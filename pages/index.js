@@ -1,0 +1,124 @@
+import React, { useEffect, useState } from 'react';
+import Standard from '../components/Carousel/Standard';
+import Head from 'next/head';
+import CarouselProducts from '../components/Carousel/CarouselProducts';
+import CarouselBrand from '../components/Carousel/CarouselBrand';
+import { isMobile } from 'react-device-detect';
+
+const Home = () => {
+	const [responsiveElements, setResponsiveElements] = useState(6);
+	const [windowsSize, setWindowsSize] = useState(0);
+	const [slideDimensions, setSlideDimensions] = useState('100%');
+	const [tempMobile, setTempMobile] = useState(false);
+
+	useEffect(() => {
+		setTempMobile(isMobile);
+  }, [isMobile]);
+  
+	useEffect(() => {
+		const updateWindowDimensions = () => {
+			const newWidth = window.innerWidth;
+			setWindowsSize(newWidth);
+			if (newWidth < 579) {
+				setResponsiveElements(2);
+			} else if (newWidth > 579 && newWidth < 1200) {
+				setResponsiveElements(4);
+			} else if (newWidth > 900) {
+				setResponsiveElements(6);
+			}
+		};
+		let dimensions = 100 / responsiveElements;
+		dimensions = dimensions + '%';
+		setSlideDimensions(dimensions);
+
+		window.addEventListener('resize', updateWindowDimensions);
+		if (windowsSize === 0) {
+			updateWindowDimensions();
+		}
+		return () => window.removeEventListener('resize', updateWindowDimensions);
+	}, [windowsSize]);
+
+	return (
+		<div>
+			<Head>
+				<title>
+					PcStore.mx: Cómputo, Accesorios, Hardware, Tecnología y Más
+				</title>
+				<meta
+					name='description'
+					content={`PcStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
+				/>
+			</Head>
+			<Standard />
+			<div className='container'>
+				<div className='section best'>
+					<div className='section-products'>
+						<div className='section-products__title'>
+							<h1>RECOMENDADOS</h1>
+						</div>
+						<CarouselProducts typeQuery={'-visitas'} mobile={tempMobile} />
+					</div>
+				</div>
+				<div className='section best-categories'>
+					<div className='section-products'>
+						<div className='section-products__title'>
+							<h1>NUEVOS</h1>
+						</div>
+						<CarouselProducts typeQuery={'-created'} mobile={tempMobile} />
+					</div>
+				</div>
+				<div className='section best-brands'>
+					<div className='section-products'>
+						<div className='section-products__title'>
+							<h1>LAS MEJORES MARCAS</h1>
+						</div>
+						<CarouselBrand
+							responsiveElements={responsiveElements}
+							slideDimensions={slideDimensions}
+						/>
+					</div>
+				</div>
+
+				<div className='section best'>
+					<div className='section-products'>
+						<div className='section-products__title'>
+							<h1>MÁS VENDIDOS</h1>
+						</div>
+						<CarouselProducts typeQuery={'-ventas'} mobile={tempMobile} />
+					</div>
+				</div>
+			</div>
+			<style jsx global>
+				{`
+					.section {
+						position: relative;
+						margin-top: 20px;
+						border: 1px solid #eaeaea;
+						background: #ffffff;
+					}
+
+					.section-products__title {
+						padding: 15px 20px;
+						border-bottom: 1px solid #eaeaea;
+					}
+
+					.section-products {
+						background: #ffffff;
+					}
+
+					h1 {
+						font-size: 18px;
+					}
+
+					@media only screen and (max-width: 48em) {
+						.button__show_mobile {
+							opacity: 1 !important;
+						}
+					}
+				`}
+			</style>
+		</div>
+	);
+};
+
+export default Home;

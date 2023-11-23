@@ -1,0 +1,107 @@
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import Capitalize from '../../hooks/CapitalizeTitle';
+
+
+const BestCategoriesMini = ({ parentCategorie }) => {
+	const [data, setData] = useState({ results: [] });
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(false);
+	const fetchData = async () => {
+		try {
+			setLoading(true);
+			const data = await fetch(
+				`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=${parentCategorie}`
+			);
+			setData(await data.json());
+		} catch (error) {
+			setError(error);
+		} finally {
+			setLoading(false);
+		}
+	};
+	useEffect(() => {
+		fetchData();
+	}, []);
+
+	useEffect(() => {
+		fetchData();
+	}, [parentCategorie]);
+
+	return (
+		<div className='categories__mini'>
+			{data.results
+				.filter((i) => i.portada)
+				.slice(0, 4)
+				.map((categorie, index) => (
+					<Link
+						href={`/listado/all/${categorie.slug}`}
+						key={index}
+						legacyBehavior
+					>
+						<a>
+							<div className='categories__mini__item'>
+								<div className='categories__mini__item__container'>
+									<div className='categories__mini__image'>
+										<Image
+											src={
+												categorie.portada
+													? categorie.portada
+													: '/images/not-available.png'
+											}
+											layout='fill'
+											objectFit='contain'
+											draggable='false'
+										/>
+									</div>
+								</div>
+								<div className='categories__mini__item__title'>
+									{Capitalize(categorie.name)}
+								</div>
+							</div>
+						</a>
+					</Link>
+				))}
+			<style jsx>
+				{`
+					.categories__mini__item__container {
+						margin-left: 20px;
+						max-width: 150px;
+						padding: 5px;
+						width: 100px;
+						height: 100px;
+					}
+					.categories__mini {
+						margin-top: 10px;
+						width: 100%;
+						display: flex;
+						flex-direction: column;
+					}
+
+					.categories__mini__item__title {
+						font-weight: 600;
+						margin-left: 20px;
+						font-size: 16px;
+					}
+
+					.categories__mini__item {
+						display: flex;
+						align-items: center;
+
+						border: 1px solid #eaeaea;
+						margin-top: 10px;
+						border-radius: 2px;
+					}
+					.categories__mini__image {
+						position: relative;
+						width: 100%;
+						height: 100%;
+					}
+				`}
+			</style>
+		</div>
+	);
+};
+
+export default BestCategoriesMini;
