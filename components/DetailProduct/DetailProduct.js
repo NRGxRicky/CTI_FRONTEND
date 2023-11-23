@@ -265,7 +265,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 													<span className='bold'>{item.stock_puebla}</span>{' '}
 													Disponibles.
 													<div className='shipping-local__label_mini'>
-														(Hasta las 6:00 p.m.)
+														(Hasta las 6:00 p.m. por $ 30.00)
 													</div>
 												</span>
 											</div>
