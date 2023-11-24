@@ -26,6 +26,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 	isMobile,
 }) => {
 	const textInput = useRef<HTMLInputElement | null>(null);
+	const searchButton = useRef<HTMLButtonElement | null>(null);
 	const [name, setName] = useState<string>('Iniciar sesión / Registrarse');
 	const router = useRouter();
 	const { q } = router.query;
@@ -63,7 +64,18 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 		const tempValue = e.target.value;
 		e.target.value = '';
 		e.target.value = tempValue;
+		e.target.style.zIndex = '200';
+		if (searchButton.current !== null) {
+			searchButton.current.style.zIndex = '200';
+		}
 	};
+
+	const focusSearchBlur = (e: ChangeEvent<HTMLInputElement>) => {
+		e.target.style.zIndex = '0';
+		if (searchButton.current !== null) {
+			searchButton.current.style.zIndex = '0';
+		}
+	}
 
 	const handleMobileSearch = () => {
 		if (searchVisibility.top === '-54px') {
@@ -112,6 +124,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 								<div className='header-bar__form-container'>
 									<input
 										onFocus={focusSearchInEnd}
+										onBlur={focusSearchBlur}
 										onChange={(e) => handleInputChange(e.target.value)}
 										className='header-bar__input'
 										type='search'
@@ -121,7 +134,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 										autoComplete='off'
 										required
 									/>
-									<button type='submit' className='header-bar__button-searh'>
+									<button type='submit' className='header-bar__button-searh' ref={searchButton}>
 										<svg
 											className='header-bar__icon'
 											width='25'
@@ -356,7 +369,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 					max-height: 54px;
 					max-width: 83rem;
 					margin: 0 auto;
-					z-index: 200;
+					
 				}
 
 				.header-bar__logo {
@@ -378,7 +391,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 				}
 
 				.header-bar__input {
-					z-index: 200;
 					width: 100%;
 					height: 40px;
 					padding: 10px;
