@@ -1,7 +1,8 @@
 import React from 'react';
+import { Properties } from 'csstype';
 
 interface OpacityContainerProps {
-	opacityContainer: { opacity: number, visibility: string };
+	opacityContainer: { opacity: number; visibility: Properties['visibility'] };
 	setParentOpacity: (state: boolean) => void;
 }
 
