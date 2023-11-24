@@ -29,7 +29,7 @@ export const getServerSideProps = async (context) => {
 };
 
 const ProductItem = ({ item }) => {
-	const convertTile = Capitalize(item.titulo);
+	const convertTitle = Capitalize(item.titulo);
 	const [tempMobile, setTempMobile] = useState(false);
 	const { height, width } = WindowDimensions();
 
@@ -40,10 +40,10 @@ const ProductItem = ({ item }) => {
 	return (
 		<div>
 			<Head>
-				<title>{convertTile} | PcStore.mx</title>
+				<title>{`${convertTitle} | PcStore.mx`}</title>
 				<meta
 					name='description'
-					content={`Compra tu ${convertTile} en PcStore.mx - Compra protegida, envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
+					content={`Compra tu ${convertTitle} en PcStore.mx - Compra protegida, envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
 				/>
 			</Head>
 			<div className='container'>

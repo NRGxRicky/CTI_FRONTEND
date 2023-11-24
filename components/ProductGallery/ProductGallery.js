@@ -7,8 +7,8 @@ import NewProduct from '../Icons/NewProduct';
 import TextTruncate from 'react-text-truncate';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
-import Zoom from 'react-medium-image-zoom';
-import 'react-medium-image-zoom/dist/styles.css';
+import InnerImageZoom from 'react-inner-image-zoom';
+import 'react-inner-image-zoom/lib/InnerImageZoom/styles.min.css';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 
 const ProductGallery = ({
@@ -199,10 +199,11 @@ const ProductGallery = ({
 								<div className='product__gallery__item__image'>
 									<Image
 										src={item.xs ? item.xs : '/images/not-available.png'}
-										layout='fill'
-										objectFit='contain'
+										fill
+										style={{ objectFit: 'contain' }}
 										alt={Capitalize(item.title)}
 										draggable='false'
+										sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
 									/>
 								</div>
 							</div>
@@ -220,26 +221,22 @@ const ProductGallery = ({
 						duration={900}
 						style={{ display: loaded ? 'none' : undefined }}
 					/>
-					<Zoom
-						wrapStyle={{
-							width: '100%',
-							height: ' 100%',
+
+					<div
+						className='product__gallery__current__image'
+						style={{
 							display: loaded ? undefined : 'none',
 						}}
-						overlayBgColorEnd='rgba(0, 0, 0, 0.7)'
 					>
-						<div className='product__gallery__current__image'>
-							<Image
-								src={current.l ? current.l : '/images/not-available.png'}
-								layout='fill'
-								objectFit='contain'
-								alt={Capitalize(current.title)}
-								draggable='false'
-								onLoad={() => setLoaded(true)}
-								priority={true}
-							/>
-						</div>
-					</Zoom>
+						<InnerImageZoom
+							src={current.l ? current.l : '/images/not-available.png'}
+							imgAttributes={{
+								onLoad: () => setLoaded(true),
+							}}
+							fullscreenOnMobile={true}
+							className='zoom__container'
+						/>
+					</div>
 				</div>
 			)}
 			<style jsx global>
@@ -268,7 +265,6 @@ const ProductGallery = ({
 
 					.product__gallery__current__image {
 						width: 100%;
-						height: 100%;
 						position: relative;
 						padding: 20px;
 					}
@@ -290,8 +286,8 @@ const ProductGallery = ({
 					.product__gallery__item__image {
 						display: flex;
 						position: relative;
-						height: 100%;
 						width: 100%;
+						height: 100%;
 					}
 
 					.product__gallery__embla__container {
@@ -307,6 +303,11 @@ const ProductGallery = ({
 					.product__gallery__embla__slide {
 						position: relative;
 						flex: 0 0 50px;
+					}
+
+					.zoom__container {
+						width: 100%;
+						height: 100%;
 					}
 				`}
 			</style>

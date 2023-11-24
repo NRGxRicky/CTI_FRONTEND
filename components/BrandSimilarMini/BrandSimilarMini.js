@@ -63,8 +63,8 @@ const BrandSimilarMini = ({
 														? item.imagen1s
 														: '/images/not-available.png'
 												}
-												layout='fill'
-												objectFit='contain'
+												fill
+												style={{ objectFit: 'contain' }}
 												draggable='false'
 											/>
 										</div>

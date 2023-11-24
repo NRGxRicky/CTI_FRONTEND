@@ -32,8 +32,8 @@ const ListProducts = ({ results, filter_available_store, tempMobile }) => {
 													? producto.imagen1s
 													: '/images/not-available.png'
 											}
-											layout='fill'
-											objectFit='contain'
+											fill
+											style={{ objectFit: 'contain' }}
 											alt={Capitalize(producto.titulo)}
 											draggable='false'
 										/>

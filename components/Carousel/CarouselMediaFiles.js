@@ -80,8 +80,8 @@ const CarouselMediaFiles = ({
 									<div className='mediafiles__item'>
 										<div className='mediafiles__item__image'>
 											<Image
-												layout='fill'
-												objectFit='contain'
+												fill
+												style={{ objectFit: 'contain' }}
 												className='mediafile__pdf'
 												alt={file.tipo}
 												draggable='false'

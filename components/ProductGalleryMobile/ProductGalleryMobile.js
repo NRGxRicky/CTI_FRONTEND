@@ -7,8 +7,8 @@ import NewProduct from '../Icons/NewProduct';
 import TextTruncate from 'react-text-truncate';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
-import Zoom from 'react-medium-image-zoom';
-import 'react-medium-image-zoom/dist/styles.css';
+import InnerImageZoom from 'react-inner-image-zoom';
+import 'react-inner-image-zoom/lib/InnerImageZoom/styles.min.css';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 
 const ProductGalleryMobile = ({
@@ -168,26 +168,19 @@ const ProductGalleryMobile = ({
 								duration={900}
 								style={{ display: loaded ? 'none' : undefined }}
 							/>
-							<Zoom
-								wrapStyle={{
-									width: '100%',
-									height: ' 100%',
+							<div
+								className='product__gallery__current__image'
+								style={{
 									display: loaded ? undefined : 'none',
 								}}
-								overlayBgColorEnd='rgba(0, 0, 0, 0.7)'
 							>
-								<div className='product__gallery__item__image'>
-									<Image
-										src={item.l ? item.l : '/images/not-available.png'}
-										layout='fill'
-										objectFit='contain'
-										alt={Capitalize(item.title)}
-										draggable='false'
-										onLoad={() => setLoaded(true)}
-										priority={true}
-									/>
-								</div>
-							</Zoom>
+								<InnerImageZoom
+									src={item.l ? item.l : '/images/not-available.png'}
+									imgAttributes={{
+										onLoad: () => setLoaded(true),
+									}}
+								/>
+							</div>
 						</div>
 					))}
 				</div>

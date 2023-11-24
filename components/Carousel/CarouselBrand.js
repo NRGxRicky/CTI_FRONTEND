@@ -112,8 +112,8 @@ const CarouselBrand = ({
 										src={
 											brand.imagen ? brand.imagen : '/images/not-available.png'
 										}
-										layout='fill'
-										objectFit='contain'
+										fill
+										style={{ objectFit: 'contain' }}
 										draggable='false'
 										alt={brand.nombre}
 									/>

@@ -8,7 +8,7 @@ const IconWhatsapp = () => {
 					position: 'fixed',
 					right: '10px',
 					bottom: '10px',
-					'text-align': 'center',
+					textAlign: 'center',
 					padding: '3px',
 				}}
 			>

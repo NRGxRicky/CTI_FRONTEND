@@ -50,8 +50,8 @@ const BestCategoriesMini = ({ parentCategorie }) => {
 													? categorie.portada
 													: '/images/not-available.png'
 											}
-											layout='fill'
-											objectFit='contain'
+											fill
+											style={{ objectFit: 'contain' }}
 											draggable='false'
 										/>
 									</div>

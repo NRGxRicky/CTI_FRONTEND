@@ -127,8 +127,8 @@ const CarouselProductsRelated = ({
 																	? producto.imagen1s
 																	: '/images/not-available.png'
 															}
-															layout='fill'
-															objectFit='contain'
+															fill
+															style={{ objectFit: 'contain' }}
 															alt={Capitalize(producto.titulo)}
 															draggable='false'
 														/>

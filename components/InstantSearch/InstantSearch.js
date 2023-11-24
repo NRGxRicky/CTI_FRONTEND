@@ -141,8 +141,8 @@ const InstantSearch = ({
 															? producto.imagen1xs
 															: '/images/not-available.png'
 													}
-													layout='fill'
-													objectFit='contain'
+													fill
+													style={{ objectFit: 'contain' }}
 													alt={Capitalize(producto.titulo)}
 												/>
 											</div>
