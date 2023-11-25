@@ -70,7 +70,7 @@ const HeaderMenu = () => {
 				{`
 					.header-menu {
 						width: 100%;
-						height: 54px;
+						height: 45px;
 						display: flex;
 						align-items: center;
 						justify-content: center;
