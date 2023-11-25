@@ -372,7 +372,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 				.header-bar__container {
 					position: relative;
 					min-height: 54px;
-
+					padding: 5px;
 					max-width: 83rem;
 					margin: 0 auto;
 				}

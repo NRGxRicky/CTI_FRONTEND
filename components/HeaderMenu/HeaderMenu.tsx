@@ -7,7 +7,7 @@ const HeaderMenu = () => {
 			<ul className='header-menu__list text--off'>
 				<li>
 					<Link
-						href={`http://localhost:3000/listado/all/index-computadoras`}
+						href={`/listado/all/index-computadoras`}
 						legacyBehavior
 					>
 						<a>Computadoras</a>
@@ -15,7 +15,7 @@ const HeaderMenu = () => {
 				</li>
 				<li>
 					<Link
-						href={`http://localhost:3000/listado/all/index-impresion`}
+						href={`/listado/all/index-impresion`}
 						legacyBehavior
 					>
 						<a>Impresoras</a>
@@ -23,23 +23,43 @@ const HeaderMenu = () => {
 				</li>
 				<li>
 					<Link
-						href={`http://localhost:3000/listado/all/index-computo-monitores`}
+						href={`/listado/all/index-computo-monitores`}
 						legacyBehavior
 					>
 						<a>Monitores</a>
 					</Link>
 				</li>
 				<li>
-					<a>Memorias</a>
+					<Link
+						href={`/listado/all/index-memorias`}
+						legacyBehavior
+					>
+						<a>Memorias</a>
+					</Link>
 				</li>
 				<li>
-					<a>Almacenamiento</a>
+					<Link
+						href={`/listado/all/index-almacenamiento`}
+						legacyBehavior
+					>
+						<a>Almacenamiento</a>
+					</Link>
 				</li>
 				<li>
-					<a>Lo más vendido</a>
+					<Link
+						href={`/listado/all/index?q=&page_size=40&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas`}
+						legacyBehavior
+					>
+						<a>Lo más vendido</a>
+					</Link>
 				</li>
 				<li>
-					<a>Novedades</a>
+					<Link
+						href={`/listado/all/index?q=&page_size=40&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-created`}
+						legacyBehavior
+					>
+						<a>Novedades</a>
+					</Link>
 				</li>
 				<li>
 					<a>OFERTAS</a>
