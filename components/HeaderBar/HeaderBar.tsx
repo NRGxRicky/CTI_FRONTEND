@@ -11,6 +11,7 @@ import InstantSearch from '../InstantSearch/InstantSearch';
 import LoginMenu from '../LoginMenu/LoginMenu';
 import { useAuth } from '../../hooks/auth';
 import TruncateManual from '../../hooks/TruncateManual';
+import HeaderMenu from '../HeaderMenu/HeaderMenu';
 
 interface HeaderBarProps {
 	setParentOpacity: (opacity: boolean) => void;
@@ -33,7 +34,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 	const [queryInInput, setQueryInInput] = useState<string | undefined>(
 		undefined
 	);
-	const [tempMobile, setTempMobile] = useState<boolean>(false);
+	const [tempMobile, setTempMobile] = useState<boolean>(true);
 	const [showLoginMenu, setShowLoginMenu] = useState<boolean>(false);
 	const maxPage = 40;
 	const mobileMaxPage = 10;
@@ -134,7 +135,11 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 										autoComplete='off'
 										required
 									/>
-									<button type='submit' className='header-bar__button-searh' ref={searchButton}>
+									<button
+										type='submit'
+										className='header-bar__button-searh'
+										ref={searchButton}
+									>
 										<svg
 											className='header-bar__icon'
 											width='25'
@@ -223,6 +228,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 							</div>
 						</div>
 					</div>
+					{!tempMobile && <HeaderMenu />}
 				</div>
 			</div>
 			<div className='header-bar__mobile' style={searchVisibility}>
@@ -263,10 +269,10 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 							<div
 								className='header-bar__clear'
 								onClick={() => {
-									 if (textInput.current) {
-											textInput.current.value = '';
-											textInput.current.focus();
-										}
+									if (textInput.current) {
+										textInput.current.value = '';
+										textInput.current.focus();
+									}
 								}}
 							>
 								<div className='close --close-search'></div>
@@ -366,10 +372,9 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 				.header-bar__container {
 					position: relative;
 					min-height: 54px;
-					max-height: 54px;
+
 					max-width: 83rem;
 					margin: 0 auto;
-					
 				}
 
 				.header-bar__logo {
