@@ -1,34 +1,42 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../../hooks/auth';
+import React, { useState } from 'react';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import TruncateManual from '../../hooks/TruncateManual';
 import Link from 'next/link';
+import { useAuth } from '../../hooks/auth';
 
-const LoginMenu = ({ setShowLoginMenu, setName, name }) => {
-	const [username, setUsername] = useState('');
-	const [password, setPassword] = useState('');
+interface LoginMenuProps {
+	setShowLoginMenu: React.Dispatch<React.SetStateAction<boolean>>;
+	setName: React.Dispatch<React.SetStateAction<string>>;
+	name: string;
+}
+
+const LoginMenu: React.FC<LoginMenuProps> = ({
+	setShowLoginMenu,
+	setName,
+	name,
+}) => {
+	const [username, setUsername] = useState<string>('');
+	const [password, setPassword] = useState<string>('');
 	const { loading, isAuthenticated, login, logout } = useAuth();
-	const [error, setError] = useState(false);
-
-	const HandleSubmit = async (e) => {
+	const [error, setError] = useState<boolean>(false);
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		try {
 			const resp = await login(username, password);
-			if (resp.status === 401) {
-				setError(true);
-			}
 
 			if (resp.status === 200) {
-				setName(localStorage.getItem('name'));
+				setName(localStorage.getItem('name') || '');
 				setError(false);
 				setShowLoginMenu(false);
+			} else {
+				setError(true);
 			}
 		} catch (error) {
 			setError(true);
 		}
 	};
 
-	const HandleLogout = () => {
+	const handleLogout = () => {
 		logout();
 		setName('Iniciar sesión / Registrarse');
 	};
@@ -68,7 +76,7 @@ const LoginMenu = ({ setShowLoginMenu, setName, name }) => {
 							{!isAuthenticated ? (
 								<div>
 									<div className='login-menu__body'>
-										<form onSubmit={(e) => HandleSubmit(e)}>
+										<form onSubmit={(e) => handleSubmit(e)}>
 											<div className='login-menu__body__item login-menu__body__item__input'>
 												<div>
 													<input
@@ -134,8 +142,8 @@ const LoginMenu = ({ setShowLoginMenu, setName, name }) => {
 									<div className='login-menu__footer'>
 										<div
 											className='login-menu__logout'
-											onClick={() => {
-												HandleLogout();
+											onClick={(e) => {
+												handleLogout();
 												setShowLoginMenu(false);
 											}}
 										>
@@ -281,6 +289,20 @@ const LoginMenu = ({ setShowLoginMenu, setName, name }) => {
 						box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 						border-bottom-left-radius: 2px;
 						border-bottom-right-radius: 2px;
+					}
+
+					.login-menu:before {
+						content: '';
+						position: absolute;
+						top: -6px;
+						left: 50%;
+						width: 0px;
+						height: 0px;
+						border-left: 6px solid transparent;
+						border-right: 6px solid transparent;
+						border-bottom: 6px solid rgb(255, 255, 255);
+						clear: both;
+						transform: translate(-50%);
 					}
 
 					@media only screen and (max-width: 62em) {

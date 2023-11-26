@@ -49,7 +49,7 @@ const Standard = () => {
 						use={TailSpin}
 						size={30}
 						strokeWidth={8}
-						strokeColor='#ff6e26'
+						strokeColor='#ff002c'
 						duration={900}
 					/>
 				</div>

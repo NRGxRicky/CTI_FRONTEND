@@ -1,33 +1,43 @@
 /* eslint-disable react/jsx-filename-extension */
-import React, { useState, useEffect, useContext } from 'react';
+import React, {
+	useState,
+	useEffect,
+	useContext,
+	ReactNode,
+	createContext,
+} from 'react';
 import { useCookies } from 'react-cookie';
 
 const API_URL = 'https://api.pccdnapi.com';
-const API_URLx = 'http://api.pccomputo.local:8000';
 
-const makeUrl = (endpoint) => API_URL + endpoint;
+const makeUrl = (endpoint: string): string => `${API_URL}${endpoint}`;
 
-const fetchToken = (username, password) => {
+const fetchToken = async (
+	username: string,
+	password: string
+): Promise<Response> => {
 	const url = makeUrl('/token/');
 	try {
-		return fetch(url, {
+		const response = await fetch(url, {
 			method: 'POST',
 			body: JSON.stringify({ username, password }),
 			headers: {
 				'Content-Type': 'application/json',
 			},
-		}).then((response) => {
-			if (response.status == 401) {
-				console.clear();
-      }
-      return response
 		});
+
+		if (response.status === 401) {
+			console.clear();
+		}
+
+		return response;
 	} catch (error) {
-		return { ok: false };
+		console.error('Error in fetchToken:', error);
+		return { ok: false } as Response;
 	}
 };
 
-const fetchNewToken = (refresh) => {
+const fetchNewToken = (refresh: string): Promise<Response> => {
 	const url = makeUrl('/token/refresh/');
 	return fetch(url, {
 		method: 'POST',
@@ -38,40 +48,63 @@ const fetchNewToken = (refresh) => {
 	});
 };
 
-const AuthContext = React.createContext({});
+interface AuthContextProps {
+	isAuthenticated: boolean;
+	loading: boolean;
+	login: (username: string, password: string) => Promise<Response>;
+	logout: () => void;
+	getToken: () => Promise<string | undefined>;
+	accessToken: string;
+}
 
-export const AuthProvider = ({ children }) => {
+const AuthContext = createContext<AuthContextProps>({
+	isAuthenticated: false,
+	loading: true,
+	login: async () => new Response(),
+	logout: () => {},
+	getToken: async () => undefined,
+	accessToken: '',
+});
+
+interface AuthProviderProps {
+	children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const [loading, setLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [accessToken, setAccessToken] = useState('');
 	const [refreshTokenValue, setRefreshToken] = useState('');
-	const [accessTokenExpiry, setAccessTokenExpiry] = useState(null);
-	const [cookies, setCookies, removeCookie] = useCookies(['tk_refresh']);
+	const [accessTokenExpiry, setAccessTokenExpiry] = useState<number | null>(
+		null
+	);
+	const [cookies, setCookies, removeCookie] = useCookies();
 
 	const setNotAuthenticated = () => {
 		setIsAuthenticated(false);
 		setLoading(false);
 	};
 
-	const accessTokenIsValid = async () => {
-		if (String(cookies.tk_refresh) === 'undefined') {
-			setIsAuthenticated(false);
-			setLoading(false);
+	const accessTokenIsValid = async (): Promise<boolean> => {
+		if (!cookies || !cookies.tk_refresh) {
+			setNotAuthenticated();
 			return false;
 		}
-		if (cookies.tk_expire === '') {
-			setCookies('tk_expire', Date.now(), {
+
+		const expireCookie = cookies.tk_expire || '';
+		if (!expireCookie) {
+			setCookies('tk_expire', Date.now().toString(), {
 				path: '/',
 				sameSite: true,
-				secure: true
+				secure: true,
 			});
 		}
 
 		setRefreshToken(cookies.tk_refresh);
-		setAccessTokenExpiry(cookies.tk_expire);
+		setAccessTokenExpiry(Number(expireCookie));
 
-		const nowDate = parseInt(Date.now());
-		if (parseInt(cookies.tk_expire) <= nowDate || accessToken === '') {
+		const nowDate = Date.now();
+		if (Number(expireCookie) <= nowDate || accessToken === '') {
 			const response = await refreshToken(cookies.tk_refresh);
 			return response;
 		} else {
@@ -90,69 +123,81 @@ export const AuthProvider = ({ children }) => {
 		initAuth();
 	}, []);
 
-	const refreshToken = async (refress) => {
-		if (refress !== '' && refress !== 'undefined') {
-			setLoading(true);
-			const resp = await fetchNewToken(refress);
+	const refreshToken = async (refresh: string): Promise<boolean> => {
+		if (!refresh || refresh === 'undefined') {
+			setLoading(false);
+			return false;
+		}
+
+		setLoading(true);
+		try {
+			const resp = await fetchNewToken(refresh);
 			if (!resp.ok) {
 				setNotAuthenticated();
 				return false;
 			}
+
 			const tokenData = await resp.json();
 			handleNewToken(tokenData);
-			return tokenData;
+			return true;
+		} catch (error) {
+			console.error('Error in refreshToken:', error);
+			setNotAuthenticated();
+			return false;
 		}
-		setLoading(false);
-		return false;
 	};
 
-	const handleNewToken = (data) => {
+	const handleNewToken = (data: any) => {
 		setAccessToken(data.access);
 		const expiryInt = new Date();
 		const convertExpireDate = expiryInt.setSeconds(
 			expiryInt.getSeconds() + data.lifetime
 		);
 		setAccessTokenExpiry(convertExpireDate);
-		setCookies('tk_expire', convertExpireDate, {
+
+		setCookies('tk_expire', convertExpireDate.toString(), {
 			path: '/',
 			sameSite: true,
-				secure: true
+			secure: true,
 		});
+
 		if (data.refresh) {
 			setRefreshToken(data.refresh);
 			setCookies('tk_refresh', data.refresh, {
 				path: '/',
 				sameSite: true,
-					secure: true
+				secure: true,
 			});
 		}
+
 		setIsAuthenticated(true);
 		setLoading(false);
 	};
 
-	const login = async (username, password) => {
+	const login = async (
+		username: string,
+		password: string
+	): Promise<Response> => {
 		setLoading(true);
 		const resp = await fetchToken(username, password);
+
 		if (resp.ok) {
 			const tokenData = await resp.json();
 			localStorage.setItem('name', tokenData.name);
 			handleNewToken(tokenData);
 		} else {
-			setIsAuthenticated(false);
-			setLoading(false);
-			// Let the page handle the error
+			setNotAuthenticated();
 		}
+
 		return resp;
 	};
 
-	const getToken = async () => {
-		// Returns an access token if there's one or refetches a new one
-		if (accessTokenIsValid()) {
-			return Promise.resolve(accessToken);
-		} else if (loading) {
-			// Assume this means the token is in the middle of refreshing
-			return Promise.resolve(accessToken);
+	const getToken = async (): Promise<string | undefined> => {
+		if ((await accessTokenIsValid()) || loading) {
+			return accessToken;
 		}
+
+		return undefined;
 	};
 
 	const logout = () => {
@@ -163,7 +208,7 @@ export const AuthProvider = ({ children }) => {
 		localStorage.removeItem('name');
 	};
 
-	const value = {
+	const value: AuthContextProps = {
 		isAuthenticated,
 		loading,
 		login,

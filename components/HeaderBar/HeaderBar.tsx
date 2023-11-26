@@ -228,6 +228,13 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 							</div>
 						</div>
 					</div>
+					{showLoginMenu && (
+						<LoginMenu
+							setShowLoginMenu={setShowLoginMenu}
+							setName={setName}
+							name={name}
+						/>
+					)}
 					{!tempMobile && <HeaderMenu />}
 				</div>
 			</div>
@@ -303,13 +310,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 					/>
 				</div>
 			</div>
-			{showLoginMenu && (
-				<LoginMenu
-					setShowLoginMenu={setShowLoginMenu}
-					setName={setName}
-					name={name}
-				/>
-			)}
 
 			<style jsx>{`
 				.header-bar__profile-icon {
