@@ -86,10 +86,10 @@ export function useCarousel(length, interval, options = {}) {
 				});
 		},
 		onSwipedLeft(e) {
-			swiped(e, dispatch, length, 1);
+			swiped(e, dispatch, length, -1);
 		},
 		onSwipedRight(e) {
-			swiped(e, dispatch, length, -1);
+			swiped(e, dispatch, length, 1);
 		},
 		trackMouse: true,
 		trackTouch: true,
