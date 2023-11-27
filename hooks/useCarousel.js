@@ -61,7 +61,7 @@ function swiped(e, dispatch, length, dir) {
 	const t = threshold(e.event.target);
 	const d = dir * -e.deltaX;
 	if (d >= t) {
-		dispatch(dir >= 0 ? { type: 'prev', length } : { type: 'next', length });
+		dispatch(dir <= 0 ? { type: 'prev', length } : { type: 'next', length });
 	} else {
 		dispatch({
 			type: 'drag',
@@ -117,7 +117,7 @@ export function useCarousel(length, interval, options = {}) {
 		const dist = Math.abs(state.active - state.desired);
 		const pref = Math.sign(state.offset || 0);
 		const dir =
-			(dist > length / 2 ? -1 : 1) * Math.sign(state.desired - state.active);
+			(dist > length / 2 ? 1 : -1) * Math.sign(state.desired - state.active);
 		const shift =
 			(totalWidth * slidesPresented * (pref || dir)) / (length + shadowSlides);
 		style.transition = smooth;
