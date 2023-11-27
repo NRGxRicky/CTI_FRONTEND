@@ -86,10 +86,10 @@ export function useCarousel(length, interval, options = {}) {
 				});
 		},
 		onSwipedLeft(e) {
-			swiped(e, dispatch, length, -1);
+			swiped(e, dispatch, length, 1);
 		},
 		onSwipedRight(e) {
-			swiped(e, dispatch, length, 1);
+			swiped(e, dispatch, length, -1);
 		},
 		trackMouse: true,
 		trackTouch: true,
@@ -117,7 +117,7 @@ export function useCarousel(length, interval, options = {}) {
 		const dist = Math.abs(state.active - state.desired);
 		const pref = Math.sign(state.offset || 0);
 		const dir =
-			(dist > length / 2 ? 1 : -1) * Math.sign(state.desired - state.active);
+			(dist > length / 2 ? -1 : 1) * Math.sign(state.desired - state.active);
 		const shift =
 			(totalWidth * slidesPresented * (pref || dir)) / (length + shadowSlides);
 		style.transition = smooth;
