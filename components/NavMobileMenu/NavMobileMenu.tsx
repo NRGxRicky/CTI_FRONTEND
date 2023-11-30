@@ -200,9 +200,9 @@ const NavMobileMenu = () => {
 					margin-top: 58px;
 					width: 100%;
 					height: 100vh;
-					z-index: 0;
 					background-color: #fff;
 					position: absolute;
+					overflow-y: auto;
 				}
 
 				.burger-button {
