@@ -206,7 +206,7 @@ const NavMobileMenu = () => {
 					height: 100vh;
 					background-color: #fff;
 					position: absolute;
-					z-index: 1000;
+					z-index: 100;
 				}
 
 				.burger-button {
