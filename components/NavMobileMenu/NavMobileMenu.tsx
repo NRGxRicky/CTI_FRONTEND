@@ -193,6 +193,7 @@ const NavMobileMenu = () => {
 
 				.mobile-menu__panel {
 					padding: 30px 20px;
+					overflow-y: auto;
 				}
 				.mobile-menu__inner {
 					right: 0;
