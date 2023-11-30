@@ -209,7 +209,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
 						position: fixed;
 						width: 100%;
 						height: 100%;
-						z-index: 1;
+						z-index: 200;
 						background: #0f0f0f;
 						opacity: 0.7;
 						transition: opacity 0.3s, visibility 0.3s;
