@@ -2,46 +2,32 @@ import React from 'react';
 import Link from 'next/link';
 
 const HeaderMenu = () => {
+
 	return (
 		<div className='header-menu'>
 			<ul className='header-menu__list text--off'>
 				<li>
-					<Link
-						href={`/listado/all/index-computadoras`}
-						legacyBehavior
-					>
+					<Link href={`/listado/all/index-computadoras`} legacyBehavior>
 						<a>Computadoras</a>
 					</Link>
 				</li>
 				<li>
-					<Link
-						href={`/listado/all/index-impresion`}
-						legacyBehavior
-					>
+					<Link href={`/listado/all/index-impresion`} legacyBehavior>
 						<a>Impresoras</a>
 					</Link>
 				</li>
 				<li>
-					<Link
-						href={`/listado/all/index-computo-monitores`}
-						legacyBehavior
-					>
+					<Link href={`/listado/all/index-computo-monitores`} legacyBehavior>
 						<a>Monitores</a>
 					</Link>
 				</li>
 				<li>
-					<Link
-						href={`/listado/all/index-memorias`}
-						legacyBehavior
-					>
+					<Link href={`/listado/all/index-memorias`} legacyBehavior>
 						<a>Memorias</a>
 					</Link>
 				</li>
 				<li>
-					<Link
-						href={`/listado/all/index-almacenamiento`}
-						legacyBehavior
-					>
+					<Link href={`/listado/all/index-almacenamiento`} legacyBehavior>
 						<a>Almacenamiento</a>
 					</Link>
 				</li>
@@ -71,7 +57,7 @@ const HeaderMenu = () => {
 					.header-menu {
 						width: 100%;
 						height: 45px;
-						display: flex;
+						display: none;
 						align-items: center;
 						justify-content: center;
 					}
@@ -84,6 +70,12 @@ const HeaderMenu = () => {
 
 					.header-menu__list a {
 						cursor: pointer;
+					}
+
+					@media only screen and (min-width: 62em) {
+						.header-menu {
+							display: flex;
+						}
 					}
 				`}
 			</style>

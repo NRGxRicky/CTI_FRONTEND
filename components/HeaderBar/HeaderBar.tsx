@@ -12,6 +12,7 @@ import LoginMenu from '../LoginMenu/LoginMenu';
 import { useAuth } from '../../hooks/auth';
 import TruncateManual from '../../hooks/TruncateManual';
 import HeaderMenu from '../HeaderMenu/HeaderMenu';
+import NavMobileMenu from '../NavMobileMenu/NavMobileMenu';
 
 interface HeaderBarProps {
 	setParentOpacity: (opacity: boolean) => void;
@@ -36,6 +37,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 	);
 	const [tempMobile, setTempMobile] = useState<boolean>(true);
 	const [showLoginMenu, setShowLoginMenu] = useState<boolean>(false);
+
 	const maxPage = 40;
 	const mobileMaxPage = 10;
 
@@ -76,7 +78,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 		if (searchButton.current !== null) {
 			searchButton.current.style.zIndex = '0';
 		}
-	}
+	};
 
 	const handleMobileSearch = () => {
 		if (searchVisibility.top === '-54px') {
@@ -102,7 +104,9 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 		<div>
 			<div className={`header-bar ${tempMobile ? 'header-bar--mobile' : ''}`}>
 				<div className='header-bar__container header-bar--left row around-xs middle-xs center-xs'>
-					<div className='header-bar__section col-xs-6 col-sm-3 col-md-2 col-lg-2'>
+					<NavMobileMenu />
+					
+					<div className='header-bar__section col-xs-4 col-sm-5 col-md-2 col-lg-2'>
 						<a className='header-bar__logo' href='/'>
 							<Image
 								src='/images/logo.png'
