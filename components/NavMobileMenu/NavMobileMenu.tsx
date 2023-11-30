@@ -6,6 +6,9 @@ const NavMobileMenu = () => {
 
 	const toggleMenu = () => {
 		setMenuMobileOpen(!menuMobileOpen);
+		menuMobileOpen
+			? document.body.classList.remove('open-modal')
+			: document.body.classList.add('open-modal');
 	};
 
 	return (
@@ -144,11 +147,11 @@ const NavMobileMenu = () => {
 				</div>
 			)}
 			<style jsx>{`
-
-				.icon--bi-phone, .icon--bi-email {
-    				margin-right: 16px;
-    				width: 24px;
-    				height: 24px;
+				.icon--bi-phone,
+				.icon--bi-email {
+					margin-right: 16px;
+					width: 24px;
+					height: 24px;
 				}
 				.mobile-menu__inner .icon {
 					display: inline-block;
@@ -173,9 +176,9 @@ const NavMobileMenu = () => {
 
 				.mobile-menu__nav-item {
 					display: flex;
-    				align-items: center;
-    				justify-content: space-between;
-   					width: 100%;
+					align-items: center;
+					justify-content: space-between;
+					width: 100%;
 				}
 
 				.mobile-menu__list {
@@ -186,12 +189,10 @@ const NavMobileMenu = () => {
 					width: 100%;
 					font-size: 18px;
 					border-bottom: 1px solid #d8d8d8;
-
-				
 				}
 
 				.mobile-menu__panel {
-					padding: 30px 20px; 
+					padding: 30px 20px;
 				}
 				.mobile-menu__inner {
 					right: 0;
@@ -199,7 +200,7 @@ const NavMobileMenu = () => {
 					margin-top: 58px;
 					width: 100%;
 					height: 100vh;
-                    z-index: 0;
+					z-index: 0;
 					background-color: #fff;
 					position: absolute;
 				}
