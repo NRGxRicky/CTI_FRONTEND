@@ -194,16 +194,19 @@ const NavMobileMenu = () => {
 				.mobile-menu__panel {
 					padding: 0 20px;
 					overflow-y: auto;
+					width: 100%;
+					height: 100%;
 				}
 				.mobile-menu__inner {
 					right: 0;
 					top: 0;
 					margin-top: 58px;
 					width: 100%;
-					height: calc(100vh - 58px);
+					max-height: calc(100vh - 58px);
+					height: 100vh;
 					background-color: #fff;
 					position: absolute;
-					overflow-y: auto;
+					z-index: 1000;
 				}
 
 				.burger-button {
