@@ -5,12 +5,14 @@
 	outline: none;
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	-webkit-appearance: none;
+	
 }
 
 body,
 html {
 	font-family: proxima-nova, sans-serif;
 	color: #474747;
+	height: -webkit-fill-available;
 }
 
 body {
