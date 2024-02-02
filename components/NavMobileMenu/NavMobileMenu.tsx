@@ -271,7 +271,7 @@ const NavMobileMenu = () => {
 					padding: 0 20px;
 					overflow-y: auto;
 					width: 100%;
-					height: calc(100% - 100px);
+					height: calc(100% - 110px);
 				}
 				.mobile-menu__inner {
 					right: 0;
