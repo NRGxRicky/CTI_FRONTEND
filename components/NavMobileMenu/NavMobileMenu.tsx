@@ -268,6 +268,7 @@ const NavMobileMenu = () => {
 				}
 
 				.mobile-menu__panel {
+					position: relative;
 					padding: 0 20px;
 					overflow-y: auto;
 					width: 100%;
