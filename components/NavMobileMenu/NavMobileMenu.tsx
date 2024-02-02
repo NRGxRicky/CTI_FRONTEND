@@ -271,15 +271,15 @@ const NavMobileMenu = () => {
 					padding: 0 20px;
 					overflow-y: auto;
 					width: 100%;
-					height: 100%;
+					height: calc(100vh - 70px);
 				}
 				.mobile-menu__inner {
 					right: 0;
 					top: 0;
 					margin-top: 58px;
 					width: 100%;
-					max-height: calc(100vh - 88px);
-					height: calc(100vh - 88px);
+
+					height: 100vh;
 					background-color: #fff;
 					position: absolute;
 					z-index: 100;
