@@ -278,8 +278,7 @@ const NavMobileMenu = () => {
 					top: 0;
 					margin-top: 58px;
 					width: 100%;
-
-					height: 100vh;
+					height: calc(100vh - 58px);
 					background-color: #fff;
 					position: absolute;
 					z-index: 100;
