@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
+import WindowDimensions from '../../hooks/WindowDimensions';
 
 const NavMobileMenu = () => {
 	const [menuMobileOpen, setMenuMobileOpen] = useState(false);
-
+	const { height, width } = WindowDimensions();
 	const toggleMenu = () => {
 		setMenuMobileOpen(!menuMobileOpen);
 		menuMobileOpen
@@ -19,7 +20,7 @@ const NavMobileMenu = () => {
 				<div className='burger-line' onClick={toggleMenu}></div>
 			</button>
 			{menuMobileOpen && (
-				<div className='mobile-menu__inner'>
+				<div className='mobile-menu__inner' style={{ 'height': `calc(${height}px - 58px)` }}>
 					<div className='mobile-menu__panel'>
 						<ul className='mobile-menu__list'>
 							<li onClick={toggleMenu} className='mobile-menu__nav-item'>
@@ -278,7 +279,6 @@ const NavMobileMenu = () => {
 					right: 0;
 					top: 58px;
 					width: 100%;
-					height: calc(100vh - 58px);
 					background-color: #fff;
 					position: absolute;
 					z-index: 100;
