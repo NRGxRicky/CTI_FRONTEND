@@ -13,20 +13,19 @@ import { useAuth } from '../../hooks/auth';
 import TruncateManual from '../../hooks/TruncateManual';
 import HeaderMenu from '../HeaderMenu/HeaderMenu';
 import NavMobileMenu from '../NavMobileMenu/NavMobileMenu';
+import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+import {
+	showOpacity,
+	hideOpacity,
+	hideAll,
+	showSearchBar,
+} from '../../lib/features/showOpacityContainerSlide';
 
 interface HeaderBarProps {
-	setParentOpacity: (opacity: boolean) => void;
-	searchVisibility: { top: string };
-	searchBoxVisibility: boolean;
 	isMobile: boolean;
 }
 
-const HeaderBar: React.FC<HeaderBarProps> = ({
-	setParentOpacity,
-	searchVisibility,
-	searchBoxVisibility,
-	isMobile,
-}) => {
+const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 	const textInput = useRef<HTMLInputElement | null>(null);
 	const searchButton = useRef<HTMLButtonElement | null>(null);
 	const [name, setName] = useState<string>('Iniciar sesión / Registrarse');
@@ -45,9 +44,13 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 		setQueryInInput(value);
 	};
 
+	const dispacth = useAppDispatch();
+	const searchVisibleValue = useAppSelector(
+		(state) => state.showOpacityContainerReducer.searchBar
+	);
+
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		setParentOpacity(false);
 		setQueryInInput(undefined);
 		const pageSize = tempMobile ? mobileMaxPage : maxPage;
 
@@ -56,14 +59,14 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 			query: { q: queryInInput, page_size: pageSize },
 		});
 
-		setParentOpacity(false);
+		dispacth(hideAll());
 		setQueryInInput(undefined);
 		textInput?.current?.blur();
 	};
 
 	const focusSearchInEnd = (e: ChangeEvent<HTMLInputElement>) => {
 		setQueryInInput(e.target.value);
-		setParentOpacity(true);
+		dispacth(showOpacity());
 		const tempValue = e.target.value;
 		e.target.value = '';
 		e.target.value = tempValue;
@@ -81,12 +84,8 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 	};
 
 	const handleMobileSearch = () => {
-		if (searchVisibility.top === '-54px') {
-			setParentOpacity(true);
-			textInput?.current?.focus();
-		} else {
-			setParentOpacity(false);
-		}
+		dispacth(showSearchBar());
+		textInput?.current?.focus();
 	};
 
 	useEffect(() => {
@@ -105,7 +104,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 			<div className={`header-bar ${tempMobile ? 'header-bar--mobile' : ''}`}>
 				<div className='header-bar__container header-bar--left row around-xs middle-xs center-xs'>
 					<NavMobileMenu />
-					
 					<div className='header-bar__section col-xs-4 col-sm-5 col-md-2 col-lg-2'>
 						<a className='header-bar__logo' href='/'>
 							<Image
@@ -164,8 +162,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 						<div className='col-sm-1 col-md-6 col-lg-7 search-box'>
 							<InstantSearch
 								queryInInput={queryInInput}
-								searchBoxVisibility={searchBoxVisibility}
-								SetParentOpacity={setParentOpacity}
 							/>
 						</div>
 					</div>
@@ -242,13 +238,16 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 					{!tempMobile && <HeaderMenu />}
 				</div>
 			</div>
-			<div className='header-bar__mobile' style={searchVisibility}>
+			<div
+				className='header-bar__mobile'
+				style={{ top: searchVisibleValue ? '0' : '-54px' }}
+			>
 				<div className='header-bar__box'>
 					<form onSubmit={(e) => handleSubmit(e)}>
 						<div className='header-bar__form-container header-bar__mobile__form-container'>
 							<div
 								className='header-bar__mobile__close'
-								onClick={() => setParentOpacity(false)}
+								onClick={() => dispacth(hideAll())}
 							>
 								<svg
 									className='header-bar__mobile__close__icon icon__ligth'
@@ -309,8 +308,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 				<div className='col-sm-12 col-md-12 col-lg-12 search-box search-box__mobile'>
 					<InstantSearch
 						queryInInput={queryInInput}
-						searchBoxVisibility={searchBoxVisibility}
-						SetParentOpacity={setParentOpacity}
 					/>
 				</div>
 			</div>

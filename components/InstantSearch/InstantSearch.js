@@ -5,16 +5,26 @@ import Capitalize from '../../hooks/CapitalizeTitle';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
+import {
+	showOpacity,
+	hideOpacity,
+	hideAll,
+	showSearchBar,
+} from '../../lib/features/showOpacityContainerSlide';
+import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 
 const InstantSearch = ({
 	queryInInput,
-	searchBoxVisibility,
-	SetParentOpacity,
 }) => {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
 	const router = useRouter();
+	const searchVisibleValue = useAppSelector(
+		(state) => state.showOpacityContainerReducer.searchBar
+	);
+	const dispacth = useAppDispatch();
+
 
 	const fetchData = async () => {
 		try {
@@ -32,14 +42,14 @@ const InstantSearch = ({
 
 	const redirecToResults = () => {
 		router.push(`/listado/all/index?q=${queryInInput}`);
-		SetParentOpacity(false);
+		dispacth(hideAll(false));
 	};
 
 	useEffect(() => {
 		if (queryInInput !== undefined) {
 			if (queryInInput.length > 0) {
 				fetchData();
-				SetParentOpacity(true);
+				dispacth(showSearchBar());
 			}
 		}
 	}, [queryInInput]);
@@ -49,7 +59,7 @@ const InstantSearch = ({
 			<div
 				className='search-box'
 				style={
-					!searchBoxVisibility ? { display: 'none' } : { display: 'block' }
+					!searchVisibleValue ? { display: 'none' } : { display: 'block' }
 				}
 			>
 				<div className='search-box__loader'>
@@ -85,7 +95,7 @@ const InstantSearch = ({
 			<div
 				className='search-box'
 				style={
-					!searchBoxVisibility ? { display: 'none' } : { display: 'block' }
+					!searchVisibleValue ? { display: 'none' } : { display: 'block' }
 				}
 			>
 				<div className='search-box__loader'>Error</div>
@@ -119,15 +129,13 @@ const InstantSearch = ({
 		return (
 			<div
 				className='search-box'
-				style={
-					!searchBoxVisibility ? { display: 'none' } : { display: 'block' }
-				}
+				style={!searchVisibleValue ? { display: 'none' } : { display: 'block' }}
 			>
 				{data.results.map((producto) => (
 					<div
 						key={producto.id}
 						className='search-box__item'
-						onClick={() => SetParentOpacity(false)}
+						onClick={() => dispacth(hideAll())}
 					>
 						<Link href={`/${producto.slug}`} legacyBehavior>
 							<a className='search-box__link'>
