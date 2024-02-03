@@ -7,7 +7,7 @@ import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 
 const OpacityContainer = () => {
 	const opacityContainerValue = useAppSelector(
-		(state) => state.showOpacityContainerReducer.opacityConatiner
+		(state: any) => state.showOpacityContainerReducer.opacityConatiner
 	);
 	const dispacth = useAppDispatch();
 	return (
