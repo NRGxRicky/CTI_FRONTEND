@@ -1,3 +1,5 @@
+'use client';
+
 import React, {
 	useState,
 	useEffect,
@@ -46,7 +48,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 
 	const dispacth = useAppDispatch();
 	const searchVisibleValue = useAppSelector(
-		(state: any) => state.showOpacityContainerReducer.searchBar
+		(state) => state.showOpacityContainerReducer.searchBar
 	);
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -160,9 +162,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 							</form>
 						</div>
 						<div className='col-sm-1 col-md-6 col-lg-7 search-box'>
-							<InstantSearch
-								queryInInput={queryInInput}
-							/>
+							<InstantSearch queryInInput={queryInInput} />
 						</div>
 					</div>
 					<div className='header-bar__section header-bar--right col-xs-6 col-sm-6 col-md-4 col-lg-3'>
@@ -306,9 +306,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 					</form>
 				</div>
 				<div className='col-sm-12 col-md-12 col-lg-12 search-box search-box__mobile'>
-					<InstantSearch
-						queryInInput={queryInInput}
-					/>
+					<InstantSearch queryInInput={queryInInput} />
 				</div>
 			</div>
 
