@@ -46,7 +46,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 
 	const dispacth = useAppDispatch();
 	const searchVisibleValue = useAppSelector(
-		(state) => state.showOpacityContainerReducer.searchBar
+		(state: any) => state.showOpacityContainerReducer.searchBar
 	);
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
