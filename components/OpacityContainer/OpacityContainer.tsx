@@ -16,7 +16,7 @@ const OpacityContainer = () => {
 				className='opacity'
 				style={{
 					opacity: opacityContainerValue ? 0.7 : 0,
-					visibility: opacityContainerValue ? "visible" : "hidden",
+					zIndex: opacityContainerValue ? 50 : -1,
 				}}
 				onClick={() => {
 					dispacth(hideAll());
@@ -30,8 +30,7 @@ const OpacityContainer = () => {
 						height: 100%;
 						background: #0f0f0f;
 						position: fixed;
-						transition: opacity 1s, display 1s;
-						z-index: 50;
+						transition: opacity 1s, z-index 1s;
 					}
 				`}
 			</style>

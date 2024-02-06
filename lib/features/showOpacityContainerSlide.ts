@@ -5,6 +5,8 @@ export const showOpacityContainerSlide = createSlice({
 	initialState: {
 		opacityConatiner: false,
 		searchBar: false,
+		loginMenu: false,
+		navMobileMenu: false
 	},
 	reducers: {
 		showOpacity: (state) => {
@@ -16,18 +18,40 @@ export const showOpacityContainerSlide = createSlice({
 		hideAll: (state) => {
 			state.searchBar = false;
 			state.opacityConatiner = false;
-		},
-		hideSearchBar: (state) => {
-			state.searchBar = false;
+			state.loginMenu = false;
+			state.navMobileMenu = false;
 		},
 		showSearchBar: (state) => {
 			state.searchBar = true;
 			state.opacityConatiner = true;
+			state.loginMenu = false;
+			state.navMobileMenu = false;
+
 		},
+		showLoginMenuState: (state) => {
+			state.searchBar = false;
+			state.opacityConatiner = true;
+			state.loginMenu = true;
+			state.navMobileMenu = false;
+
+		},
+		showNavMobileMenu: (state) => {
+			state.searchBar = false;
+			state.opacityConatiner = true;
+			state.loginMenu = false;
+			state.navMobileMenu = true;
+
+		}
 	},
 });
 
-export const { showOpacity, hideOpacity, hideAll, hideSearchBar, showSearchBar } =
-	showOpacityContainerSlide.actions;
+export const {
+	showOpacity,
+	hideOpacity,
+	hideAll,
+	showSearchBar,
+	showLoginMenuState,
+	showNavMobileMenu,
+} = showOpacityContainerSlide.actions;
 
 export default showOpacityContainerSlide.reducer;

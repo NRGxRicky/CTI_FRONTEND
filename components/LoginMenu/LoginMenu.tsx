@@ -3,15 +3,21 @@ import { Preloader, TailSpin } from 'react-preloader-icon';
 import TruncateManual from '../../hooks/TruncateManual';
 import Link from 'next/link';
 import { useAuth } from '../../hooks/auth';
+import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+import {
+	showOpacity,
+	hideOpacity,
+	hideAll,
+	showSearchBar,
+	showLoginMenuState,
+} from '../../lib/features/showOpacityContainerSlide';
 
 interface LoginMenuProps {
-	setShowLoginMenu: React.Dispatch<React.SetStateAction<boolean>>;
 	setName: React.Dispatch<React.SetStateAction<string>>;
 	name: string;
 }
 
 const LoginMenu: React.FC<LoginMenuProps> = ({
-	setShowLoginMenu,
 	setName,
 	name,
 }) => {
@@ -19,6 +25,8 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
 	const [password, setPassword] = useState<string>('');
 	const { loading, isAuthenticated, login, logout } = useAuth();
 	const [error, setError] = useState<boolean>(false);
+	const dispacth = useAppDispatch();
+
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		try {
@@ -27,7 +35,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
 			if (resp.status === 200) {
 				setName(localStorage.getItem('name') || '');
 				setError(false);
-				setShowLoginMenu(false);
+				dispacth(hideAll());
 			} else {
 				setError(true);
 			}
@@ -44,11 +52,6 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
 	return (
 		<div className='login-menu__ll'>
 			<div className='login-menu__ll2'>
-				<div
-					className='login-menu__viewport'
-					onClick={() => setShowLoginMenu(false)}
-				></div>
-
 				<div className='login-menu'>
 					{loading ? (
 						<div className='login-menu__loader'>
@@ -104,7 +107,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
 											</div>
 										</form>
 										<Link href={`/login/forgot-password/`} legacyBehavior>
-											<a onClick={() => setShowLoginMenu(false)}>
+											<a onClick={() => dispacth(hideAll())}>
 												<div className='login-menu__forgot-password'>
 													¿Has olvidado tu contraseña?
 												</div>
@@ -132,7 +135,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
 											<a>
 												<div
 													className='login-menu__body__item'
-													onClick={() => setShowLoginMenu(false)}
+													onClick={() => dispacth(hideAll())}
 												>
 													<span>Mis datos</span>
 												</div>
@@ -144,7 +147,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
 											className='login-menu__logout'
 											onClick={(e) => {
 												handleLogout();
-												setShowLoginMenu(false);
+												dispacth(hideAll());
 											}}
 										>
 											<div className='login-menu__logout__title'>Salir</div>
@@ -202,17 +205,6 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
 						position: relative;
 						width: 100%;
 						background-color: #ff002c;
-					}
-					.login-menu__viewport {
-						left: 0;
-						top: 0;
-						position: fixed;
-						width: 100%;
-						height: 100%;
-						z-index: 200;
-						background: #0f0f0f;
-						opacity: 0.7;
-						transition: opacity 0.3s, visibility 0.3s;
 					}
 
 					.login-menu__body__item {

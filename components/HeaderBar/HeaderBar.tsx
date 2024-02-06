@@ -21,6 +21,7 @@ import {
 	hideOpacity,
 	hideAll,
 	showSearchBar,
+	showLoginMenuState,
 } from '../../lib/features/showOpacityContainerSlide';
 
 interface HeaderBarProps {
@@ -37,7 +38,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 		undefined
 	);
 	const [tempMobile, setTempMobile] = useState<boolean>(true);
-	const [showLoginMenu, setShowLoginMenu] = useState<boolean>(false);
 
 	const maxPage = 40;
 	const mobileMaxPage = 10;
@@ -49,6 +49,9 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 	const dispacth = useAppDispatch();
 	const searchVisibleValue = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.searchBar
+	);
+	const showLoginMenu = useAppSelector(
+		(state: any) => state.showOpacityContainerReducer.loginMenu
 	);
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -100,6 +103,10 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 			setName(storedName);
 		}
 	}, []);
+
+	useEffect(() => {
+		showLoginMenu && dispacth(showLoginMenuState());
+	}, [showLoginMenu]);
 
 	return (
 		<div>
@@ -186,7 +193,11 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 						<div className='header-bar__section-icon'>
 							<div
 								className='header-bar__profile-icon'
-								onClick={() => setShowLoginMenu(!showLoginMenu)}
+								onClick={() =>
+									showLoginMenu
+										? dispacth(hideAll())
+										: dispacth(showLoginMenuState())
+								}
 							>
 								<svg
 									className='header-bar__icon icon__ligth'
@@ -228,13 +239,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 							</div>
 						</div>
 					</div>
-					{showLoginMenu && (
-						<LoginMenu
-							setShowLoginMenu={setShowLoginMenu}
-							setName={setName}
-							name={name}
-						/>
-					)}
+					{showLoginMenu && <LoginMenu setName={setName} name={name} />}
 					{!tempMobile && <HeaderMenu />}
 				</div>
 			</div>
