@@ -38,7 +38,14 @@ const NavMobileMenu = () => {
 	}, [height]);
 
 	useEffect(() => {
-		toggleMenu();
+		if (menuMobileOpen) {
+			setBurgerActive(true)
+			document.body.classList.add('open-modal');
+		}
+		else {
+			setBurgerActive(false);
+			document.body.classList.remove('open-modal');
+		}
 	}, [menuMobileOpen]);
 
 	return (
