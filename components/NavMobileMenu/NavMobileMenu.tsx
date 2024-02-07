@@ -24,18 +24,22 @@ const NavMobileMenu = () => {
 	const toggleMenu = () => {
 		if (!menuMobileOpen) {
 			document.body.classList.add('open-modal');
-			 setBurgerActive(true);
+			setBurgerActive(true);
 			dispacth(showNavMobileMenu());
 		} else {
 			document.body.classList.remove('open-modal');
-			 setBurgerActive(false);
+			setBurgerActive(false);
 			dispacth(hideAll());
 		}
 	};
 
 	useEffect(() => {
-		setCurrentHeight(height)
-	}, [height])
+		setCurrentHeight(height);
+	}, [height]);
+
+	useEffect(() => {
+		menuMobileOpen ? setBurgerActive(true) : setBurgerActive(false);
+	}, [menuMobileOpen]);
 
 	return (
 		<nav className='header__mobile-nav-toggle col-xs-1 col-sm-1 col-md-1 col-lg-1'>
