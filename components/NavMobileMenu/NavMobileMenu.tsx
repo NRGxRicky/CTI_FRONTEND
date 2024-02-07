@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import WindowDimensions from '../../hooks/WindowDimensions';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
@@ -18,20 +18,31 @@ const NavMobileMenu = () => {
 		(state: any) => state.showOpacityContainerReducer.navMobileMenu
 	);
 	const [isBurgerActive, setBurgerActive] = useState(false);
+	const [currentHeight, setCurrentHeight] = useState(height - 58);
+	const [currentWidth, setCurrentWidth] = useState(width);
 
 	const toggleMenu = () => {
 		if (!menuMobileOpen) {
 			document.body.classList.add('open-modal');
+			 setBurgerActive(true);
 			dispacth(showNavMobileMenu());
 		} else {
 			document.body.classList.remove('open-modal');
+			 setBurgerActive(false);
 			dispacth(hideAll());
 		}
 	};
 
+	useEffect(() => {
+		setCurrentHeight(height)
+	}, [height])
+
 	return (
 		<nav className='header__mobile-nav-toggle col-xs-1 col-sm-1 col-md-1 col-lg-1'>
-			<button className='burger-button' onClick={toggleMenu}>
+			<button
+				className={`burger-button ${isBurgerActive ? 'active' : ''}`}
+				onClick={toggleMenu}
+			>
 				<div className='burger-line' onClick={toggleMenu}></div>
 				<div className='burger-line' onClick={toggleMenu}></div>
 				<div className='burger-line' onClick={toggleMenu}></div>
@@ -39,8 +50,8 @@ const NavMobileMenu = () => {
 			<div
 				className='mobile-menu__inner'
 				style={{
-					height: `calc(${height}px - 58px)`,
-					left: menuMobileOpen ? 0 : `-${width}px`,
+					height: currentHeight,
+					left: menuMobileOpen ? 0 : '-100%',
 					opacity: menuMobileOpen ? 1 : 0,
 				}}
 			>
@@ -242,7 +253,8 @@ const NavMobileMenu = () => {
 					</ul>
 				</div>
 			</div>
-			<style jsx>{`
+			<style jsx>
+				{`
 				.icon--bi-phone,
 				.icon--bi-email,
 				.icon--facebook,
@@ -322,6 +334,7 @@ const NavMobileMenu = () => {
 					width: 20px;
 					height: 2px;
 					background-color: #474747;
+					transition: transform 0.3s, opacity 0.3s;
 				}
 
 				@media only screen and (min-width: 62em) {
@@ -331,13 +344,13 @@ const NavMobileMenu = () => {
 				}
 
 				.burger-button.active .burger-line:nth-child(1) {
-          			transform: rotate(-45deg) translate(-5px, 6px);
+          			transform: rotate(-45deg) translate(-4px, 6px);
         		}
         		.burger-button.active .burger-line:nth-child(2) {
           			opacity: 0;
        			}
         		.burger-button.active .burger-line:nth-child(3) {
-          			ransform: rotate(45deg) translate(-5px, -6px);
+          			transform: rotate(45deg) translate(-4px, -6px);
 				`}
 			</style>
 		</nav>
