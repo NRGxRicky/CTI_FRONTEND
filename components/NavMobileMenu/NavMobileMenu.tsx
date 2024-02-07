@@ -38,7 +38,7 @@ const NavMobileMenu = () => {
 	}, [height]);
 
 	useEffect(() => {
-		menuMobileOpen ? setBurgerActive(true) : setBurgerActive(false);
+		toggleMenu();
 	}, [menuMobileOpen]);
 
 	return (
