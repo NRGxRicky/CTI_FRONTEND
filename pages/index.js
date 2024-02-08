@@ -4,6 +4,7 @@ import Head from 'next/head';
 import CarouselProducts from '../components/Carousel/CarouselProducts';
 import CarouselBrand from '../components/Carousel/CarouselBrand';
 import { isMobile } from 'react-device-detect';
+import InfoPageFooter from '../components/InfoPageFooter/InfoPageFooter';
 
 const Home = () => {
 	const [responsiveElements, setResponsiveElements] = useState(6);
@@ -87,6 +88,7 @@ const Home = () => {
 						<CarouselProducts typeQuery={'-ventas'} mobile={tempMobile} />
 					</div>
 				</div>
+				<InfoPageFooter />
 			</div>
 			<style jsx global>
 				{`

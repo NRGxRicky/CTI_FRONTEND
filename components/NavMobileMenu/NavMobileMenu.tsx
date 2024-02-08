@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import WindowDimensions from '../../hooks/WindowDimensions';
+
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import {
 	showOpacity,
@@ -12,14 +12,11 @@ import {
 } from '../../lib/features/showOpacityContainerSlide';
 
 const NavMobileMenu = () => {
-	const { height, width } = WindowDimensions();
 	const dispacth = useAppDispatch();
 	const menuMobileOpen = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.navMobileMenu
 	);
 	const [isBurgerActive, setBurgerActive] = useState(false);
-	const [currentHeight, setCurrentHeight] = useState(height - 58);
-	const [currentWidth, setCurrentWidth] = useState(width);
 
 	const toggleMenu = () => {
 		if (!menuMobileOpen) {
@@ -32,10 +29,6 @@ const NavMobileMenu = () => {
 			dispacth(hideAll());
 		}
 	};
-
-	useEffect(() => {
-		setCurrentHeight(height - 58);
-	}, [height]);
 
 	useEffect(() => {
 		if (menuMobileOpen) {
@@ -60,7 +53,6 @@ const NavMobileMenu = () => {
 			<div
 				className='mobile-menu__inner'
 				style={{
-					height: currentHeight,
 					left: menuMobileOpen ? 0 : '-100%',
 					opacity: menuMobileOpen ? 1 : 0,
 				}}
@@ -320,10 +312,11 @@ const NavMobileMenu = () => {
 					height: calc(100% - 20px);
 				}
 				.mobile-menu__inner {
-					top: 58px;
+					height: calc(100% - 58px);
+					top: 60px;
 					width: 90%;
 					background-color: #fff;
-					position: absolute;
+					position: fixed;
 					z-index: 100;
 					transition: left 0.5s, opacity 0.5s;
 				}
