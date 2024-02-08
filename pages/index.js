@@ -5,6 +5,7 @@ import CarouselProducts from '../components/Carousel/CarouselProducts';
 import CarouselBrand from '../components/Carousel/CarouselBrand';
 import { isMobile } from 'react-device-detect';
 import InfoPageFooter from '../components/InfoPageFooter/InfoPageFooter';
+import Footer from '../components/Footer/Footer';
 
 const Home = () => {
 	const [responsiveElements, setResponsiveElements] = useState(6);
@@ -42,9 +43,7 @@ const Home = () => {
 	return (
 		<div>
 			<Head>
-				<title>
-					PcStore.mx: Cómputo, Accesorios, Hardware, Tecnología y Más
-				</title>
+				<title>PcStore.mx: Tu tienda en Tecnología, Cómputo, Accesorios</title>
 				<meta
 					name='description'
 					content={`PcStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
@@ -90,6 +89,7 @@ const Home = () => {
 				</div>
 				<InfoPageFooter />
 			</div>
+			<Footer />
 			<style jsx global>
 				{`
 					.section {

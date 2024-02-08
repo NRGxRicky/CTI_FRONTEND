@@ -19,6 +19,7 @@ import {
 	isMobile,
 } from 'react-device-detect';
 import CarouselProductsRelated from '../components/Carousel/CarouselProductsRelated';
+import Footer from '../components/Footer/Footer';
 
 export const getServerSideProps = async (context) => {
 	const { productId } = context.query;
@@ -130,6 +131,7 @@ const ProductItem = ({ item }) => {
 					)}
 				</div>
 			</div>
+			<Footer />
 			<style jsx>
 				{`
 					.product__same-brand__recommended,
