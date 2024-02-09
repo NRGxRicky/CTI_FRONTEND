@@ -15,6 +15,7 @@ import WindowDimensions from '../../hooks/WindowDimensions';
 import IconNoSearch from '../../components/IconNoSearch/IconNoSearch';
 import FiltersOptionsMain from '../../components/FiltersOptionsMain/FiltersOptionsMain';
 import CarouselProductsV2 from '../../components/Carousel/CarouselProductsV2';
+import Footer from '../../components/Footer/Footer';
 
 import {
 	BrowserView,
@@ -678,6 +679,7 @@ const Listado = ({
 				opacityContainer={opacity}
 				SetParentOpacity={SetParentOpacity}
 			/>
+			{!isMobile && <Footer />}
 			<style jsx>
 				{`
 					.list-products__products__loader {
