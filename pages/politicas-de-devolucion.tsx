@@ -131,7 +131,7 @@ const politicasDeDevolucion = () => {
 			<style jsx>
 				{`
 					.policy__container {
-						padding: 50px 0;
+						padding: 50px 10px;
 					}
 
                     .policy__content {
