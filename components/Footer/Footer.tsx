@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface FooterProps {}
 
@@ -36,7 +37,9 @@ const Footer: React.FC<FooterProps> = () => {
 							style={{ maxHeight: column1 ? '500px' : '0px' }}
 						>
 							<div className='footer__column__element'>
-								Políticas de devolución
+								<Link href={`politicas-de-devolucion`} legacyBehavior>
+									<a>Políticas de devolución</a>
+								</Link>
 							</div>
 							<div className='footer__column__element'>
 								Términos de servicio
