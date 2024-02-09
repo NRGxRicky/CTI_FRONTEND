@@ -36,7 +36,7 @@ class MyDocument extends Document {
         </Head>
         <meta
           name="description"
-          content="PcStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas."
+          content="PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas."
         />
         <body>
           <Main />

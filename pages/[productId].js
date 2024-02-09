@@ -41,10 +41,10 @@ const ProductItem = ({ item }) => {
 	return (
 		<div>
 			<Head>
-				<title>{`${convertTitle} | PcStore.mx`}</title>
+				<title>{`${convertTitle} | PCStore.mx`}</title>
 				<meta
 					name='description'
-					content={`Compra tu ${convertTitle} en PcStore.mx - Compra protegida, envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
+					content={`Compra tu ${convertTitle} en PCStore.mx - Compra protegida, envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
 				/>
 			</Head>
 			<div className='container'>

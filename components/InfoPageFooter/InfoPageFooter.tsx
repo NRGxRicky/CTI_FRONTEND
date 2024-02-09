@@ -5,7 +5,7 @@ const InfoPageFooter = () => {
 		<div className='footer-info__container'>
 			<div className='footer-info__container__text'>
 				<p>
-					<b>PcStore.mx</b>
+					<b>PCStore.mx</b>
 				</p>
 				<p>
 					<b> Tu tienda de tecnología en México </b>
@@ -28,7 +28,7 @@ const InfoPageFooter = () => {
 					24/7. Estamos comprometidos a brindarte un servicio excelente y una
 					experiencia de compra positiva.
 				</p>
-				<p>¡Bienvenido a PcStore.mx!</p>
+				<p>¡Bienvenido a PCStore.mx!</p>
 			</div>
 			<style jsx>
 				{`

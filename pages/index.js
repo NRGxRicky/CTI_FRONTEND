@@ -43,10 +43,10 @@ const Home = () => {
 	return (
 		<div>
 			<Head>
-				<title>PcStore.mx: Tu tienda en Tecnología, Cómputo, Accesorios</title>
+				<title>PCStore.mx: Tu tienda en Tecnología, Cómputo, Accesorios</title>
 				<meta
 					name='description'
-					content={`PcStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
+					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
 				/>
 			</Head>
 			<Standard />
