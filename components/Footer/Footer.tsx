@@ -1,95 +1,111 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
-import { useState } from 'react';
 
-const Footer = () => {
-	const [colum1, setColum1] = useState(false);
-	const [colum2, setColum2] = useState(false);
-	const [colum3, setColum3] = useState(false);
-	const [colum4, setColum4] = useState(false);
+interface FooterProps {}
 
-	const showCurrentColum: any = (intergerColum: number) => {
-		intergerColum === 1 ? setColum1(!colum1) : setColum1(false);
-		intergerColum === 2 ? setColum2(!colum2) : setColum2(false);
-		intergerColum === 3 ? setColum3(!colum3) : setColum3(false);
-		intergerColum === 4 ? setColum4(!colum4) : setColum4(false);
+const Footer: React.FC<FooterProps> = () => {
+	const [column1, setColumn1] = useState(false);
+	const [column2, setColumn2] = useState(false);
+	const [column3, setColumn3] = useState(false);
+	const [column4, setColumn4] = useState(false);
+
+	const showCurrentColumn = (integerColumn: number): void => {
+		const columnStates = [column1, column2, column3, column4];
+		const setStateFunction = [setColumn1, setColumn2, setColumn3, setColumn4];
+
+		columnStates.forEach((state, index) => {
+			setStateFunction[index](index + 1 === integerColumn ? !state : false);
+		});
 	};
-
 	return (
 		<div className='footer'>
 			<div className='container'>
 				<div className='footer__container'>
-					<div className='footer__colum'>
+					<div className='footer__column'>
 						<div
-							className='footer__colum__title'
-							onClick={() => showCurrentColum(1)}
+							className='footer__column__title'
+							onClick={() => showCurrentColumn(1)}
 						>
 							INFORMACIÓN
+							<button
+								className={!column1 ? 'toggle-button active' : 'toggle-button'}
+							></button>
 						</div>
 						<div
-							className='footer__colum__container'
-							style={{ maxHeight: colum1 ? '500px' : '0px' }}
+							className='footer__column__container'
+							style={{ maxHeight: column1 ? '500px' : '0px' }}
 						>
-							<div className='footer__colum__element'>
+							<div className='footer__column__element'>
 								Políticas de devolución
 							</div>
-							<div className='footer__colum__element'>Términos de servicio</div>
-							<div className='footer__colum__element'>Aviso de Privacidad</div>
-							<div className='footer__colum__element'>Politicas de Envíos</div>
-							<div className='footer__colum__element'>Código de Ética</div>
+							<div className='footer__column__element'>
+								Términos de servicio
+							</div>
+							<div className='footer__column__element'>Aviso de Privacidad</div>
+							<div className='footer__column__element'>Politicas de Envíos</div>
+							<div className='footer__column__element'>Código de Ética</div>
 						</div>
 					</div>
-					<div className='footer__colum'>
+					<div className='footer__column'>
 						<div
-							className='footer__colum__title'
-							onClick={() => showCurrentColum(2)}
+							className='footer__column__title'
+							onClick={() => showCurrentColumn(2)}
 						>
 							CONTACTAR
+							<button
+								className={!column2 ? 'toggle-button active' : 'toggle-button'}
+							></button>
 						</div>
 						<div
-							className='footer__colum__container'
-							style={{ maxHeight: colum2 ? '500px' : '0px' }}
+							className='footer__column__container'
+							style={{ maxHeight: column2 ? '500px' : '0px' }}
 						>
-							<div className='footer__colum__element'>
+							<div className='footer__column__element'>
 								<b>Telefono:</b> 22 18 15 59 52
 							</div>
-							<div className='footer__colum__element'>
+							<div className='footer__column__element'>
 								<b>WhatsApp:</b> 22 18 15 59 52
 							</div>
-							<div className='footer__colum__element'>
+							<div className='footer__column__element'>
 								<b>Email:</b> contacto@pcstore.mx
 							</div>
-							<div className='footer__colum__element'>
+							<div className='footer__column__element'>
 								<b>Horario:</b> Lunes a Viernes 9:00 am a 6:00 pm
 							</div>
 						</div>
 					</div>
-					<div className='footer__colum'>
+					<div className='footer__column'>
 						<div
-							className='footer__colum__title'
-							onClick={() => showCurrentColum(3)}
+							className='footer__column__title'
+							onClick={() => showCurrentColumn(3)}
 						>
 							SERVICIO A CLIENTES
+							<button
+								className={!column3 ? 'toggle-button active' : 'toggle-button'}
+							></button>
 						</div>
 						<div
-							className='footer__colum__container'
-							style={{ maxHeight: colum3 ? '500px' : '0px' }}
+							className='footer__column__container'
+							style={{ maxHeight: column3 ? '500px' : '0px' }}
 						>
-							<div className='footer__colum__element'>Facturación</div>
+							<div className='footer__column__element'>Facturación</div>
 						</div>
 					</div>
-					<div className='footer__colum'>
+					<div className='footer__column'>
 						<div
-							className='footer__colum__title'
-							onClick={() => showCurrentColum(4)}
+							className='footer__column__title'
+							onClick={() => showCurrentColumn(4)}
 						>
 							SÍGUENOS
+							<button
+								className={!column4 ? 'toggle-button active' : 'toggle-button'}
+							></button>
 						</div>
 						<div
-							className='footer__colum__container'
-							style={{ maxHeight: colum4 ? '500px' : '0px' }}
+							className='footer__column__container'
+							style={{ maxHeight: column4 ? '500px' : '0px' }}
 						>
-							<div className='footer__colum__element facebook'>
+							<div className='footer__column__element facebook'>
 								<a
 									href='https://facebook.com/pcstoremxoficial'
 									target='_blank'
@@ -113,7 +129,7 @@ const Footer = () => {
 								</a>
 							</div>
 
-							<div className='footer__colum__element instagram'>
+							<div className='footer__column__element instagram'>
 								<a
 									href='https://www.instagram.com/pcstore.mx/'
 									target='_blank'
@@ -137,7 +153,7 @@ const Footer = () => {
 									Instagram
 								</a>
 							</div>
-							<div className='footer__colum__element tiktok'>
+							<div className='footer__column__element tiktok'>
 								<a
 									href='https://www.tiktok.com/@pcstore.mx'
 									target='_blank'
@@ -163,9 +179,9 @@ const Footer = () => {
 							</div>
 						</div>
 					</div>
-					<div className='footer__colum'>
-						<div className='footer__colum__title'>ACEPTAMOS</div>
-						<div className='footer__colum__element footer__colum__element__payment'>
+					<div className='footer__column'>
+						<div className='footer__column__title'>ACEPTAMOS</div>
+						<div className='footer__column__element footer__column__element__payment'>
 							<Image
 								src='/images/visa-mastercard-logos.png'
 								fill
@@ -174,7 +190,7 @@ const Footer = () => {
 								draggable='false'
 							/>
 						</div>
-						<div className='footer__colum__element footer__colum__element__payment'>
+						<div className='footer__column__element footer__column__element__payment'>
 							<Image
 								src='/images/paypal-logo-footer.png'
 								fill
@@ -183,7 +199,7 @@ const Footer = () => {
 								draggable='false'
 							/>
 						</div>
-						<div className='footer__colum__element footer__colum__element__payment'>
+						<div className='footer__column__element footer__column__element__payment'>
 							<Image
 								src='/images/Logotipo_Kueski_pay.png'
 								fill
@@ -192,7 +208,7 @@ const Footer = () => {
 								draggable='false'
 							/>
 						</div>
-						<div className='footer__colum__element footer__colum__element__payment'>
+						<div className='footer__column__element footer__column__element__payment'>
 							<Image
 								src='/images/logo-oxxo-spei.png'
 								fill
@@ -219,19 +235,23 @@ const Footer = () => {
 						display: flex;
 						width: 100%;
 						justify-content: space-evenly;
+						flex-wrap: wrap;
 					}
 
-					.footer__colum__title {
+					.footer__column__title {
 						font-weight: 700;
 						margin-bottom: 12px;
 						width: 100%;
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
 					}
 
-					.footer__colum {
+					.footer__column {
 						padding: 20px 35px;
 					}
 
-					.footer__colum__element {
+					.footer__column__element {
 						line-height: 2;
 						font-size: 16px;
 						padding: 5px 0;
@@ -243,7 +263,7 @@ const Footer = () => {
 						display: flex;
 					}
 
-					.footer__colum__element svg {
+					.footer__column__element svg {
 						vertical-align: top;
 						margin-right: 12px;
 						width: 28px;
@@ -264,43 +284,90 @@ const Footer = () => {
 					.tiktok:hover svg {
 						color: #fd355a;
 					}
-					.footer__colum__element:hover svg {
+					.footer__column__element:hover svg {
 						opacity: 1;
 					}
 
-					.footer__colum__element__payment {
+					.footer__column__element__payment {
 						height: 50px;
 					}
 
 					.footer__aside {
-                        display: flex;
-                        justify-content: center;
-                        line-height: 4;
-                    }
-                    @media only screen and (max-width: 48em) {
+						display: flex;
+						justify-content: center;
+						line-height: 4;
+					}
+
+					.toggle-button {
+						width: 30px;
+						height: 30px;
+						border: none;
+						cursor: pointer;
+						position: relative;
+						background-color: #fff;
+						display: none;
+					}
+
+					.toggle-button::before,
+					.toggle-button::after {
+						content: '';
+						position: absolute;
+						height: 2px;
+						width: 10px;
+						background-color: #474747;
+						top: 50%;
+						left: 50%;
+						transform: translate(-50%, -50%);
+						transition: transform 0.5s, opacity 0.5s ease-in-out;
+					}
+
+					.toggle-button::after {
+						opacity: 0;
+					}
+
+					.toggle-button.active::before {
+						transform: translate(-50%, -50%) rotate(-270deg);
+					}
+
+					.toggle-button.active::after {
+						opacity: 1;
+						transform: translate(-50%, -50%) rotate(-180deg);
+					}
+
+					.footer__column__container {
+						overflow: hidden;
+						transition: max-height 0.5s ease-in-out;
+						max-height: 0;
+					}
+
+					.footer__column__container--active {
+						max-height: 500px;
+					}
+
+					@media only screen and (max-width: 48em) {
 						.footer__container {
-							display: flex;
 							flex-direction: column;
-							flex-wrap: wrap;
 						}
 
-						.footer__colum {
+						.footer__column {
 							border-bottom: 1px solid#eaeaea;
 						}
 
-						.footer__colum__container {
-							overflow: hidden;
-							transition: max-height 0.5s ease-in-out;
-							max-height: 0;
-						}
-
-						.footer__colum__title {
+						.footer__column__title {
 							margin: 0;
 							line-height: 2.5;
 						}
 
-						.footer__colum__element__payment {
+						.footer__column__element__payment {
 							max-width: 100px;
+						}
+						.toggle-button {
+							display: block;
+						}
+					}
+					@media only screen and (min-width: 48em) {
+						.footer__column__container {
+							max-height: 500px !important;
 						}
 					}
 				`}
