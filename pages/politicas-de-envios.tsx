@@ -40,7 +40,7 @@ const PoliticasDeEnvios = () => {
 							</p>
 							<br />
 							<ul>
-								<li>
+								<p>
 									El comprador/cliente debe proporcionar un domicilio real y
 									completo, que incluya los siguientes datos:
 									<ul>
@@ -54,7 +54,7 @@ const PoliticasDeEnvios = () => {
 										<li>Teléfono de contacto</li>
 										<li>Nombre de la persona que recibirá el paquete</li>
 									</ul>
-								</li>
+								</p>
 							</ul>
 							<br />
 							<p>

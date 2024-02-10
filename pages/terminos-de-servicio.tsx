@@ -509,8 +509,7 @@ const TerminosDeServicio = () => {
 								<br />
 								Estos Términos del servicio y cualquier acuerdo aparte mediante
 								el cual le brindemos servicios se regirán e interpretarán de
-								acuerdo con las leyes aplicables en el Estado de [Estado], EE.
-								UU.
+								acuerdo con las leyes aplicables en los Estados Unidos Mexicanos.
 								<br />
 								<br />
 								**SECCIÓN 19: CAMBIOS EN LOS TÉRMINOS DEL SERVICIO**
@@ -543,7 +542,7 @@ const TerminosDeServicio = () => {
 								<br />
 								Responsable Legal: Crystian Ordoñez Sanchez
 								<br />
-								Nombre de la Empresa: PCSTORE.MX Puebla
+								Nombre de la Empresa: PCSTORE.MX
 								<br />
 								Correo Electrónico: contacto@pcstore.mx
 								<br />
