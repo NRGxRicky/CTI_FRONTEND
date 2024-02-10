@@ -38,15 +38,29 @@ const Footer: React.FC<FooterProps> = () => {
 						>
 							<div className='footer__column__element'>
 								<Link href={`politicas-de-devolucion`} legacyBehavior>
-									<a>Políticas de devolución</a>
+									<a>Políticas de Devolución</a>
 								</Link>
 							</div>
 							<div className='footer__column__element'>
-								Términos de servicio
+								<Link href={`terminos-de-servicio`} legacyBehavior>
+									<a>Términos de Servicio</a>
+								</Link>
 							</div>
-							<div className='footer__column__element'>Aviso de Privacidad</div>
-							<div className='footer__column__element'>Politicas de Envíos</div>
-							<div className='footer__column__element'>Código de Ética</div>
+							<div className='footer__column__element'>
+								<Link href={`aviso-de-privacidad`} legacyBehavior>
+									<a>Aviso de Privacidad</a>
+								</Link>
+							</div>
+							<div className='footer__column__element'>
+								<Link href={`politicas-de-envios`} legacyBehavior>
+									<a>Políticas de Envíos</a>
+								</Link>
+							</div>
+							<div className='footer__column__element'>
+								<Link href={`codigo-de-etica`} legacyBehavior>
+									<a>Código de Ética</a>
+								</Link>
+							</div>
 						</div>
 					</div>
 					<div className='footer__column'>

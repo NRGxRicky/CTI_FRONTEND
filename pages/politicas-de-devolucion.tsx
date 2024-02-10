@@ -1,7 +1,7 @@
 import React from 'react';
 import Footer from '../components/Footer/Footer';
 
-const politicasDeDevolucion = () => {
+const PoliticasDeDevolucion = () => {
 	return (
 		<div>
 			<div className='container'>
@@ -11,11 +11,6 @@ const politicasDeDevolucion = () => {
 					</div>
 					<div className='policy__body'>
 						<div className='policy__content'>
-							<h2>DEVOLUCIONES</h2>
-							<br />
-							----
-							<br />
-							<br />
 							Nuestra política dura 30 días. Si pasaron 30 días desde su compra,
 							desafortunadamente no podemos ofrecerle un reembolso ni un cambio.
 							<br />
@@ -128,24 +123,8 @@ const politicasDeDevolucion = () => {
 				</div>
 			</div>
 			<Footer />
-			<style jsx>
-				{`
-					.policy__container {
-						padding: 50px 20px;
-					}
-
-                    .policy__content {
-                        line-height: 1.8;
-                    }
-
-                    .policy__title {
-                        margin-bottom: 20px;
-                        text-align: center;
-                    }
-				`}
-			</style>
 		</div>
 	);
 };
 
-export default politicasDeDevolucion;
+export default PoliticasDeDevolucion;

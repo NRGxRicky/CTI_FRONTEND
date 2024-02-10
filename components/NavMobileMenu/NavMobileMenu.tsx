@@ -135,7 +135,7 @@ const NavMobileMenu = () => {
 										></path>
 									</g>
 								</svg>
-								<span>Llámanos 2229616956</span>
+								<span>Llámanos 22 18 15 59 52</span>
 							</div>
 						</li>
 						<li className='mobile-menu__nav-item'>

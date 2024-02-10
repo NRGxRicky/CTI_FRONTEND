@@ -13,7 +13,7 @@ const IconWhatsapp = () => {
 				}}
 			>
 				<a
-					href='https://wa.me/+5212229616956'
+					href='https://wa.me/+5212218155952'
 					target='_blank'
 					rel='noopener noreferrer'
 				>

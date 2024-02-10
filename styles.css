@@ -5,7 +5,6 @@
 	outline: none;
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	-webkit-appearance: none;
-	
 }
 
 body,
@@ -1079,4 +1078,17 @@ input[type='search']::-webkit-search-results-decoration {
 
 .--show-mobile {
 	display: none;
+}
+
+.policy__container {
+	padding: 50px 20px;
+}
+
+.policy__content {
+	line-height: 1.8;
+}
+
+.policy__title {
+	margin-bottom: 50px;
+	text-align: center;
 }
