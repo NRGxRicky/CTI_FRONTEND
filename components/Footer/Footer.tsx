@@ -87,7 +87,7 @@ const Footer: React.FC<FooterProps> = () => {
 									target='_blank'
 									rel='noopener noreferrer'
 								>
-									22 18 15 59 52
+									{' '}22 18 15 59 52
 								</a>
 							</div>
 							<div className='footer__column__element'>
