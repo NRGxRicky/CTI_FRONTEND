@@ -43,6 +43,8 @@ const PoliticasDeEnvios = () => {
 								<p>
 									El comprador/cliente debe proporcionar un domicilio real y
 									completo, que incluya los siguientes datos:
+									<br />
+									<br />
 									<ul>
 										<li>Calle</li>
 										<li>Número (si aplica)</li>
@@ -144,9 +146,9 @@ const PoliticasDeEnvios = () => {
 										contacto@pcstore.mx
 									</a>
 								</li>
-                                <li>Teléfono: 22 18 15 59 52</li>
-                            </ul>
-                            <br />
+								<li>Teléfono: 22 18 15 59 52</li>
+							</ul>
+							<br />
 							<p>
 								En pcstore.mx, trabajamos constantemente para garantizar que su
 								experiencia de compra y envío sea segura y satisfactoria.

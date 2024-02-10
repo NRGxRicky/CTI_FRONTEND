@@ -656,6 +656,8 @@ const CodigoDeEtica = () => {
 							<p>
 								<b>Artículo 16. Compromiso de cumplimiento del Código</b>
 							</p>
+							<br />
+							<br />
 							<p>
 								PCSTORE.MX manifiesta su adhesión al presente Código por lo que
 								se comprometen a respetarlo y cumplirlo en materia de comercio
