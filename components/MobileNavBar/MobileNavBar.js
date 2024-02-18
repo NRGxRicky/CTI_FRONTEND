@@ -69,7 +69,7 @@ const MobileNavBar = ({
 		<div>
 			<div
 				className='nav__container'
-				style={{ top: visibleNav ? '58px' : '-58px' }}
+				style={{ top: visibleNav ? '59px' : '-59px' }}
 			>
 				<div className='nav'>
 					<div className='nav__sort' onClick={() => handleSortsShow()}>

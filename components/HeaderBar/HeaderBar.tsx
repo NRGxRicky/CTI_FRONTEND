@@ -356,6 +356,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 					background-color: #fff;
 					position: relative;
 					padding: 2px 0;
+					border-bottom: 1px solid #eaeaea;
 				}
 
 				.header-bar--mobile {

@@ -223,6 +223,7 @@ const Footer: React.FC<FooterProps> = () => {
 								style={{ objectFit: 'contain' }}
 								alt={'Paypal'}
 								draggable='false'
+								sizes='auto'
 							/>
 						</div>
 						<div className='footer__column__element footer__column__element__payment'>

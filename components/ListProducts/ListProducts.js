@@ -36,6 +36,8 @@ const ListProducts = ({ results, filter_available_store, tempMobile }) => {
 											style={{ objectFit: 'contain' }}
 											alt={Capitalize(producto.titulo)}
 											draggable='false'
+											sizes='auto'
+											priority={true}
 										/>
 										<NewProduct date={producto.created} />
 									</div>

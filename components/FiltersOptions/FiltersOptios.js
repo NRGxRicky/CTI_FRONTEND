@@ -139,7 +139,7 @@ const FiltersOptios = ({
 							className='nav__filters__header__close'
 							onClick={() => SetParentOpacity(false)}
 						>
-							<button className='close --close-white --close-fliters'></button>
+							<button className='close --close-fliters'></button>
 						</div>
 						<div className='nav__filters__header-up__title'>Filtrar por</div>
 					</div>
@@ -435,8 +435,8 @@ const FiltersOptios = ({
 						flex-wrap: wrap;
 						height: 54px;
 						padding: 0 20px;
-						color: #ffffff;
-						background-color: #1f2024;
+						border-bottom: 1px solid #eaeaea;
+						background-color: #fff;
 						align-items: center;
 						justify-content: center;
 					}

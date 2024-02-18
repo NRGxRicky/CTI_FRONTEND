@@ -152,6 +152,7 @@ const InstantSearch = ({
 													fill
 													style={{ objectFit: 'contain' }}
 													alt={Capitalize(producto.titulo)}
+													sizes='auto'
 												/>
 											</div>
 										</div>
