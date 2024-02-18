@@ -116,6 +116,7 @@ const CarouselBrand = ({
 										style={{ objectFit: 'contain' }}
 										draggable='false'
 										alt={brand.nombre}
+										sizes="auto"
 									/>
 								</div>
 							</div>

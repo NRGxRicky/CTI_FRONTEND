@@ -156,6 +156,7 @@ const CarouselProducts = ({
 															style={{ objectFit: 'contain' }}
 															alt={Capitalize(producto.titulo)}
 															draggable='false'
+															sizes='auto'
 														/>
 														<NewProduct date={producto.created} />
 													</div>
