@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import Head from 'next/head';
 import Navbar from '../../components/Navbar/Navbar';
 import ListProducts from '../../components/ListProducts/ListProducts';
@@ -246,30 +246,48 @@ const Listado = ({
 		});
 	};
 
-	const loadMore = async () => {
-		if (!loading && hasMore) {
-			setLoading(true);
+	const updatePage = async () => {
+		await router.push(
+			{
+				pathname: router.pathname,
+				query: { ...router.query, page: pageActual + 1 },
+			},
+			undefined,
+			{ shallow: true, scroll: false }
+		);
+		setPageActual((pageActual) => pageActual + 1);
+	};
 
-			const moreResults = await fetchData(
-				q,
-				order,
-				pageActual + 1,
-				filter_available,
-				filter_available_store,
-				filter_free_shipping,
-				brands,
-				categories,
-				attributes,
-				marca,
-				categoria,
-				page_size
-			);
-			setResults((results) => [...results, ...moreResults.results]);
-			setPageActual(pageActual + 1);
-			setLoading(false);
-			if (pageActual + 1 === pages) {
-				setHasMore(false);
+	const loadMore = async () => {
+		try {
+			if (!loading && hasMore && !firstLoading) {
+				setLoading(true);
+
+				const moreResults = await fetchData(
+					q,
+					order,
+					pageActual + 1,
+					filter_available,
+					filter_available_store,
+					filter_free_shipping,
+					brands,
+					categories,
+					attributes,
+					marca,
+					categoria,
+					page_size
+				);
+				setResults((results) => [...results, ...moreResults.results]);
+
+				setLoading(false);
+				if (pageActual + 1 === pages) {
+					setHasMore(false);
+				}
+				updatePage();
 			}
+		}
+		catch {
+
 		}
 	};
 
@@ -323,7 +341,6 @@ const Listado = ({
 		setResults(data.results);
 		setTotalItems(data.count);
 		setPages(Math.ceil(data.count / itemsPerPage));
-		setPageActual(1);
 		getFilters();
 
 		setLoading(false);
@@ -360,21 +377,57 @@ const Listado = ({
 
 	const getData = async () => {
 		setLoadingData(true);
-		const datares = await fetchData(
-			q,
-			order,
-			page,
-			filter_available,
-			filter_available_store,
-			filter_free_shipping,
-			brands,
-			categories,
-			attributes,
-			marca,
-			categoria,
-			page_size
-		);
-		setData(datares);
+		if (!isMobile) {
+			const datares = await fetchData(
+				q,
+				order,
+				page,
+				filter_available,
+				filter_available_store,
+				filter_free_shipping,
+				brands,
+				categories,
+				attributes,
+				marca,
+				categoria,
+				page_size
+			);
+			setData(datares);
+		} else {
+			if (page > 1) {
+				const datares = await fetchData(
+					q,
+					order,
+					1,
+					filter_available,
+					filter_available_store,
+					filter_free_shipping,
+					brands,
+					categories,
+					attributes,
+					marca,
+					categoria,
+					page_size * page
+				);
+				setData(datares);
+			} else {
+				const datares = await fetchData(
+					q,
+					order,
+					page,
+					filter_available,
+					filter_available_store,
+					filter_free_shipping,
+					brands,
+					categories,
+					attributes,
+					marca,
+					categoria,
+					page_size
+				);
+				setData(datares);
+			}
+		}
 		setLoadingData(false);
 	};
 
@@ -388,6 +441,8 @@ const Listado = ({
 		setFiltersActive(defaultFilters);
 		setFiltersActiveMain(defaultFilters);
 		setInternalOrder(order);
+
+		parseInt(page) === 1 && setPageActual(1);
 	}, [
 		q,
 		page,
@@ -401,6 +456,27 @@ const Listado = ({
 		marca,
 		categoria,
 	]);
+
+	useEffect(() => {
+		const handleBeforeUnload = () => {
+			const scrollPosition =
+				window.scrollY || document.documentElement.scrollTop;
+			sessionStorage.setItem('scrollPosition', scrollPosition.toString());
+		};
+
+		router.events.on('beforeHistoryChange', handleBeforeUnload);
+
+		return () => {
+			router.events.off('beforeHistoryChange', handleBeforeUnload);
+		};
+	}, [router]);
+
+	useEffect(() => {
+		const scrollPosition = sessionStorage.getItem('scrollPosition');
+		if (scrollPosition && !loading) {
+			window.scrollTo(0, parseInt(scrollPosition, 10));
+		}
+	}, [firstLoading]);
 
 	if (firstLoading) {
 		return (

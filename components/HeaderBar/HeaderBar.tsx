@@ -61,7 +61,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 
 		await router.replace({
 			pathname: '/listado/all/index',
-			query: { q: queryInInput, page_size: pageSize },
+			query: { q: queryInInput, page_size: pageSize, page: 1 },
 		});
 
 		dispacth(hideAll());
