@@ -472,13 +472,17 @@ const Listado = ({
 	}, [router]);
 
 	useEffect(() => {
-		if (!firstLoading && !loading) {
+		if (
+			!firstLoading &&
+			!loading &&
+			!secondLoading
+		) {
 			const scrollPosition = sessionStorage.getItem('scrollPosition');
 			if (scrollPosition) {
 				window.scrollTo(0, parseInt(scrollPosition, 10));
 			}
 		}
-	}, [firstLoading]);
+	}, [secondLoading]);
 
 	if (firstLoading) {
 		return (
