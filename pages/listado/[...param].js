@@ -472,9 +472,11 @@ const Listado = ({
 	}, [router]);
 
 	useEffect(() => {
-		const scrollPosition = sessionStorage.getItem('scrollPosition');
-		if (scrollPosition && !loading) {
-			window.scrollTo(0, parseInt(scrollPosition, 10));
+		if (!firstLoading && !loading) {
+			const scrollPosition = sessionStorage.getItem('scrollPosition');
+			if (scrollPosition) {
+				window.scrollTo(0, parseInt(scrollPosition, 10));
+			}
 		}
 	}, [firstLoading]);
 
