@@ -280,10 +280,13 @@ const Listado = ({
 				setResults((results) => [...results, ...moreResults.results]);
 
 				setLoading(false);
-				if (pageActual + 1 === pages) {
+				if (parseInt(pageActual) + 1 >= parseInt(pages)) {
 					setHasMore(false);
 				}
-				updatePage();
+				else {
+					updatePage();
+				}
+				
 			}
 		} catch {}
 	};

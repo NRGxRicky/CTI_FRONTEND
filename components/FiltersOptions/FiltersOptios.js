@@ -101,7 +101,7 @@ const FiltersOptios = ({
 		SetParentOpacity(false);
 		await router.replace({
 			pathname: router.pathname,
-			query: { ...router.query, ...filtersActive },
+			query: { ...router.query, ...filtersActive, page: 1 },
 		});
 	};
 
