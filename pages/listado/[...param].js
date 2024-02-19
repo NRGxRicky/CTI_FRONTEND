@@ -285,10 +285,7 @@ const Listado = ({
 				}
 				updatePage();
 			}
-		}
-		catch {
-
-		}
+		} catch {}
 	};
 
 	const handleFiltersToApply = async () => {
@@ -443,6 +440,7 @@ const Listado = ({
 		setInternalOrder(order);
 
 		parseInt(page) === 1 && setPageActual(1);
+		parseInt(page) === 1 && sessionStorage.removeItem('scrollPosition');
 	}, [
 		q,
 		page,
@@ -472,11 +470,7 @@ const Listado = ({
 	}, [router]);
 
 	useEffect(() => {
-		if (
-			!firstLoading &&
-			!loading &&
-			!secondLoading
-		) {
+		if (!firstLoading && !loading && !secondLoading) {
 			const scrollPosition = sessionStorage.getItem('scrollPosition');
 			if (scrollPosition) {
 				window.scrollTo(0, parseInt(scrollPosition, 10));
