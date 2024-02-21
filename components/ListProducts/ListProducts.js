@@ -50,7 +50,7 @@ const ListProducts = ({
 					: 'products-list__container'
 			}
 			id='products-list__container'
-			style={{'height': height - 60}}
+			style={{'height': height - 61}}
 		>
 			{tempMobile && <div className='list__container__mobile_fix'></div>}
 			{results.map((producto) => (
