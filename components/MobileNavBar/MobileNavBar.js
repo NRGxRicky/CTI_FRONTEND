@@ -12,9 +12,10 @@ const MobileNavBar = ({
 	sortsShow,
 	setSecondLoading,
 	q,
+	mobileScroll,
 }) => {
 	const router = useRouter();
-	const [prevScroll, setPrevScroll] = useState(500);
+	const [prevScroll, setPrevScroll] = useState(250);
 	const [visibleNav, setVisibleNav] = useState(true);
 
 	const dictSortLabel = {
@@ -45,48 +46,26 @@ const MobileNavBar = ({
 		setFiltersShow(true);
 	};
 
-	useEffect(() => {
-		const productsListContainer = document.getElementById(
-			'products-list__container'
-		);
-
-		const handleScroll = (productsListContainer) => {
-
-			if (productsListContainer) {
-				const currentScroll = productsListContainer.scrollTop;
-				console.log(currentScroll);
-				console.log(prevScroll);
-				if (currentScroll < prevScroll) {
-					console.log('se cumple');
+	const handleScroll = () => {
+			if (mobileScroll < prevScroll) {
+				const difference = prevScroll - mobileScroll;
+				if (difference > 250) {
+					setPrevScroll(mobileScroll);
 					setVisibleNav(true);
-
-					const difference = prevScroll - currentScroll;
-					if (difference > 500) {
-						setPrevScroll(currentScroll);
-					}
-				} else {
-					setVisibleNav(false);
-					setPrevScroll(currentScroll);
 				}
+			} else {
+				setVisibleNav(false);
+				setPrevScroll(mobileScroll);
 			}
-		};
-
-		if (productsListContainer) {
-			productsListContainer.addEventListener(
-				'scroll',
-				handleScroll(productsListContainer)
-			);
-			return () =>
-				productsListContainer.removeEventListener(
-					'scroll',
-					handleScroll(productsListContainer)
-				);
-		}
-	}, []);
+	};
 
 	useEffect(() => {
-		!visibleNav && prevScroll > 500 && setVisibleNav(true);
-		setPrevScroll(500);
+		handleScroll()
+	}, [mobileScroll]);
+
+	useEffect(() => {
+		!visibleNav && prevScroll > 250 && setVisibleNav(true);
+		setPrevScroll(250);
 	}, [q]);
 
 	return (

@@ -185,6 +185,7 @@ const Listado = ({
 		visibility: 'hidden',
 		zIndex: 50,
 	});
+	const [mobileScroll, setMobileScroll] = useState(0);
 
 	const dictSortLabel = {
 		'-ventas': 'Más vendidos',
@@ -515,6 +516,7 @@ const Listado = ({
 						sortsShow={sortsShow}
 						setSecondLoading={setSecondLoading}
 						q={q}
+						mobileScroll={mobileScroll}
 					/>
 					<FiltersOptios
 						q={q}
@@ -673,8 +675,9 @@ const Listado = ({
 							<ListProducts
 								results={results}
 								filter_available_store={filter_available_store}
-										tempMobile={tempMobile}
-										hasMore={hasMore}
+								tempMobile={tempMobile}
+								hasMore={hasMore}
+								setMobileScroll={setMobileScroll}
 							/>
 						</InfiniteScroll>
 					)}
