@@ -461,6 +461,8 @@ const Listado = ({
 		if (scrollPosition) {
 			setMobileInitialScrollY(parseInt(scrollPosition, 10));
 		}
+
+		isMobile && addBodyClass('open-modal')
 	}, []);
 
 	if (firstLoading) {
