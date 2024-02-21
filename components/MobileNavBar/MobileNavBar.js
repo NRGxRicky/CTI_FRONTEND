@@ -33,9 +33,13 @@ const MobileNavBar = ({
 			query: { ...router.query, order: order },
 		});
 	};
+	const productsListContainer = document.getElementById(
+		'products-list__container'
+	);
 
 	const handleScroll = () => {
-		const currentScroll = window.pageYOffset;
+		
+		const currentScroll = productsListContainer.pageYOffset;
 
 		if (currentScroll < prevScroll) {
 			setVisibleNav(true);
@@ -61,8 +65,9 @@ const MobileNavBar = ({
 	};
 
 	useEffect(() => {
-		window.addEventListener('scroll', handleScroll);
-		return () => window.removeEventListener('scroll', handleScroll);
+		productsListContainer.addEventListener('scroll', handleScroll);
+		return () =>
+			productsListContainer.removeEventListener('scroll', handleScroll);
 	});
 
 	return (
