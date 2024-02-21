@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Navbar from '../../components/Navbar/Navbar';
 import ListProducts from '../../components/ListProducts/ListProducts';
@@ -177,7 +177,7 @@ const Listado = ({
 	const [sortsShow, setSortsShow] = useState(false);
 	const [filtersActive, setFiltersActive] = useState(defaultFilters);
 	const [filtersActiveMain, setFiltersActiveMain] = useState(defaultFilters);
-
+	const [mobileInitialScrollY, setMobileInitialScrollY] = useState(0);
 	const router = useRouter();
 	const { height, width } = WindowDimensions();
 	const [opacity, setOpacity] = useState({
@@ -282,11 +282,9 @@ const Listado = ({
 				setLoading(false);
 				if (parseInt(pageActual) + 1 >= parseInt(pages)) {
 					setHasMore(false);
-				}
-				else {
+				} else {
 					updatePage();
 				}
-				
 			}
 		} catch {}
 	};
@@ -459,27 +457,11 @@ const Listado = ({
 	]);
 
 	useEffect(() => {
-		const handleBeforeUnload = () => {
-			const scrollPosition =
-				window.scrollY || document.documentElement.scrollTop;
-			sessionStorage.setItem('scrollPosition', scrollPosition.toString());
-		};
-
-		router.events.on('beforeHistoryChange', handleBeforeUnload);
-
-		return () => {
-			router.events.off('beforeHistoryChange', handleBeforeUnload);
-		};
-	}, [router]);
-
-	useEffect(() => {
-		if (!firstLoading && !loading && !secondLoading) {
-			const scrollPosition = sessionStorage.getItem('scrollPosition');
-			if (scrollPosition) {
-				window.scrollTo(0, parseInt(scrollPosition, 10));
-			}
+		const scrollPosition = sessionStorage.getItem('scrollPosition');
+		if (scrollPosition) {
+			setMobileInitialScrollY(parseInt(scrollPosition, 10));
 		}
-	}, [secondLoading]);
+	}, []);
 
 	if (firstLoading) {
 		return (
@@ -693,6 +675,9 @@ const Listado = ({
 									/>
 								</div>
 							}
+							initialScrollY={mobileInitialScrollY}
+							scrollableTarget={'products-list__container'}
+							style={{ overflow: 'hidden' }}
 						>
 							<ListProducts
 								results={results}
