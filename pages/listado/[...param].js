@@ -663,17 +663,6 @@ const Listado = ({
 							dataLength={results.length}
 							next={loadMore}
 							hasMore={hasMore}
-							loader={
-								<div className='list-products__loader'>
-									<Preloader
-										use={TailSpin}
-										size={30}
-										strokeWidth={8}
-										strokeColor='#FF002C'
-										duration={900}
-									/>
-								</div>
-							}
 							initialScrollY={mobileInitialScrollY}
 							scrollableTarget={'products-list__container'}
 							style={{ overflow: 'hidden' }}
@@ -681,7 +670,8 @@ const Listado = ({
 							<ListProducts
 								results={results}
 								filter_available_store={filter_available_store}
-								tempMobile={tempMobile}
+										tempMobile={tempMobile}
+										hasMore={hasMore}
 							/>
 						</InfiniteScroll>
 					)}

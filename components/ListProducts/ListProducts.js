@@ -9,8 +9,9 @@ import TextTruncate from 'react-text-truncate';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
 import NewProduct from '../Icons/NewProduct';
+import { Preloader, TailSpin } from 'react-preloader-icon';
 
-const ListProducts = ({ results, filter_available_store, tempMobile }) => {
+const ListProducts = ({ results, filter_available_store, tempMobile, hasMore }) => {
 	if (results === null) {
 		return null;
 	}
@@ -124,13 +125,33 @@ const ListProducts = ({ results, filter_available_store, tempMobile }) => {
 					</Link>
 				</div>
 			))}
+			{tempMobile && hasMore && (
+				<div className='list-products__loader'>
+					<Preloader
+						use={TailSpin}
+						size={30}
+						strokeWidth={8}
+						strokeColor='#FF002C'
+						duration={900}
+					/>
+				</div>
+			)}
 			<style jsx>
 				{`
+					.list-products__loader {
+						padding: 30px 0;
+						width: 100%;
+						height: 90px;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+					}
+
 					.list__container__mobile_fix {
 						height: 54px;
 						width: 100%;
 					}
-					
+
 					.products-list__container {
 						display: flex;
 						flex-wrap: wrap;
@@ -141,7 +162,7 @@ const ListProducts = ({ results, filter_available_store, tempMobile }) => {
 
 					.products-list__container__mobile {
 						overflow-y: auto;
-						height: calc(100vh - 113px);
+						height: calc(100vh - 59px);
 					}
 
 					.products-list__item {
