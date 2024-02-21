@@ -33,24 +33,26 @@ const MobileNavBar = ({
 			query: { ...router.query, order: order },
 		});
 	};
-	const productsListContainer = document.getElementById(
-		'products-list__container'
-	);
 
 	const handleScroll = () => {
-		
-		const currentScroll = productsListContainer.pageYOffset;
+		const productsListContainer = document.getElementById(
+			'products-list__container'
+		);
 
-		if (currentScroll < prevScroll) {
-			setVisibleNav(true);
+		if (productsListContainer) {
+			const currentScroll = productsListContainer.scrollTop;
 
-			const difference = prevScroll - currentScroll;
-			if (difference > 500) {
-				setPrevScroll(currentScroll + 500);
+			if (currentScroll < prevScroll) {
+				setVisibleNav(true);
+
+				const difference = prevScroll - currentScroll;
+				if (difference > 500) {
+					setPrevScroll(currentScroll + 500);
+				}
+			} else {
+				setVisibleNav(false);
+				setPrevScroll(currentScroll);
 			}
-		} else {
-			setVisibleNav(false);
-			setPrevScroll(currentScroll);
 		}
 	};
 
@@ -65,9 +67,16 @@ const MobileNavBar = ({
 	};
 
 	useEffect(() => {
-		productsListContainer.addEventListener('scroll', handleScroll);
-		return () =>
-			productsListContainer.removeEventListener('scroll', handleScroll);
+
+		const productsListContainer = document.getElementById(
+			'products-list__container'
+		);
+		if (productsListContainer) {
+				
+			productsListContainer.addEventListener('scroll', handleScroll);
+			return () =>
+				productsListContainer.removeEventListener('scroll', handleScroll);
+		}
 	});
 
 	return (
