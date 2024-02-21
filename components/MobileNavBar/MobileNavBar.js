@@ -85,7 +85,7 @@ const MobileNavBar = ({
 	}, []);
 
 	useEffect(() => {
-		!visibleNav && prevScroll < 500 && setVisibleNav(true);
+		!visibleNav && prevScroll > 500 && setVisibleNav(true);
 		setPrevScroll(500);
 	}, [q]);
 
