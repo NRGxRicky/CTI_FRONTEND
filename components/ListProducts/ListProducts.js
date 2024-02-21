@@ -10,13 +10,20 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
 import NewProduct from '../Icons/NewProduct';
 import { Preloader, TailSpin } from 'react-preloader-icon';
+import WindowDimensions from '../../hooks/WindowDimensions';
 
-const ListProducts = ({ results, filter_available_store, tempMobile, hasMore }) => {
+const ListProducts = ({
+	results,
+	filter_available_store,
+	tempMobile,
+	hasMore,
+}) => {
 	if (results === null) {
 		return null;
 	}
+	const { height, width } = WindowDimensions();
 
- useEffect(() => {
+	useEffect(() => {
 		const handleBeforeUnload = () => {
 			const productsListContainer = document.getElementById(
 				'products-list__container'
@@ -33,8 +40,8 @@ const ListProducts = ({ results, filter_available_store, tempMobile, hasMore }) 
 		return () => {
 			productsListContainer.removeEventListener('scroll', handleBeforeUnload);
 		};
- }, []);
-	
+	}, []);
+
 	return (
 		<div
 			className={
@@ -43,6 +50,7 @@ const ListProducts = ({ results, filter_available_store, tempMobile, hasMore }) 
 					: 'products-list__container'
 			}
 			id='products-list__container'
+			style={{'height': height - 60}}
 		>
 			{tempMobile && <div className='list__container__mobile_fix'></div>}
 			{results.map((producto) => (
@@ -162,7 +170,6 @@ const ListProducts = ({ results, filter_available_store, tempMobile, hasMore }) 
 
 					.products-list__container__mobile {
 						overflow-y: auto;
-						height: calc(100vh - 113px);
 					}
 
 					.products-list__item {
