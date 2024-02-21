@@ -502,7 +502,6 @@ const Listado = ({
 
 	return (
 		<div>
-			<div className='mobile__clear-fix__filters'></div>
 			{tempMobile && (
 				<div>
 					<MobileNavBar

@@ -43,6 +43,7 @@ const ListProducts = ({ results, filter_available_store, tempMobile }) => {
 			}
 			id='products-list__container'
 		>
+			{tempMobile && <div className='list__container__mobile_fix'></div>}
 			{results.map((producto) => (
 				<div
 					className='products-list__item'
@@ -125,6 +126,11 @@ const ListProducts = ({ results, filter_available_store, tempMobile }) => {
 			))}
 			<style jsx>
 				{`
+					.list__container__mobile_fix {
+						height: 54px;
+						width: 100%;
+					}
+					
 					.products-list__container {
 						display: flex;
 						flex-wrap: wrap;
