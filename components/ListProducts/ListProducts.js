@@ -162,7 +162,7 @@ const ListProducts = ({ results, filter_available_store, tempMobile, hasMore }) 
 
 					.products-list__container__mobile {
 						overflow-y: auto;
-						height: calc(100vh - 59px);
+						height: calc(100vh - 113px);
 					}
 
 					.products-list__item {
