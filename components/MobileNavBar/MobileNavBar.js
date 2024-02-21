@@ -11,6 +11,7 @@ const MobileNavBar = ({
 	setSortsShow,
 	sortsShow,
 	setSecondLoading,
+	q,
 }) => {
 	const router = useRouter();
 	const [prevScroll, setPrevScroll] = useState(500);
@@ -34,28 +35,6 @@ const MobileNavBar = ({
 		});
 	};
 
-	const handleScroll = () => {
-		const productsListContainer = document.getElementById(
-			'products-list__container'
-		);
-
-		if (productsListContainer) {
-			const currentScroll = productsListContainer.scrollTop;
-
-			if (currentScroll < prevScroll) {
-				setVisibleNav(true);
-
-				const difference = prevScroll - currentScroll;
-				if (difference > 500) {
-					setPrevScroll(currentScroll + 500);
-				}
-			} else {
-				setVisibleNav(false);
-				setPrevScroll(currentScroll);
-			}
-		}
-	};
-
 	const handleSortsShow = () => {
 		setOpacity({ opacity: 0.7, visibility: 'visible', zIndex: 2000 });
 		setSortsShow(true);
@@ -67,17 +46,48 @@ const MobileNavBar = ({
 	};
 
 	useEffect(() => {
-
 		const productsListContainer = document.getElementById(
 			'products-list__container'
 		);
+
+		const handleScroll = (productsListContainer) => {
+
+			if (productsListContainer) {
+				const currentScroll = productsListContainer.scrollTop;
+				console.log(currentScroll);
+				console.log(prevScroll);
+				if (currentScroll < prevScroll) {
+					console.log('se cumple');
+					setVisibleNav(true);
+
+					const difference = prevScroll - currentScroll;
+					if (difference > 500) {
+						setPrevScroll(currentScroll);
+					}
+				} else {
+					setVisibleNav(false);
+					setPrevScroll(currentScroll);
+				}
+			}
+		};
+
 		if (productsListContainer) {
-				
-			productsListContainer.addEventListener('scroll', handleScroll);
+			productsListContainer.addEventListener(
+				'scroll',
+				handleScroll(productsListContainer)
+			);
 			return () =>
-				productsListContainer.removeEventListener('scroll', handleScroll);
+				productsListContainer.removeEventListener(
+					'scroll',
+					handleScroll(productsListContainer)
+				);
 		}
-	});
+	}, []);
+
+	useEffect(() => {
+		!visibleNav && prevScroll < 500 && setVisibleNav(true);
+		setPrevScroll(500);
+	}, [q]);
 
 	return (
 		<div>

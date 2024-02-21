@@ -314,7 +314,7 @@ const Listado = ({
 		const filters = await fetchFilterData(
 			q,
 			order,
-			pageActual + 1,
+			1,
 			filter_available,
 			filter_available_store,
 			filter_free_shipping,
@@ -512,6 +512,7 @@ const Listado = ({
 						setSortsShow={setSortsShow}
 						sortsShow={sortsShow}
 						setSecondLoading={setSecondLoading}
+						q={q}
 					/>
 					<FiltersOptios
 						q={q}
