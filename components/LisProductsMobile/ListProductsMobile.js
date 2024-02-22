@@ -72,7 +72,7 @@ const ListProductsMobile = ({
 					<div
 						className='products-list__item'
 						key={producto.id}
-						style={{ border: '0.5px solid #eaeaea' }}
+						style={{ border: '0.5px solid #eaeaea', maxWidth: '50%' }}
 					>
 						<Link href={`/${producto.slug}`} legacyBehavior>
 							<a>
