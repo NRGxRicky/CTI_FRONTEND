@@ -1,8 +1,7 @@
-import React, { UseState, useEffect } from 'react';
+import React, { UseState, useEffect, useRef } from 'react';
 import Router, { useRouter } from 'next/router';
 import { BrowserView, MobileView } from 'react-device-detect';
 import Link from 'next/link';
-import { useState } from 'react';
 import Image from 'next/image';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import TextTruncate from 'react-text-truncate';
@@ -12,54 +11,24 @@ import NewProduct from '../Icons/NewProduct';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import WindowDimensions from '../../hooks/WindowDimensions';
 
+
 const ListProducts = ({
 	results,
 	filter_available_store,
-	tempMobile,
-	hasMore,
-	setMobileScroll,
 }) => {
 	if (results === null) {
 		return null;
 	}
-	const { height, width } = WindowDimensions();
-
-	useEffect(() => {
-		const handleBeforeUnload = () => {
-			const productsListContainer = document.getElementById(
-				'products-list__container'
-			);
-			const scrollPosition = productsListContainer.scrollTop;
-			sessionStorage.setItem('scrollPosition', scrollPosition.toString());
-		};
-
-		const productsListContainer = document.getElementById(
-			'products-list__container'
-		);
-		productsListContainer.addEventListener('scroll', handleBeforeUnload);
-
-		return () => {
-			productsListContainer.removeEventListener('scroll', handleBeforeUnload);
-		};
-	}, []);
 
 	return (
 		<div
-			className={
-				tempMobile
-					? 'products-list__container products-list__container__mobile'
-					: 'products-list__container'
-			}
+			className={'products-list__container'}
 			id='products-list__container'
-			style={{ 'height': height - 58 }}
-			onScroll={(e) => setMobileScroll(e.currentTarget.scrollTop)}
 		>
-			{tempMobile && <div className='list__container__mobile_fix'></div>}
 			{results.map((producto) => (
 				<div
 					className='products-list__item'
 					key={producto.id}
-					style={{ border: tempMobile && '0.5px solid #eaeaea' }}
 				>
 					<Link href={`/${producto.slug}`} legacyBehavior>
 						<a>
@@ -135,17 +104,6 @@ const ListProducts = ({
 					</Link>
 				</div>
 			))}
-			{tempMobile && hasMore && (
-				<div className='list-products__loader'>
-					<Preloader
-						use={TailSpin}
-						size={30}
-						strokeWidth={8}
-						strokeColor='#FF002C'
-						duration={900}
-					/>
-				</div>
-			)}
 			<style jsx>
 				{`
 					.list-products__loader {

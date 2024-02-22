@@ -5,7 +5,6 @@ import ListProducts from '../../components/ListProducts/ListProducts';
 import fetchData from '../../hooks/GetData';
 import ListProductsPagination from '../../components/ListProductsPagination/ListProductsPagination';
 import Router, { useRouter } from 'next/router';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import MobileNavBar from '../../components/MobileNavBar/MobileNavBar';
 import fetchFilterData from '../../hooks/GetFiltersData';
@@ -16,6 +15,7 @@ import IconNoSearch from '../../components/IconNoSearch/IconNoSearch';
 import FiltersOptionsMain from '../../components/FiltersOptionsMain/FiltersOptionsMain';
 import CarouselProductsV2 from '../../components/Carousel/CarouselProductsV2';
 import Footer from '../../components/Footer/Footer';
+import ListProductsMobile from '../../components/LisProductsMobile/ListProductsMobile';
 
 import {
 	BrowserView,
@@ -156,6 +156,7 @@ const Listado = ({
 	const [loadingData, setLoadingData] = useState(false);
 	const [data, setData] = useState({ results: [] });
 	const [pageActual, setPageActual] = useState(parseInt(page));
+	const [lastUpdatedPage, setLastUpdatedPage] = useState(parseInt(page));
 	const [internalOrder, setInternalOrder] = useState(order);
 	const [itemsPerPage, setItemsPerPage] = useState(page_size);
 	const [totalItems, setTotalItems] = useState(data.count);
@@ -177,7 +178,6 @@ const Listado = ({
 	const [sortsShow, setSortsShow] = useState(false);
 	const [filtersActive, setFiltersActive] = useState(defaultFilters);
 	const [filtersActiveMain, setFiltersActiveMain] = useState(defaultFilters);
-	const [mobileInitialScrollY, setMobileInitialScrollY] = useState(0);
 	const router = useRouter();
 	const { height, width } = WindowDimensions();
 	const [opacity, setOpacity] = useState({
@@ -248,6 +248,10 @@ const Listado = ({
 	};
 
 	const updatePage = async () => {
+		if (pageActual + 1 === lastUpdatedPage) {
+			return;
+		}
+
 		await router.push(
 			{
 				pathname: router.pathname,
@@ -256,14 +260,19 @@ const Listado = ({
 			undefined,
 			{ shallow: true, scroll: false }
 		);
+		setLastUpdatedPage(pageActual + 1);
 		setPageActual((pageActual) => pageActual + 1);
 	};
 
 	const loadMore = async () => {
 		try {
-			if (!loading && hasMore && !firstLoading) {
-				setLoading(true);
+			if (loading) {
+				return;
+			}
 
+			setLoading(true);
+
+			if (hasMore && !firstLoading) {
 				const moreResults = await fetchData(
 					q,
 					order,
@@ -278,16 +287,20 @@ const Listado = ({
 					categoria,
 					page_size
 				);
-				setResults((results) => [...results, ...moreResults.results]);
+
+				if (moreResults.results.length > 0) {
+					setResults([...results, ...moreResults.results]);
+
+					if (parseInt(pageActual) + 1 >= parseInt(pages)) {
+						setHasMore(false);
+					} else {
+						updatePage();
+					}
+				}
 
 				setLoading(false);
-				if (parseInt(pageActual) + 1 >= parseInt(pages)) {
-					setHasMore(false);
-				} else {
-					updatePage();
-				}
 			}
-		} catch {}
+		} catch (error) {}
 	};
 
 	const handleFiltersToApply = async () => {
@@ -358,22 +371,6 @@ const Listado = ({
 		setTempMobile(isMobile);
 	}, [isMobile]);
 
-	useEffect(() => {
-		if (filtersShow) {
-			addBodyClass('open-modal');
-		} else {
-			removeBodyClass('open-modal');
-		}
-	}, [filtersShow]);
-
-	useEffect(() => {
-		if (sortsShow) {
-			addBodyClass('open-modal');
-		} else {
-			removeBodyClass('open-modal');
-		}
-	}, [sortsShow]);
-
 	const getData = async () => {
 		setLoadingData(true);
 		if (!isMobile) {
@@ -443,6 +440,7 @@ const Listado = ({
 
 		parseInt(page) === 1 && setPageActual(1);
 		parseInt(page) === 1 && sessionStorage.removeItem('scrollPosition');
+		parseInt(page) === 1 && setMobileScroll(0);
 	}, [
 		q,
 		page,
@@ -456,15 +454,6 @@ const Listado = ({
 		marca,
 		categoria,
 	]);
-
-	useEffect(() => {
-		const scrollPosition = sessionStorage.getItem('scrollPosition');
-		if (scrollPosition) {
-			setMobileInitialScrollY(parseInt(scrollPosition, 10));
-		}
-
-		isMobile && addBodyClass('open-modal')
-	}, []);
 
 	if (firstLoading) {
 		return (
@@ -626,7 +615,6 @@ const Listado = ({
 												<ListProducts
 													results={results}
 													filter_available_store={filter_available_store}
-													tempMobile={tempMobile}
 												/>
 												<ListProductsPagination
 													pages={pages}
@@ -664,22 +652,14 @@ const Listado = ({
 							/>
 						</div>
 					) : (
-						<InfiniteScroll
-							dataLength={results.length}
-							next={loadMore}
+						<ListProductsMobile
+							results={results}
+							filter_available_store={filter_available_store}
 							hasMore={hasMore}
-							initialScrollY={mobileInitialScrollY}
-							scrollableTarget={'products-list__container'}
-							style={{ overflow: 'hidden' }}
-						>
-							<ListProducts
-								results={results}
-								filter_available_store={filter_available_store}
-								tempMobile={tempMobile}
-								hasMore={hasMore}
-								setMobileScroll={setMobileScroll}
-							/>
-						</InfiniteScroll>
+							setMobileScroll={setMobileScroll}
+							loadMore={loadMore}
+							mobileScroll={mobileScroll}
+						/>
 					)}
 				</div>
 			) : (
