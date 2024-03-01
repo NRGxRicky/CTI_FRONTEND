@@ -1,22 +1,21 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import OpacityContainer from '../OpacityContainer/OpacityContainer';
 import { useRouter } from 'next/router';
 import TextTruncate from 'react-text-truncate';
+import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+import {
+	hideAll,
+	showNavMobileSort,
+	showNavMobileFilters,
+} from '../../lib/features/showOpacityContainerSlide';
 
-const MobileNavBar = ({
-	SetParentOpacity,
-	sortList,
-	setFiltersShow,
-	setOpacity,
-	setSortsShow,
-	sortsShow,
-	setSecondLoading,
-	q,
-	mobileScroll,
-}) => {
+const MobileNavBar = ({ sortList, setSecondLoading, q, mobileScroll }) => {
 	const router = useRouter();
 	const [prevScroll, setPrevScroll] = useState(250);
 	const [visibleNav, setVisibleNav] = useState(true);
+	const dispacth = useAppDispatch();
+	const mobileNavSort = useAppSelector(
+		(state) => state.showOpacityContainerReducer.navMobileSort
+	);
 
 	const dictSortLabel = {
 		'-ventas': 'Más vendidos',
@@ -29,38 +28,28 @@ const MobileNavBar = ({
 
 	const handleSort = async (order) => {
 		setSecondLoading(true);
-		SetParentOpacity(false);
+		dispacth(hideAll())
 		await router.replace({
 			pathname: router.pathname,
-			query: { ...router.query, order: order },
+			query: { ...router.query, order: order, page: 1 },
 		});
 	};
 
-	const handleSortsShow = () => {
-		setOpacity({ opacity: 0.7, visibility: 'visible', zIndex: 2000 });
-		setSortsShow(true);
-	};
-
-	const handleFiltersShow = () => {
-		setOpacity({ opacity: 0.7, visibility: 'visible', zIndex: 2000 });
-		setFiltersShow(true);
-	};
-
 	const handleScroll = () => {
-			if (mobileScroll < prevScroll) {
-				const difference = prevScroll - mobileScroll;
-				if (difference > 250) {
-					setPrevScroll(mobileScroll);
-					setVisibleNav(true);
-				}
-			} else {
-				setVisibleNav(false);
+		if (mobileScroll < prevScroll) {
+			const difference = prevScroll - mobileScroll;
+			if (difference > 250) {
 				setPrevScroll(mobileScroll);
+				setVisibleNav(true);
 			}
+		} else {
+			setVisibleNav(false);
+			setPrevScroll(mobileScroll);
+		}
 	};
 
 	useEffect(() => {
-		handleScroll()
+		handleScroll();
 	}, [mobileScroll]);
 
 	useEffect(() => {
@@ -75,7 +64,7 @@ const MobileNavBar = ({
 				style={{ top: visibleNav ? '59px' : '-59px' }}
 			>
 				<div className='nav'>
-					<div className='nav__sort' onClick={() => handleSortsShow()}>
+					<div className='nav__sort' onClick={() => dispacth(showNavMobileSort())}>
 						<svg
 							xmlns='http://www.w3.org/2000/svg'
 							x='0px'
@@ -94,7 +83,7 @@ const MobileNavBar = ({
 							text={`Ordenar: ${dictSortLabel[sortList]}`}
 						/>
 					</div>
-					<div className='nav__filters' onClick={() => handleFiltersShow()}>
+					<div className='nav__filters' onClick={() => dispacth(showNavMobileFilters())}>
 						<svg
 							xmlns='http://www.w3.org/2000/svg'
 							x='0px'
@@ -117,14 +106,14 @@ const MobileNavBar = ({
 			<div
 				className='nav__sort__details'
 				style={{
-					opacity: !sortsShow ? '0' : '1',
-					display: !sortsShow ? 'none' : 'block',
+					opacity: !mobileNavSort ? '0' : '1',
+					display: !mobileNavSort ? 'none' : 'block',
 				}}
-				onClick={() => SetParentOpacity(false)}
+				onClick={() => dispacth(hideAll())}
 			>
 				<div
 					className='nav__sort__details__container'
-					style={{ display: !sortsShow ? 'none' : 'block' }}
+					style={{ display: !mobileNavSort ? 'none' : 'block' }}
 				>
 					<div className='nav__sort__header'>Ordenar por</div>
 					<div className='nav__sort__options'>

@@ -3,6 +3,10 @@ import Capitalize from '../../hooks/CapitalizeTitle';
 import ToggleButon from '../ToggleButton/ToggleButon';
 import { useRouter } from 'next/router';
 import { Preloader, TailSpin } from 'react-preloader-icon';
+import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+import {
+	hideAll,
+} from '../../lib/features/showOpacityContainerSlide';
 
 const FiltersOptios = ({
 	q,
@@ -18,9 +22,7 @@ const FiltersOptios = ({
 	origin_categories,
 	attributesAvailables,
 	origin_attributes,
-	SetParentOpacity,
 	loading,
-	filtersShow,
 	setFiltersActive,
 	filtersActive,
 	marca,
@@ -31,6 +33,10 @@ const FiltersOptios = ({
 	const [showCategoriesContainer, setShowCategoriesContainer] = useState(false);
 	const [showAttributesContainer, setShowAttributesContainer] = useState(false);
 	const [attributesCounter, setAttributesCounter] = useState(10);
+	const dispacth = useAppDispatch();
+	const mobileNavFilters = useAppSelector(
+		(state) => state.showOpacityContainerReducer.navMobileFilters
+	);
 
 	const handdleAppendFilter = useCallback(
 		({ target: { name, checked } }) => {
@@ -98,7 +104,7 @@ const FiltersOptios = ({
 	);
 
 	const handleFiltersToApply = async () => {
-		SetParentOpacity(false);
+		dispacth(hideAll())
 		await router.replace({
 			pathname: router.pathname,
 			query: { ...router.query, ...filtersActive, page: 1 },
@@ -106,7 +112,7 @@ const FiltersOptios = ({
 	};
 
 	const handleFiltersClear = async () => {
-		SetParentOpacity(false);
+		dispacth(hideAll());
 		setFiltersActive({
 			brands: [],
 			categories: [],
@@ -117,7 +123,7 @@ const FiltersOptios = ({
 		});
 		await router.replace({
 			pathname: router.pathname,
-			query: { q, param: [marca, categoria] },
+			query: { q, param: [marca, categoria], page: 1 },
 		});
 	};
 
@@ -126,18 +132,15 @@ const FiltersOptios = ({
 			<div
 				className='nav__filters__details'
 				style={{
-					opacity: !filtersShow ? '0' : '1',
-					display: !filtersShow ? 'none' : 'block',
+					opacity: !mobileNavFilters ? '0' : '1',
+					display: !mobileNavFilters ? 'none' : 'block',
 				}}
 			>
-				<div
-					className='nav__filters__details__container'
-					style={{ display: !filtersShow ? 'none' : 'block' }}
-				>
+				<div className='nav__filters__details__container'>
 					<div className='nav__filters__header'>
 						<div
 							className='nav__filters__header__close'
-							onClick={() => SetParentOpacity(false)}
+							onClick={() => dispacth(hideAll())}
 						>
 							<button className='close --close-fliters'></button>
 						</div>

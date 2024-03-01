@@ -33,11 +33,14 @@ const ProductItem = ({ item }) => {
 	const convertTitle = Capitalize(item.titulo);
 	const [tempMobile, setTempMobile] = useState(false);
 	const { height, width } = WindowDimensions();
+	const removeBodyClass = (className) =>
+		document.body.classList.remove(className);
 
 	useEffect(() => {
 		setTempMobile(isMobile);
+		isMobile && removeBodyClass('open-modal');
 	}, [isMobile]);
-	
+
 	return (
 		<div>
 			<Head>

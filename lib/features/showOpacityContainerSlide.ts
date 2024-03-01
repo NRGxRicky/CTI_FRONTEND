@@ -6,7 +6,9 @@ export const showOpacityContainerSlide = createSlice({
 		opacityConatiner: false,
 		searchBar: false,
 		loginMenu: false,
-		navMobileMenu: false
+		navMobileMenu: false,
+		navMobileSort: false,
+		navMobileFilters: false,
 	},
 	reducers: {
 		showOpacity: (state) => {
@@ -20,28 +22,49 @@ export const showOpacityContainerSlide = createSlice({
 			state.opacityConatiner = false;
 			state.loginMenu = false;
 			state.navMobileMenu = false;
+			state.navMobileSort = false;
+			state.navMobileFilters = false;
 		},
 		showSearchBar: (state) => {
 			state.searchBar = true;
 			state.opacityConatiner = true;
 			state.loginMenu = false;
 			state.navMobileMenu = false;
-
+			state.navMobileSort = false;
+			state.navMobileFilters = false;
 		},
 		showLoginMenuState: (state) => {
 			state.searchBar = false;
 			state.opacityConatiner = true;
 			state.loginMenu = true;
 			state.navMobileMenu = false;
-
+			state.navMobileSort = false;
+			state.navMobileFilters = false;
 		},
 		showNavMobileMenu: (state) => {
 			state.searchBar = false;
 			state.opacityConatiner = true;
 			state.loginMenu = false;
 			state.navMobileMenu = true;
-
-		}
+			state.navMobileSort = false;
+			state.navMobileFilters = false;
+		},
+		showNavMobileSort: (state) => {
+			state.searchBar = false;
+			state.opacityConatiner = true;
+			state.loginMenu = false;
+			state.navMobileMenu = false;
+			state.navMobileSort = true;
+			state.navMobileFilters = false;
+		},
+		showNavMobileFilters: (state) => {
+			state.searchBar = false;
+			state.opacityConatiner = true;
+			state.loginMenu = false;
+			state.navMobileMenu = false;
+			state.navMobileSort = false;
+			state.navMobileFilters = true;
+		},
 	},
 });
 
@@ -52,6 +75,8 @@ export const {
 	showSearchBar,
 	showLoginMenuState,
 	showNavMobileMenu,
+	showNavMobileSort,
+	showNavMobileFilters,
 } = showOpacityContainerSlide.actions;
 
 export default showOpacityContainerSlide.reducer;

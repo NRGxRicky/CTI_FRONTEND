@@ -9,13 +9,20 @@ import { Preloader, TailSpin } from 'react-preloader-icon';
 import MobileNavBar from '../../components/MobileNavBar/MobileNavBar';
 import fetchFilterData from '../../hooks/GetFiltersData';
 import FiltersOptios from '../../components/FiltersOptions/FiltersOptios';
-import OpacityContainer from '../../components/OpacityContainer/OpacityContainer';
 import WindowDimensions from '../../hooks/WindowDimensions';
 import IconNoSearch from '../../components/IconNoSearch/IconNoSearch';
 import FiltersOptionsMain from '../../components/FiltersOptionsMain/FiltersOptionsMain';
 import CarouselProductsV2 from '../../components/Carousel/CarouselProductsV2';
 import Footer from '../../components/Footer/Footer';
 import ListProductsMobile from '../../components/LisProductsMobile/ListProductsMobile';
+import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+import {
+	showOpacity,
+	hideOpacity,
+	hideAll,
+	showSearchBar,
+	showLoginMenuState,
+} from '../../lib/features/showOpacityContainerSlide';
 
 import {
 	BrowserView,
@@ -23,6 +30,7 @@ import {
 	isBrowser,
 	isMobile,
 } from 'react-device-detect';
+import Capitalize from '../../hooks/CapitalizeTitle';
 
 export const getServerSideProps = async (context) => {
 	let order = '-visitas';
@@ -174,18 +182,15 @@ const Listado = ({
 	const [brandsAvailables, setBrandsAvailables] = useState([]);
 	const [categoriesAvailables, setcategoriesAvailables] = useState([]);
 	const [attributesAvailables, setAttributesAvailables] = useState([]);
-	const [filtersShow, setFiltersShow] = useState(false);
-	const [sortsShow, setSortsShow] = useState(false);
 	const [filtersActive, setFiltersActive] = useState(defaultFilters);
 	const [filtersActiveMain, setFiltersActiveMain] = useState(defaultFilters);
 	const router = useRouter();
 	const { height, width } = WindowDimensions();
-	const [opacity, setOpacity] = useState({
-		opacity: 0,
-		visibility: 'hidden',
-		zIndex: 50,
-	});
 	const [mobileScroll, setMobileScroll] = useState(0);
+	
+	const dispacth = useAppDispatch();
+
+	const convertTitle = Capitalize(q);
 
 	const dictSortLabel = {
 		'-ventas': 'Más vendidos',
@@ -199,7 +204,7 @@ const Listado = ({
 	const handleSort = async (order) => {
 		setInternalOrder(order);
 		setSecondLoading(true);
-		SetParentOpacity(false);
+		dispacth(hideAll)
 		await router.replace({
 			pathname: router.pathname,
 			query: { ...router.query, order: order },
@@ -207,11 +212,9 @@ const Listado = ({
 	};
 
 	const addBodyClass = (className) => document.body.classList.add(className);
-	const removeBodyClass = (className) =>
-		document.body.classList.remove(className);
 
 	const handleFiltersClear = async () => {
-		SetParentOpacity(false);
+		dispacth(hideAll)
 		setFiltersActiveMain({
 			brands: [],
 			categories: [],
@@ -224,18 +227,6 @@ const Listado = ({
 			pathname: router.pathname,
 			query: { q, param: [marca, categoria] },
 		});
-	};
-
-	const SetParentOpacity = (state) => {
-		if (!state) {
-			setOpacity({ opacity: 0, visibility: 'hidden', zIndex: 50 });
-			setFiltersShow(false);
-			setSortsShow(false);
-		} else {
-			setOpacity({ opacity: 0.7, visibility: 'visible', zIndex: 2000 });
-			setFiltersShow(true);
-			setSortsShow(false);
-		}
 	};
 
 	const refreshPage = async (page) => {
@@ -304,7 +295,7 @@ const Listado = ({
 	};
 
 	const handleFiltersToApply = async () => {
-		SetParentOpacity(false);
+		dispacth(hideAll)
 
 		await router.replace({
 			pathname: router.pathname,
@@ -455,6 +446,10 @@ const Listado = ({
 		categoria,
 	]);
 
+	useEffect(() => {
+		isMobile && addBodyClass('open-modal')
+	}, [isMobile])
+
 	if (firstLoading) {
 		return (
 			<div className='list-products__container'>
@@ -497,12 +492,7 @@ const Listado = ({
 			{tempMobile && (
 				<div>
 					<MobileNavBar
-						SetParentOpacity={SetParentOpacity}
 						sortList={order}
-						setFiltersShow={setFiltersShow}
-						setOpacity={setOpacity}
-						setSortsShow={setSortsShow}
-						sortsShow={sortsShow}
 						setSecondLoading={setSecondLoading}
 						q={q}
 						mobileScroll={mobileScroll}
@@ -521,9 +511,7 @@ const Listado = ({
 						origin_categories={categories}
 						attributesAvailables={attributesAvailables}
 						origin_attributes={attributes}
-						SetParentOpacity={SetParentOpacity}
 						loading={loadingFilters}
-						filtersShow={filtersShow}
 						filtersActive={filtersActive}
 						setFiltersActive={setFiltersActive}
 						handleFiltersToApply={handleFiltersToApply}
@@ -534,7 +522,13 @@ const Listado = ({
 			)}
 			{results.length > 0 ? (
 				<div>
-					<Head></Head>
+					<Head>
+						<title>{`${convertTitle} | PCStore.mx`}</title>
+						<meta
+							name='description'
+							content={`Compra tu ${convertTitle} en PCStore.mx - Compra protegida, envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
+						/>
+					</Head>
 					{!tempMobile ? (
 						<div className='container'>
 							<div className='list-products__aside'>
@@ -553,7 +547,6 @@ const Listado = ({
 										origin_categories={categories}
 										attributesAvailables={attributesAvailables}
 										origin_attributes={attributes}
-										SetParentOpacity={SetParentOpacity}
 										loading={loadingFilters}
 										filtersActive={filtersActiveMain}
 										setFiltersActive={setFiltersActiveMain}
@@ -714,10 +707,7 @@ const Listado = ({
 					</div>
 				</div>
 			)}
-			<OpacityContainer
-				opacityContainer={opacity}
-				SetParentOpacity={SetParentOpacity}
-			/>
+
 			{!isMobile && <Footer />}
 			<style jsx>
 				{`
