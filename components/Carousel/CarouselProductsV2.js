@@ -288,7 +288,7 @@ const CarouselProductsV2 = ({
 
 						.v2__embla__slide {
 							position: relative;
-							flex: 1 0 25%;
+							flex: 1 0 50%;
 							background-color: #ffffff;
 							border: 1px solid #eaeaea;
 						}
@@ -400,7 +400,7 @@ const CarouselProductsV2 = ({
 							font-size: 12px;
 						}
 
-						@media only screen and (min-width: 48em) {
+						@media only screen and (min-width: 62em) {
 							.v2__embla__slide {
 								flex: 1 0 calc(25% - 15px);
 							}

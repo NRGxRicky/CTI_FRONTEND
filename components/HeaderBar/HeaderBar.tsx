@@ -55,6 +55,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 	);
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+		console.log('se llama');
 		e.preventDefault();
 		setQueryInInput(undefined);
 		const pageSize = tempMobile ? mobileMaxPage : maxPage;
@@ -75,18 +76,9 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 		const tempValue = e.target.value;
 		e.target.value = '';
 		e.target.value = tempValue;
-		e.target.style.zIndex = '200';
-		if (searchButton.current !== null) {
-			searchButton.current.style.zIndex = '200';
-		}
 	};
 
-	const focusSearchBlur = (e: ChangeEvent<HTMLInputElement>) => {
-		e.target.style.zIndex = '0';
-		if (searchButton.current !== null) {
-			searchButton.current.style.zIndex = '0';
-		}
-	};
+	const focusSearchBlur = (e: ChangeEvent<HTMLInputElement>) => {};
 
 	const handleMobileSearch = () => {
 		dispacth(showSearchBar());
@@ -148,7 +140,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 									/>
 									<button
 										type='submit'
-										className='header-bar__button-searh'
+										className='header-bar__button-search'
 										ref={searchButton}
 									>
 										<svg
@@ -292,7 +284,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 							>
 								<div className='close --close-search'></div>
 							</div>
-							<button type='submit' className='header-bar__button-searh'>
+							<button type='submit' className='header-bar__button-search'>
 								<svg
 									className='header-bar__icon'
 									width='25'
@@ -409,13 +401,18 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 					font-size: 1rem;
 					font-weight: 300;
 					color: #474747;
+					transition: z-index 3s ease;
 				}
 
 				.header-bar__input:focus {
 					outline: 0;
 				}
+				.header-bar__form-container:focus-within .header-bar__button-search,
+				.header-bar__form-container:focus-within .header-bar__input {
+					z-index: 200;
+				}
 
-				.header-bar__button-searh {
+				.header-bar__button-search {
 					border: 1px solid #ff002c;
 					background-color: #ff002c;
 					height: 40px;
@@ -424,6 +421,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 					border-top-right-radius: 2px;
 					border-bottom-right-radius: 2px;
 					cursor: pointer;
+					transition: z-index 3s ease;
 				}
 
 				.header-bar__section-icon {
