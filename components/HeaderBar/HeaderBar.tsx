@@ -55,7 +55,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 	);
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-		console.log('se llama');
 		e.preventDefault();
 		setQueryInInput(undefined);
 		const pageSize = tempMobile ? mobileMaxPage : maxPage;
@@ -112,7 +111,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 								width='98'
 								height='42'
 								className='header-bar__logo'
-								sizes='100vw'
+								sizes='auto'
 								style={{
 									width: '98',
 									height: 'auto',

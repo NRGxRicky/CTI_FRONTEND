@@ -29,15 +29,12 @@ const NavMobileMenu = () => {
 	const bodyScroll = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.bodyScroll
 	);
-	const [isBurgerActive, setBurgerActive] = useState(false);
 
 	const toggleMenu = () => {
 		if (!menuMobileOpen) {
-			setBurgerActive(true);
 			dispacth(showNavMobileMenu());
 			document.body.classList.add('open-modal');
 		} else {
-			setBurgerActive(false);
 			dispacth(hideAll());
 			!bodyScroll && document.body.classList.remove('open-modal');
 		}
@@ -60,7 +57,7 @@ const NavMobileMenu = () => {
 	return (
 		<nav className='header__mobile-nav-toggle col-xs-1 col-sm-1 col-md-1 col-lg-1'>
 			<button
-				className={`burger-button ${isBurgerActive ? 'active' : ''}`}
+				className={`burger-button ${menuMobileOpen ? 'active' : ''}`}
 				onClick={toggleMenu}
 			>
 				<div className='burger-line' onClick={toggleMenu}></div>

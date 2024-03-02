@@ -13,9 +13,7 @@ import {
 } from '../../lib/features/showOpacityContainerSlide';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 
-const InstantSearch = ({
-	queryInInput,
-}) => {
+const InstantSearch = ({ queryInInput }) => {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
@@ -24,7 +22,6 @@ const InstantSearch = ({
 		(state) => state.showOpacityContainerReducer.searchBar
 	);
 	const dispacth = useAppDispatch();
-
 
 	const fetchData = async () => {
 		try {
@@ -58,9 +55,7 @@ const InstantSearch = ({
 		return (
 			<div
 				className='search-box'
-				style={
-					!searchVisibleValue ? { display: 'none' } : { display: 'block' }
-				}
+				style={!searchVisibleValue ? { display: 'none' } : { display: 'block' }}
 			>
 				<div className='search-box__loader'>
 					<Preloader
@@ -94,9 +89,7 @@ const InstantSearch = ({
 		return (
 			<div
 				className='search-box'
-				style={
-					!searchVisibleValue ? { display: 'none' } : { display: 'block' }
-				}
+				style={!searchVisibleValue ? { display: 'none' } : { display: 'block' }}
 			>
 				<div className='search-box__loader'>Error</div>
 

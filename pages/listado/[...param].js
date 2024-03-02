@@ -28,6 +28,7 @@ import {
 	isMobile,
 } from 'react-device-detect';
 import Capitalize from '../../hooks/CapitalizeTitle';
+import { isConstructorDeclaration } from 'typescript';
 
 export const getServerSideProps = async (context) => {
 	let order = '-visitas';
@@ -279,6 +280,7 @@ const Listado = ({
 
 					if (parseInt(pageActual) + 1 >= parseInt(pages)) {
 						setHasMore(false);
+
 					} else {
 						updatePage();
 					}
@@ -427,6 +429,8 @@ const Listado = ({
 		parseInt(page) === 1 && setPageActual(1);
 		parseInt(page) === 1 && sessionStorage.removeItem('scrollPosition');
 		parseInt(page) === 1 && setMobileScroll(0);
+		parseInt(page) === 1 && setLastUpdatedPage(1);
+
 	}, [
 		q,
 		page,
