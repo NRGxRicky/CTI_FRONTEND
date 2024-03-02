@@ -17,11 +17,8 @@ import Footer from '../../components/Footer/Footer';
 import ListProductsMobile from '../../components/LisProductsMobile/ListProductsMobile';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import {
-	showOpacity,
-	hideOpacity,
 	hideAll,
-	showSearchBar,
-	showLoginMenuState,
+	blockBodyScroll,
 } from '../../lib/features/showOpacityContainerSlide';
 
 import {
@@ -210,8 +207,6 @@ const Listado = ({
 			query: { ...router.query, order: order },
 		});
 	};
-
-	const addBodyClass = (className) => document.body.classList.add(className);
 
 	const handleFiltersClear = async () => {
 		dispacth(hideAll);
@@ -445,10 +440,6 @@ const Listado = ({
 		marca,
 		categoria,
 	]);
-
-	useEffect(() => {
-		isMobile && addBodyClass('open-modal');
-	}, [isMobile]);
 
 	if (firstLoading) {
 		return (

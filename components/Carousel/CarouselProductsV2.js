@@ -352,6 +352,7 @@ const CarouselProductsV2 = ({
 							position: relative;
 							display: flex;
 							align-items: center;
+							padding: 5px;
 						}
 
 						.v2__card__carousel__image {
@@ -365,7 +366,7 @@ const CarouselProductsV2 = ({
 
 						.v2__card__carousel__content {
 							flex: 0 0 50%;
-							padding: 10px;
+							padding: 5px;
 						}
 
 						.v2__card__carousel__price {

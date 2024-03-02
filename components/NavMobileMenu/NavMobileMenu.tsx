@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-
+import { useRouter } from 'next/router';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import {
 	showOpacity,
@@ -9,36 +9,53 @@ import {
 	showSearchBar,
 	showLoginMenuState,
 	showNavMobileMenu,
+	blockBodyScroll,
+	unlockBodyScroll,
 } from '../../lib/features/showOpacityContainerSlide';
+import {
+	BrowserView,
+	MobileView,
+	isBrowser,
+	isMobile,
+} from 'react-device-detect';
 
 const NavMobileMenu = () => {
 	const dispacth = useAppDispatch();
 	const menuMobileOpen = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.navMobileMenu
 	);
+	const router = useRouter();
+
+	const bodyScroll = useAppSelector(
+		(state: any) => state.showOpacityContainerReducer.bodyScroll
+	);
 	const [isBurgerActive, setBurgerActive] = useState(false);
 
 	const toggleMenu = () => {
 		if (!menuMobileOpen) {
-			document.body.classList.add('open-modal');
 			setBurgerActive(true);
 			dispacth(showNavMobileMenu());
+			document.body.classList.add('open-modal');
 		} else {
-			document.body.classList.remove('open-modal');
 			setBurgerActive(false);
 			dispacth(hideAll());
+			!bodyScroll && document.body.classList.remove('open-modal');
 		}
 	};
 
 	useEffect(() => {
-		if (menuMobileOpen) {
-			setBurgerActive(true);
-			document.body.classList.add('open-modal');
+		bodyScroll
+			? document.body.classList.add('open-modal')
+			: document.body.classList.remove('open-modal');
+	}, [bodyScroll]);
+
+	useEffect(() => {
+		if (router.pathname.startsWith('/listado') && isMobile) {
+			dispacth(blockBodyScroll());
 		} else {
-			setBurgerActive(false);
-			document.body.classList.remove('open-modal');
+			dispacth(unlockBodyScroll());
 		}
-	}, [menuMobileOpen]);
+	}, [router.pathname, isMobile]);
 
 	return (
 		<nav className='header__mobile-nav-toggle col-xs-1 col-sm-1 col-md-1 col-lg-1'>

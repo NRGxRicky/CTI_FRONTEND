@@ -9,6 +9,7 @@ export const showOpacityContainerSlide = createSlice({
 		navMobileMenu: false,
 		navMobileSort: false,
 		navMobileFilters: false,
+		bodyScroll: false
 	},
 	reducers: {
 		showOpacity: (state) => {
@@ -65,6 +66,12 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileSort = false;
 			state.navMobileFilters = true;
 		},
+		blockBodyScroll: (state) => {
+			state.bodyScroll = true
+		},
+		unlockBodyScroll: (state) => {
+			state.bodyScroll = false
+		}
 	},
 });
 
@@ -77,6 +84,8 @@ export const {
 	showNavMobileMenu,
 	showNavMobileSort,
 	showNavMobileFilters,
+	blockBodyScroll,
+	unlockBodyScroll
 } = showOpacityContainerSlide.actions;
 
 export default showOpacityContainerSlide.reducer;

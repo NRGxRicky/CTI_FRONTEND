@@ -28,7 +28,7 @@ const MobileNavBar = ({ sortList, setSecondLoading, q, mobileScroll }) => {
 
 	const handleSort = async (order) => {
 		setSecondLoading(true);
-		dispacth(hideAll())
+		dispacth(hideAll());
 		await router.replace({
 			pathname: router.pathname,
 			query: { ...router.query, order: order, page: 1 },
@@ -43,8 +43,10 @@ const MobileNavBar = ({ sortList, setSecondLoading, q, mobileScroll }) => {
 				setVisibleNav(true);
 			}
 		} else {
-			setVisibleNav(false);
-			setPrevScroll(mobileScroll);
+			if (mobileScroll > 500) {
+				setVisibleNav(false);
+				setPrevScroll(mobileScroll);
+			}
 		}
 	};
 
@@ -64,7 +66,10 @@ const MobileNavBar = ({ sortList, setSecondLoading, q, mobileScroll }) => {
 				style={{ top: visibleNav ? '59px' : '-59px' }}
 			>
 				<div className='nav'>
-					<div className='nav__sort' onClick={() => dispacth(showNavMobileSort())}>
+					<div
+						className='nav__sort'
+						onClick={() => dispacth(showNavMobileSort())}
+					>
 						<svg
 							xmlns='http://www.w3.org/2000/svg'
 							x='0px'
@@ -83,7 +88,10 @@ const MobileNavBar = ({ sortList, setSecondLoading, q, mobileScroll }) => {
 							text={`Ordenar: ${dictSortLabel[sortList]}`}
 						/>
 					</div>
-					<div className='nav__filters' onClick={() => dispacth(showNavMobileFilters())}>
+					<div
+						className='nav__filters'
+						onClick={() => dispacth(showNavMobileFilters())}
+					>
 						<svg
 							xmlns='http://www.w3.org/2000/svg'
 							x='0px'
