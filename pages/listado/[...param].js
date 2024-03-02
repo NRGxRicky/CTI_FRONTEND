@@ -187,7 +187,7 @@ const Listado = ({
 	const router = useRouter();
 	const { height, width } = WindowDimensions();
 	const [mobileScroll, setMobileScroll] = useState(0);
-	
+
 	const dispacth = useAppDispatch();
 
 	const convertTitle = Capitalize(q);
@@ -204,7 +204,7 @@ const Listado = ({
 	const handleSort = async (order) => {
 		setInternalOrder(order);
 		setSecondLoading(true);
-		dispacth(hideAll)
+		dispacth(hideAll);
 		await router.replace({
 			pathname: router.pathname,
 			query: { ...router.query, order: order },
@@ -214,7 +214,7 @@ const Listado = ({
 	const addBodyClass = (className) => document.body.classList.add(className);
 
 	const handleFiltersClear = async () => {
-		dispacth(hideAll)
+		dispacth(hideAll);
 		setFiltersActiveMain({
 			brands: [],
 			categories: [],
@@ -295,7 +295,7 @@ const Listado = ({
 	};
 
 	const handleFiltersToApply = async () => {
-		dispacth(hideAll)
+		dispacth(hideAll);
 
 		await router.replace({
 			pathname: router.pathname,
@@ -447,8 +447,8 @@ const Listado = ({
 	]);
 
 	useEffect(() => {
-		isMobile && addBodyClass('open-modal')
-	}, [isMobile])
+		isMobile && addBodyClass('open-modal');
+	}, [isMobile]);
 
 	if (firstLoading) {
 		return (
@@ -619,20 +619,15 @@ const Listado = ({
 									</div>
 								</div>
 							</div>
-							<div className='list-products__section'>
-								<h3>Recomendados</h3>
-								<div className='list-products__section__content'>
-									<CarouselProductsV2
-										typeQuery={'-ventas'}
-										responsiveElements={1}
-										slideDimensions={'25%'}
-										filter_available_store={filter_available_store}
-										categoria={categoria}
-										marca={marca}
-										q={q}
-									/>
-								</div>
-							</div>
+							<CarouselProductsV2
+								typeQuery={'-ventas'}
+								responsiveElements={1}
+								slideDimensions={'25%'}
+								filter_available_store={filter_available_store}
+								categoria={categoria}
+								marca={marca}
+								q={q}
+							/>
 						</div>
 					) : secondLoading ? (
 						<div className='list-products__products__loader'>
@@ -723,14 +718,6 @@ const Listado = ({
 
 					.list-products__items {
 						margin-top: 20px;
-					}
-
-					.list-products__section {
-						margin-top: 40px;
-					}
-
-					.list-products__section__content {
-						margin-top: 10px;
 					}
 
 					.list-products__sort__header {

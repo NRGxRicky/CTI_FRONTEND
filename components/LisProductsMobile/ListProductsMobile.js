@@ -118,7 +118,13 @@ const ListProductsMobile = ({
 										<div className='card__available'>
 											{!filter_available_store && (
 												<div>
-													<span>
+													<span
+														className={
+															producto.stock_total > 0
+																? 'text--green'
+																: 'text--red'
+														}
+													>
 														{producto.stock_total}{' '}
 														{producto.stock_total > 1
 															? 'disponibles'
@@ -128,7 +134,13 @@ const ListProductsMobile = ({
 											)}
 											{filter_available_store && (
 												<div>
-													<span>
+													<span
+														className={
+															producto.stock_total > 0
+																? 'text--green'
+																: 'text--red'
+														}
+													>
 														{producto.stock_puebla}{' '}
 														{producto.stock_puebla > 1
 															? 'disponibles'

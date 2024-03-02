@@ -11,25 +11,15 @@ import NewProduct from '../Icons/NewProduct';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import WindowDimensions from '../../hooks/WindowDimensions';
 
-
-const ListProducts = ({
-	results,
-	filter_available_store,
-}) => {
+const ListProducts = ({ results, filter_available_store }) => {
 	if (results === null) {
 		return null;
 	}
 
 	return (
-		<div
-			className={'products-list__container'}
-			id='products-list__container'
-		>
+		<div className={'products-list__container'} id='products-list__container'>
 			{results.map((producto) => (
-				<div
-					className='products-list__item'
-					key={producto.id}
-				>
+				<div className='products-list__item' key={producto.id}>
 					<Link href={`/${producto.slug}`} legacyBehavior>
 						<a>
 							<div className='card'>
@@ -74,7 +64,13 @@ const ListProducts = ({
 									<div className='card__available'>
 										{!filter_available_store && (
 											<div>
-												<span>
+												<span
+													className={
+														producto.stock_total > 0
+															? 'text--green'
+															: 'text--red'
+													}
+												>
 													{producto.stock_total}{' '}
 													{producto.stock_total > 1
 														? 'disponibles'
@@ -84,7 +80,13 @@ const ListProducts = ({
 										)}
 										{filter_available_store && (
 											<div>
-												<span>
+												<span
+													className={
+														producto.stock_total > 0
+															? 'text--green'
+															: 'text--red'
+													}
+												>
 													{producto.stock_puebla}{' '}
 													{producto.stock_puebla > 1
 														? 'disponibles'
@@ -140,7 +142,7 @@ const ListProducts = ({
 						width: 100%;
 						min-height: 325px;
 						height: auto;
-						max-height: 450px;
+						max-height: 500px;
 						position: relative;
 						padding: 8px 15px;
 						background-color: #ffffff;
@@ -172,6 +174,7 @@ const ListProducts = ({
 						width: 100%;
 						height: 20px;
 						font-size: 12px;
+						font-weight: 600;
 					}
 
 					.card__sku {
@@ -190,6 +193,8 @@ const ListProducts = ({
 					@media only screen and (min-width: 48em) {
 						.products-list__item {
 							flex: 0 0 calc(25% - 5px);
+							max-width: 24%;
+							min-height: 400px;
 						}
 						.card__image {
 							min-height: 180px;

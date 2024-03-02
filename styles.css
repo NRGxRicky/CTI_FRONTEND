@@ -72,6 +72,9 @@ a:hover {
 .text--green {
 	color: #00b517;
 }
+.text--red {
+	color: #ff002c;
+}
 
 .card:hover .card__title {
 	color: #ff002c;
@@ -1130,6 +1133,7 @@ input[type='search']::-webkit-search-results-decoration {
 	padding: 8px 15px;
 	background-color: #ffffff;
 	height: 100%;
+	line-height: 1.5;
 }
 
 .card__image {
