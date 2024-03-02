@@ -133,7 +133,7 @@ const ListProductsMobile = ({
 												</div>
 											)}
 											{filter_available_store && (
-												<div>
+												<div className='card__stock'>
 													<span
 														className={
 															producto.stock_total > 0
