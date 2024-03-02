@@ -1155,7 +1155,7 @@ input[type='search']::-webkit-search-results-decoration {
 .card__title {
 	width: 100%;
 	height: auto;
-	min-height: 100px;
+	min-height: 90px;
 	margin-bottom: 5px;
 }
 .card__available {
