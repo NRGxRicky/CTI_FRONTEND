@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import ToggleButon from '../ToggleButton/ToggleButon';
 import { useRouter } from 'next/router';
@@ -33,6 +33,7 @@ const FiltersOptionsMain = ({
 	const [attributesCounter, setAttributesCounter] = useState(5);
 	const [categoriesCounter, setCategoriesCounter] = useState(5);
 	const [brandsCounter, setBrandsCounter] = useState(5);
+	const [internalLoading, setInternalLoading] = useState(true);
 
 	const handdleAppendFilter = ({ target: { name, checked } }) => {
 		setFiltersActive((prevState) => ({ ...prevState, [name]: checked }));
@@ -104,6 +105,51 @@ const FiltersOptionsMain = ({
 		}
 		setFiltersActive((prevState) => ({ ...prevState, ...copyState }));
 	};
+
+	useEffect(() => {
+		setInternalLoading(true)
+	}, [q])
+	
+	useEffect(() => {
+		!loading && setInternalLoading(loading);
+	}, [loading])
+
+	if (internalLoading) {
+		return (
+			<div className='list-filters__container'>
+				<div className='list-filters__loader'>
+					<Preloader
+						use={TailSpin}
+						size={30}
+						strokeWidth={8}
+						strokeColor='#FF002C'
+						duration={900}
+					/>
+				</div>
+				<style jsx>
+					{`
+						.list-filters__loader {
+							padding: 30px 0;
+							width: 100%;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							position: relative;
+							height: 50vh;
+						}
+
+						.mobile__clear-fix__filters {
+							height: 54px;
+						}
+
+						.list-filters__container {
+							position: relative;
+						}
+					`}
+				</style>
+			</div>
+		);
+	}
 
 	return (
 		<div>
@@ -506,7 +552,7 @@ const FiltersOptionsMain = ({
 						max-width: 100%;
 						width: 100%;
 						height: 100%;
-					
+
 						padding: 0 20px;
 					}
 

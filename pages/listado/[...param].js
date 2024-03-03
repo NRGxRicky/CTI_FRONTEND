@@ -280,7 +280,6 @@ const Listado = ({
 
 					if (parseInt(pageActual) + 1 >= parseInt(pages)) {
 						setHasMore(false);
-
 					} else {
 						updatePage();
 					}
@@ -307,15 +306,11 @@ const Listado = ({
 		}
 	}, [filtersActiveMain]);
 
-	useEffect(() => {
-		setSecondLoading(true);
-	}, [filtersActive]);
-
 	const getFilters = async () => {
 		setLoadingFilters(true);
 		const filters = await fetchFilterData(
 			q,
-			order,
+			'-visitas',
 			1,
 			filter_available,
 			filter_available_store,
@@ -332,8 +327,16 @@ const Listado = ({
 		setBrandsAvailables(filters.brands);
 		setcategoriesAvailables(filters.categories);
 		setAttributesAvailables(filters.attributes);
-		setLoadingFilters(false);
 	};
+
+	useEffect(() => {
+		setLoadingFilters(false);
+	}, [itemsAvailables]);
+
+	useEffect(() => {
+		getFilters();
+	}, [q, filtersActive, filtersActiveMain]);
+
 
 	useEffect(() => {
 		setFirtsLoading(true);
@@ -341,8 +344,6 @@ const Listado = ({
 		setResults(data.results);
 		setTotalItems(data.count);
 		setPages(Math.ceil(data.count / itemsPerPage));
-		getFilters();
-
 		setLoading(false);
 
 		if (data.count > 10) {
@@ -430,7 +431,7 @@ const Listado = ({
 		parseInt(page) === 1 && sessionStorage.removeItem('scrollPosition');
 		parseInt(page) === 1 && setMobileScroll(0);
 		parseInt(page) === 1 && setLastUpdatedPage(1);
-
+		isMobile && setFirtsLoading(true)
 	}, [
 		q,
 		page,
@@ -772,6 +773,7 @@ const Listado = ({
 						min-height: 30px;
 						height: auto;
 						display: block;
+						line-height: 1.5;
 					}
 					.--no-results {
 						font-size: 16px;

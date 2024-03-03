@@ -1,12 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import ToggleButon from '../ToggleButton/ToggleButon';
 import { useRouter } from 'next/router';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
-import {
-	hideAll,
-} from '../../lib/features/showOpacityContainerSlide';
+import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 
 const FiltersOptios = ({
 	q,
@@ -33,6 +31,7 @@ const FiltersOptios = ({
 	const [showCategoriesContainer, setShowCategoriesContainer] = useState(false);
 	const [showAttributesContainer, setShowAttributesContainer] = useState(false);
 	const [attributesCounter, setAttributesCounter] = useState(10);
+	const [internalLoading, setInternalLoading] = useState(true);
 	const dispacth = useAppDispatch();
 	const mobileNavFilters = useAppSelector(
 		(state) => state.showOpacityContainerReducer.navMobileFilters
@@ -104,7 +103,7 @@ const FiltersOptios = ({
 	);
 
 	const handleFiltersToApply = async () => {
-		dispacth(hideAll())
+		dispacth(hideAll());
 		await router.replace({
 			pathname: router.pathname,
 			query: { ...router.query, ...filtersActive, page: 1 },
@@ -127,6 +126,14 @@ const FiltersOptios = ({
 		});
 	};
 
+	useEffect(() => {
+		setInternalLoading(true);
+	}, [q]);
+
+	useEffect(() => {
+		!loading && setInternalLoading(loading);
+	}, [loading]);
+
 	return (
 		<div>
 			<div
@@ -146,7 +153,7 @@ const FiltersOptios = ({
 						</div>
 						<div className='nav__filters__header-up__title'>Filtrar por</div>
 					</div>
-					{loading ? (
+					{internalLoading ? (
 						<div className='nav__filters__loading'>
 							<Preloader
 								use={TailSpin}

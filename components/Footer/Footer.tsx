@@ -256,7 +256,7 @@ const Footer: React.FC<FooterProps> = () => {
 				{`
 					.footer {
 						background-color: #ffffff;
-						margin-top: 0 !important;
+						margin-top: 20px !important;
 						border-top: 1px solid#eaeaea;
 					}
 
