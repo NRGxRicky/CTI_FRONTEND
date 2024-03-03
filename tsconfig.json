@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "target": "es5",
     "lib": [
       "dom",
       "dom.iterable",
@@ -8,23 +7,21 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "incremental": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
-    "incremental": true,
     "jsx": "preserve"
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "components/LoginMenu/LoginMenu.tsx", "hooks/auth.tsx"  ],
+  ],
   "exclude": [
     "node_modules"
   ]

@@ -1126,13 +1126,9 @@ input[type='search']::-webkit-search-results-decoration {
 
 .card {
 	width: 100%;
-	min-height: 325px;
-	height: auto;
-	max-height: 450px;
 	position: relative;
 	padding: 8px 15px;
 	background-color: #ffffff;
-	height: 100%;
 	line-height: 1.5;
 }
 
@@ -1160,7 +1156,7 @@ input[type='search']::-webkit-search-results-decoration {
 }
 .card__available {
 	width: 100%;
-	height: 20px;
+
 	font-size: 12px;
 	font-weight: 600;
 }
@@ -1174,12 +1170,7 @@ input[type='search']::-webkit-search-results-decoration {
 
 .card__info {
 	width: 100%;
-	margin-top: 7px;
 	font-size: 12px;
-}
-
-.card__stock {
-	min-height: 50px;
 }
 
 @media only screen and (min-width: 48em) {
