@@ -104,10 +104,12 @@ const FiltersOptios = ({
 
 	const handleFiltersToApply = async () => {
 		dispacth(hideAll());
-		await router.replace({
-			pathname: router.pathname,
-			query: { ...router.query, ...filtersActive, page: 1 },
-		});
+		await router.replace(
+			{
+				pathname: router.pathname,
+				query: { ...router.query, ...filtersActive, page: 1 },
+			},
+		);
 	};
 
 	const handleFiltersClear = async () => {
@@ -133,6 +135,12 @@ const FiltersOptios = ({
 	useEffect(() => {
 		!loading && setInternalLoading(loading);
 	}, [loading]);
+
+	useEffect(() => {
+		origin_brands.length > 0 && setShowBransContainer(true);
+		origin_categories.length > 0 && setShowCategoriesContainer(true);
+		origin_attributes.length > 0 && setShowAttributesContainer(true);
+	}, [])
 
 	return (
 		<div>

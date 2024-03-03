@@ -331,12 +331,18 @@ const Listado = ({
 
 	useEffect(() => {
 		setLoadingFilters(false);
-	}, [itemsAvailables]);
+	}, [
+		itemsAvailables,
+		itemsAvailableStore,
+		itemsAvailablesFreeShipping,
+		brandsAvailables,
+		categoriesAvailables,
+		attributesAvailables,
+	]);
 
 	useEffect(() => {
 		getFilters();
 	}, [q, filtersActive, filtersActiveMain]);
-
 
 	useEffect(() => {
 		setFirtsLoading(true);
@@ -431,7 +437,7 @@ const Listado = ({
 		parseInt(page) === 1 && sessionStorage.removeItem('scrollPosition');
 		parseInt(page) === 1 && setMobileScroll(0);
 		parseInt(page) === 1 && setLastUpdatedPage(1);
-		isMobile && setFirtsLoading(true)
+		isMobile && setFirtsLoading(true);
 	}, [
 		q,
 		page,

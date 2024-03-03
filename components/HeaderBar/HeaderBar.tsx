@@ -40,7 +40,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 	const [tempMobile, setTempMobile] = useState<boolean>(true);
 
 	const maxPage = 40;
-	const mobileMaxPage = 10;
+	const mobileMaxPage = 6;
 
 	const handleInputChange = (value: string) => {
 		setQueryInInput(value);

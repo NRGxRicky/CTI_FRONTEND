@@ -20,6 +20,9 @@ body {
 	background-color: #f9f9f9;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+	text-size-adjust: 100%;
 }
 
 @font-face {
