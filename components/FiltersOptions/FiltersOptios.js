@@ -438,6 +438,7 @@ const FiltersOptios = ({
 						display: none;
 						width: 100%;
 						max-width: 100%;
+						font-size: 14px;
 					}
 
 					.nav__filters__details__container {
