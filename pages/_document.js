@@ -34,11 +34,11 @@ class MyDocument extends Document {
 					/>
 					<meta
 						name='viewport'
-						content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'
+						content='width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, maximum-scale=1.0'
 					/>
 					<meta
 						name='description'
-						content='PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.'
+						content='Descubre la mejor experiencia de compra en tecnología en PCstore.mx. Encuentra cómputo, accesorios, hardware y más de las marcas más reconocidas. Compra protegida con envíos asegurados y pagos seguros. ¡Los mejores precios y productos te esperan!'
 					/>
 				</Head>
 				<body>
