@@ -12,9 +12,9 @@ html {
 	font-family: proxima-nova, sans-serif;
 	color: #474747;
 	height: -webkit-fill-available;
-	-webkit-text-size-adjust: 100%;
-	-ms-text-size-adjust: 100%;
-	text-size-adjust: 100%;
+	-webkit-text-size-adjust: none;
+	-ms-text-size-adjust: none;
+	text-size-adjust: none;
 }
 
 body {
