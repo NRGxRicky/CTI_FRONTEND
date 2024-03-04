@@ -33,10 +33,6 @@ class MyDocument extends Document {
 						crossOrigin=''
 					/>
 					<meta
-						name='viewport'
-						content='width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, maximum-scale=1.0'
-					/>
-					<meta
 						name='description'
 						content='Descubre la mejor experiencia de compra en tecnología en PCstore.mx. Encuentra cómputo, accesorios, hardware y más de las marcas más reconocidas. Compra protegida con envíos asegurados y pagos seguros. ¡Los mejores precios y productos te esperan!'
 					/>
