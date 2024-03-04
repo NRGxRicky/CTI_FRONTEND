@@ -9,12 +9,6 @@ function MyApp({ Component, pageProps }) {
 	return (
 		<>
 			<GoogleAnalytics />
-			<Head>
-				<meta
-					name='viewport'
-					content='width=device-width, maximum-scale=1, minimum-scale=1, initial-scale=1, user-scalable=no, shrink-to-fit=no'
-				/>
-			</Head>
 			<AuthProvider>
 				<Layout>
 					<Component {...pageProps} />
