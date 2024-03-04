@@ -1,9 +1,9 @@
-import React from "react";
-import Document, { Html, Head, Main, NextScript } from "next/document";
+import React from 'react';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
 
 class MyDocument extends Document {
-  render() {
-    return (
+	render() {
+		return (
 			<Html>
 				<Head>
 					<link
@@ -32,7 +32,10 @@ class MyDocument extends Document {
 						rel='preload'
 						crossOrigin=''
 					/>
-					<meta name='viewport' content='width=device-width' />
+					<meta
+						name='viewport'
+						content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'
+					/>
 					<meta
 						name='description'
 						content='PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.'
@@ -44,7 +47,7 @@ class MyDocument extends Document {
 				</body>
 			</Html>
 		);
-  }
+	}
 }
 
 export default MyDocument;
