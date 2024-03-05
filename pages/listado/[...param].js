@@ -202,7 +202,7 @@ const Listado = ({
 	const handleSort = async (order) => {
 		setInternalOrder(order);
 		setSecondLoading(true);
-		dispacth(hideAll);
+		dispacth(hideAll());
 		await router.replace({
 			pathname: router.pathname,
 			query: { ...router.query, order: order },
@@ -210,15 +210,8 @@ const Listado = ({
 	};
 
 	const handleFiltersClear = async () => {
-		dispacth(hideAll);
-		setFiltersActiveMain({
-			brands: [],
-			categories: [],
-			attributes: [],
-			filter_available: false,
-			filter_available_store: false,
-			filter_free_shipping: false,
-		});
+		dispacth(hideAll());
+
 		await router.replace({
 			pathname: router.pathname,
 			query: { q, param: [marca, categoria] },
@@ -291,7 +284,7 @@ const Listado = ({
 	};
 
 	const handleFiltersToApply = async () => {
-		dispacth(hideAll);
+		dispacth(hideAll());
 
 		await router.replace({
 			pathname: router.pathname,

@@ -35,7 +35,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 	const router = useRouter();
 	const { q } = router.query;
 	const [queryInInput, setQueryInInput] = useState<string | undefined>(
-		undefined
 	);
 	const [tempMobile, setTempMobile] = useState<boolean>(true);
 
@@ -56,28 +55,22 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		setQueryInInput(undefined);
-		const pageSize = tempMobile ? mobileMaxPage : maxPage;
+		if (queryInInput) {
+			const pageSize = tempMobile ? mobileMaxPage : maxPage;
+			await router.replace({
+				pathname: '/listado/all/index',
+				query: { q: queryInInput, page_size: pageSize, page: 1 },
+			});
 
-		await router.replace({
-			pathname: '/listado/all/index',
-			query: { q: queryInInput, page_size: pageSize, page: 1 },
-		});
-
-		dispacth(hideAll());
-		setQueryInInput(undefined);
-		textInput?.current?.blur();
+			dispacth(hideAll());
+			textInput?.current?.blur();
+		}
 	};
 
 	const focusSearchInEnd = (e: ChangeEvent<HTMLInputElement>) => {
 		setQueryInInput(e.target.value);
 		dispacth(showOpacity());
-		const tempValue = e.target.value;
-		e.target.value = '';
-		e.target.value = tempValue;
 	};
-
-	const focusSearchBlur = (e: ChangeEvent<HTMLInputElement>) => {};
 
 	const handleMobileSearch = () => {
 		dispacth(showSearchBar());
@@ -127,7 +120,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 								<div className='header-bar__form-container'>
 									<input
 										onFocus={focusSearchInEnd}
-										onBlur={focusSearchBlur}
 										onChange={(e) => handleInputChange(e.target.value)}
 										className='header-bar__input'
 										type='search'
@@ -263,7 +255,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 							<input
 								ref={textInput}
 								onFocus={focusSearchInEnd}
-								onChange={(e) => setQueryInInput(e.target.value)}
+								onChange={(e) => handleInputChange(e.target.value)}
 								className='header-bar__input'
 								type='search'
 								name='q'

@@ -291,7 +291,7 @@ const FiltersOptios = ({
 																{category.nombre.toUpperCase()}
 															</div>
 														) : (
-															category.nombre !== '' && (
+															category.slug !== 'index-' && (
 																<div
 																	key={category.id}
 																	className='nav__filters__option__item'
@@ -303,8 +303,8 @@ const FiltersOptios = ({
 																	>
 																		<ToggleButon
 																			tchecked={origin_categories.some(
-																				(category) =>
-																					category.endsWith(
+																				(categoryFilter) =>
+																					categoryFilter.endsWith(
 																						String(category.slug)
 																					)
 																			)}

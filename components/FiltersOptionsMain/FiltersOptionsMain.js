@@ -225,28 +225,48 @@ const FiltersOptionsMain = ({
 									{Capitalize(brand)} <span className='close'></span>
 								</span>
 							))}
+
 						{Object.keys(categoriesAvailables).length > 0 &&
 							categoriesAvailables.map((category) => {
-								return Object.entries(category.childrens)
-									.filter(([key, value]) =>
-										origin_categories.some((category) =>
-											category.endsWith(String(value.ids))
-										)
-									)
-									.map(([key, value]) => (
-										<span
-											key={key}
-											onClick={() => {
-												functionAppendDictionaryCategoryFilter(
-													String(value.ids),
-													false
-												);
-											}}
-										>
-											{Capitalize(value.nombre)} <span className='close'></span>
-										</span>
-									));
+								return Object.entries(category.childrens).length > 0
+									? Object.entries(category.childrens)
+											.filter(([key, value]) =>
+												origin_categories.some((originCategory) =>
+													originCategory.endsWith(String(value.ids))
+												)
+											)
+											.map(([key, value]) => (
+												<span
+													key={key}
+													onClick={() => {
+														functionAppendDictionaryCategoryFilter(
+															String(value.ids),
+															false
+														);
+													}}
+												>
+													{Capitalize(value.nombre)}{' '}
+													<span className='close'></span>
+												</span>
+											))
+									: origin_categories.some((categoryFilter) =>
+											categoryFilter.endsWith(String(category.slug))
+									  ) && (
+											<span
+												key={category.id}
+												onClick={() => {
+													functionAppendDictionaryCategoryFilter(
+														String(category.slug),
+														false
+													);
+												}}
+											>
+												{Capitalize(category.nombre)}{' '}
+												<span className='close'></span>
+											</span>
+									  );
 							})}
+
 						{Object.entries(attributesAvailables).map(
 							([attribute, attribute_value]) => {
 								return Object.entries(attribute_value)
@@ -399,7 +419,7 @@ const FiltersOptionsMain = ({
 															{category.nombre.toUpperCase()}
 														</div>
 													) : (
-														category.nombre !== '' && (
+														category.slug !== 'index-' && (
 															<div
 																key={category.id}
 																className='nav__filters__option__item'
@@ -409,8 +429,10 @@ const FiltersOptionsMain = ({
 																>
 																	<ToggleButon
 																		tchecked={origin_categories.some(
-																			(category) =>
-																				category.endsWith(String(category.slug))
+																			(categoryFilter) =>
+																				categoryFilter.endsWith(
+																					String(category.slug)
+																				)
 																		)}
 																		tonChange={
 																			handdleAppendDictionaryCategoryFilter
