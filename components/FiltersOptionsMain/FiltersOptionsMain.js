@@ -107,12 +107,12 @@ const FiltersOptionsMain = ({
 	};
 
 	useEffect(() => {
-		setInternalLoading(true)
-	}, [q])
-	
+		setInternalLoading(true);
+	}, [q]);
+
 	useEffect(() => {
 		!loading && setInternalLoading(loading);
-	}, [loading])
+	}, [loading]);
 
 	if (internalLoading) {
 		return (
@@ -225,25 +225,28 @@ const FiltersOptionsMain = ({
 									{Capitalize(brand)} <span className='close'></span>
 								</span>
 							))}
-						{categoriesAvailables.map((category) => {
-							return Object.entries(category.childrens)
-								.filter(([key, value]) =>
-									origin_categories.includes(String(value.ids))
-								)
-								.map(([key, value]) => (
-									<span
-										key={key}
-										onClick={() => {
-											functionAppendDictionaryCategoryFilter(
-												String(value.ids),
-												false
-											);
-										}}
-									>
-										{Capitalize(value.nombre)} <span className='close'></span>
-									</span>
-								));
-						})}
+						{Object.keys(categoriesAvailables).length > 0 &&
+							categoriesAvailables.map((category) => {
+								return Object.entries(category.childrens)
+									.filter(([key, value]) =>
+										origin_categories.some((category) =>
+											category.endsWith(String(value.ids))
+										)
+									)
+									.map(([key, value]) => (
+										<span
+											key={key}
+											onClick={() => {
+												functionAppendDictionaryCategoryFilter(
+													String(value.ids),
+													false
+												);
+											}}
+										>
+											{Capitalize(value.nombre)} <span className='close'></span>
+										</span>
+									));
+							})}
 						{Object.entries(attributesAvailables).map(
 							([attribute, attribute_value]) => {
 								return Object.entries(attribute_value)
@@ -308,7 +311,7 @@ const FiltersOptionsMain = ({
 							</div>
 						</div>
 						{marca === 'all' && (
-							<div className='nav__filters__section nav__filters__sectiion__brands'>
+							<div className='nav__filters__section nav__filters__section__brands'>
 								<div
 									className='nav__filters__header__container'
 									onClick={() => setShowBransContainer(!showBransContainer)}
@@ -358,80 +361,115 @@ const FiltersOptionsMain = ({
 								</div>
 							</div>
 						)}
-						<div className='nav__filters__section nav__filters__sectiion__categories'>
-							<div
-								className='nav__filters__header__container'
-								onClick={() =>
-									setShowCategoriesContainer(!showCategoriesContainer)
-								}
-							>
-								<div className='nav__filters__header__title'>Categoría</div>
-								<div className='nav__filters__header__icon'>
-									<i
-										className={
-											showCategoriesContainer
-												? 'arrow arrow--up'
-												: 'arrow arrow--down'
-										}
-									></i>
+						{Object.keys(categoriesAvailables).length > 0 && (
+							<div className='nav__filters__section nav__filters__section__categories'>
+								<div
+									className='nav__filters__header__container'
+									onClick={() =>
+										setShowCategoriesContainer(!showCategoriesContainer)
+									}
+								>
+									<div className='nav__filters__header__title'>Categoría</div>
+									<div className='nav__filters__header__icon'>
+										<i
+											className={
+												showCategoriesContainer
+													? 'arrow arrow--up'
+													: 'arrow arrow--down'
+											}
+										></i>
+									</div>
+								</div>
+								<div
+									className='nav__filters'
+									style={{
+										display: showCategoriesContainer ? 'block' : 'none',
+									}}
+								>
+									{categoriesAvailables
+										.slice(0, categoriesCounter)
+										.map((category) => {
+											return (
+												<div
+													key={category.id}
+													className='nav__filters__option__item'
+												>
+													{Object.keys(category.childrens).length > 0 ? (
+														<div className='nav__filters__sub-title'>
+															{category.nombre.toUpperCase()}
+														</div>
+													) : (
+														category.nombre !== '' && (
+															<div
+																key={category.id}
+																className='nav__filters__option__item'
+															>
+																<div
+																	className={category.count < 1 && 'text--off'}
+																>
+																	<ToggleButon
+																		tchecked={origin_categories.some(
+																			(category) =>
+																				category.endsWith(String(category.slug))
+																		)}
+																		tonChange={
+																			handdleAppendDictionaryCategoryFilter
+																		}
+																		tname={category.slug}
+																		tdisabled={
+																			category.count > 0 ? false : true
+																		}
+																		tcontent={`${Capitalize(
+																			category.nombre
+																		)} (${category.count})`}
+																	/>
+																</div>
+															</div>
+														)
+													)}
+													{Object.entries(category.childrens).map(
+														([key, value]) => (
+															<div
+																key={key}
+																className='nav__filters__option__item'
+															>
+																<div className={value.count < 1 && 'text--off'}>
+																	<ToggleButon
+																		tchecked={origin_categories.some(
+																			(category) =>
+																				category.endsWith(String(value.ids))
+																		)}
+																		tonChange={
+																			handdleAppendDictionaryCategoryFilter
+																		}
+																		tname={value.ids}
+																		tdisabled={value.count > 0 ? false : true}
+																		tcontent={`${Capitalize(value.nombre)} (${
+																			value.count
+																		})`}
+																	/>
+																</div>
+															</div>
+														)
+													)}
+												</div>
+											);
+										})}
+									{categoriesCounter <
+										Object.entries(categoriesAvailables).length && (
+										<div
+											className='nav__show-more text--off'
+											onClick={() =>
+												setCategoriesCounter(categoriesCounter + 5)
+											}
+										>
+											<a>MOSTRAR MÁS...</a>
+										</div>
+									)}
 								</div>
 							</div>
-							<div
-								className='nav__filters'
-								style={{
-									display: showCategoriesContainer ? 'block' : 'none',
-								}}
-							>
-								{categoriesAvailables
-									.slice(0, categoriesCounter)
-									.map((category) => {
-										return (
-											<div
-												key={category.id}
-												className='nav__filters__option__item'
-											>
-												<div className='nav__filters__sub-title'>
-													{category.nombre.toUpperCase()}
-												</div>
-												{Object.entries(category.childrens).map(
-													([key, value]) => (
-														<div
-															key={key}
-															className='nav__filters__option__item'
-														>
-															<div className={value.count < 1 && 'text--off'}>
-																<ToggleButon
-																	tchecked={origin_categories.includes(
-																		String(value.ids)
-																	)}
-																	tonChange={
-																		handdleAppendDictionaryCategoryFilter
-																	}
-																	tname={value.ids}
-																	tdisabled={value.count > 0 ? false : true}
-																	tcontent={`${Capitalize(value.nombre)} (${
-																		value.count
-																	})`}
-																/>
-															</div>
-														</div>
-													)
-												)}
-											</div>
-										);
-									})}
-								{categoriesCounter <
-									Object.entries(categoriesAvailables).length && (
-									<div
-										className='nav__show-more text--off'
-										onClick={() => setCategoriesCounter(categoriesCounter + 5)}
-									>
-										<a>MOSTRAR MÁS...</a>
-									</div>
-								)}
-							</div>
-						</div>
-						<div className='nav__filters__section nav__filters__sectiion__attributes'>
+						)}
+						<div className='nav__filters__section nav__filters__section__attributes'>
 							<div
 								className='nav__filters__header__container'
 								onClick={() =>
