@@ -294,7 +294,6 @@ const FiltersOptios = ({
 															category.slug !== 'index-' && (
 																<div
 																	key={category.id}
-																	className='nav__filters__option__item'
 																>
 																	<div
 																		className={

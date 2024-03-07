@@ -57,17 +57,18 @@ const ToggleButon = ({
 
 					.toggle__container {
 						display: flex;
-						line-height: 2;
+						height: 28px;
+						align-items: center;
 					}
 
 					.toggle {
-						height: 30px;
+						height: 100%;
 						width: 100%;
-						line-height: 30px;
 						display: flex;
 						align-items: center;
-						flex: 0 0 15%;
+						position: relative;
 					}
+
 					.switch {
 						position: relative;
 						display: inline-block;
@@ -76,6 +77,7 @@ const ToggleButon = ({
 						outline: none;
 						margin-right: 10px;
 						cursor: pointer;
+						margin-top: 3px;
 					}
 					.switch .checkbox {
 						display: none;

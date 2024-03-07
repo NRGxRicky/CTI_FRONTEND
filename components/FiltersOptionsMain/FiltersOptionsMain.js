@@ -420,10 +420,7 @@ const FiltersOptionsMain = ({
 														</div>
 													) : (
 														category.slug !== 'index-' && (
-															<div
-																key={category.id}
-																className='nav__filters__option__item'
-															>
+															<div key={category.id}>
 																<div
 																	className={category.count < 1 && 'text--off'}
 																>
