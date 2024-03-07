@@ -393,6 +393,10 @@ const Footer: React.FC<FooterProps> = () => {
 						.toggle-button {
 							display: block;
 						}
+
+						.container {
+							margin-top: 0 !important;
+						}
 					}
 					@media only screen and (min-width: 48em) {
 						.footer__column__container {
