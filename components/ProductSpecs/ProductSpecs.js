@@ -53,10 +53,11 @@ const ProductSpecs = ({ item = { specs: [] } }) => {
 					.description {
 						width: 100%;
 						text-align: justify;
+						margin-bottom: 20px;
 					}
 
 					.description span {
-						line-height: 1.4;
+						line-height: 1.5;
 					}
 
 					.specs__title,
@@ -85,6 +86,13 @@ const ProductSpecs = ({ item = { specs: [] } }) => {
 					.specs__table td {
 						padding: 20px 0 20px 10px;
 					}
+
+					.product__content {
+						background-color: #ffffff;
+						padding: 10px 20px 30px 20px;
+						border: 1px solid #eaeaea;
+					}
+					
 				`}
 			</style>
 		</div>

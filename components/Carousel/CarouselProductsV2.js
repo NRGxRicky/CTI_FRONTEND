@@ -17,6 +17,7 @@ const CarouselProductsV2 = ({
 	marca,
 	q,
 	exclude = null,
+	title
 }) => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
@@ -101,7 +102,7 @@ const CarouselProductsV2 = ({
 	if (data.results.length >= 4) {
 		return (
 			<div className='list-products__section'>
-				<h3>Recomendados</h3>
+				{title}
 				<div className='list-products__section__content'>
 					<div className='v2__embla'>
 						<div className='v2__embla__viewport' ref={emblaRef}>
@@ -126,6 +127,7 @@ const CarouselProductsV2 = ({
 																	alt={Capitalize(producto.titulo)}
 																	draggable='false'
 																	sizes='auto'
+																	loading='lazy'
 																/>
 																<NewProduct date={producto.created} />
 															</div>
@@ -254,7 +256,7 @@ const CarouselProductsV2 = ({
 						</div>
 					</div>
 				</div>
-				<style jsx global>
+				<style jsx>
 					{`
 						.list-products__section {
 							margin-top: 20px;

@@ -90,7 +90,7 @@ const Home = () => {
 				<InfoPageFooter />
 			</div>
 			<Footer />
-			<style jsx global>
+			<style jsx>
 				{`
 					.section {
 						position: relative;

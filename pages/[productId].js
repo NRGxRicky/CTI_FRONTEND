@@ -65,12 +65,13 @@ const ProductItem = ({ item }) => {
 				/>
 				{item.compatibleProductos.length > 0 && (
 					<div className='product__recommended'>
-						<h2>Productos relacionados</h2>
-						<CarouselProductsRelated data={item.compatibleProductos} />
+						<CarouselProductsRelated
+							data={item.compatibleProductos}
+							title={<h2>Productos relacionados</h2>}
+						/>
 					</div>
 				)}
 				<div className='product__recommended'>
-					<h2>También te puede interesar</h2>
 					<CarouselProductsV3
 						typeQuery={'-visitas'}
 						responsiveElements={1}
@@ -81,29 +82,30 @@ const ProductItem = ({ item }) => {
 						q={''}
 						exclude={item.id}
 						mobile={tempMobile}
+						title={<h2>También te puede interesar</h2>}
 					/>
 				</div>
 
 				<div className='product__body'>
 					<div className='product__primary__container'>
-						<ProductSpecs item={item} />
+						{(item.descripcion ||
+							(item.specs && Object.keys(item.specs).length > 0)) && (
+							<ProductSpecs item={item} />
+						)}
 					</div>
 					<div className='product__secondary__container'>
-						<div className='product__categories__recommended'>
-							<h2>Categorías que te podrían interesar</h2>
-							<BestCategoriesMini parentCategorie={item.parent__slug} />
-						</div>
-						<div className='product__same-brand__recommended'>
-							<BrandSimilarMini
-								categoria={item.categoria}
-								marca={item.marca}
-								item={item}
-							/>
-						</div>
+						<BestCategoriesMini
+							parentCategorie={item.parent__slug}
+							title={<h2>Categorías que te podrían interesar</h2>}
+						/>
+						<BrandSimilarMini
+							categoria={item.categoria}
+							marca={item.marca}
+							item={item}
+						/>
 					</div>
 				</div>
 				<div className='product__recommended__bk__off'>
-					<h2>Otros clientes que vieron este producto también compraron</h2>
 					{!tempMobile ? (
 						<CarouselProductsV2
 							typeQuery={'-ventas'}
@@ -115,6 +117,11 @@ const ProductItem = ({ item }) => {
 							q={''}
 							exclude={item.id}
 							mobile={tempMobile}
+							title={
+								<h2>
+									Otros clientes que vieron este producto también compraron
+								</h2>
+							}
 						/>
 					) : (
 						<CarouselProductsV3
@@ -127,6 +134,11 @@ const ProductItem = ({ item }) => {
 							q={''}
 							exclude={item.id}
 							mobile={tempMobile}
+							title={
+								<h3>
+									Otros clientes que vieron este producto también compraron
+								</h3>
+							}
 						/>
 					)}
 				</div>
@@ -134,12 +146,6 @@ const ProductItem = ({ item }) => {
 			<Footer />
 			<style jsx>
 				{`
-					.product__same-brand__recommended,
-					.product__categories__recommended {
-						background-color: #ffffff;
-						padding: 20px;
-						border: 1px solid #eaeaea;
-					}
 					.product__same-brand__recommended {
 						margin-top: 20px;
 					}
@@ -157,9 +163,6 @@ const ProductItem = ({ item }) => {
 					}
 					.product__primary__container {
 						flex-basis: calc(65% - 10px);
-						background-color: #ffffff;
-						padding: 10px 20px;
-						border: 1px solid #eaeaea;
 					}
 
 					.product__secondary__container {
@@ -176,13 +179,6 @@ const ProductItem = ({ item }) => {
 
 					.product__recommended__bk__off h2 {
 						line-height: 3;
-					}
-
-					.product__recommended {
-						margin-top: 20px;
-						background-color: #ffffff;
-						padding-top: 20px;
-						border: 1px solid #eaeaea;
 					}
 
 					.container {

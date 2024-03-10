@@ -13,6 +13,7 @@ const CarouselProductsRelated = ({
 	mobile = false,
 	data = [],
 	filter_available_store = false,
+	title,
 }) => {
 	const [prevButton, setPrevButton] = useState(true);
 	const [nextButton, setNextButton] = useState(true);
@@ -79,16 +80,19 @@ const CarouselProductsRelated = ({
 
 	useEffect(() => {
 		let temp_dict = ['Todos'];
-		data.map((producto) => {
-			if (!temp_dict.includes(producto.categoria.name)) {
-				temp_dict.push(producto.categoria.name);
-			}
-		});
+		data
+			.filter((p) => p.stock_total > 0)
+			.map((producto) => {
+				if (!temp_dict.includes(producto.categoria.name)) {
+					temp_dict.push(producto.categoria.name);
+				}
+			});
 		setSortData(temp_dict);
 	}, [data]);
 
 	return (
-		<div>
+		<div className='products__related'>
+			<div className='products__related__title'>{title}</div>
 			<div className='embla__categories'>
 				{sortData.map((categorie, index) =>
 					categorie === currentShow ? (
@@ -112,7 +116,9 @@ const CarouselProductsRelated = ({
 						{data
 							.filter(
 								(p) =>
-									p.categoria.name === currentShow || currentShow === 'Todos'
+									(p.categoria.name === currentShow ||
+										currentShow === 'Todos') &&
+									p.stock_total > 0
 							)
 							.map((producto) => (
 								<div className='embla__slide' key={producto.id}>
@@ -131,6 +137,7 @@ const CarouselProductsRelated = ({
 															style={{ objectFit: 'contain' }}
 															alt={Capitalize(producto.titulo)}
 															draggable='false'
+															sizes='auto'
 														/>
 														<NewProduct date={producto.created} />
 													</div>
@@ -166,7 +173,13 @@ const CarouselProductsRelated = ({
 													<div className='card__carousel__available'>
 														{!filter_available_store && (
 															<div>
-																<span>
+																<span
+																	className={
+																		producto.stock_total > 0
+																			? 'text--green'
+																			: 'text--red'
+																	}
+																>
 																	{producto.stock_total}{' '}
 																	{producto.stock_total > 1
 																		? 'disponibles'
@@ -242,14 +255,14 @@ const CarouselProductsRelated = ({
 					</button>
 				</div>
 			</div>
-			<style jsx global>
+			<style jsx>
 				{`
 					.embla__filter-active {
 						cursor: default;
 						border-bottom: 2px solid;
 					}
 					.embla__categories span {
-						padding: 10px 0 5px;
+						padding: 10px 0px 5px;
 						margin: 0 10px;
 						cursor: pointer;
 					}
@@ -260,17 +273,18 @@ const CarouselProductsRelated = ({
 						align-content: center;
 						line-height: 2;
 						overflow-y: auto;
+						padding-left: 10px;
 					}
 					.embla {
 						margin-top: 20px;
 						width: 100%;
 						max-height: 350px;
 						position: relative;
+						border: 0 !important;
 					}
 
 					.embla__container {
 						display: flex;
-
 						align-items: center;
 						width: 100%;
 						position: relative;
@@ -367,18 +381,21 @@ const CarouselProductsRelated = ({
 						width: 100%;
 						font-weight: 600;
 						font-size: 16px;
+						line-height: 2;
 					}
 
 					.card__carousel__title {
 						width: 100%;
-						height: auto;
+
 						margin-bottom: 5px;
 						font-weight: 600;
+						line-height: 1.5;
 					}
 					.card__carousel__available {
 						width: 100%;
 						height: 20px;
 						font-size: 12px;
+						font-weight: 600;
 					}
 
 					.card__carousel__sku {
@@ -392,6 +409,17 @@ const CarouselProductsRelated = ({
 						width: 100%;
 						margin-top: 7px;
 						font-size: 12px;
+					}
+
+					.products__related {
+						background-color: #ffffff;
+						border: 1px solid #eaeaea;
+						margin-top: 20px;
+					}
+
+					.products__related__title {
+						margin-top: 20px;
+						margin-left: 10px;
 					}
 
 					@media only screen and (min-width: 48em) {

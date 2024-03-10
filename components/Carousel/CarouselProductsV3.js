@@ -18,6 +18,7 @@ const CarouselProductsV3 = ({
 	marca,
 	q,
 	exclude = null,
+	title
 }) => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
@@ -125,8 +126,9 @@ const CarouselProductsV3 = ({
 		);
 	}
 	return (
-		<div>
+		data.results.length > 0 && (
 			<div className='embla'>
+				<div className='embla__title'>{title}</div>
 				<div className='embla__viewport' ref={emblaRef}>
 					<div className='embla__container'>
 						{data.results
@@ -148,6 +150,7 @@ const CarouselProductsV3 = ({
 															style={{ objectFit: 'contain' }}
 															alt={Capitalize(producto.titulo)}
 															draggable='false'
+															sizes='auto'
 														/>
 														<NewProduct date={producto.created} />
 													</div>
@@ -183,7 +186,13 @@ const CarouselProductsV3 = ({
 													<div className='card__carousel__available'>
 														{!filter_available_store && (
 															<div>
-																<span>
+																<span
+																	className={
+																		producto.stock_total > 0
+																			? 'text--green'
+																			: 'text--red'
+																	}
+																>
 																	{producto.stock_total}{' '}
 																	{producto.stock_total > 1
 																		? 'disponibles'
@@ -258,154 +267,162 @@ const CarouselProductsV3 = ({
 						</svg>
 					</button>
 				</div>
-			</div>
-			<style jsx global>
-				{`
-					.embla {
-						margin-top: 20px;
-						width: 100%;
-						max-height: 350px;
-						position: relative;
-						height: 300px;
-					}
-
-					.embla__container {
-						display: flex;
-						align-items: center;
-						width: 100%;
-						position: relative;
-					}
-
-					.embla__viewport {
-						width: 100%;
-						overflow: hidden;
-						position: relative;
-						height: 100%;
-					}
-
-					.embla__slide {
-						position: relative;
-						flex: 1 0 46%;
-					}
-
-					.carousel__button {
-						border-radius: 0 4px 4px 0;
-						justify-content: space-around;
-						position: absolute;
-						top: calc(50% - 52px);
-						width: 47px;
-						height: 104px;
-						box-shadow: 0 1px 5px 0 rgb(0 0 0 / 11%);
-						transition: opacity 0.2s ease-in;
-						display: flex;
-						align-items: center;
-						cursor: pointer;
-						text-decoration: none;
-						opacity: 0;
-					}
-
-					.button__nav {
-						background: none;
-						color: inherit;
-						border: none;
-						padding: 0;
-						font: inherit;
-						cursor: pointer;
-						user-select: none;
-					}
-
-					.carousel__button-prev {
-						left: 0;
-					}
-
-					.carousel__button-next {
-						right: 0;
-						transform: rotate(180deg);
-					}
-
-					.carousel__button--color-ligth {
-						background: #ffffff;
-						fill: #ff002c;
-					}
-
-					.carousel__button--color-ligth:hover,
-					.carcarousel__button--color-ligth:active {
-						background: #ffffff;
-					}
-
-					@media only screen and (min-width: 48em) {
-						.embla:hover .carousel__button {
-							opacity: 1;
+				<style jsx>
+					{`
+						.embla {
+							margin-top: 20px;
+							width: 100%;
+							max-height: 450px;
+							position: relative;
+							height: auto;
+							background-color: #ffffff;
+							border: 1px solid #eaeaea;
 						}
-					}
 
-					.card__carousel {
-						width: 100%;
-						min-height: 170px;
-						height: auto;
-						max-height: 300px;
-						position: relative;
-						padding: 0 20px;
-						align-items: center;
-						padding: 0 10px;
-					}
+						.embla__title {
+							padding: 20px 10px;
+						}
 
-					.card__carousel__image {
-						align-self: center;
-						position: relative;
-						max-width: 100%;
-						width: auto;
-						min-height: 140px;
-						height: 140px;
-					}
+						.embla__container {
+							display: flex;
+							align-items: center;
+							width: 100%;
+							position: relative;
+						}
 
-					.card__carousel__content {
-						padding: 5px;
-					}
+						.embla__viewport {
+							width: 100%;
+							overflow: hidden;
+							position: relative;
+							height: 100%;
+						}
 
-					.card__carousel__price {
-						width: 100%;
-						font-weight: 600;
-						font-size: 16px;
-					}
-
-					.card__carousel__title {
-						width: 100%;
-						height: auto;
-						margin-bottom: 5px;
-						font-weight: 600;
-					}
-					.card__carousel__available {
-						width: 100%;
-						height: 20px;
-						font-size: 12px;
-					}
-
-					.card__carousel__sku {
-						height: 30px;
-						width: 100%;
-						margin-top: 4px;
-						font-size: 12px;
-					}
-
-					.card__carousel__info {
-						width: 100%;
-						margin-top: 7px;
-						font-size: 12px;
-					}
-
-					@media only screen and (min-width: 48em) {
 						.embla__slide {
-							flex: 0 0 220px;
+							position: relative;
+							flex: 1 0 46%;
 						}
+
+						.carousel__button {
+							border-radius: 0 4px 4px 0;
+							justify-content: space-around;
+							position: absolute;
+							top: calc(50% - 52px);
+							width: 47px;
+							height: 104px;
+							box-shadow: 0 1px 5px 0 rgb(0 0 0 / 11%);
+							transition: opacity 0.2s ease-in;
+							display: flex;
+							align-items: center;
+							cursor: pointer;
+							text-decoration: none;
+							opacity: 0;
+						}
+
+						.button__nav {
+							background: none;
+							color: inherit;
+							border: none;
+							padding: 0;
+							font: inherit;
+							cursor: pointer;
+							user-select: none;
+						}
+
+						.carousel__button-prev {
+							left: 0;
+						}
+
+						.carousel__button-next {
+							right: 0;
+							transform: rotate(180deg);
+						}
+
+						.carousel__button--color-ligth {
+							background: #ffffff;
+							fill: #ff002c;
+						}
+
+						.carousel__button--color-ligth:hover,
+						.carcarousel__button--color-ligth:active {
+							background: #ffffff;
+						}
+
+						@media only screen and (min-width: 48em) {
+							.embla:hover .carousel__button {
+								opacity: 1;
+							}
+						}
+
+						.card__carousel {
+							width: 100%;
+							min-height: 170px;
+							height: auto;
+							max-height: 300px;
+							position: relative;
+							padding: 0 20px;
+							align-items: center;
+							padding: 0 10px;
+						}
+
 						.card__carousel__image {
+							align-self: center;
+							position: relative;
+							max-width: 100%;
+							width: auto;
 							min-height: 140px;
 							height: 140px;
 						}
-					}
-				`}
-			</style>
-		</div>
+
+						.card__carousel__content {
+							padding: 5px;
+						}
+
+						.card__carousel__price {
+							width: 100%;
+							font-weight: 600;
+							font-size: 16px;
+							line-height: 1.5;
+						}
+
+						.card__carousel__title {
+							width: 100%;
+							height: auto;
+							margin-bottom: 5px;
+							font-weight: 600;
+						}
+						.card__carousel__available {
+							width: 100%;
+							height: 20px;
+							font-size: 12px;
+							font-weight: 600;
+						}
+
+						.card__carousel__sku {
+							height: 30px;
+							width: 100%;
+							margin-top: 4px;
+							font-size: 12px;
+						}
+
+						.card__carousel__info {
+							width: 100%;
+							margin-top: 7px;
+							font-size: 12px;
+						}
+
+						@media only screen and (min-width: 48em) {
+							.embla__slide {
+								flex: 0 0 220px;
+							}
+							.card__carousel__image {
+								min-height: 140px;
+								height: 140px;
+							}
+						}
+					`}
+				</style>
+			</div>
+		)
 	);
 };
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import Capitalize from '../../hooks/CapitalizeTitle';
 
 const InfoMini = () => {
 	return (
@@ -14,6 +15,7 @@ const InfoMini = () => {
 							fill
 							style={{ objectFit: 'contain' }}
 							draggable='false'
+							alt={Capitalize('Return')}
 						/>
 					</div>
 					<div className='info__mini__label'>
@@ -34,6 +36,7 @@ const InfoMini = () => {
 							fill
 							style={{ objectFit: 'contain' }}
 							draggable='false'
+							alt={Capitalize('Secure Payments')}
 						/>
 					</div>
 					<div className='info__mini__label'>

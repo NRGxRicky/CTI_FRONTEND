@@ -84,7 +84,7 @@ const CarouselBrand = ({
 	if (loading) {
 		return (
 			<div className='embla'>
-				<style jsx global>
+				<style jsx>
 					{`
 						.embla {
 							position: relative;
@@ -168,7 +168,7 @@ const CarouselBrand = ({
 					</button>
 				</div>
 			</div>
-			<style jsx global>
+			<style jsx>
 				{`
 					.brand__imagen {
 						position: relative;

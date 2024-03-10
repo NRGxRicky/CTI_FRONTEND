@@ -268,7 +268,7 @@ const CarouselProducts = ({
 					</button>
 				</div>
 			</div>
-			<style jsx global>
+			<style jsx>
 				{`
 					.embla {
 						width: 100%;

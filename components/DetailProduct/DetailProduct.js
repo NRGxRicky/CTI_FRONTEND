@@ -120,6 +120,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 															style={{ objectFit: 'contain' }}
 															alt={Capitalize(item.marca.nombre)}
 															draggable='false'
+															sizes='auto'
 														/>
 													) : (
 														`${Capitalize(item.marca.nombre)}`
@@ -246,6 +247,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 													fill
 													style={{ objectFit: 'contain' }}
 													draggable='false'
+													alt={Capitalize('Local Shipping Icon')}
 												/>
 											</div>
 											<div className='shipping-local__label'>
@@ -294,6 +296,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 										fill
 										style={{ objectFit: 'contain' }}
 										draggable='false'
+										alt={Capitalize('Local Shipping')}
 									/>
 								</div>
 								<div>

@@ -622,6 +622,7 @@ const Listado = ({
 								categoria={categoria}
 								marca={marca}
 								q={q}
+								title={<h3>Recomendados</h3>}
 							/>
 						</div>
 					) : secondLoading ? (

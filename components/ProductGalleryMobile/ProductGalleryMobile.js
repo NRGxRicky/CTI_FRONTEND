@@ -192,7 +192,7 @@ const ProductGalleryMobile = ({
 					</div>
 				)}
 			</div>
-			<style jsx global>
+			<style jsx>
 				{`
 					.product__pagination {
 						position: absolute;

@@ -42,64 +42,69 @@ const BrandSimilarMini = ({
 	}
 
 	return (
-		<div className='brand__mini'>
-			<h2>
-				Mas de {Capitalize(marca.nombre)} en {Capitalize(categoria.name)}
-			</h2>
-			<div className='brand__mini__results'>
-				{data.results
-					.filter((i) => i.id !== item.id)
-					.filter((i) => i.imagen1s)
-					.slice(0, 4)
-					.map((item, index) => (
-						<Link href={`/${item.slug}`} key={index} legacyBehavior>
-							<a>
-								<div className='brand__mini__item'>
-									<div className='brand__mini__item__container'>
-										<div className='brand__mini__item__image'>
-											<Image
-												src={
-													item.imagen1s
-														? item.imagen1s
-														: '/images/not-available.png'
-												}
-												fill
-												style={{ objectFit: 'contain' }}
-												draggable='false'
-											/>
+		data.results.length > 0 && (
+			<div className='product__same-brand__recommended'>
+				<div className='brand__mini'>
+					<h2>
+						Mas de {Capitalize(marca.nombre)} en {Capitalize(categoria.name)}
+					</h2>
+					<div className='brand__mini__results'>
+						{data.results
+							.filter((i) => i.id !== item.id)
+							.filter((i) => i.imagen1s)
+							.slice(0, 4)
+							.map((item, index) => (
+								<Link href={`/${item.slug}`} key={index} legacyBehavior>
+									<a>
+										<div className='brand__mini__item'>
+											<div className='brand__mini__item__container'>
+												<div className='brand__mini__item__image'>
+													<Image
+														src={
+															item.imagen1s
+																? item.imagen1s
+																: '/images/not-available.png'
+														}
+														fill
+														style={{ objectFit: 'contain' }}
+														draggable='false'
+														sizes='auto'
+														alt={Capitalize(item.titulo)}
+													/>
+												</div>
+											</div>
+											<div className='brand__mini__item__content'>
+												<div className='brand__mini__item__price'>
+													$ {CurrencyFormat(item.precio_final, 2, '.', ',')}
+												</div>
+												<div>{item.envio_gratis && <FreeShipping />}</div>
+												<div>
+													<TextTruncate
+														line={2}
+														element='span'
+														truncateText='…'
+														text={Capitalize(item.titulo)}
+													/>
+												</div>
+											</div>
 										</div>
-									</div>
-									<div className='brand__mini__item__content'>
-										<div className='brand__mini__item__price'>
-											{CurrencyFormat(item.precio_final, 2, '.', ',')}
-										</div>
-										<div>{item.envio_gratis && <FreeShipping />}</div>
-										<div>
-											<TextTruncate
-												line={2}
-												element='span'
-												truncateText='…'
-												text={Capitalize(item.titulo)}
-											/>
-										</div>
-									</div>
-								</div>
-							</a>
-						</Link>
-					))}
-			</div>
-			<style jsx>
-				{`
-				.brand__mini__item__container{
-				padding: 5px;
-						width: 100px;
-						height: 100px;
-            flex-basis: 100px;
-            border: 1px solid #eaeaea;
-            border border-radius: 2px;
+									</a>
+								</Link>
+							))}
+					</div>
+				</div>
+				<style jsx>
+					{`
+				.brand__mini__item__container {
+					padding: 5px;
+					width: 100px;
+					height: 100px;
+          flex-basis: 100px;
+          border: 1px solid #eaeaea;
+          border border-radius: 2px;
 				}
 
-				.brand__mini__item__price{
+				.brand__mini__item__price {
 					font-size: 18px;
 					font-weight: 600;
 					line-height: 1.5;
@@ -108,12 +113,9 @@ const BrandSimilarMini = ({
 						margin-top: 10px;
             display: flex;
             width: 100%;
-        align-items: center;
+        		align-items: center;
             flex-direction: row;
             justify-content: space-between;
-      
-          
-            
           }
 
          .brand__mini__item__content {     
@@ -136,14 +138,20 @@ const BrandSimilarMini = ({
             border border-radius: 2px;
             padding: 10px;
 					}
-
-          		.brand__mini h2 {
-                margin-left: 10px;
-								line-height: 2;
-        				}
-                				`}
-			</style>
-		</div>
+					.brand__mini h2 {
+						margin-left: 5px;
+						line-height: 2;
+					}
+					.product__same-brand__recommended {
+						background-color: #ffffff;
+						padding: 20px;
+						border: 1px solid #eaeaea;
+						margin-top: 20px;
+					}
+					`}
+				</style>
+			</div>
+		)
 	);
 };
 

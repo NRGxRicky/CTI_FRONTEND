@@ -3,8 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
 
-
-const BestCategoriesMini = ({ parentCategorie }) => {
+const BestCategoriesMini = ({ parentCategorie, title }) => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
@@ -30,77 +29,89 @@ const BestCategoriesMini = ({ parentCategorie }) => {
 	}, [parentCategorie]);
 
 	return (
-		<div className='categories__mini'>
-			{data.results
-				.filter((i) => i.portada)
-				.slice(0, 4)
-				.map((categorie, index) => (
-					<Link
-						href={`/listado/all/${categorie.slug}`}
-						key={index}
-						legacyBehavior
-					>
-						<a>
-							<div className='categories__mini__item'>
-								<div className='categories__mini__item__container'>
-									<div className='categories__mini__image'>
-										<Image
-											src={
-												categorie.portada
-													? categorie.portada
-													: '/images/not-available.png'
-											}
-											fill
-											style={{ objectFit: 'contain' }}
-											draggable='false'
-										/>
+		data.results.length > 0 && (
+			<div className='product__categories__recommended'>
+				{title}
+				<div className='categories__mini'>
+					{data.results
+						.filter((i) => i.portada)
+						.slice(0, 4)
+						.map((categorie, index) => (
+							<Link
+								href={`/listado/all/${categorie.slug}`}
+								key={index}
+								legacyBehavior
+							>
+								<a>
+									<div className='categories__mini__item'>
+										<div className='categories__mini__item__container'>
+											<div className='categories__mini__image'>
+												<Image
+													src={
+														categorie.portada
+															? categorie.portada
+															: '/images/not-available.png'
+													}
+													fill
+													style={{ objectFit: 'contain' }}
+													draggable='false'
+													sizes='auto'
+													alt={Capitalize(categorie.name)}
+												/>
+											</div>
+										</div>
+										<div className='categories__mini__item__title'>
+											{Capitalize(categorie.name)}
+										</div>
 									</div>
-								</div>
-								<div className='categories__mini__item__title'>
-									{Capitalize(categorie.name)}
-								</div>
-							</div>
-						</a>
-					</Link>
-				))}
-			<style jsx>
-				{`
-					.categories__mini__item__container {
-						margin-left: 20px;
-						max-width: 150px;
-						padding: 5px;
-						width: 100px;
-						height: 100px;
-					}
-					.categories__mini {
-						margin-top: 10px;
-						width: 100%;
-						display: flex;
-						flex-direction: column;
-					}
+								</a>
+							</Link>
+						))}
+				</div>
+				<style jsx>
+					{`
+						.categories__mini__item__container {
+							margin-left: 20px;
+							max-width: 150px;
+							padding: 5px;
+							width: 100px;
+							height: 100px;
+						}
+						.categories__mini {
+							margin-top: 10px;
+							width: 100%;
+							display: flex;
+							flex-direction: column;
+						}
 
-					.categories__mini__item__title {
-						font-weight: 600;
-						margin-left: 20px;
-						font-size: 16px;
-					}
+						.categories__mini__item__title {
+							font-weight: 600;
+							margin-left: 20px;
+							font-size: 16px;
+						}
 
-					.categories__mini__item {
-						display: flex;
-						align-items: center;
+						.categories__mini__item {
+							display: flex;
+							align-items: center;
 
-						border: 1px solid #eaeaea;
-						margin-top: 10px;
-						border-radius: 2px;
-					}
-					.categories__mini__image {
-						position: relative;
-						width: 100%;
-						height: 100%;
-					}
-				`}
-			</style>
-		</div>
+							border: 1px solid #eaeaea;
+							margin-top: 10px;
+							border-radius: 2px;
+						}
+						.categories__mini__image {
+							position: relative;
+							width: 100%;
+							height: 100%;
+						}
+						.product__categories__recommended {
+							background-color: #ffffff;
+							padding: 20px;
+							border: 1px solid #eaeaea;
+						}
+					`}
+				</style>
+			</div>
+		)
 	);
 };
 

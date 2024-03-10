@@ -239,7 +239,7 @@ const ProductGallery = ({
 					</div>
 				</div>
 			)}
-			<style jsx global>
+			<style jsx>
 				{`
 					.product__gallery__container {
 						display: flex;
