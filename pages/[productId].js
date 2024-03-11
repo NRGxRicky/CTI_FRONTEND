@@ -34,7 +34,7 @@ const ProductItem = ({ item }) => {
 	const [tempMobile, setTempMobile] = useState(false);
 	const { height, width } = WindowDimensions();
 	const router = useRouter();
-	const urlCurrent = `'https://pcstore.mx'${router.asPath}`;
+	const urlCurrent = `https://pcstore.mx${router.asPath}`;
 	
 	useEffect(() => {
 		setTempMobile(isMobile);
@@ -63,7 +63,7 @@ const ProductItem = ({ item }) => {
 				/>
 				<meta property='og:url' content={urlCurrent} />
 				<meta property='product:price:currency' content='MXN' />
-				<meta property='product:price:amount' content={item.preci_final} />
+				<meta property='product:price:amount' content={item.precio_final} />
 				<meta name='twitter:card' content='summary' />
 				<meta
 					property='twitter:title'
