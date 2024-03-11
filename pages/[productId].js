@@ -46,19 +46,39 @@ const ProductItem = ({ item }) => {
 				<title>{`${convertTitle} | PCStore.mx`}</title>
 				<meta
 					name='description'
-					content={`Compra tu ${convertTitle} en PCStore.mx - Compra protegida, envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
+					content={`Compra tu ${convertTitle} en PCStore.mx - Tu tienda de confianza para comprar productos de cómputo y tecnología. Compra protegida con envíos asegurados y pagos seguroscon el mejor servicio, calidad y precio.`}
 				/>
 				<meta property='og:title' content={`${convertTitle} en PCStore.mx`} />
 				<meta
 					property='og:description'
-					content={`Compra protegida, envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
+					content={`Compra tu ${convertTitle} en PCStore.mx - Tu tienda de confianza para comprar productos de cómputo y tecnología. Compra protegida con envíos asegurados y pagos seguroscon el mejor servicio, calidad y precio.`}
 				/>
 				<meta
 					property='og:image'
 					content={item.imagen1s ? item.imagen1s : '/images/not-available.png'}
 				/>
+				<meta
+					property='og:image:secure_url'
+					content={item.imagen1s ? item.imagen1s : '/images/not-available.png'}
+				/>
 				<meta property='og:url' content={urlCurrent} />
-				<meta name='twitter:card' content='summary_large_image' />
+				<meta property='product:price:currency' content='MXN' />
+				<meta property='product:price:amount' content={item.preci_final} />
+				<meta name='twitter:card' content='summary' />
+				<meta
+					property='twitter:title'
+					content={`${convertTitle} en PCStore.mx`}
+				/>
+				<meta
+					name='twitter:image'
+					content={item.imagen1s ? item.imagen1s : '/images/not-available.png'}
+				/>
+				<meta
+					property='twitter:description'
+					content={`Compra tu ${convertTitle} en PCStore.mx - Tu tienda de confianza para comprar productos de cómputo y tecnología. Compra protegida con envíos asegurados y pagos seguroscon el mejor servicio, calidad y precio.`}
+				/>
+				<meta property='og:type' content='product' />
+				<meta property='og:site_name' content='PCStore.mx' />
 			</Head>
 			<div className='container'>
 				{!tempMobile && (
