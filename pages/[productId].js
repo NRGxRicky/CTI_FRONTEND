@@ -34,7 +34,7 @@ const ProductItem = ({ item }) => {
 	const [tempMobile, setTempMobile] = useState(false);
 	const { height, width } = WindowDimensions();
 	const router = useRouter();
-	const urlCurrent = `${process.env.NEXT_PUBLIC_BASE_URL}${router.asPath}`;
+	const urlCurrent = `'https://pcstore.mx'${router.asPath}`;
 	
 	useEffect(() => {
 		setTempMobile(isMobile);
