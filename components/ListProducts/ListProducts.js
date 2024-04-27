@@ -58,7 +58,7 @@ const ListProducts = ({ results, filter_available_store }) => {
 									</div>
 									<div className='card__price'>
 										<span>
-											$ {CurrencyFormat(producto.precio_final, 2, '.', ',')}
+											$ {CurrencyFormat(producto.precio_contado, 2, '.', ',')}
 										</span>
 									</div>
 									<div className='card__available'>

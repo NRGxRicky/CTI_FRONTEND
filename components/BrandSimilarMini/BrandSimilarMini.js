@@ -75,7 +75,7 @@ const BrandSimilarMini = ({
 											</div>
 											<div className='brand__mini__item__content'>
 												<div className='brand__mini__item__price'>
-													$ {CurrencyFormat(item.precio_final, 2, '.', ',')}
+													$ {CurrencyFormat(item.precio_contado, 2, '.', ',')}
 												</div>
 												<div>{item.envio_gratis && <FreeShipping />}</div>
 												<div>

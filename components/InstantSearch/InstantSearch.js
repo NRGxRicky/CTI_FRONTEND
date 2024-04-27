@@ -161,7 +161,7 @@ const InstantSearch = ({ queryInInput }) => {
 									<div className='search-box__info'>
 										<div className='search-box__price'>
 											<span>
-												$ {CurrencyFormat(producto.precio_final, 2, '.', ',')}
+												$ {CurrencyFormat(producto.precio_contado, 2, '.', ',')}
 											</span>
 										</div>
 										<div className='search-box__stock text--off'>

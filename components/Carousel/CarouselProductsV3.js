@@ -18,7 +18,7 @@ const CarouselProductsV3 = ({
 	marca,
 	q,
 	exclude = null,
-	title
+	title,
 }) => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
@@ -176,7 +176,7 @@ const CarouselProductsV3 = ({
 														<span>
 															${' '}
 															{CurrencyFormat(
-																producto.precio_final,
+																producto.precio_contado,
 																2,
 																'.',
 																','

@@ -182,7 +182,7 @@ const CarouselProducts = ({
 														<span>
 															${' '}
 															{CurrencyFormat(
-																producto.precio_final,
+																producto.precio_contado,
 																2,
 																'.',
 																','
