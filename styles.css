@@ -1124,6 +1124,7 @@ input[type='search']::-webkit-search-results-decoration {
 
 .products-list__item {
 	flex: 1 0 50%;
+	background-color: #ffffff;
 }
 
 .card {

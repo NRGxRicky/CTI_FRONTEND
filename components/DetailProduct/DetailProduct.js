@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import ProductGallery from '../ProductGallery/ProductGallery';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
@@ -9,12 +9,19 @@ import ProductGalleryMobile from '../ProductGalleryMobile/ProductGalleryMobile';
 import InfoMini from '../InfoMini/InfoMini';
 
 const DetailProduct = ({ item, width, height, tempMobile = false }) => {
-	let today = new Date();
-	const currentDay = new Date();
-
 	const lastday = function (y, m) {
 		return new Date(y, m + 1, 0).getDate();
 	};
+
+	const [labelTimeRemaining, setLabelTimeRemaining] =
+		useState('(Por $ 40.00)');
+	const [today, setToday] = useState(new Date());
+	const [shippingIntervalStart, setShippingIntervalStart] = useState(
+		addDays(today, 1)
+	);
+	const [shippingIntervalEnd, setShippingIntervalEnd] = useState(
+		addDays(today, 5)
+	);
 
 	function addDays(d, qty) {
 		let dd = d.getDate();
@@ -26,27 +33,57 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 		return new Date(yyyy, mm, dd + qty);
 	}
 
-	if (
-		today.getHours() > 13 &&
-		currentDay.toLocaleDateString('es-ES', { weekday: 'long' }) !== 'sábado' &&
-		currentDay.toLocaleDateString('es-ES', { weekday: 'long' }) !== 'domingo'
-	) {
-		today = addDays(today, 1);
-	}
-	if (
-		currentDay.toLocaleDateString('es-ES', { weekday: 'long' }) === 'sábado'
-	) {
-		today = addDays(today, 2);
-	}
+	const timeRemainingFunction = () => {
+		const newToday = new Date();
+		setToday(newToday)
+		const dayOfWeek = newToday.toLocaleDateString('es-ES', {
+			weekday: 'long',
+		});
+		const currentHour = newToday.getHours();
+		const isWeekend = dayOfWeek !== 'sábado' || dayOfWeek !== 'domingo';
 
-	if (
-		currentDay.toLocaleDateString('es-ES', { weekday: 'long' }) === 'domingo'
-	) {
-		today = addDays(today, 1);
-	}
+		const isLaboral = 
+			dayOfWeek !== 'domingo' &&
+			dayOfWeek !== 'sabado' &&
+			currentHour >= 9 &&
+			currentHour < 18;
+		
+		let shippingStart;
+		if (newToday.getHours() > 13 && isWeekend) {
+			shippingStart = addDays(newToday, 1);
+		} else if (dayOfWeek === 'sábado') {
+			shippingStart = addDays(newToday, 3);
+		} else if (dayOfWeek === 'domingo') {
+			shippingStart = addDays(newToday, 2);
+		}
 
-	let ShippingIntervalStart = addDays(today, 1);
-	let ShippingIntervalEnd = addDays(today, 5);
+		const endTime = new Date();
+		if (isLaboral) {
+			endTime.setHours(16, 0, 0, 0);
+			const timeRemaining = endTime - newToday;
+			const hoursRemaining = Math.floor(timeRemaining / 3600000);
+			const minutesRemaining = Math.floor((timeRemaining % 3600000) / 60000);
+			setLabelTimeRemaining(
+				` (Comprando dentro de ${hoursRemaining} horas, ${minutesRemaining} minutos por $40.00)`
+			);
+		}
+		else {
+			setLabelTimeRemaining(` (Por $40.00)`)
+		}
+
+		if (shippingStart) {
+			setShippingIntervalStart(shippingStart);
+			setShippingIntervalEnd(addDays(shippingStart, 5));
+		}
+	};
+
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			timeRemainingFunction();
+		}, 1000);
+		return () => clearInterval(interval);
+	}, []);
 
 	if (item === null) {
 		return null;
@@ -211,45 +248,45 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 												<FreeShipping
 													modeCard={true}
 													label={`Recíbelo gratis entre el ${Capitalize(
-														ShippingIntervalStart.toLocaleDateString('es-ES', {
+														shippingIntervalStart.toLocaleDateString('es-ES', {
 															weekday: 'long',
 														})
 													)} y el ${Capitalize(
-														ShippingIntervalEnd.toLocaleDateString('es-ES', {
+														shippingIntervalEnd.toLocaleDateString('es-ES', {
 															weekday: 'long',
 														})
 													)}, (${Capitalize(
-														ShippingIntervalStart.toLocaleDateString('es-ES', {
+														shippingIntervalStart.toLocaleDateString('es-ES', {
 															month: 'long',
 														})
-													)}  ${ShippingIntervalStart.getDate()} 
+													)}  ${shippingIntervalStart.getDate()} 
 											y ${Capitalize(
-												ShippingIntervalEnd.toLocaleDateString('es-ES', {
+												shippingIntervalEnd.toLocaleDateString('es-ES', {
 													month: 'long',
 												})
-											)}  ${ShippingIntervalEnd.getDate()})`}
+											)}  ${shippingIntervalEnd.getDate()})`}
 												/>
 											) : (
 												<FreeShipping
 													modeCard={true}
 													label={`Recíbelo por $99.00 entre el ${Capitalize(
-														ShippingIntervalStart.toLocaleDateString('es-ES', {
+														shippingIntervalStart.toLocaleDateString('es-ES', {
 															weekday: 'long',
 														})
 													)} y el ${Capitalize(
-														ShippingIntervalEnd.toLocaleDateString('es-ES', {
+														shippingIntervalEnd.toLocaleDateString('es-ES', {
 															weekday: 'long',
 														})
 													)}, (${Capitalize(
-														ShippingIntervalStart.toLocaleDateString('es-ES', {
+														shippingIntervalStart.toLocaleDateString('es-ES', {
 															month: 'long',
 														})
-													)}  ${ShippingIntervalStart.getDate()} 
+													)}  ${shippingIntervalStart.getDate()} 
 											y ${Capitalize(
-												ShippingIntervalEnd.toLocaleDateString('es-ES', {
+												shippingIntervalEnd.toLocaleDateString('es-ES', {
 													month: 'long',
 												})
-											)}  ${ShippingIntervalEnd.getDate()})`}
+											)}  ${shippingIntervalEnd.getDate()})`}
 													color={false}
 												/>
 											)}
@@ -298,10 +335,10 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 											<div className='shipping-local__label'>
 												<span>
 													Para entrega{' '}
-													{currentDay.toLocaleDateString('es-ES', {
+													{today.toLocaleDateString('es-ES', {
 														weekday: 'long',
 													}) === 'sábado' ||
-													currentDay.toLocaleDateString('es-ES', {
+													today.toLocaleDateString('es-ES', {
 														weekday: 'long',
 													}) === 'domingo'
 														? 'el Lunes '
@@ -312,7 +349,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 													<span className='bold'>{item.stock_puebla}</span>{' '}
 													Disponibles.
 													<div className='shipping-local__label_mini'>
-														(Hasta las 6:00 p.m. por $ 40.00)
+														{labelTimeRemaining}
 													</div>
 												</span>
 											</div>
@@ -368,7 +405,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 						display: flex;
 						justify-content: space-between;
 						flex-wrap: nowrap;
-						gap: 10px
+						gap: 10px;
 					}
 					.product__price__item {
 						line-height: 1.5 !important;

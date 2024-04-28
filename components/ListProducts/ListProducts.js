@@ -171,6 +171,7 @@ const ListProducts = ({ results, filter_available_store }) => {
 
 					.products-list__item {
 						flex: 1 0 50%;
+						background-color: #ffffff;
 					}
 
 					.card {
