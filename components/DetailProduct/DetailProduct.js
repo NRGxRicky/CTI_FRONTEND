@@ -150,7 +150,6 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 					<div className='product__title --show-mobile'>
 						<h1>{Capitalize(item.titulo)}</h1>
 					</div>
-
 					{item.precio_final_descuento > 0 && (
 						<>
 							<div className='product__price__label on-sale'>
@@ -365,11 +364,11 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 					.price--compare {
 						font-size: 18px;
 					}
-					product__price__container__type_of_payments {
+					.product__price__container__type_of_payments {
 						display: flex;
 						justify-content: space-between;
-
 						flex-wrap: nowrap;
+						gap: 10px
 					}
 					.product__price__item {
 						line-height: 1.5 !important;
@@ -380,6 +379,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 						border-radius: 5px;
 						margin-bottom: 10px;
 						padding: 10px;
+						width: 100%;
 					}
 
 					.product_price__info_payment {
