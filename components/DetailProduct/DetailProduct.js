@@ -362,7 +362,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 						margin-bottom: 10px;
 					}
 					.price--compare {
-						font-size: 18px;
+						font-size: 16px;
 					}
 					.product__price__container__type_of_payments {
 						display: flex;
@@ -566,7 +566,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 					}
 
 					.product__price {
-						font-size: 24px;
+						font-size: 20px;
 						font-weight: 600;
 						margin-top: 10px;
 					}
@@ -576,7 +576,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 						font-weight: 100;
 					}
 					.product__title h1 {
-						font-size: 24px;
+						font-size: 22px;
 						line-height: 1.5;
 						margin-bottom: 10px;
 					}
