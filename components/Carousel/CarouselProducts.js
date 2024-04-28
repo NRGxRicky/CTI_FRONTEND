@@ -145,6 +145,20 @@ const CarouselProducts = ({
 										<a>
 											<div className='card__carousel'>
 												<div className='card__carousel__content'>
+													{producto.precio_final_descuento > 0 && (
+														<>
+															<div className='product__price__label on-sale'>
+																Ahorra{' '}
+																{Math.ceil(
+																	((producto.precio_final -
+																		producto.precio_final_descuento) *
+																		100) /
+																		producto.precio_final
+																)}
+																%
+															</div>
+														</>
+													)}
 													<div className='card__carousel__image'>
 														<Image
 															src={
@@ -179,6 +193,15 @@ const CarouselProducts = ({
 														/>
 													</div>
 													<div className='card__carousel__price'>
+														{producto.precio_final_descuento > 0 && (
+															<>
+																<div className='text--off'>
+																	<span className='price--compare'>
+																		$ {CurrencyFormat(producto.precio_final)}
+																	</span>
+																</div>
+															</>
+														)}
 														<span>
 															${' '}
 															{CurrencyFormat(
@@ -270,6 +293,16 @@ const CarouselProducts = ({
 			</div>
 			<style jsx>
 				{`
+					.product__price__label {
+						z-index: 1;
+						position: absolute;
+						left: 0;
+					}
+
+					.price--compare {
+						font-size: 14px;
+					}
+
 					.embla {
 						width: 100%;
 						max-height: 400px;
