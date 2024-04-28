@@ -1192,3 +1192,19 @@ input[type='search']::-webkit-search-results-decoration {
 		gap: 5px;
 	}
 }
+
+.price--compare {
+	text-decoration: line-through;
+	font-weight: 100;
+
+}
+
+.on-sale {
+	background-color: #ff002c;
+	border-radius: 3px;
+	color: #ffffff;
+	padding: 2px 5px;
+	font-weight: 600;
+	width: 90px !important;
+	text-align: center;
+}

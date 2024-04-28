@@ -277,7 +277,7 @@ const Footer: React.FC<FooterProps> = () => {
 					}
 
 					.footer__column {
-						padding: 20px 30px;
+						padding: 20px 15px;
 					}
 
 					.footer__column__element {

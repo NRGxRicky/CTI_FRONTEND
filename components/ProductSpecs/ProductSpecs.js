@@ -89,7 +89,7 @@ const ProductSpecs = ({ item = { specs: [] } }) => {
 
 					.product__content {
 						background-color: #ffffff;
-						padding: 10px 20px 30px 20px;
+						padding: 10px 15px 30px 15px;
 						border: 1px solid #eaeaea;
 					}
 					

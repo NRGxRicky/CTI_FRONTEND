@@ -105,7 +105,7 @@ const BestCategoriesMini = ({ parentCategorie, title }) => {
 						}
 						.product__categories__recommended {
 							background-color: #ffffff;
-							padding: 20px;
+							padding: 15px;
 							border: 1px solid #eaeaea;
 						}
 					`}

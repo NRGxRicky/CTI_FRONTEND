@@ -150,6 +150,25 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 					<div className='product__title --show-mobile'>
 						<h1>{Capitalize(item.titulo)}</h1>
 					</div>
+
+					{item.precio_final_descuento > 0 && (
+						<>
+							<div className='product__price__label on-sale'>
+								Ahorra{' '}
+								{Math.ceil(
+									((item.precio_final - item.precio_final_descuento) * 100) /
+										item.precio_final
+								)}
+								%
+							</div>
+							<div className='text--off'>
+								Antes:{' '}
+								<span className='price--compare'>
+									$ {CurrencyFormat(item.precio_final)}
+								</span>
+							</div>
+						</>
+					)}
 					<div className='product__price'>
 						<div className='product__price__container__type_of_payments'>
 							<div className='product__price__item'>
@@ -162,7 +181,10 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 							<div className='product__price__item'>
 								<div className='product__price__header'>A MSI:</div>
 								<span className='text--ligth'>
-									$ {CurrencyFormat(item.precio_final)}
+									${' '}
+									{item.precio_final_descuento > 0
+										? CurrencyFormat(item.precio_final_descuento)
+										: CurrencyFormat(item.precio_final)}
 								</span>
 								<div className='product__tax text--off'>Incluye IVA</div>
 							</div>
@@ -337,19 +359,24 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 
 			<style jsx>
 				{`
-					.product__price__container__type_of_payments {
+					.product__price__label {
+						margin-bottom: 10px;
+					}
+					.price--compare {
+						font-size: 18px;
+					}
+					product__price__container__type_of_payments {
 						display: flex;
 						justify-content: space-between;
-						gap: 10px;
+
+						flex-wrap: nowrap;
 					}
 					.product__price__item {
 						line-height: 1.5 !important;
-
-						width: 100%;
 					}
 
 					.product__price__container__type_of_payments .product__price__item {
-						border: 1px solid #ced4da;
+						border: 1px solid #eaeaea;
 						border-radius: 5px;
 						margin-bottom: 10px;
 						padding: 10px;
@@ -471,7 +498,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 					.product__specs__resume {
 						line-height: 2;
 						flex-basis: 30%;
-						padding: 20px;
+						padding: 15px;
 					}
 					.product__brand {
 						width: 100px;
@@ -534,7 +561,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 
 					.product__info {
 						flex-basis: 25%;
-						padding: 20px;
+						padding: 15px;
 						border-radius: 2px;
 					}
 
@@ -613,7 +640,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 
 						.product__specs__resume {
 							margin: 0;
-							padding: 20px;
+							padding: 15px;
 							order: 3;
 						}
 						.product__info {
