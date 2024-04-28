@@ -246,10 +246,20 @@ const Footer: React.FC<FooterProps> = () => {
 								sizes='auto'
 							/>
 						</div>
+						<div className='footer__column__element footer__column__element__payment'>
+							<Image
+								src='/images/logo-mercado-pago.png'
+								fill
+								style={{ objectFit: 'contain' }}
+								alt={'Mercado Pago'}
+								draggable='false'
+								sizes='auto'
+							/>
+						</div>
 					</div>
 				</div>
 				<aside className='footer__aside'>
-					© 2024 PCStore.mx - Puebla, Puebla
+					© 2024 PCStore.mx - Hecho en Puebla, Puebla con ❤️
 				</aside>
 			</div>
 			<style jsx>

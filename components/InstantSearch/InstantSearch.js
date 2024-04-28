@@ -161,6 +161,15 @@ const InstantSearch = ({ queryInInput }) => {
 									<div className='search-box__info'>
 										<div className='search-box__price'>
 											<span>
+												{producto.precio_final_descuento > 0 && (
+													<>
+														<div className='text--off'>
+															<span className='price--compare'>
+																$ {CurrencyFormat(producto.precio_final)}
+															</span>
+														</div>
+													</>
+												)}
 												$ {CurrencyFormat(producto.precio_contado, 2, '.', ',')}
 											</span>
 										</div>
@@ -186,6 +195,10 @@ const InstantSearch = ({ queryInInput }) => {
 				)}
 				<style jsx>
 					{`
+						.price--compare  {
+							font-size: 12px;
+						}
+						
 						.search-box {
 							height: 100%;
 						}

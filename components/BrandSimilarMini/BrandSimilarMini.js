@@ -59,6 +59,20 @@ const BrandSimilarMini = ({
 										<div className='brand__mini__item'>
 											<div className='brand__mini__item__container'>
 												<div className='brand__mini__item__image'>
+													{item.precio_final_descuento > 0 && (
+														<>
+															<div className='product__price__label on-sale'>
+																Ahorra{' '}
+																{Math.ceil(
+																	((item.precio_final -
+																		item.precio_final_descuento) *
+																		100) /
+																		item.precio_final
+																)}
+																%
+															</div>
+														</>
+													)}
 													<Image
 														src={
 															item.imagen1s
@@ -75,6 +89,15 @@ const BrandSimilarMini = ({
 											</div>
 											<div className='brand__mini__item__content'>
 												<div className='brand__mini__item__price'>
+													{item.precio_final_descuento > 0 && (
+														<>
+															<div className='text--off'>
+																<span className='price--compare'>
+																	$ {CurrencyFormat(item.precio_final)}
+																</span>
+															</div>
+														</>
+													)}
 													$ {CurrencyFormat(item.precio_contado, 2, '.', ',')}
 												</div>
 												<div>{item.envio_gratis && <FreeShipping />}</div>
@@ -95,6 +118,17 @@ const BrandSimilarMini = ({
 				</div>
 				<style jsx>
 					{`
+				.product__price__label {
+					z-index: 1;
+					position: absolute;
+					left: 0;
+					font-size: 10px;
+					max-width: 75% !important;
+				}
+
+				.price--compare {
+					font-size: 14px;
+				}
 				.brand__mini__item__container {
 					padding: 5px;
 					width: 100px;

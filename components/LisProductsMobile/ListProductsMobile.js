@@ -77,6 +77,20 @@ const ListProductsMobile = ({
 						<Link href={`/${producto.slug}`} legacyBehavior>
 							<a>
 								<div className='card'>
+									{producto.precio_final_descuento > 0 && (
+										<>
+											<div className='product__price__label on-sale'>
+												Ahorra{' '}
+												{Math.ceil(
+													((producto.precio_final -
+														producto.precio_final_descuento) *
+														100) /
+														producto.precio_final
+												)}
+												%
+											</div>
+										</>
+									)}
 									<div className='card__image'>
 										<Image
 											src={
@@ -111,6 +125,15 @@ const ListProductsMobile = ({
 											/>
 										</div>
 										<div className='card__price'>
+											{producto.precio_final_descuento > 0 && (
+												<>
+													<div className='text--off'>
+														<span className='price--compare'>
+															$ {CurrencyFormat(producto.precio_final)}
+														</span>
+													</div>
+												</>
+											)}
 											<span>
 												$ {CurrencyFormat(producto.precio_contado, 2, '.', ',')}
 											</span>
@@ -161,6 +184,21 @@ const ListProductsMobile = ({
 					</div>
 				))}
 			</InfiniteScroll>
+			<style jsx>
+				{`
+					.product__price__label {
+						z-index: 1;
+						position: absolute;
+						left: 0;
+						border-top-left-radius: 0;
+						border-bottom-left-radius: 0;
+					}
+
+					.price--compare {
+						font-size: 14px;
+					}
+				`}
+			</style>
 		</div>
 	);
 };

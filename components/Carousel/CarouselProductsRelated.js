@@ -126,6 +126,20 @@ const CarouselProductsRelated = ({
 										<a>
 											<div className='card__carousel'>
 												<div className='card__carousel__content'>
+													{producto.precio_final_descuento > 0 && (
+														<>
+															<div className='product__price__label on-sale'>
+																Ahorra{' '}
+																{Math.ceil(
+																	((producto.precio_final -
+																		producto.precio_final_descuento) *
+																		100) /
+																		producto.precio_final
+																)}
+																%
+															</div>
+														</>
+													)}
 													<div className='card__carousel__image'>
 														<Image
 															src={
@@ -160,6 +174,15 @@ const CarouselProductsRelated = ({
 														/>
 													</div>
 													<div className='card__carousel__price'>
+														{producto.precio_final_descuento > 0 && (
+															<>
+																<div className='text--off'>
+																	<span className='price--compare'>
+																		$ {CurrencyFormat(producto.precio_final)}
+																	</span>
+																</div>
+															</>
+														)}
 														<span>
 															${' '}
 															{CurrencyFormat(
@@ -257,6 +280,16 @@ const CarouselProductsRelated = ({
 			</div>
 			<style jsx>
 				{`
+					.product__price__label {
+						z-index: 1;
+						position: absolute;
+						left: 0;
+					}
+
+					.price--compare {
+						font-size: 14px;
+					}
+
 					.embla__filter-active {
 						cursor: default;
 						border-bottom: 2px solid;
@@ -381,7 +414,7 @@ const CarouselProductsRelated = ({
 						width: 100%;
 						font-weight: 600;
 						font-size: 16px;
-						line-height: 2;
+						line-height: 1.5;
 					}
 
 					.card__carousel__title {
