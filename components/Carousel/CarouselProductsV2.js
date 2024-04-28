@@ -286,6 +286,8 @@ const CarouselProductsV2 = ({
 							z-index: 1;
 							position: absolute;
 							left: 0;
+							border-top-left-radius: 0;
+							border-bottom-left-radius: 0;
 						}
 
 						.price--compare {
