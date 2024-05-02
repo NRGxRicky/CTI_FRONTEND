@@ -30,6 +30,7 @@ const ProductGallery = ({
 	const [error, setError] = useState(null);
 	const [loaded, setLoaded] = useState(false);
 	const [showZoomGallery, setShowZoomGallery] = useState(false);
+	const [dictImagesloaded, setDictImagesloaded] = useState([]);
 
 	const makeDictImages = (producto) => {
 		let dictImages = [];
@@ -170,6 +171,16 @@ const ProductGallery = ({
 		makeDictImages(producto);
 		setLoaded(false);
 	}, [producto]);
+
+	useEffect(() => {
+		if (!dictImagesloaded.find((image) => image == current.url.m)) {
+			setLoaded(false);
+			dictImagesloaded.push(current.url.m)
+		}
+		else {
+				setLoaded(true);
+		}
+	}, [current])
 
 	return (
 		<div className='product__gallery__container'>
