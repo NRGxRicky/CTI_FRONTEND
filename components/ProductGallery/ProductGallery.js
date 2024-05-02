@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import useEmblaCarousel from 'embla-carousel-react';
 import Link from 'next/link';
@@ -28,7 +28,7 @@ const ProductGallery = ({
 		align: 'start',
 	});
 	const [error, setError] = useState(null);
-	const [loaded, setLoaded] = useState(true);
+	const [loaded, setLoaded] = useState(false);
 	const [showZoomGallery, setShowZoomGallery] = useState(false);
 
 	const makeDictImages = (producto) => {
@@ -166,6 +166,11 @@ const ProductGallery = ({
 		}
 	}, [emblaApi]);
 
+	useEffect(() => {
+		makeDictImages(producto);
+		setLoaded(false);
+	}, [producto]);
+
 	return (
 		<div className='product__gallery__container'>
 			<div className='product__gallery__thumbnails'>
@@ -205,19 +210,32 @@ const ProductGallery = ({
 			</div>
 			{stateDictImages.length > 0 && (
 				<div className='product__gallery__current'>
+					<Preloader
+						use={TailSpin}
+						size={30}
+						strokeWidth={8}
+						strokeColor='#FF002C'
+						duration={900}
+						style={{ display: loaded ? 'none' : undefined }}
+					/>
+
 					<div
 						className='product__gallery__current__image'
+						style={{
+							display: loaded ? undefined : 'none',
+						}}
 						onClick={() => setShowZoomGallery(true)}
 					>
 						<Image
-							src={current.url.l ? current.url.l : '/images/not-available.png'}
+							src={current.url.m ? current.url.m : '/images/not-available.png'}
 							fill
 							style={{ objectFit: 'contain' }}
 							alt={Capitalize(producto.titulo)}
 							draggable='false'
 							sizes='auto'
-							priority={true}
+							onLoad={() => setLoaded(true)}
 							className='zoom__container'
+							priority={true}
 						/>
 					</div>
 				</div>
