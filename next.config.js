@@ -17,6 +17,8 @@ module.exports = {
 				pathname: '**',
 			},
 		],
+		loader: 'custom',
+		loaderFile: './components/ImageLoader/ImageLoader.js',
 	},
 	eslint: {
 		// Warning: This allows production builds to successfully complete even if

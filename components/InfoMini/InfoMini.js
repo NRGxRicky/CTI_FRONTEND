@@ -20,7 +20,7 @@ const InfoMini = () => {
 					</div>
 					<div className='info__mini__label'>
 						<div className='info__mini__label__title'>
-							Devuelvo si no es lo que esperabas
+							Devuélvelo si no es lo que esperabas
 						</div>
 						<div className='nfo__mini__label__text'>
 							Cuentas con 30 días para devolverlo.

@@ -49,7 +49,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 			currentHour < 18;
 		
 		let shippingStart;
-		if (newToday.getHours() > 13 && isWeekend) {
+		if (currentHour > 13 && isWeekend) {
 			shippingStart = addDays(newToday, 1);
 		} else if (dayOfWeek === 'sábado') {
 			shippingStart = addDays(newToday, 3);
@@ -58,13 +58,13 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 		}
 
 		const endTime = new Date();
-		if (isLaboral) {
+		if (isLaboral && currentHour <= 16) {
 			endTime.setHours(16, 0, 0, 0);
 			const timeRemaining = endTime - newToday;
 			const hoursRemaining = Math.floor(timeRemaining / 3600000);
 			const minutesRemaining = Math.floor((timeRemaining % 3600000) / 60000);
 			setLabelTimeRemaining(
-				` (Comprando dentro de ${hoursRemaining} horas, ${minutesRemaining} minutos por $40.00)`
+				` (Comprando dentro de ${hoursRemaining} horas, ${minutesRemaining} minutos por $ 40.00)`
 			);
 		}
 		else {
@@ -342,7 +342,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 														weekday: 'long',
 													}) === 'domingo'
 														? 'el Lunes '
-														: today.getHours() < 18
+														: today.getHours() < 16
 														? 'Hoy '
 														: 'Mañana '}
 													en Ciudad de Puebla hay{' '}

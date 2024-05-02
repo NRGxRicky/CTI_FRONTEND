@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import useEmblaCarousel from 'embla-carousel-react';
 import Link from 'next/link';
@@ -7,9 +7,9 @@ import NewProduct from '../Icons/NewProduct';
 import TextTruncate from 'react-text-truncate';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
-import InnerImageZoom from 'react-inner-image-zoom';
 import 'react-inner-image-zoom/lib/InnerImageZoom/styles.min.css';
 import { Preloader, TailSpin } from 'react-preloader-icon';
+import ProductGalleryZoom from '../ProductGalleryZoom/ProductGalleryZoom';
 
 const ProductGallery = ({
 	responsiveElements = 1,
@@ -28,7 +28,8 @@ const ProductGallery = ({
 		align: 'start',
 	});
 	const [error, setError] = useState(null);
-	const [loaded, setLoaded] = useState(false);
+	const [loaded, setLoaded] = useState(true);
+	const [showZoomGallery, setShowZoomGallery] = useState(false);
 
 	const makeDictImages = (producto) => {
 		let dictImages = [];
@@ -123,7 +124,7 @@ const ProductGallery = ({
 			});
 		setStateDictImages([...dictImages]);
 
-		setCurrent(dictImages[0]);
+		setCurrent({ url: dictImages[0], index: 0 });
 	};
 
 	const checkButtonNext = () => {
@@ -165,15 +166,6 @@ const ProductGallery = ({
 		}
 	}, [emblaApi]);
 
-	useEffect(() => {
-		makeDictImages(producto);
-		setLoaded(false);
-	}, [producto]);
-
-	useEffect(() => {
-		setLoaded(false);
-	}, [current]);
-
 	return (
 		<div className='product__gallery__container'>
 			<div className='product__gallery__thumbnails'>
@@ -183,15 +175,15 @@ const ProductGallery = ({
 							className='product__gallery__embla__slide'
 							key={index}
 							onMouseOver={() => {
-								setCurrent(item);
+								setCurrent({ url: item, index: index });
 							}}
 							onClick={() => {
-								setCurrent(item);
+								setCurrent({ url: item, index: index });
 							}}
 						>
 							<div
 								className={
-									current == item
+									current.index == index
 										? 'product__gallery__item product__gallery__item__active'
 										: 'product__gallery__item'
 								}
@@ -213,32 +205,27 @@ const ProductGallery = ({
 			</div>
 			{stateDictImages.length > 0 && (
 				<div className='product__gallery__current'>
-					<Preloader
-						use={TailSpin}
-						size={30}
-						strokeWidth={8}
-						strokeColor='#FF002C'
-						duration={900}
-						style={{ display: loaded ? 'none' : undefined }}
-					/>
-
 					<div
 						className='product__gallery__current__image'
-						style={{
-							display: loaded ? undefined : 'none',
-						}}
+						onClick={() => setShowZoomGallery(true)}
 					>
-						<InnerImageZoom
-							src={current.l ? current.l : '/images/not-available.png'}
-							imgAttributes={{
-								onLoad: () => setLoaded(true),
-							}}
-							fullscreenOnMobile={true}
+						<Image
+							src={current.url.l ? current.url.l : '/images/not-available.png'}
+							fill
+							style={{ objectFit: 'contain' }}
+							alt={Capitalize(producto.titulo)}
+							draggable='false'
+							sizes='auto'
+							priority={true}
 							className='zoom__container'
 						/>
 					</div>
 				</div>
 			)}
+			<ProductGalleryZoom
+				visible={showZoomGallery}
+				setVisible={setShowZoomGallery}
+			/>
 			<style jsx>
 				{`
 					.product__gallery__container {
@@ -267,6 +254,8 @@ const ProductGallery = ({
 						width: 100%;
 						position: relative;
 						padding: 20px;
+						height: 100%;
+						cursor: zoom-in;
 					}
 
 					.product__gallery__item {
