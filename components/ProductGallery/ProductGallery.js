@@ -173,13 +173,13 @@ const ProductGallery = ({
 	}, [producto]);
 
 	useEffect(() => {
-		if (!dictImagesloaded.find((image) => image == current.url.m)) {
-			setLoaded(false);
-			dictImagesloaded.push(current.url.m)
+		if (current) {
+			if (!dictImagesloaded.find((image) => image == current.url.m)) {
+				setLoaded(false);
+				dictImagesloaded.push(current.url.m)
+			}
 		}
-		else {
-				setLoaded(true);
-		}
+		
 	}, [current])
 
 	return (
