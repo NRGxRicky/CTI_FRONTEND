@@ -251,10 +251,15 @@ const ProductGallery = ({
 					</div>
 				</div>
 			)}
-			<ProductGalleryZoom
-				visible={showZoomGallery}
-				setVisible={setShowZoomGallery}
-			/>
+			{current && (
+				<ProductGalleryZoom
+					visible={showZoomGallery}
+					setVisible={setShowZoomGallery}
+					current={current}
+					stateDictImages={stateDictImages}
+					setCurrent={setCurrent}
+				/>
+			)}
 			<style jsx>
 				{`
 					.product__gallery__container {
