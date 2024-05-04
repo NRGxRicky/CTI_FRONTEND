@@ -85,6 +85,7 @@ a:hover {
 
 .container {
 	margin: 20px auto 0;
+	max-width: 1350px;
 }
 .container-fluid {
 	margin-right: auto;
@@ -975,6 +976,13 @@ a:hover {
 		-webkit-box-ordinal-group: 2;
 		order: 1;
 	}
+}
+
+@media only screen and (min-width: 1400px) {
+ .container {
+	max-width: 1350px;
+	width: auto;
+ }
 }
 
 .arrow {

@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
+'use client';
+
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import useEmblaCarousel from 'embla-carousel-react';
 import Link from 'next/link';
@@ -30,6 +32,8 @@ const ProductGallery = ({
 	const [loaded, setLoaded] = useState(false);
 	const [showZoomGallery, setShowZoomGallery] = useState(false);
 	const [dictImagesloaded, setDictImagesloaded] = useState([]);
+	const [offsetY, setOffsetY] = useState(0);
+	const floatContainer = useRef();
 
 	const makeDictImages = (producto) => {
 		let dictImages = [];
@@ -175,14 +179,29 @@ const ProductGallery = ({
 		if (current) {
 			if (!dictImagesloaded.find((image) => image == current.url.m)) {
 				setLoaded(false);
-				dictImagesloaded.push(current.url.m)
+				dictImagesloaded.push(current.url.m);
 			}
 		}
-		
-	}, [current])
+	}, [current]);
+
+	useEffect(() => {
+		const handleScroll = () => {
+			const scrollLimit = floatContainer.current.parentNode.offsetHeight -floatContainer.current.offsetHeight;
+			window.scrollY < scrollLimit && setOffsetY(window.scrollY);
+		};
+
+		window.addEventListener('scroll', handleScroll);
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+		};
+	}, []);
 
 	return (
-		<div className='product__gallery__container'>
+		<div
+			className='product__gallery__container'
+			style={{ top: `${offsetY}px` }}
+			ref={floatContainer}
+		>
 			<div className='product__gallery__thumbnails'>
 				<div className='product__gallery__embla__container'>
 					{stateDictImages.map((item, index) => (
@@ -236,17 +255,20 @@ const ProductGallery = ({
 						}}
 						onClick={() => setShowZoomGallery(true)}
 					>
-						<Image
-							src={current.url.m ? current.url.m : '/images/not-available.png'}
-							fill
-							style={{ objectFit: 'contain' }}
-							alt={Capitalize(producto.titulo)}
-							draggable='false'
-							sizes='auto'
-							onLoad={() => setLoaded(true)}
-							className='zoom__container'
-							priority={true}
-						/>
+						<div className='zoom__container'>
+							<Image
+								src={
+									current.url.m ? current.url.m : '/images/not-available.png'
+								}
+								fill
+								style={{ objectFit: 'contain' }}
+								alt={Capitalize(producto.titulo)}
+								draggable='false'
+								sizes='auto'
+								onLoad={() => setLoaded(true)}
+								priority={true}
+							/>
+						</div>
 					</div>
 				</div>
 			)}
@@ -263,9 +285,11 @@ const ProductGallery = ({
 				{`
 					.product__gallery__container {
 						display: flex;
+						min-width: 100%;
 						width: 100%;
-						min-height: 550px;
+						min-height: 500px;
 						padding: 20px;
+						position: absolute;
 					}
 					.product__gallery__thumbnails {
 						width: 50px;
@@ -286,7 +310,7 @@ const ProductGallery = ({
 					.product__gallery__current__image {
 						width: 100%;
 						position: relative;
-						padding: 20px;
+						padding: 10px;
 						height: 100%;
 						cursor: zoom-in;
 					}
@@ -320,6 +344,7 @@ const ProductGallery = ({
 						-webkit-tap-highlight-color: transparent;
 						flex-direction: column;
 						height: 100%;
+						gap: 5px;
 					}
 
 					.product__gallery__embla__slide {
@@ -328,6 +353,7 @@ const ProductGallery = ({
 					}
 
 					.zoom__container {
+						position: relative;
 						width: 100%;
 						height: 100%;
 					}

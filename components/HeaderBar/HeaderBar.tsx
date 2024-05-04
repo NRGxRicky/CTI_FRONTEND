@@ -366,7 +366,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 					position: relative;
 					min-height: 54px;
 					padding: 5px 0;
-					max-width: 83rem;
+					max-width: 1350px;
 					margin: 0 auto;
 				}
 
