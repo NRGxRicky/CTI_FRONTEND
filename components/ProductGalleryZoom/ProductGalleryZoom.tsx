@@ -63,14 +63,11 @@ const ProductGalleryZoom = ({
 		checkButtonNext();
 	}, [emblaApi]);
 
-
 	const checkCurrent = () => {
-		if (current.index != emblaApi.selectedScrollSnap()) {
-			setCurrent({
-				url: stateDictImages[emblaApi.selectedScrollSnap()],
-				index: emblaApi.selectedScrollSnap(),
-			});
-		}
+		setCurrent({
+			url: stateDictImages[emblaApi.selectedScrollSnap()],
+			index: emblaApi.selectedScrollSnap(),
+		});
 	};
 
 	useEffect(() => {
@@ -114,7 +111,6 @@ const ProductGalleryZoom = ({
 			emblaApi.reInit({ startIndex: current.index });
 		}
 	}, [visible]);
-
 
 	return (
 		<div
