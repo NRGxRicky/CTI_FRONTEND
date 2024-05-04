@@ -177,7 +177,7 @@ const ListProducts = ({ results, filter_available_store }) => {
 						min-height: 50px;
 						display: flex;
 						align-items: center;
-						justify-content: center;
+
 					}
 					.product__brand {
 						width: 100px;
