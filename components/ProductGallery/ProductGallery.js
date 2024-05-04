@@ -7,7 +7,6 @@ import NewProduct from '../Icons/NewProduct';
 import TextTruncate from 'react-text-truncate';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
-import 'react-inner-image-zoom/lib/InnerImageZoom/styles.min.css';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import ProductGalleryZoom from '../ProductGalleryZoom/ProductGalleryZoom';
 
