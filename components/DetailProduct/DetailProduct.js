@@ -594,6 +594,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 						height: auto;
 						position: relative;
 						flex-basis: 45%;
+						min-height: 500px;
 					}
 
 					.product__info {

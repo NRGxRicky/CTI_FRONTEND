@@ -544,8 +544,7 @@ const FiltersOptionsMain = ({
 																		? false
 																		: true
 																}
-																tcontent={`${Capitalize(attribute_internal)} (
-															${attribute_internal_value.count})`}
+																tcontent={`${Capitalize(attribute_internal)} (${attribute_internal_value.count})`}
 															/>
 														</div>
 													</div>

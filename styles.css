@@ -978,7 +978,7 @@ a:hover {
 	}
 }
 
-@media only screen and (min-width: 1400px) {
+@media only screen and (min-width: 1300px) {
  .container {
 	max-width: 1350px;
 	width: auto;

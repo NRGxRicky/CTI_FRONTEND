@@ -53,6 +53,34 @@ const ListProducts = ({ results, filter_available_store }) => {
 									/>
 									<NewProduct date={producto.created} />
 								</div>
+								<div className='product__brand'>
+									<div className='product__brand__image'>
+										{producto.marca_imagen ? (
+											<Link
+												href={`/listado/${producto.marca_slug}/index`}
+												legacyBehavior
+											>
+												<Image
+													src={`https://api.pccdnapi.com/media/${producto.marca_imagen}`}
+													fill
+													style={{ objectFit: 'contain' }}
+													alt={Capitalize(producto.marca_nombre)}
+													draggable='false'
+													sizes='auto'
+												/>
+											</Link>
+										) : (
+											<Link
+												href={`/listado/${producto.marca_slug}/index`}
+												legacyBehavior
+											>
+												<div className='text--off'>{`${Capitalize(
+													producto.marca_nombre
+												)}`}</div>
+											</Link>
+										)}
+									</div>
+								</div>
 								<div>
 									<div className='card__title'>
 										<TextTruncate
@@ -62,6 +90,7 @@ const ListProducts = ({ results, filter_available_store }) => {
 											text={Capitalize(producto.titulo)}
 										/>
 									</div>
+
 									<div className='card__sku text--off'>
 										<TextTruncate
 											line={2}
@@ -131,6 +160,31 @@ const ListProducts = ({ results, filter_available_store }) => {
 			))}
 			<style jsx>
 				{`
+					.product__brand__image {
+						position: relative;
+						max-width: 45px;
+						height: auto;
+						max-height: 50px;
+						min-height: 45px;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+					}
+					.product__brand {
+						width: 45px;
+						padding: 2px;
+						outline: 1px solid #ced4da;
+						border-radius: 2px;
+						font-size: 12px;
+						position: absolute;
+						top: 130px;
+						background-color: #ffffff;
+					}
+
+					.product__brand:hover {
+						outline: 2px solid #ff002c;
+					}
+
 					.product__price__label {
 						z-index: 1;
 						position: absolute;
@@ -140,7 +194,7 @@ const ListProducts = ({ results, filter_available_store }) => {
 					}
 
 					.price--compare {
-						font-size: 14px; 
+						font-size: 14px;
 					}
 
 					.list-products__loader {
