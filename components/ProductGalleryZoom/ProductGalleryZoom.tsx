@@ -63,20 +63,19 @@ const ProductGalleryZoom = ({
 		checkButtonNext();
 	}, [emblaApi]);
 
-	const checkCurrent = () => {
-		setCurrent({
-			url: stateDictImages[emblaApi.selectedScrollSnap()],
-			index: emblaApi.selectedScrollSnap(),
-		});
-	};
+	
 
 	useEffect(() => {
-		if (emblaApi) {
-			checkAllButons();
-			emblaApi.on('select', checkAllButons);
+		if (emblaApi && visible) {
+			const checkCurrent = () => {
+				setCurrent({
+					url: stateDictImages[emblaApi.selectedScrollSnap()],
+					index: emblaApi.selectedScrollSnap(),
+				});
+			};
 			emblaApi.on('scroll', checkCurrent);
 		}
-	}, [emblaApi]);
+	}, [visible]);
 
 	useEffect(() => {
 		if (visible) {

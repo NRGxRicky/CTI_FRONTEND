@@ -36,6 +36,7 @@ const ProductGallery = ({
 	const floatContainer = useRef();
 
 	const makeDictImages = (producto) => {
+			
 		let dictImages = [];
 		producto.imagen1m &&
 			dictImages.push({
@@ -126,7 +127,7 @@ const ProductGallery = ({
 				m: '/images/not-available.png',
 				l: '/images/not-available.png',
 			});
-		setStateDictImages([...dictImages]);
+		setStateDictImages(dictImages);
 
 		setCurrent({ url: dictImages[0], index: 0 });
 	};
@@ -173,6 +174,7 @@ const ProductGallery = ({
 	useEffect(() => {
 		makeDictImages(producto);
 		setLoaded(false);
+		
 	}, [producto]);
 
 	useEffect(() => {
