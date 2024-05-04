@@ -56,7 +56,7 @@ const ListProducts = ({ results, filter_available_store }) => {
 								<div className='card__content'>
 									<div className='card__title'>
 										<TextTruncate
-											line={4}
+											line={3}
 											element='span'
 											truncateText='…'
 											text={Capitalize(producto.titulo)}
@@ -256,7 +256,7 @@ const ListProducts = ({ results, filter_available_store }) => {
 
 					.card__title {
 						width: 100%;
-						height: 90px;
+						height: 70px;
 						justify-self: first baseline;
 					}
 					.card__available {
