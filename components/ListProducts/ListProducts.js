@@ -53,35 +53,7 @@ const ListProducts = ({ results, filter_available_store }) => {
 									/>
 									<NewProduct date={producto.created} />
 								</div>
-								<div className='product__brand'>
-									<div className='product__brand__image'>
-										{producto.marca_imagen ? (
-											<Link
-												href={`/listado/${producto.marca_slug}/index`}
-												legacyBehavior
-											>
-												<Image
-													src={`https://api.pccdnapi.com/media/${producto.marca_imagen}`}
-													fill
-													style={{ objectFit: 'contain' }}
-													alt={Capitalize(producto.marca_nombre)}
-													draggable='false'
-													sizes='auto'
-												/>
-											</Link>
-										) : (
-											<Link
-												href={`/listado/${producto.marca_slug}/index`}
-												legacyBehavior
-											>
-												<div className='text--off'>{`${Capitalize(
-													producto.marca_nombre
-												)}`}</div>
-											</Link>
-										)}
-									</div>
-								</div>
-								<div>
+								<div className='card__content'>
 									<div className='card__title'>
 										<TextTruncate
 											line={4}
@@ -89,6 +61,34 @@ const ListProducts = ({ results, filter_available_store }) => {
 											truncateText='…'
 											text={Capitalize(producto.titulo)}
 										/>
+									</div>
+									<div className='product__brand'>
+										<div className='product__brand__image'>
+											{producto.marca_imagen ? (
+												<Link
+													href={`/listado/${producto.marca_slug}/index`}
+													legacyBehavior
+												>
+													<Image
+														src={`https://api.pccdnapi.com/media/${producto.marca_imagen}`}
+														fill
+														style={{ objectFit: 'contain' }}
+														alt={Capitalize(producto.marca_nombre)}
+														draggable='false'
+														sizes='auto'
+													/>
+												</Link>
+											) : (
+												<Link
+													href={`/listado/${producto.marca_slug}/index`}
+													legacyBehavior
+												>
+													<div className='text--off'>{`${Capitalize(
+														producto.marca_nombre
+													)}`}</div>
+												</Link>
+											)}
+										</div>
 									</div>
 
 									<div className='card__sku text--off'>
@@ -160,29 +160,29 @@ const ListProducts = ({ results, filter_available_store }) => {
 			))}
 			<style jsx>
 				{`
+
+				.card__content {
+					display: flex;
+					flex-direction: column;
+					justify-content: space-between;
+					position: relative;
+					width: 100%;
+					max-height: 500px;
+				}
 					.product__brand__image {
 						position: relative;
-						max-width: 45px;
+						max-width: 50px;
 						height: auto;
 						max-height: 50px;
-						min-height: 45px;
+						min-height: 50px;
 						display: flex;
 						align-items: center;
 						justify-content: center;
 					}
 					.product__brand {
-						width: 45px;
-						padding: 2px;
-						outline: 1px solid #ced4da;
-						border-radius: 2px;
+						width: 100px;
 						font-size: 12px;
-						position: absolute;
-						top: 130px;
 						background-color: #ffffff;
-					}
-
-					.product__brand:hover {
-						outline: 2px solid #ff002c;
 					}
 
 					.product__price__label {
@@ -232,7 +232,6 @@ const ListProducts = ({ results, filter_available_store }) => {
 						width: 100%;
 						min-height: 325px;
 						height: auto;
-						max-height: 500px;
 						position: relative;
 						padding: 8px 15px;
 						background-color: #ffffff;
@@ -257,26 +256,24 @@ const ListProducts = ({ results, filter_available_store }) => {
 
 					.card__title {
 						width: 100%;
-						height: auto;
-						margin-bottom: 5px;
+						height: 90px;
+						justify-self: first baseline;
 					}
 					.card__available {
 						width: 100%;
-						height: 20px;
 						font-size: 12px;
 						font-weight: 600;
+						line-height: 2;
 					}
 
 					.card__sku {
-						height: 30px;
 						width: 100%;
-						margin-top: 4px;
 						font-size: 12px;
+						line-height: 2;
 					}
 
 					.card__info {
 						width: 100%;
-						margin-top: 7px;
 						font-size: 12px;
 					}
 

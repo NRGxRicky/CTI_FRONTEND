@@ -774,7 +774,7 @@ const Listado = ({
 						min-height: 30px;
 						height: auto;
 						display: block;
-						line-height: 1.5;
+						line-height: 2;
 					}
 					.--no-results {
 						font-size: 16px;
