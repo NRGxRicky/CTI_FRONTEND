@@ -96,7 +96,7 @@ export const CarouselContainer = ({
 						width: 100%;
 						position: relative;
 						overflow: hidden;
-						max-width: 83rem;
+						max-width: 1350px;
 						margin: 0 auto;
 						-webkit-tap-highlight-color: transparent;
 						touch-action: pan-y;

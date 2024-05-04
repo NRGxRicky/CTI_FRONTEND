@@ -58,7 +58,7 @@ const Standard = () => {
 						.carousel {
 							position: relative;
 							overflow: hidden;
-							max-width: 83rem;
+							max-width: 1350px;
 							margin: 0 auto;
 							height: 40vw;
 							max-height: 550px;
@@ -115,7 +115,7 @@ const Standard = () => {
 					}
 
 					.carousel__slide {
-						max-width: 83rem;
+						max-width: 1350px;
 						max-height: 550px;
 						height: 40vw;
 						background-repeat: no-repeat;
