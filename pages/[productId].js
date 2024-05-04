@@ -96,7 +96,8 @@ const ProductItem = ({ item }) => {
 					height={height}
 					tempMobile={tempMobile}
 				/>
-				{item.compatibleProductos.length > 0 && (
+				{item.compatibleProductos.filter((p) => p.stock_total > 0).length >
+					0 && (
 					<div className='product__recommended'>
 						<CarouselProductsRelated
 							data={item.compatibleProductos}
