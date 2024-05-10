@@ -63,17 +63,25 @@ const ProductGalleryZoom = ({
 		checkButtonNext();
 	}, [emblaApi]);
 
-	
+	const checkCurrent = (item, index) => {
+		if (current.index !== index) {
+			emblaApi.scrollTo(index);
+		}
+	};
+
+	const checkCurrentScroll = () => {
+		if (current.index !== emblaApi.selectedScrollSnap()) {
+			setCurrent({
+				url: stateDictImages[emblaApi.selectedScrollSnap()],
+				index: emblaApi.selectedScrollSnap(),
+			});
+			
+		}
+	};
 
 	useEffect(() => {
 		if (emblaApi && visible) {
-			const checkCurrent = () => {
-				setCurrent({
-					url: stateDictImages[emblaApi.selectedScrollSnap()],
-					index: emblaApi.selectedScrollSnap(),
-				});
-			};
-			emblaApi.on('scroll', checkCurrent);
+			emblaApi.on('select', checkCurrentScroll)
 		}
 	}, [visible]);
 
@@ -100,12 +108,6 @@ const ProductGalleryZoom = ({
 	};
 
 	useEffect(() => {
-		if (emblaApi && visible) {
-			emblaApi.scrollTo(current.index);
-		}
-	}, [current]);
-
-	useEffect(() => {
 		if (emblaApi) {
 			emblaApi.reInit({ startIndex: current.index });
 		}
@@ -125,50 +127,56 @@ const ProductGalleryZoom = ({
 					ref={emblaRef}
 				>
 					<div className='product__gallery_zoom__carousel__container'>
-						{stateDictImages.map((item, index) => (
-							<div
-								className='product__gallery_zoom__carousel__item'
-								key={index}
-							>
-								<InnerImageZoom
-									src={item.m ? item.m : '/images/not-available.png'}
-									hideHint={true}
-									zoomPreload={true}
-									zoomSrc={item.l ? item.l : '/images/not-available.png'}
-									className='product__gallery_zoom__carousel__item__image'
-								/>
-							</div>
-						))}
+						{stateDictImages.map(
+							(item, index) =>
+								index !== stateDictImages.length - 1 && (
+									<div
+										className='product__gallery_zoom__carousel__item'
+										key={index}
+									>
+										<InnerImageZoom
+											src={item.m ? item.m : '/images/not-available.png'}
+											hideHint={true}
+											zoomPreload={true}
+											zoomSrc={item.l ? item.l : '/images/not-available.png'}
+											className='product__gallery_zoom__carousel__item__image'
+										/>
+									</div>
+								)
+						)}
 					</div>
 				</div>
 				<div className='product__gallery_zoom__thumbnails'>
-					{stateDictImages.map((item, index) => (
-						<div
-							className={
-								current.index == index
-									? 'product__gallery_zoom__thumbnails__item active'
-									: 'product__gallery_zoom__thumbnails__item'
-							}
-							key={index}
-							onMouseOver={() => {
-								setCurrent({ url: item, index: index });
-							}}
-							onClick={() => {
-								setCurrent({ url: item, index: index });
-							}}
-						>
-							<div className='product__gallery_zoom__thumbnails__item__image'>
-								<Image
-									src={item.s ? item.s : '/images/not-available.png'}
-									fill
-									style={{ objectFit: 'contain' }}
-									alt={Capitalize(item.title)}
-									draggable='false'
-									sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-								/>
-							</div>
-						</div>
-					))}
+					{stateDictImages.map(
+						(item, index) =>
+							index !== stateDictImages.length - 1 && (
+								<div
+									className={
+										current.index == index
+											? 'product__gallery_zoom__thumbnails__item active'
+											: 'product__gallery_zoom__thumbnails__item'
+									}
+									key={index}
+									onMouseOver={() => {
+										checkCurrent(item, index);
+									}}
+									onClick={() => {
+										checkCurrent(item, index);
+									}}
+								>
+									<div className='product__gallery_zoom__thumbnails__item__image'>
+										<Image
+											src={item.s ? item.s : '/images/not-available.png'}
+											fill
+											style={{ objectFit: 'contain' }}
+											alt={Capitalize(item.title)}
+											draggable='false'
+											sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+										/>
+									</div>
+								</div>
+							)
+					)}
 				</div>
 				<div onClick={scrollNext} className={styleClass}>
 					<button

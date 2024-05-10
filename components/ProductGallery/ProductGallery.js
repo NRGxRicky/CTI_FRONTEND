@@ -11,6 +11,7 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import ProductGalleryZoom from '../ProductGalleryZoom/ProductGalleryZoom';
+import ReactImageMagnify from 'react-image-magnify';
 
 const ProductGallery = ({
 	responsiveElements = 1,
@@ -33,10 +34,12 @@ const ProductGallery = ({
 	const [showZoomGallery, setShowZoomGallery] = useState(false);
 	const [dictImagesloaded, setDictImagesloaded] = useState([]);
 	const [offsetY, setOffsetY] = useState(0);
+	const [parentDimensionsHeight, setParentDimensionsHeight] = useState(0);
+	const [parentDimensionsWidth, setParentDimensionsWidth] = useState(0);
 	const floatContainer = useRef();
+	const imgCurrentRef = useRef();
 
-	const makeDictImages = (producto) => {
-			
+	const makeDictImages = async (producto) => {
 		let dictImages = [];
 		producto.imagen1m &&
 			dictImages.push({
@@ -119,6 +122,15 @@ const ProductGallery = ({
 				l: producto.imagen10l,
 			});
 
+		producto.imagen1m &&
+			dictImages.push({
+				title: producto.titulo,
+				xs: producto.imagen1xs,
+				s: producto.imagen1s,
+				m: producto.imagen1l,
+				l: producto.imagen1l,
+			});
+
 		dictImages.length < 1 &&
 			dictImages.push({
 				title: 'not-available',
@@ -127,9 +139,8 @@ const ProductGallery = ({
 				m: '/images/not-available.png',
 				l: '/images/not-available.png',
 			});
-		setStateDictImages(dictImages);
 
-		setCurrent({ url: dictImages[0], index: 0 });
+		return dictImages;
 	};
 
 	const checkButtonNext = () => {
@@ -172,31 +183,75 @@ const ProductGallery = ({
 	}, [emblaApi]);
 
 	useEffect(() => {
-		makeDictImages(producto);
-		setLoaded(false);
-		
+		const makeImages = async () => {
+			setLoaded(false);
+			setStateDictImages([]);
+			if (producto !== null && producto !== undefined) {
+				const images = await makeDictImages(producto);
+				setStateDictImages(images);
+				setCurrent({
+					url: images[parseInt(images.length) - 1],
+					index: 0,
+				});
+			}
+		};
+
+		makeImages();
 	}, [producto]);
 
 	useEffect(() => {
 		if (current) {
 			if (!dictImagesloaded.find((image) => image == current.url.m)) {
-				setLoaded(false);
 				dictImagesloaded.push(current.url.m);
 			}
+			setParentDimensionsHeight(floatContainer.current.parentNode.offsetHeight);
+			setParentDimensionsWidth(
+				floatContainer.current.parentNode.parentNode.offsetWidth -
+					floatContainer.current.offsetWidth
+			);
 		}
 	}, [current]);
 
-	useEffect(() => {
-		const handleScroll = () => {
-			const scrollLimit = floatContainer.current.parentNode.offsetHeight -floatContainer.current.offsetHeight;
-			window.scrollY < scrollLimit && setOffsetY(window.scrollY);
-		};
+	const handleScroll = () => {
+		const scrollLimit =
+			floatContainer.current.parentNode.offsetHeight -
+			floatContainer.current.offsetHeight;
+		window.scrollY < scrollLimit
+			? setOffsetY(window.scrollY)
+			: setOffsetY(scrollLimit);
+		setParentDimensionsHeight(floatContainer.current.parentNode.offsetHeight);
+		setParentDimensionsWidth(
+			floatContainer.current.parentNode.parentNode.offsetWidth -
+				floatContainer.current.offsetWidth
+		);
+	};
 
+	useEffect(() => {
 		window.addEventListener('scroll', handleScroll);
 		return () => {
 			window.removeEventListener('scroll', handleScroll);
 		};
 	}, []);
+
+	useEffect(() => {
+		window.addEventListener('resize', handleScroll);
+		return () => {
+			window.removeEventListener('resize', handleScroll);
+		};
+	}, []);
+
+	stateDictImages.length === 0 && (
+		<div className='product__gallery__loader'>
+			<Preloader
+				use={TailSpin}
+				size={30}
+				strokeWidth={8}
+				strokeColor='#FF002C'
+				duration={900}
+				style={{ display: loaded ? 'none' : 'block' }}
+			/>
+		</div>
+	);
 
 	return (
 		<div
@@ -206,74 +261,122 @@ const ProductGallery = ({
 		>
 			<div className='product__gallery__thumbnails'>
 				<div className='product__gallery__embla__container'>
-					{stateDictImages.map((item, index) => (
-						<div
-							className='product__gallery__embla__slide'
-							key={index}
-							onMouseOver={() => {
-								setCurrent({ url: item, index: index });
-							}}
-							onClick={() => {
-								setCurrent({ url: item, index: index });
-							}}
-						>
-							<div
-								className={
-									current.index == index
-										? 'product__gallery__item product__gallery__item__active'
-										: 'product__gallery__item'
-								}
-							>
-								<div className='product__gallery__item__image'>
-									<Image
-										src={item.xs ? item.xs : '/images/not-available.png'}
-										fill
-										style={{ objectFit: 'contain' }}
-										alt={Capitalize(item.title)}
-										draggable='false'
-										sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-									/>
+					{stateDictImages.map(
+						(item, index) =>
+							index !== stateDictImages.length - 1 && (
+								<div
+									className='product__gallery__embla__slide'
+									key={index}
+									onMouseOver={() => {
+										setCurrent({ url: item, index: index });
+									}}
+									onClick={() => {
+										setCurrent({ url: item, index: index });
+									}}
+								>
+									<div
+										className={
+											current.index == index
+												? 'product__gallery__item product__gallery__item__active'
+												: 'product__gallery__item'
+										}
+									>
+										<div className='product__gallery__item__image'>
+											<Image
+												src={item.xs ? item.xs : '/images/not-available.png'}
+												fill
+												style={{ objectFit: 'contain' }}
+												alt={Capitalize(item.title)}
+												draggable='false'
+												sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+											/>
+										</div>
+									</div>
 								</div>
-							</div>
-						</div>
-					))}
+							)
+					)}
 				</div>
 			</div>
-			{stateDictImages.length > 0 && (
-				<div className='product__gallery__current'>
+			<div className='product__gallery__current'>
+				<div className='product__gallery__loader'>
 					<Preloader
 						use={TailSpin}
 						size={30}
 						strokeWidth={8}
 						strokeColor='#FF002C'
 						duration={900}
-						style={{ display: loaded ? 'none' : undefined }}
+						style={{ display: loaded ? 'none' : 'block' }}
 					/>
+				</div>
 
+				<div
+					className='product__gallery__current__image'
+					onClick={() => setShowZoomGallery(true)}
+					style={{ display: loaded ? 'block' : 'none' }}
+				>
 					<div
-						className='product__gallery__current__image'
-						style={{
-							display: loaded ? undefined : 'none',
+						className='zoom__container'
+						onMouseOver={async () => {
+							if (current.index === 0) {
+								setCurrent({ url: stateDictImages[1], index: 1 });
+								setCurrent({ url: stateDictImages[0], index: 0 });
+							}
 						}}
-						onClick={() => setShowZoomGallery(true)}
+						ref={imgCurrentRef}
 					>
-						<div className='zoom__container'>
-							<Image
-								src={
-									current.url.m ? current.url.m : '/images/not-available.png'
-								}
-								fill
-								style={{ objectFit: 'contain' }}
-								alt={Capitalize(producto.titulo)}
-								draggable='false'
-								sizes='auto'
-								onLoad={() => setLoaded(true)}
-								priority={true}
+						{current && (
+							<ReactImageMagnify
+								{...{
+									smallImage: {
+										alt: Capitalize(producto.titulo),
+										isFluidWidth: true,
+										src: current.url.m
+											? current.url.m
+											: '/images/not-available.png',
+										onLoad: () => setLoaded(true),
+									},
+									style: {
+										maxWidth: '100%',
+										display: loaded ? 'block' : 'none',
+										zIndex: 1,
+									},
+									imageStyle: {
+										objectFit: 'contain',
+										width: '100%',
+										height: '100%',
+										maxHeight: '500px',
+									},
+									largeImage: {
+										src: current?.url.l
+											? current.url.l
+											: '/images/not-available.png',
+										width: imgCurrentRef
+											? imgCurrentRef?.current?.offsetWidth * 3
+											: 0,
+										height: imgCurrentRef
+											? imgCurrentRef?.current?.offsetHeight * 3
+											: 0,
+									},
+
+									enlargedImageContainerStyle: {
+										border: '1px solid #ff002c',
+									},
+
+									enlargedImageContainerDimensions: {
+										width: imgCurrentRef
+											? imgCurrentRef?.current?.offsetWidth
+											: 0,
+										height: imgCurrentRef
+											? imgCurrentRef?.current?.offsetHeight
+											: 0,
+									},
+
+								}}
 							/>
-						</div>
+						)}
 					</div>
 				</div>
-			)}
+			</div>
 			{current && (
 				<ProductGalleryZoom
 					visible={showZoomGallery}
@@ -289,7 +392,7 @@ const ProductGallery = ({
 						display: flex;
 						min-width: 100%;
 						width: 100%;
-						min-height: 500px;
+						min-height: 250px;
 						padding: 20px;
 						position: absolute;
 					}
@@ -307,6 +410,7 @@ const ProductGallery = ({
 						display: flex;
 						align-items: center;
 						justify-content: center;
+						max-height: 550px;
 					}
 
 					.product__gallery__current__image {
@@ -314,13 +418,13 @@ const ProductGallery = ({
 						position: relative;
 						padding: 10px;
 						height: 100%;
-						cursor: zoom-in;
 					}
 
 					.product__gallery__item {
 						width: 50px;
 						height: 50px;
 						border: 0.5px solid #eaeaea;
+						border-radius: 4px;
 						padding: 5px;
 						display: flex;
 						align-items: center;
