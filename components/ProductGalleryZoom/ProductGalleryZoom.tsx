@@ -70,18 +70,15 @@ const ProductGalleryZoom = ({
 	};
 
 	const checkCurrentScroll = () => {
-		if (current.index !== emblaApi.selectedScrollSnap()) {
-			setCurrent({
-				url: stateDictImages[emblaApi.selectedScrollSnap()],
-				index: emblaApi.selectedScrollSnap(),
-			});
-			
-		}
+		setCurrent({
+			url: stateDictImages[emblaApi.selectedScrollSnap()],
+			index: emblaApi.selectedScrollSnap(),
+		});
 	};
 
 	useEffect(() => {
 		if (emblaApi && visible) {
-			emblaApi.on('select', checkCurrentScroll)
+			emblaApi.on('select', checkCurrentScroll);
 		}
 	}, [visible]);
 

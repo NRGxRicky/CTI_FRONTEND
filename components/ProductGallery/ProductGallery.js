@@ -38,6 +38,7 @@ const ProductGallery = ({
 	const [parentDimensionsWidth, setParentDimensionsWidth] = useState(0);
 	const floatContainer = useRef();
 	const imgCurrentRef = useRef();
+	const [notImages, setNotImages] = useState(false)
 
 	const makeDictImages = async (producto) => {
 		let dictImages = [];
@@ -240,6 +241,14 @@ const ProductGallery = ({
 		};
 	}, []);
 
+	useEffect(() => {
+		if (current) {
+			current.url.s === '/images/not-available.png' && setLoaded(true)
+			current.url.s === '/images/not-available.png' ? setNotImages(true) : setNotImages(false);
+		}
+
+	}, [current])
+
 	stateDictImages.length === 0 && (
 		<div className='product__gallery__loader'>
 			<Preloader
@@ -311,7 +320,7 @@ const ProductGallery = ({
 
 				<div
 					className='product__gallery__current__image'
-					onClick={() => setShowZoomGallery(true)}
+					onClick={() => !notImages && setShowZoomGallery(true)}
 					style={{ display: loaded ? 'block' : 'none' }}
 				>
 					<div
@@ -324,7 +333,7 @@ const ProductGallery = ({
 						}}
 						ref={imgCurrentRef}
 					>
-						{current && (
+						{current && !notImages ? (
 							<ReactImageMagnify
 								{...{
 									smallImage: {
@@ -370,14 +379,23 @@ const ProductGallery = ({
 											? imgCurrentRef?.current?.offsetHeight
 											: 0,
 									},
-
 								}}
 							/>
+						) : (
+								<Image
+									src={'/images/not-available.png'}
+									fill
+									style={{ objectFit: 'contain' }}
+									alt={Capitalize(producto.titulo)}
+									draggable='false'
+									sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+									onLoad={() => setLoaded(true)}
+								/>
 						)}
 					</div>
 				</div>
 			</div>
-			{current && (
+			{current && !notImages && (
 				<ProductGalleryZoom
 					visible={showZoomGallery}
 					setVisible={setShowZoomGallery}
