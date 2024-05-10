@@ -207,8 +207,7 @@ const ProductGallery = ({
 			}
 			setParentDimensionsHeight(floatContainer.current.parentNode.offsetHeight);
 			setParentDimensionsWidth(
-				floatContainer.current.parentNode.parentNode.offsetWidth -
-					floatContainer.current.offsetWidth
+				floatContainer.current.parentNode.parentNode.parentNode.offsetWidth
 			);
 		}
 	}, [current]);
@@ -222,8 +221,7 @@ const ProductGallery = ({
 			: setOffsetY(scrollLimit);
 		setParentDimensionsHeight(floatContainer.current.parentNode.offsetHeight);
 		setParentDimensionsWidth(
-			floatContainer.current.parentNode.parentNode.offsetWidth -
-				floatContainer.current.offsetWidth
+			floatContainer.current.parentNode.parentNode.parentNode.offsetWidth
 		);
 	};
 
@@ -265,7 +263,9 @@ const ProductGallery = ({
 	return (
 		<div
 			className='product__gallery__container'
-			style={{ top: `${offsetY}px` }}
+			style={{
+				top: `${offsetY}px`,
+			}}
 			ref={floatContainer}
 		>
 			<div className='product__gallery__thumbnails'>
@@ -369,6 +369,18 @@ const ProductGallery = ({
 
 									enlargedImageContainerStyle: {
 										border: '1px solid #ff002c',
+										top:
+											imgCurrentRef?.current?.offsetWidth +
+												imgCurrentRef?.current?.offsetWidth / 2 >=
+											parentDimensionsWidth
+												? imgCurrentRef?.current?.offsetHeight + 10
+												: 0,
+										left:
+											imgCurrentRef?.current?.offsetWidth +
+												imgCurrentRef?.current?.offsetWidth / 2 >=
+											parentDimensionsWidth
+												? - 10
+												: imgCurrentRef?.current?.offsetWidth,
 									},
 
 									enlargedImageContainerDimensions: {
@@ -382,15 +394,15 @@ const ProductGallery = ({
 								}}
 							/>
 						) : (
-								<Image
-									src={'/images/not-available.png'}
-									fill
-									style={{ objectFit: 'contain' }}
-									alt={Capitalize(producto.titulo)}
-									draggable='false'
-									sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-									onLoad={() => setLoaded(true)}
-								/>
+							<Image
+								src={'/images/not-available.png'}
+								fill
+								style={{ objectFit: 'contain' }}
+								alt={Capitalize(producto.titulo)}
+								draggable='false'
+								sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+								onLoad={() => setLoaded(true)}
+							/>
 						)}
 					</div>
 				</div>
@@ -412,7 +424,7 @@ const ProductGallery = ({
 						width: 100%;
 						min-height: 250px;
 						padding: 20px;
-						position: absolute;
+						position: relative;
 					}
 					.product__gallery__thumbnails {
 						width: 50px;
