@@ -144,7 +144,13 @@ const ProductGalleryZoom = ({
 						)}
 					</div>
 				</div>
-				<div className='product__gallery_zoom__thumbnails'>
+				<div
+					className={
+						stateDictImages.length < 7
+							? 'product__gallery_zoom__thumbnails'
+							: 'product__gallery_zoom__thumbnails product__gallery_zoom__thumbnails__mobile'
+					}
+				>
 					{stateDictImages.map(
 						(item, index) =>
 							index !== stateDictImages.length - 1 && (
@@ -362,7 +368,11 @@ const ProductGalleryZoom = ({
 						.product__gallery_zoom__carousel__button {
 							display: none;
 						}
-					}
+
+						.product__gallery_zoom__thumbnails__mobile .product__gallery_zoom__thumbnails__item {
+							max-height: 8vw;
+							max-width: 8vw;	
+						}
 				`}
 			</style>
 		</div>
