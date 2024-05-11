@@ -90,7 +90,6 @@ const ProductItem = ({ item }) => {
 						/>
 					</div>
 				)}
-				{getComputedStyle(document.documentElement).getPropertyValue('--sab')}
 				<DetailProduct
 					item={item}
 					width={width}
