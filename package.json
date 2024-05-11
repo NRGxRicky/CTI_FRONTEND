@@ -20,6 +20,7 @@
     "isomorphic-fetch": "^3.0.0",
     "isomorphic-unfetch": "^3.1.0",
     "next": "^14.0.3",
+    "nextjs-toploader": "^1.6.12",
     "react": "^18.2.0",
     "react-cookie": "^4.1.1",
     "react-device-detect": "^2.2.3",
@@ -34,6 +35,7 @@
     "react-redux": "^9.1.0",
     "react-swipeable": "^6.2.0",
     "react-text-truncate": "^0.19.0",
+    "react-top-loading-bar": "^2.3.1",
     "sharp": "^0.32.6",
     "swr": "^2.2.4"
   },

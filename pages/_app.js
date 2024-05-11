@@ -4,10 +4,12 @@ import '../styles.css';
 import Head from 'next/head';
 import { AuthProvider } from '../hooks/auth';
 import GoogleAnalytics from '../components/GoogleAnalytics/GoogleAnalytics';
+import NextTopLoader from 'nextjs-toploader';
 
 function MyApp({ Component, pageProps }) {
 	return (
 		<>
+			<NextTopLoader color='#ff002c' />
 			<GoogleAnalytics />
 			<Head>
 				<meta

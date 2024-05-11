@@ -26,9 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 	return (
 		<div>
 			<Providers>
-				<HeaderBar
-					isMobile={isMobile}
-				/>
+				<HeaderBar isMobile={isMobile} />
 				<div
 					className='mobile__clear-fix'
 					style={{ height: isMobile ? '58px' : '0' }}
