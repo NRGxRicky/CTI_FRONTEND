@@ -10,6 +10,7 @@ import FreeShipping from '../Icons/FreeShipping';
 import InnerImageZoom from 'react-inner-image-zoom';
 import 'react-inner-image-zoom/lib/InnerImageZoom/styles.min.css';
 import { Preloader, TailSpin } from 'react-preloader-icon';
+import ProductGalleryZoom from '../ProductGalleryZoom/ProductGalleryZoom';
 
 const ProductGalleryMobile = ({
 	responsiveElements = 1,
@@ -21,7 +22,10 @@ const ProductGalleryMobile = ({
 	const [prevButton, setPrevButton] = useState(false);
 	const [nextButton, setNextButton] = useState(false);
 	const [stateDictImages, setStateDictImages] = useState([]);
-	const [current, setCurrent] = useState(1);
+	const [current, setCurrent] = useState({
+		url: '',
+		index: 0,
+	});
 	const [lengthSlides, setLengthSlides] = useState(0);
 	const [currentHeight, setCurrentHeight] = useState(height);
 	const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -32,14 +36,20 @@ const ProductGalleryMobile = ({
 	});
 	const [error, setError] = useState(null);
 	const [loaded, setLoaded] = useState(false);
+	const [notImages, setNotImages] = useState(false);
+	const [showZoomGallery, setShowZoomGallery] = useState(false);
 
 	const checkCurrent = () => {
-		setCurrent(emblaApi.selectedScrollSnap() + 1);
+		setCurrent({
+			url: stateDictImages[emblaApi.selectedScrollSnap()],
+			index: emblaApi.selectedScrollSnap(),
+		});
 	};
+
 	useEffect(() => {
 		if (emblaApi) {
 			setLengthSlides(emblaApi.slideNodes().length);
-			emblaApi.on('scroll', checkCurrent);
+			emblaApi.on('select', checkCurrent);
 		}
 	}, [emblaApi]);
 
@@ -126,6 +136,15 @@ const ProductGalleryMobile = ({
 				l: producto.imagen10l,
 			});
 
+		producto.imagen1m &&
+			dictImages.push({
+				title: producto.titulo,
+				xs: producto.imagen1xs,
+				s: producto.imagen1s,
+				m: producto.imagen1m,
+				l: producto.imagen1l,
+			});
+
 		dictImages.length < 1 &&
 			dictImages.push({
 				title: 'not-available',
@@ -134,22 +153,41 @@ const ProductGalleryMobile = ({
 				m: '/images/not-available.png',
 				l: '/images/not-available.png',
 			});
-		setStateDictImages([...dictImages]);
+		return dictImages;
 	};
 
 	useEffect(() => {
-		setLoaded(false);
-		makeDictImages(producto);
+		const changeProduct = async () => {
+			setLoaded(false);
+			const dictImages = await makeDictImages(producto);
+			setStateDictImages(dictImages);
+			setCurrent({ url: dictImages[0], index: 0 });
+			setLengthSlides(dictImages.length - 1);
+		};
+
+		changeProduct();
 	}, [producto]);
 
 	useEffect(() => {
 		if (emblaApi && stateDictImages.length > 0) {
 			emblaApi.scrollTo(0, true);
 			emblaApi.reInit();
-			setLengthSlides(emblaApi.slideNodes().length);
-			checkCurrent();
 		}
-	}, [stateDictImages]);
+	}, [producto]);
+
+	useEffect(() => {
+		if (current?.url) {
+			current.url.s === '/images/not-available.png' && setLoaded(true);
+			current.url.s === '/images/not-available.png'
+				? setNotImages(true)
+				: setNotImages(false);
+		}
+
+		if (current && emblaApi)
+			if (current.index !== emblaApi.selectedScrollSnap()) {
+				emblaApi.scrollTo(current.index);
+			}
+	}, [current]);
 
 	return (
 		<div
@@ -158,42 +196,97 @@ const ProductGalleryMobile = ({
 		>
 			<div className='product__gallery__viewport' ref={emblaRef}>
 				<div className='product__gallery__container'>
-					{stateDictImages.map((item, index) => (
-						<div className='product__gallery__item' key={index}>
-							<Preloader
-								use={TailSpin}
-								size={30}
-								strokeWidth={8}
-								strokeColor='#FF002C'
-								duration={900}
-								style={{ display: loaded ? 'none' : undefined }}
-							/>
-							<div
-								className='product__gallery__current__image'
-								style={{
-									display: loaded ? undefined : 'none',
-								}}
-							>
-								<InnerImageZoom
-									src={item.l ? item.l : '/images/not-available.png'}
-									imgAttributes={{
-										onLoad: () => setLoaded(true),
-									}}
+					{!notImages ? (
+						stateDictImages.map(
+							(item, index) =>
+								index !== stateDictImages.length - 1 && (
+									<div className='product__gallery__item' key={index}>
+										<div
+											className=''
+											style={{
+												display: loaded ? 'none' : 'flex',
+												width: '100%',
+												height: '100%',
+											}}
+										>
+											<div className='product__gallery__loader'>
+												<Preloader
+													use={TailSpin}
+													size={30}
+													strokeWidth={8}
+													strokeColor='#FF002C'
+													duration={900}
+												/>
+											</div>
+										</div>
+										<div
+											className='product__gallery__current__image'
+											onClick={() => setShowZoomGallery(true)}
+										>
+											<Image
+												src={item.m ? item.m : '/images/not-available.png'}
+												fill
+												style={{ objectFit: 'contain' }}
+												draggable='false'
+												sizes='auto'
+												alt={Capitalize(item.title)}
+												onLoad={() => setLoaded(true)}
+											/>
+										</div>
+									</div>
+								)
+						)
+					) : (
+						<div className='product__gallery__item'>
+							<div className='product__gallery__current__image'>
+								<Image
+									src={'/images/not-available.png'}
+									fill
+									style={{ objectFit: 'contain' }}
+									alt={Capitalize(producto.titulo)}
+									draggable='false'
+									sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+									onLoad={() => setLoaded(true)}
 								/>
 							</div>
 						</div>
-					))}
+					)}
 				</div>
 				{lengthSlides !== 0 && (
 					<div className='product__pagination'>
-						<div className='product__pagination_current'>{current}</div>
+						<div className='product__pagination_current'>
+							{current?.index ? current.index + 1 : 1}
+						</div>
 						<div className='product__pagination__separator'>/</div>
 						<div className='product__pagination__counter'>{lengthSlides}</div>
 					</div>
 				)}
 			</div>
+			{current && !notImages && (
+				<ProductGalleryZoom
+					visible={showZoomGallery}
+					setVisible={setShowZoomGallery}
+					current={current}
+					stateDictImages={stateDictImages}
+					setCurrent={setCurrent}
+				/>
+			)}
 			<style jsx>
 				{`
+					.product__gallery__loader {
+						display: flex;
+						position: relative;
+						width: 100%;
+						justify-content: center;
+						align-items: center;
+					}
+
+					.product__gallery__current__image {
+						position: relative;
+						width: 100%;
+						height: 100%;
+					}
+
 					.product__pagination {
 						position: absolute;
 						width: 50px;
@@ -225,9 +318,6 @@ const ProductGalleryMobile = ({
 						width: 100%;
 						height: 100%;
 						padding: 5px;
-						display: flex;
-						align-items: center;
-						justify-content: center;
 						cursor: pointer;
 						flex: 0 0 100%;
 					}

@@ -134,6 +134,7 @@ const ProductGalleryZoom = ({
 										<InnerImageZoom
 											src={item.m ? item.m : '/images/not-available.png'}
 											hideHint={true}
+											hideCloseButton={true}
 											zoomPreload={true}
 											zoomSrc={item.l ? item.l : '/images/not-available.png'}
 											className='product__gallery_zoom__carousel__item__image'
@@ -242,12 +243,12 @@ const ProductGalleryZoom = ({
 					}
 
 					.product__gallery_zoom__carousel__button-prev {
-						left: 15vh;
+						left: 15vw;
 						top: calc(50% - 45px);
 					}
 
 					.product__gallery_zoom__carousel__button-next {
-						right: 15vh;
+						right: 15vw;
 						transform: rotate(180deg);
 					}
 
@@ -350,6 +351,17 @@ const ProductGalleryZoom = ({
 						position: relative;
 						width: 100%;
 						height: 100%;
+					}
+
+					@media only screen and (max-width: 60rem) {
+						.product__gallery_zoom {
+							padding: 0;
+							z-index: 2000;
+						}
+
+						.product__gallery_zoom__carousel__button {
+							display: none;
+						}
 					}
 				`}
 			</style>

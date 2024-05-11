@@ -307,17 +307,18 @@ const ProductGallery = ({
 				</div>
 			</div>
 			<div className='product__gallery__current'>
-				<div className='product__gallery__loader'>
+				<div
+					className='product__gallery__loader'
+					style={{ display: loaded ? 'none' : 'block' }}
+				>
 					<Preloader
 						use={TailSpin}
 						size={30}
 						strokeWidth={8}
 						strokeColor='#FF002C'
 						duration={900}
-						style={{ display: loaded ? 'none' : 'block' }}
 					/>
 				</div>
-
 				<div
 					className='product__gallery__current__image'
 					onClick={() => !notImages && setShowZoomGallery(true)}
@@ -379,7 +380,7 @@ const ProductGallery = ({
 											imgCurrentRef?.current?.offsetWidth +
 												imgCurrentRef?.current?.offsetWidth / 2 >=
 											parentDimensionsWidth
-												? - 10
+												? -10
 												: imgCurrentRef?.current?.offsetWidth,
 									},
 
