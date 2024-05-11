@@ -146,7 +146,7 @@ const ProductGalleryZoom = ({
 				</div>
 				<div
 					className={
-						stateDictImages.length < 7
+						stateDictImages.length < 8
 							? 'product__gallery_zoom__thumbnails'
 							: 'product__gallery_zoom__thumbnails product__gallery_zoom__thumbnails__mobile'
 					}
