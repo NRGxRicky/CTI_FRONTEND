@@ -41,7 +41,7 @@ const ProductItem = ({ item }) => {
 	}, [isMobile]);
 
 	useEffect(() => {
-		window.scrollTo(0, -100);
+		window.scrollTo(0, -200);
 	}, [item])
 
 	return (
