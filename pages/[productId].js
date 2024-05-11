@@ -90,6 +90,7 @@ const ProductItem = ({ item }) => {
 						/>
 					</div>
 				)}
+				{getComputedStyle(document.documentElement).getPropertyValue('--sat')}
 				<DetailProduct
 					item={item}
 					width={width}
