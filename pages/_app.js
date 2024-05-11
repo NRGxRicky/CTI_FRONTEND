@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }) {
 			<Head>
 				<meta
 					name='viewport'
-					content='width=device-width, maximum-scale=1, minimum-scale=1, initial-scale=1, height=device-height, user-scalable=no, shrink-to-fit=no'
+					content='width=device-width, maximum-scale=1, minimum-scale=1, initial-scale=1, height=device-height, user-scalable=no, shrink-to-fit=no viewport-fit=cover'
 				/>
 			</Head>
 			<AuthProvider>
