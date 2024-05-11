@@ -90,8 +90,8 @@ const ProductItem = ({ item }) => {
 						/>
 					</div>
 				)}
-				{getComputedStyle(document.documentElement).getPropertyValue('--sat')}
 				{getComputedStyle(document.documentElement).getPropertyValue('--sar')}
+				{getComputedStyle(document.documentElement).getPropertyValue('--sat')}
 				{getComputedStyle(document.documentElement).getPropertyValue('--sab')}
 				{getComputedStyle(document.documentElement).getPropertyValue('--sal')}
 				<DetailProduct
