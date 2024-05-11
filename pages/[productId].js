@@ -215,6 +215,10 @@ const ProductItem = ({ item }) => {
 						line-height: 3;
 					}
 
+					.container {
+						margin-top: 0;
+					}
+
 					@media only screen and (max-width: 42em) {
 						.product__primary__container,
 						.product__secondary__container {
