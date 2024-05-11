@@ -40,12 +40,8 @@ const ProductItem = ({ item }) => {
 		setTempMobile(isMobile);
 	}, [isMobile]);
 
-	useEffect(() => {
-		window.scrollTo(0, -200);
-	}, [item])
-
 	return (
-		<div>
+		<div><div></div>
 			<Head>
 				<title>{`${convertTitle} | PCStore.mx`}</title>
 				<meta
