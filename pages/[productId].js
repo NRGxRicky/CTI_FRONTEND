@@ -40,6 +40,10 @@ const ProductItem = ({ item }) => {
 		setTempMobile(isMobile);
 	}, [isMobile]);
 
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, [item])
+
 	return (
 		<div>
 			<Head>
