@@ -41,7 +41,7 @@ const ProductItem = ({ item }) => {
 	}, [isMobile]);
 
 	return (
-		<div><div></div>
+		<div>
 			<Head>
 				<title>{`${convertTitle} | PCStore.mx`}</title>
 				<meta
