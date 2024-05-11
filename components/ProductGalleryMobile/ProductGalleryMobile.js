@@ -40,6 +40,7 @@ const ProductGalleryMobile = ({
 	const [showZoomGallery, setShowZoomGallery] = useState(false);
 
 	const checkCurrent = () => {
+		console.log(stateDictImages[emblaApi.selectedScrollSnap()]);
 		setCurrent({
 			url: stateDictImages[emblaApi.selectedScrollSnap()],
 			index: emblaApi.selectedScrollSnap(),
@@ -48,10 +49,9 @@ const ProductGalleryMobile = ({
 
 	useEffect(() => {
 		if (emblaApi) {
-			setLengthSlides(emblaApi.slideNodes().length);
 			emblaApi.on('select', checkCurrent);
 		}
-	}, [emblaApi]);
+	}, [emblaApi, stateDictImages]);
 
 	const makeDictImages = (producto) => {
 		let dictImages = [];
