@@ -17,7 +17,10 @@ const HeaderMenu = () => {
 					</Link>
 				</li>
 				<li>
-					<Link href={`/listado/all/index-computo-monitores`} legacyBehavior>
+					<Link
+						href={`/listado/all/index-computo-monitores`}
+						legacyBehavior
+					>
 						<a>Monitores</a>
 					</Link>
 				</li>
@@ -27,7 +30,10 @@ const HeaderMenu = () => {
 					</Link>
 				</li>
 				<li>
-					<Link href={`/listado/all/index-almacenamiento`} legacyBehavior>
+					<Link
+						href={`/listado/all/index-almacenamiento`}
+						legacyBehavior
+					>
 						<a>Almacenamiento</a>
 					</Link>
 				</li>

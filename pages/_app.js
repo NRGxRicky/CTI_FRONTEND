@@ -1,18 +1,30 @@
 // import App from 'next/app'
 import { useEffect, useCallback } from 'react';
+import { useRouter } from 'next/router';
 import Layout from '../components/Layout/Layout';
 import '../styles.css';
 import Head from 'next/head';
 import { AuthProvider } from '../hooks/auth';
 import GoogleAnalytics from '../components/GoogleAnalytics/GoogleAnalytics';
 import NextTopLoader from 'nextjs-toploader';
-import Router from 'next/router';
 
 function MyApp({ Component, pageProps }) {
-	
- useEffect(() => {
+	useEffect(() => {
 		window.history.scrollRestoration = 'manual';
- }, []);
+	}, []);
+
+	const router = useRouter();
+
+	useEffect(() => {
+		setTimeout(() => {
+			document.body.scrollTo({
+				top: 0,
+				left: 0,
+				behavior: 'instant',
+			});
+		}, 0);
+
+	}, [router]);
 
 	return (
 		<>

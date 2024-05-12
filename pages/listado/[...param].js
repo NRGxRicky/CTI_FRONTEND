@@ -219,7 +219,7 @@ const Listado = ({
 	};
 
 	const refreshPage = async (page) => {
-		window.scrollTo(0, 0);
+		document.body.scrollTo(0, 0);
 		setSecondLoading(true);
 		await router.replace({
 			pathname: router.pathname,

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -31,7 +33,7 @@ export const getServerSideProps = async (context) => {
 
 const ProductItem = ({ item }) => {
 	const convertTitle = Capitalize(item.titulo);
-	const [tempMobile, setTempMobile] = useState(false);
+	const [tempMobile, setTempMobile] = useState(true);
 	const { height, width } = WindowDimensions();
 	const router = useRouter();
 	const urlCurrent = `https://pcstore.mx${router.asPath}`;

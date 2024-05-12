@@ -6,6 +6,7 @@
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	-webkit-appearance: none;
 }
+
 body,
 html {
 	font-family: proxima-nova, sans-serif;
@@ -16,11 +17,25 @@ html {
 	text-size-adjust: 100%;
 	padding-top: env(safe-area-inset-top, 0px);
 	padding-bottom: env(safe-area-inset-bottom, 0px);
-	min-height: -webkit-fill-available;
+	margin: 0;
+	padding: 0;
 }
 
 body {
-	margin: 0;
+	height: 100%;
+	position: relative;
+	overflow: auto;
+}
+
+html {
+	max-height: 100dvh;
+	height: 100dvh;
+	min-height: 100dvh;
+	position: relative;
+	overflow: hidden;
+}
+
+body {
 	background-color: #f9f9f9;
 	word-wrap: break-word;
 	overflow-wrap: break-word;

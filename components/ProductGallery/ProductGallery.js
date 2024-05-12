@@ -216,8 +216,8 @@ const ProductGallery = ({
 		const scrollLimit =
 			floatContainer.current.parentNode.offsetHeight -
 			floatContainer.current.offsetHeight;
-		window.scrollY < scrollLimit
-			? setOffsetY(window.scrollY)
+		document.body.scrollTop < scrollLimit
+			? setOffsetY(document.body.scrollTop)
 			: setOffsetY(scrollLimit);
 		setParentDimensionsHeight(floatContainer.current.parentNode.offsetHeight);
 		setParentDimensionsWidth(
@@ -226,9 +226,9 @@ const ProductGallery = ({
 	};
 
 	useEffect(() => {
-		window.addEventListener('scroll', handleScroll);
+		document.body.addEventListener('scroll', handleScroll);
 		return () => {
-			window.removeEventListener('scroll', handleScroll);
+			document.body.removeEventListener('scroll', handleScroll);
 		};
 	}, []);
 

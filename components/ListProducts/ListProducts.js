@@ -160,15 +160,14 @@ const ListProducts = ({ results, filter_available_store }) => {
 			))}
 			<style jsx>
 				{`
-
-				.card__content {
-					display: flex;
-					flex-direction: column;
-					justify-content: space-between;
-					position: relative;
-					width: 100%;
-					max-height: 500px;
-				}
+					.card__content {
+						display: flex;
+						flex-direction: column;
+						justify-content: space-between;
+						position: relative;
+						width: 100%;
+						max-height: 500px;
+					}
 					.product__brand__image {
 						position: relative;
 						max-width: 50px;
@@ -177,7 +176,6 @@ const ListProducts = ({ results, filter_available_store }) => {
 						min-height: 50px;
 						display: flex;
 						align-items: center;
-
 					}
 					.product__brand {
 						width: 100px;

@@ -195,10 +195,10 @@ const InstantSearch = ({ queryInInput }) => {
 				)}
 				<style jsx>
 					{`
-						.price--compare  {
+						.price--compare {
 							font-size: 12px;
 						}
-						
+
 						.search-box {
 							height: 100%;
 						}

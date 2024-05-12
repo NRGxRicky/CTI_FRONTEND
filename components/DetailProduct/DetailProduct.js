@@ -155,6 +155,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 									<Link
 										href={`/listado/${item.marca.slug}/index`}
 										legacyBehavior
+										
 									>
 										<a>
 											<span className='product__resume__detail'>

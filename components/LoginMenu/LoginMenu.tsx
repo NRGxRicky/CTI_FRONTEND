@@ -106,7 +106,10 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
 												<input type='submit' value='Iniciar Sesión' />
 											</div>
 										</form>
-										<Link href={`/login/forgot-password/`} legacyBehavior>
+										<Link
+											href={`/login/forgot-password/`}
+											legacyBehavior
+										>
 											<a onClick={() => dispacth(hideAll())}>
 												<div className='login-menu__forgot-password'>
 													¿Has olvidado tu contraseña?

@@ -74,12 +74,18 @@ const NavMobileMenu = () => {
 				<div className='mobile-menu__panel'>
 					<ul className='mobile-menu__list'>
 						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link href={`/listado/all/index-computadoras`} legacyBehavior>
+							<Link
+								href={`/listado/all/index-computadoras`}
+								legacyBehavior
+							>
 								<a className='mobile-menu__nav-link'>Computadoras</a>
 							</Link>
 						</li>
 						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link href={`/listado/all/index-impresion`} legacyBehavior>
+							<Link
+								href={`/listado/all/index-impresion`}
+								legacyBehavior
+							>
 								<a className='mobile-menu__nav-link'>Impresoras</a>
 							</Link>
 						</li>
@@ -97,7 +103,10 @@ const NavMobileMenu = () => {
 							</Link>
 						</li>
 						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link href={`/listado/all/index-almacenamiento`} legacyBehavior>
+							<Link
+								href={`/listado/all/index-almacenamiento`}
+								legacyBehavior
+							>
 								<a className='mobile-menu__nav-link'>Almacenamiento</a>
 							</Link>
 						</li>
