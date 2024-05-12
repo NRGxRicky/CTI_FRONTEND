@@ -1,12 +1,19 @@
 // import App from 'next/app'
+import { useEffect, useCallback } from 'react';
 import Layout from '../components/Layout/Layout';
 import '../styles.css';
 import Head from 'next/head';
 import { AuthProvider } from '../hooks/auth';
 import GoogleAnalytics from '../components/GoogleAnalytics/GoogleAnalytics';
 import NextTopLoader from 'nextjs-toploader';
+import Router from 'next/router';
 
 function MyApp({ Component, pageProps }) {
+	
+ useEffect(() => {
+		window.history.scrollRestoration = 'manual';
+ }, []);
+
 	return (
 		<>
 			<NextTopLoader color='#ff002c' />
