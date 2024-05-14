@@ -273,6 +273,7 @@ const ProductGalleryZoom = ({
 						overflow: hidden;
 						width: 100%;
 						height: auto;
+						flex-grow: 2;
 					}
 
 					.product__gallery_zoom {
@@ -294,7 +295,7 @@ const ProductGalleryZoom = ({
 						justify-content: space-between;
 						height: 100%;
 						display: flex;
-						gap: 5px;
+						gap: 20px;
 					}
 
 					.--close_zoom {

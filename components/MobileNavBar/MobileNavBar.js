@@ -180,6 +180,7 @@ const MobileNavBar = ({ sortList, setSecondLoading, q, mobileScroll }) => {
 						height: 100%;
 						border: 0.5px solid #eaeaea;
 						align-self: center;
+						cursor: pointer;
 					}
 
 					.nav__sort {
@@ -188,6 +189,7 @@ const MobileNavBar = ({ sortList, setSecondLoading, q, mobileScroll }) => {
 						height: 100%;
 						border: 0.5px solid #eaeaea;
 						align-self: center;
+						cursor: pointer;
 					}
 
 					.nav svg {
