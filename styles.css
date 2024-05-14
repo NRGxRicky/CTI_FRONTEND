@@ -1250,6 +1250,5 @@ input[type='search']::-webkit-search-results-decoration {
 
 .product__gallery_zoom__carousel__item__image img {
 	width: 100%;
-	max-height: 100%;
 	object-fit: contain;
 }
