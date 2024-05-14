@@ -360,6 +360,26 @@ const ProductGalleryZoom = ({
 						height: 100%;
 					}
 
+					.product__gallery_zoom__carousel__item__image {
+						width: auto;
+						height: 100%;
+						display: flex !important;
+						align-items: center;
+						justify-items: center;
+					}
+
+					.product__gallery_zoom__carousel__item__image div {
+						width: 100%;
+						height: 100%;
+						position: relative;
+					}
+
+					.product__gallery_zoom__carousel__item__image img {
+						width: 100%;
+						max-height: 100%;
+					}
+
+
 					@media only screen and (max-width: 60rem) {
 						.product__gallery_zoom {
 							padding: 0;

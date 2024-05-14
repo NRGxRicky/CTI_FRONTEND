@@ -1232,11 +1232,3 @@ input[type='search']::-webkit-search-results-decoration {
 	width: 90px !important;
 	text-align: center;
 }
-
-.product__gallery_zoom__carousel__item__image {
-	width: auto;
-	height: 100%;
-	display: flex !important;
-	align-items: center;
-	justify-items: center;
-}
