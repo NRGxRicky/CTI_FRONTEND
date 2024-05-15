@@ -46,7 +46,7 @@ const OpacityContainer = () => {
 						height: 100%;
 						background: #0f0f0f;
 						position: fixed;
-						transition: opacity 1s, z-index 1s;
+						transition: opacity 0.5s, z-index 0.5s;
 					}
 				`}
 			</style>
