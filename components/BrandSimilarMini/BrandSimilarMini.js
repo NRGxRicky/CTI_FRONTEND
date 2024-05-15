@@ -42,7 +42,7 @@ const BrandSimilarMini = ({
 	}
 
 	return (
-		data.results.length > 0 && (
+		data.results.length > 1 && (
 			<div className='product__same-brand__recommended'>
 				<div className='brand__mini'>
 					<h2>

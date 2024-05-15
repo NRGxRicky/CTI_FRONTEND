@@ -48,12 +48,12 @@ const ProductItem = ({ item }) => {
 				<title>{`${convertTitle} | PCStore.mx`}</title>
 				<meta
 					name='description'
-					content={`Compra tu ${convertTitle} en PCStore.mx - Tu tienda de confianza para comprar productos de cómputo y tecnología. Compra protegida con envíos asegurados y pagos seguroscon el mejor servicio, calidad y precio.`}
+					content={`Compra tu ${convertTitle} en PCStore.mx - Tu tienda de confianza para comprar productos de cómputo y tecnología. Compra protegida con envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
 				/>
 				<meta property='og:title' content={`${convertTitle} en PCStore.mx`} />
 				<meta
 					property='og:description'
-					content={`Compra tu ${convertTitle} en PCStore.mx - Tu tienda de confianza para comprar productos de cómputo y tecnología. Compra protegida con envíos asegurados y pagos seguroscon el mejor servicio, calidad y precio.`}
+					content={`Compra tu ${convertTitle} en PCStore.mx - Tu tienda de confianza para comprar productos de cómputo y tecnología. Compra protegida con envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
 				/>
 				<meta
 					property='og:image'
@@ -98,7 +98,7 @@ const ProductItem = ({ item }) => {
 					height={height}
 					tempMobile={tempMobile}
 				/>
-				{item.compatibleProductos.filter((p) => p.stock_total > 0).length >
+				{item.compatibleProductos.filter((p) => p.stock_total > 1).length >
 					0 && (
 					<div className='product__recommended'>
 						<CarouselProductsRelated

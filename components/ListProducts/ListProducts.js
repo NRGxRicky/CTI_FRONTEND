@@ -64,27 +64,27 @@ const ListProducts = ({ results, filter_available_store }) => {
 									</div>
 									<div className='product__brand'>
 										<div className='product__brand__image'>
-											{producto.marca_imagen ? (
+											{producto.marca.imagen ? (
 												<Link
-													href={`/listado/${producto.marca_slug}/index`}
+													href={`/listado/${producto.marca.slug}/index`}
 													legacyBehavior
 												>
 													<Image
-														src={`https://api.pccdnapi.com/media/${producto.marca_imagen}`}
+														src={`${producto.marca.imagen}`}
 														fill
 														style={{ objectFit: 'contain' }}
-														alt={Capitalize(producto.marca_nombre)}
+														alt={Capitalize(producto.marca.nombre)}
 														draggable='false'
 														sizes='auto'
 													/>
 												</Link>
 											) : (
 												<Link
-													href={`/listado/${producto.marca_slug}/index`}
+													href={`/listado/${producto.marca.slug}/index`}
 													legacyBehavior
 												>
 													<div className='text--off'>{`${Capitalize(
-														producto.marca_nombre
+														producto.marca.nombre
 													)}`}</div>
 												</Link>
 											)}

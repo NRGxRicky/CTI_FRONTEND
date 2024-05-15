@@ -126,7 +126,7 @@ const CarouselProductsV3 = ({
 		);
 	}
 	return (
-		data.results.length > 0 && (
+		data.results.length > 1 && (
 			<div className='embla'>
 				<div className='embla__title'>{title}</div>
 				<div className='embla__viewport' ref={emblaRef}>
