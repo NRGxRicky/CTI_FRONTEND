@@ -13,12 +13,10 @@ const OpacityContainer = () => {
 		);
 
 	useEffect(() => {
-			console.log(bodyScroll);
 			bodyScroll
 				? document.body.classList.add('open-modal')
 				: document.body.classList.remove('open-modal');
-			console.log('event');
-		}, [opacityContainerValue]);
+		}, [bodyScroll]);
 	
 	const dispatch = useAppDispatch();
 	return (
@@ -31,8 +29,6 @@ const OpacityContainer = () => {
 				}}
 				onClick={() => {
 					dispatch(hideAll());
-					dispatch(unlockBodyScroll());
-					console.log(bodyScroll)
 				}}
 			></div>
 			<style jsx>
