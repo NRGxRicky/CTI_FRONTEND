@@ -107,7 +107,7 @@ const ListProductsMobile = ({
 										/>
 										<NewProduct date={producto.created} />
 									</div>
-									<div>
+									<div className='card__content'>
 										<div className='card__title'>
 											<TextTruncate
 												line={4}
@@ -125,18 +125,14 @@ const ListProductsMobile = ({
 											/>
 										</div>
 										<div className='card__price'>
-											{producto.precio_final_descuento > 0 && (
-												<>
-													<div className='text--off'>
-														<span className='price--compare'>
-															$ {CurrencyFormat(producto.precio_final)}
-														</span>
-													</div>
-												</>
-											)}
 											<span>
 												$ {CurrencyFormat(producto.precio_contado, 2, '.', ',')}
 											</span>
+											{producto.precio_final_descuento > 0 && (
+												<span className='price--compare text--off'>
+													$ {CurrencyFormat(producto.precio_final)}
+												</span>
+											)}
 										</div>
 										<div className='card__available'>
 											{!filter_available_store && (
@@ -186,6 +182,20 @@ const ListProductsMobile = ({
 			</InfiniteScroll>
 			<style jsx>
 				{`
+
+				.card__available {
+					justify-self: self-end;
+				}
+
+					.card__price {
+						display: flex;
+						gap: 0.2rem;
+						align-items: center;
+					}
+					.card__title {
+						flex-grow: 2;
+					}
+
 					.product__price__label {
 						z-index: 1;
 						position: absolute;
@@ -196,6 +206,29 @@ const ListProductsMobile = ({
 
 					.price--compare {
 						font-size: 14px;
+					}
+
+					.card__content {
+						position: relative;
+						display: flex;
+						flex-direction: column;
+						justify-content: space-between;
+						position: relative;
+						width: 100%;
+						height: 100%;
+						gap: 10px;
+					}
+
+					.card__title {
+						width: 100%;
+						min-height: 6rem;
+						justify-self: first baseline;
+					}
+
+					.card__sku {
+						height: auto;
+
+						line-height: 2;
 					}
 				`}
 			</style>

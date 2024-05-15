@@ -1209,10 +1209,6 @@ input[type='search']::-webkit-search-results-decoration {
 		height: auto;
 	}
 
-	.card {
-		border: 1px solid #eaeaea;
-	}
-
 	.products-list__container {
 		gap: 5px;
 	}
