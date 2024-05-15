@@ -66,7 +66,7 @@ const PoliticaDePrivacidad = () => {
 							contacto:
 							<br />
 							<br />
-							-Por vía telefónica en el teléfono al 22 18 15 59 52 de lunes a
+							-Por vía telefónica en el teléfono al 22 28 29 83 51 de lunes a
 							viernes con horario 9:00 am a 6:00 pm.
 							<br />
 							<br />

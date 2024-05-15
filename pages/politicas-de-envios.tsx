@@ -146,7 +146,7 @@ const PoliticasDeEnvios = () => {
 										contacto@pcstore.mx
 									</a>
 								</li>
-								<li>Teléfono: 22 18 15 59 52</li>
+								<li>Teléfono: 22 28 29 83 51</li>
 							</ul>
 							<br />
 							<p>

@@ -647,7 +647,7 @@ const CodigoDeEtica = () => {
 								contacto:
 							</p>
 							<p>
-								PCSTORE.MX: contacto@pcstore.mx Teléfono&nbsp;22 18 15 59 52.
+								PCSTORE.MX: contacto@pcstore.mx Teléfono&nbsp;22 28 29 83 51.
 							</p>
 							<p>
 								<br />

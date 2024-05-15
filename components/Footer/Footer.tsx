@@ -78,17 +78,17 @@ const Footer: React.FC<FooterProps> = () => {
 							style={{ maxHeight: column2 ? '500px' : '0px' }}
 						>
 							<div className='footer__column__element'>
-								<b>Telefono:</b> 22 18 15 59 52
+								<b>Telefono:</b> 22 28 29 83 51
 							</div>
 							<div className='footer__column__element'>
 								<b>WhatsApp:</b>
 								<a
-									href='https://wa.me/+5212218155952'
+									href='https://wa.me/+5212228298351'
 									target='_blank'
 									rel='noopener noreferrer'
 								>
 									{' '}
-									22 18 15 59 52
+									22 28 29 83 51
 								</a>
 							</div>
 							<div className='footer__column__element'>

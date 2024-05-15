@@ -509,7 +509,8 @@ const TerminosDeServicio = () => {
 								<br />
 								Estos Términos del servicio y cualquier acuerdo aparte mediante
 								el cual le brindemos servicios se regirán e interpretarán de
-								acuerdo con las leyes aplicables en los Estados Unidos Mexicanos.
+								acuerdo con las leyes aplicables en los Estados Unidos
+								Mexicanos.
 								<br />
 								<br />
 								**SECCIÓN 19: CAMBIOS EN LOS TÉRMINOS DEL SERVICIO**
@@ -546,7 +547,7 @@ const TerminosDeServicio = () => {
 								<br />
 								Correo Electrónico: contacto@pcstore.mx
 								<br />
-								Número de Teléfono: 22 18 15 59 52
+								Número de Teléfono: 22 28 29 83 51
 								<br />
 								Número de Identificación Fiscal (RFC): OOSC911003QR0
 							</p>

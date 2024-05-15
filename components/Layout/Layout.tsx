@@ -3,17 +3,13 @@ import HeaderBar from '../HeaderBar/HeaderBar';
 import OpacityContainer from '../OpacityContainer/OpacityContainer';
 import { isMobile as detectIsMobile } from 'react-device-detect';
 import IconWhatsapp from '../IconWhatsapp/IconWhatsapp';
-import { Properties } from 'csstype';
 import { Providers } from '../../lib/providers';
 
 interface LayoutProps {
 	children: ReactNode;
 }
 
-interface OpacityState {
-	opacity: number;
-	visibility: Properties['visibility'];
-}
+
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
 

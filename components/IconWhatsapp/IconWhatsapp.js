@@ -1,7 +1,7 @@
 import React from 'react';
 
 const IconWhatsapp = () => {
-  return (
+	return (
 		<div>
 			<div
 				style={{
@@ -13,7 +13,7 @@ const IconWhatsapp = () => {
 				}}
 			>
 				<a
-					href='https://wa.me/+5212218155952'
+					href='https://wa.me/+5212228298351'
 					target='_blank'
 					rel='noopener noreferrer'
 				>

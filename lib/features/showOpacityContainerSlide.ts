@@ -25,6 +25,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileMenu = false;
 			state.navMobileSort = false;
 			state.navMobileFilters = false;
+			state.bodyScroll = false;
 		},
 		showSearchBar: (state) => {
 			state.searchBar = true;
@@ -49,6 +50,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileMenu = true;
 			state.navMobileSort = false;
 			state.navMobileFilters = false;
+			state.bodyScroll = true;
 		},
 		showNavMobileSort: (state) => {
 			state.searchBar = false;

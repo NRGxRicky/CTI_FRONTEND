@@ -33,18 +33,10 @@ const NavMobileMenu = () => {
 	const toggleMenu = () => {
 		if (!menuMobileOpen) {
 			dispacth(showNavMobileMenu());
-			document.body.classList.add('open-modal');
 		} else {
 			dispacth(hideAll());
-			!bodyScroll && document.body.classList.remove('open-modal');
 		}
 	};
-
-	useEffect(() => {
-		bodyScroll
-			? document.body.classList.add('open-modal')
-			: document.body.classList.remove('open-modal');
-	}, [bodyScroll]);
 
 	useEffect(() => {
 		if (router.pathname.startsWith('/listado') && isMobile) {
@@ -74,18 +66,12 @@ const NavMobileMenu = () => {
 				<div className='mobile-menu__panel'>
 					<ul className='mobile-menu__list'>
 						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link
-								href={`/listado/all/index-computadoras`}
-								legacyBehavior
-							>
+							<Link href={`/listado/all/index-computadoras`} legacyBehavior>
 								<a className='mobile-menu__nav-link'>Computadoras</a>
 							</Link>
 						</li>
 						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link
-								href={`/listado/all/index-impresion`}
-								legacyBehavior
-							>
+							<Link href={`/listado/all/index-impresion`} legacyBehavior>
 								<a className='mobile-menu__nav-link'>Impresoras</a>
 							</Link>
 						</li>
@@ -103,10 +89,7 @@ const NavMobileMenu = () => {
 							</Link>
 						</li>
 						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link
-								href={`/listado/all/index-almacenamiento`}
-								legacyBehavior
-							>
+							<Link href={`/listado/all/index-almacenamiento`} legacyBehavior>
 								<a className='mobile-menu__nav-link'>Almacenamiento</a>
 							</Link>
 						</li>
@@ -158,7 +141,7 @@ const NavMobileMenu = () => {
 										></path>
 									</g>
 								</svg>
-								<span>Llámanos 22 18 15 59 52</span>
+								<span>Llámanos 22 28 29 83 51</span>
 							</div>
 						</li>
 						<li className='mobile-menu__nav-item'>
