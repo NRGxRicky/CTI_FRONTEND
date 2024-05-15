@@ -100,18 +100,14 @@ const ListProducts = ({ results, filter_available_store }) => {
 										/>
 									</div>
 									<div className='card__price'>
-										{producto.precio_final_descuento > 0 && (
-											<>
-												<div className='text--off'>
-													<span className='price--compare'>
-														$ {CurrencyFormat(producto.precio_final)}
-													</span>
-												</div>
-											</>
-										)}
 										<span>
 											$ {CurrencyFormat(producto.precio_contado, 2, '.', ',')}
 										</span>
+										{producto.precio_final_descuento > 0 && (
+											<span className='price--compare text--off'>
+												$ {CurrencyFormat(producto.precio_final)}
+											</span>
+										)}
 									</div>
 									<div className='card__available'>
 										{!filter_available_store && (
@@ -222,7 +218,7 @@ const ListProducts = ({ results, filter_available_store }) => {
 					}
 
 					.products-list__item {
-						flex: 1 0 50%;
+						flex: 0 0 49%;
 						background-color: #ffffff;
 					}
 
@@ -250,6 +246,9 @@ const ListProducts = ({ results, filter_available_store }) => {
 						width: 100%;
 						font-weight: 600;
 						font-size: 16px;
+						display: flex;
+						gap: 0.2rem;
+						align-items: center;
 					}
 
 					.card__title {
@@ -275,12 +274,13 @@ const ListProducts = ({ results, filter_available_store }) => {
 						font-size: 12px;
 					}
 
-					@media only screen and (min-width: 48em) {
+					@media only screen and (min-width: 62em) {
 						.products-list__item {
-							flex: 0 0 calc(25% - 5px);
-							max-width: 24%;
+							flex: 0 0 calc(33% - 5px);
+							max-width: 32%;
 							min-height: 400px;
 						}
+
 						.card__image {
 							min-height: 180px;
 							height: auto;
@@ -294,6 +294,21 @@ const ListProducts = ({ results, filter_available_store }) => {
 							gap: 5px;
 						}
 					}
+
+					@media only screen and (min-width: 80em) {
+						.products-list__item {
+							flex: 0 0 calc(25% - 5px);
+							max-width: 24%;
+							min-height: 400px;
+						}
+					}
+
+					@media only screen and (max-width: 61em) {
+						.products-list__item {
+							flex: 0 0 calc(50% - 5px);
+							max-width: 49%;
+							min-height: 400px;
+						}
 				`}
 			</style>
 		</div>
