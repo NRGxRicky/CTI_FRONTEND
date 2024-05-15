@@ -13,9 +13,14 @@ const OpacityContainer = () => {
 		);
 
 	useEffect(() => {
-			bodyScroll
-				? document.body.classList.add('open-modal')
-				: document.body.classList.remove('open-modal');
+		if (bodyScroll) {
+			document.body.classList.add('open-modal')
+
+		}
+		else {
+			document.body.classList.remove('open-modal');
+			document.body.focus()
+		}
 		}, [bodyScroll]);
 	
 	const dispatch = useAppDispatch();
@@ -29,6 +34,7 @@ const OpacityContainer = () => {
 				}}
 				onClick={() => {
 					dispatch(hideAll());
+
 				}}
 			></div>
 			<style jsx>
