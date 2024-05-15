@@ -185,7 +185,6 @@ const MobileNavBar = ({
 						justify-content: center;
 						font-size: 0.7rem;
 						position: relative;
-						top: -0.3rem;
 						left: 5px;
 					}
 
