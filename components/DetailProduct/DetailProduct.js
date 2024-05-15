@@ -270,7 +270,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 											) : (
 												<FreeShipping
 													modeCard={true}
-													label={`Recíbelo por $99.00 entre el ${Capitalize(
+													label={`Recíbelo por $129.00 entre el ${Capitalize(
 														shippingIntervalStart.toLocaleDateString('es-ES', {
 															weekday: 'long',
 														})

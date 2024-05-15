@@ -491,6 +491,7 @@ const Listado = ({
 						setSecondLoading={setSecondLoading}
 						q={q}
 						mobileScroll={mobileScroll}
+						filtersActive={filtersActive}
 					/>
 					<FiltersOptios
 						q={q}
@@ -702,7 +703,6 @@ const Listado = ({
 			{!isMobile && <Footer />}
 			<style jsx>
 				{`
-
 					.list-products__products__loader {
 						padding: 30px 0;
 						width: 100%;

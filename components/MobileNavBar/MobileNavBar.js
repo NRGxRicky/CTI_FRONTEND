@@ -8,14 +8,23 @@ import {
 	showNavMobileFilters,
 } from '../../lib/features/showOpacityContainerSlide';
 
-const MobileNavBar = ({ sortList, setSecondLoading, q, mobileScroll }) => {
+const MobileNavBar = ({
+	sortList,
+	setSecondLoading,
+	q,
+	mobileScroll,
+	filtersActive,
+}) => {
 	const router = useRouter();
 	const [prevScroll, setPrevScroll] = useState(250);
 	const [visibleNav, setVisibleNav] = useState(true);
+	const [counterFilters, setCounterFilters] = useState(0);
+
 	const dispacth = useAppDispatch();
 	const mobileNavSort = useAppSelector(
 		(state) => state.showOpacityContainerReducer.navMobileSort
 	);
+
 
 	const dictSortLabel = {
 		'-ventas': 'Más vendidos',
@@ -58,6 +67,18 @@ const MobileNavBar = ({ sortList, setSecondLoading, q, mobileScroll }) => {
 		!visibleNav && prevScroll > 250 && setVisibleNav(true);
 		setPrevScroll(250);
 	}, [q]);
+
+	useEffect(() => {
+		let counterFiltersInteger =
+			filtersActive.brands.length +
+			filtersActive.categories.length +
+			filtersActive.attributes.length +
+			filtersActive.filter_available +
+			filtersActive.filter_available_store +
+			filtersActive.filter_free_shipping;
+
+		setCounterFilters(counterFiltersInteger);
+	}, [filtersActive])
 
 	return (
 		<div>
@@ -108,6 +129,9 @@ const MobileNavBar = ({ sortList, setSecondLoading, q, mobileScroll }) => {
 							</g>
 						</svg>
 						<span>Filtros</span>
+						{counterFilters > 0 &&
+							<span className='nav__filters__counter'>{counterFilters}</span>
+						}
 					</div>
 				</div>
 			</div>
@@ -149,6 +173,22 @@ const MobileNavBar = ({ sortList, setSecondLoading, q, mobileScroll }) => {
 			</div>
 			<style jsx>
 				{`
+					.nav__filters__counter {
+						background-color: #ff002c;
+						border-radius: 15px;
+						border: 1px solid #ff002c;
+						color: #ffffff;
+						width: 1.5rem;
+						height: 1.5rem;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						font-size: 0.7rem;
+						position: relative;
+						top: -0.3rem;
+						left: 5px;
+					}
+
 					.nav__container {
 						max-width: 100%;
 						margin: 0;
@@ -181,6 +221,9 @@ const MobileNavBar = ({ sortList, setSecondLoading, q, mobileScroll }) => {
 						border: 0.5px solid #eaeaea;
 						align-self: center;
 						cursor: pointer;
+						display: flex;
+						align-items: center;
+						justify-content: center;
 					}
 
 					.nav__sort {
