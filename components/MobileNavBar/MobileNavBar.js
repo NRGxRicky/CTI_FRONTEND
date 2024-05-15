@@ -129,9 +129,9 @@ const MobileNavBar = ({
 							</g>
 						</svg>
 						<span>Filtros</span>
-						{counterFilters > 0 &&
+						{counterFilters > 0 && (
 							<span className='nav__filters__counter'>{counterFilters}</span>
-						}
+						)}
 					</div>
 				</div>
 			</div>
@@ -174,9 +174,9 @@ const MobileNavBar = ({
 			<style jsx>
 				{`
 					.nav__filters__counter {
-						background-color: #ff002c;
+						background-color: #474747;
 						border-radius: 15px;
-						border: 1px solid #ff002c;
+						border: 1px solid #474747;
 						color: #ffffff;
 						width: 1.5rem;
 						height: 1.5rem;
