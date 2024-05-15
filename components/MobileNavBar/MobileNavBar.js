@@ -78,7 +78,7 @@ const MobileNavBar = ({
 			filtersActive.filter_free_shipping;
 
 		setCounterFilters(counterFiltersInteger);
-	}, [filtersActive])
+	}, [])
 
 	return (
 		<div>
