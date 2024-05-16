@@ -185,11 +185,8 @@ const Listado = ({
 	const router = useRouter();
 	const { height, width } = WindowDimensions();
 	const [mobileScroll, setMobileScroll] = useState(0);
-
+	const [convertTitle, setConvertTitle] = useState(q);
 	const dispacth = useAppDispatch();
-
-	let convertTitle = Capitalize(q);
-
 	const dictSortLabel = {
 		'-ventas': 'Más vendidos',
 		'-visitas': 'Más relevantes',
@@ -433,16 +430,27 @@ const Listado = ({
 		isMobile && setFirtsLoading(true);
 
 		if (categoria !== 'index') {
-			let nameCategory = '';
-
-			data.breadcrumblist
-				.filter((item) => item.name !== 'Index')
-				.map((bc) => (nameCategory += ` ${Capitalize(bc.name)}`));
-
-			convertTitle = +` | ${Capitalize(categoria)}`;
-		}
-		if (marca !== 'all') {
-			convertTitle = +` | Tienda de Marca ${Capitalize(marca)}`;
+			console.log(categoria);
+			let newNameCategory = String(categoria).split('index-').join('');
+			q
+				? setConvertTitle(
+						` | ${Capitalize(newNameCategory.split('-').join(' '))}`
+				  )
+				: setConvertTitle(
+						`${Capitalize(String(newNameCategory).split('-').join(' '))}`
+				  );
+		} else if (marca !== 'all') {
+			q
+				? setConvertTitle(
+						` | Tienda de Marca ${Capitalize(
+							String(marca).split('-').join(' ')
+						)}`
+				  )
+				: setConvertTitle(
+						`Tienda de Marca ${Capitalize(String(marca).split('-').join(' '))}`
+				  );
+		} else {
+			setConvertTitle(q);
 		}
 	}, [
 		q,
