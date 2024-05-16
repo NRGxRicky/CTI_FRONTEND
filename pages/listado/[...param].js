@@ -188,7 +188,7 @@ const Listado = ({
 
 	const dispacth = useAppDispatch();
 
-	const convertTitle = Capitalize(q);
+	let convertTitle = Capitalize(q);
 
 	const dictSortLabel = {
 		'-ventas': 'Más vendidos',
@@ -431,6 +431,19 @@ const Listado = ({
 		parseInt(page) === 1 && setMobileScroll(0);
 		parseInt(page) === 1 && setLastUpdatedPage(1);
 		isMobile && setFirtsLoading(true);
+
+		if (categoria !== 'index') {
+			let nameCategory = '';
+
+			data.breadcrumblist
+				.filter((item) => item.name !== 'Index')
+				.map((bc) => (nameCategory += ` ${Capitalize(bc.name)}`));
+
+			convertTitle = +` | ${Capitalize(categoria)}`;
+		}
+		if (marca !== 'all') {
+			convertTitle = +` | Tienda de Marca ${Capitalize(marca)}`;
+		}
 	}, [
 		q,
 		page,
