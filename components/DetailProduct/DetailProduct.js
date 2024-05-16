@@ -569,7 +569,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 						background-color: #ffb116;
 						color: #ffffff;
 						font-weight: 600;
-						border-radius: 2px;
+						border-radius: 4px;
 						padding: 0 10px;
 						flex-grow: 1;
 					}
@@ -586,7 +586,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 						background-color: #ff002c;
 						color: #ffffff;
 						font-weight: 600;
-						border-radius: 2px;
+						border-radius: 4px;
 						flex-grow: 2;
 					}
 
