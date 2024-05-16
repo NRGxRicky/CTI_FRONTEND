@@ -135,7 +135,7 @@ const BrandSimilarMini = ({
 					height: 100px;
           flex-basis: 100px;
           border: 1px solid #eaeaea;
-          border border-radius: 2px;
+          border border-radius: 5px;
 				}
 
 				.brand__mini__item__price {
@@ -169,7 +169,7 @@ const BrandSimilarMini = ({
 					.brand__mini {
 						margin-top: 10px;
             border: 1px solid #eaeaea;
-            border border-radius: 2px;
+            border border-radius: 5px;
             padding: 10px;
 					}
 					.brand__mini h2 {

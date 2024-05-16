@@ -9,10 +9,12 @@ const FiltersOptionsMain = ({
 	itemsAvailables,
 	itemsAvailableStore,
 	itemsAvailablesFreeShipping,
+	itemsAvailablesDiscount,
 	brandsAvailables,
 	origin_filter_available,
 	origin_filter_available_store,
 	origin_filter_free_shipping,
+	origin_filter_discount,
 	origin_brands,
 	categoriesAvailables,
 	origin_categories,
@@ -329,6 +331,17 @@ const FiltersOptionsMain = ({
 									/>
 								</div>
 							</div>
+							<div className='nav__filters__option__item'>
+								<div className={itemsAvailablesDiscount < 1 && 'text--off'}>
+									<ToggleButon
+										tchecked={origin_filter_discount}
+										tonChange={handdleAppendFilter}
+										tname='filter_discount'
+										tdisabled={itemsAvailablesDiscount > 0 ? false : true}
+										tcontent={`Ofertas (${itemsAvailablesDiscount})`}
+									/>
+								</div>
+							</div>
 						</div>
 						{marca === 'all' && (
 							<div className='nav__filters__section nav__filters__section__brands'>
@@ -544,7 +557,9 @@ const FiltersOptionsMain = ({
 																		? false
 																		: true
 																}
-																tcontent={`${Capitalize(attribute_internal)} (${attribute_internal_value.count})`}
+																tcontent={`${Capitalize(attribute_internal)} (${
+																	attribute_internal_value.count
+																})`}
 															/>
 														</div>
 													</div>
@@ -692,7 +707,7 @@ const FiltersOptionsMain = ({
 						text-align: center;
 						cursor: pointer;
 						border: 1px solid #eaeaea;
-						border-radius: 2px;
+						border-radius: 5px;
 						padding: 5px;
 					}
 				`}

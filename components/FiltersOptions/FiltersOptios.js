@@ -11,10 +11,12 @@ const FiltersOptios = ({
 	itemsAvailables,
 	itemsAvailableStore,
 	itemsAvailablesFreeShipping,
+	itemsAvailablesDiscount,
 	brandsAvailables,
 	origin_filter_available,
 	origin_filter_available_store,
 	origin_filter_free_shipping,
+	origin_filter_discount,
 	origin_brands,
 	categoriesAvailables,
 	origin_categories,
@@ -104,12 +106,10 @@ const FiltersOptios = ({
 
 	const handleFiltersToApply = async () => {
 		dispacth(hideAll());
-		await router.replace(
-			{
-				pathname: router.pathname,
-				query: { ...router.query, ...filtersActive, page: 1 },
-			},
-		);
+		await router.replace({
+			pathname: router.pathname,
+			query: { ...router.query, ...filtersActive, page: 1 },
+		});
 	};
 
 	const handleFiltersClear = async () => {
@@ -121,6 +121,7 @@ const FiltersOptios = ({
 			filter_available: false,
 			filter_available_store: false,
 			filter_free_shipping: false,
+			filter_discount: false,
 		});
 		await router.replace({
 			pathname: router.pathname,
@@ -140,7 +141,7 @@ const FiltersOptios = ({
 		origin_brands.length > 0 && setShowBransContainer(true);
 		origin_categories.length > 0 && setShowCategoriesContainer(true);
 		origin_attributes.length > 0 && setShowAttributesContainer(true);
-	}, [])
+	}, []);
 
 	return (
 		<div>
@@ -208,6 +209,19 @@ const FiltersOptios = ({
 											tdisabled={itemsAvailablesFreeShipping > 0 ? false : true}
 											tcontent={`Envío gratis (${itemsAvailablesFreeShipping})`}
 											style={'checkbox green'}
+										/>
+									</div>
+								</div>
+								<div className='nav__filters__option__item'>
+									<div
+										className={itemsAvailablesDiscount < 1 && 'text--off'}
+									>
+										<ToggleButon
+											tchecked={origin_filter_discount}
+											tonChange={handdleAppendFilter}
+											tname='filter_discount'
+											tdisabled={itemsAvailablesDiscount > 0 ? false : true}
+											tcontent={`Ofertas (${itemsAvailablesDiscount})`}
 										/>
 									</div>
 								</div>
@@ -281,77 +295,71 @@ const FiltersOptios = ({
 										}}
 									>
 										{categoriesAvailables.map((category) => {
-												return (
-													<div
-														key={category.id}
-														className='nav__filters__option__item'
-													>
-														{Object.keys(category.childrens).length > 0 ? (
-															<div className='nav__filters__sub-title'>
-																{category.nombre.toUpperCase()}
-															</div>
-														) : (
-															category.slug !== 'index-' && (
+											return (
+												<div
+													key={category.id}
+													className='nav__filters__option__item'
+												>
+													{Object.keys(category.childrens).length > 0 ? (
+														<div className='nav__filters__sub-title'>
+															{category.nombre.toUpperCase()}
+														</div>
+													) : (
+														category.slug !== 'index-' && (
+															<div key={category.id}>
 																<div
-																	key={category.id}
+																	className={category.count < 1 && 'text--off'}
 																>
-																	<div
-																		className={
-																			category.count < 1 && 'text--off'
+																	<ToggleButon
+																		tchecked={origin_categories.some(
+																			(categoryFilter) =>
+																				categoryFilter.endsWith(
+																					String(category.slug)
+																				)
+																		)}
+																		tonChange={
+																			handdleAppendDictionaryCategoryFilter
 																		}
-																	>
-																		<ToggleButon
-																			tchecked={origin_categories.some(
-																				(categoryFilter) =>
-																					categoryFilter.endsWith(
-																						String(category.slug)
-																					)
-																			)}
-																			tonChange={
-																				handdleAppendDictionaryCategoryFilter
-																			}
-																			tname={category.slug}
-																			tdisabled={
-																				category.count > 0 ? false : true
-																			}
-																			tcontent={`${Capitalize(
-																				category.nombre
-																			)} (${category.count})`}
-																		/>
-																	</div>
+																		tname={category.slug}
+																		tdisabled={
+																			category.count > 0 ? false : true
+																		}
+																		tcontent={`${Capitalize(
+																			category.nombre
+																		)} (${category.count})`}
+																	/>
 																</div>
-															)
-														)}
-														{Object.entries(category.childrens).map(
-															([key, value]) => (
-																<div
-																	key={key}
-																	className='nav__filters__option__item'
-																>
-																	<div
-																		className={value.count < 1 && 'text--off'}
-																	>
-																		<ToggleButon
-																			tchecked={origin_categories.some(
-																				(category) =>
-																					category.endsWith(String(value.ids))
-																			)}
-																			tonChange={
-																				handdleAppendDictionaryCategoryFilter
-																			}
-																			tname={value.ids}
-																			tdisabled={value.count > 0 ? false : true}
-																			tcontent={`${Capitalize(value.nombre)} (${
-																				value.count
-																			})`}
-																		/>
-																	</div>
+															</div>
+														)
+													)}
+													{Object.entries(category.childrens).map(
+														([key, value]) => (
+															<div
+																key={key}
+																className='nav__filters__option__item'
+															>
+																<div className={value.count < 1 && 'text--off'}>
+																	<ToggleButon
+																		tchecked={origin_categories.some(
+																			(category) =>
+																				category.endsWith(String(value.ids))
+																		)}
+																		tonChange={
+																			handdleAppendDictionaryCategoryFilter
+																		}
+																		tname={value.ids}
+																		tdisabled={value.count > 0 ? false : true}
+																		tcontent={`${Capitalize(value.nombre)} (${
+																			value.count
+																		})`}
+																	/>
 																</div>
-															)
-														)}
-													</div>
-												);
-											})}
+															</div>
+														)
+													)}
+												</div>
+											);
+										})}
 									</div>
 								</div>
 							)}
@@ -416,7 +424,9 @@ const FiltersOptios = ({
 																			? false
 																			: true
 																	}
-																	tcontent={`${Capitalize(attribute_internal)} (${attribute_internal_value.count})`}
+																	tcontent={`${Capitalize(
+																		attribute_internal
+																	)} (${attribute_internal_value.count})`}
 																/>
 															</div>
 														</div>
@@ -592,7 +602,7 @@ const FiltersOptios = ({
 						text-align: center;
 						cursor: pointer;
 						border: 1px solid #eaeaea;
-						border-radius: 2px;
+						border-radius: 5px;
 						padding: 5px;
 					}
 				`}

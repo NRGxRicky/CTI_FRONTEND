@@ -311,7 +311,7 @@ const ProductGalleryZoom = ({
 						width: 50px;
 						align-self: flex-end;
 						border: 1px solid #ced4da;
-						border-radius: 4px;
+						border-radius: 5px;
 						cursor: pointer;
 					}
 
@@ -345,7 +345,7 @@ const ProductGalleryZoom = ({
 						height: 10vh;
 						position: relative;
 						border: 1px solid #ced4da;
-						border-radius: 4px;
+						border-radius: 5px;
 						cursor: pointer;
 						padding: 5px;
 					}

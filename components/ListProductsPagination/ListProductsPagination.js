@@ -128,7 +128,7 @@ const ListProductsPagination = ({ pages, pageActive, refreshPage }) => {
 					.pagination__item {
 						border: 1px solid #eaeaea;
 						padding: 7px 15px;
-						border-radius: 2px;
+						border-radius: 5px;
 						margin: 2px;
 						cursor: pointer;
 						background-color: #ffffff;

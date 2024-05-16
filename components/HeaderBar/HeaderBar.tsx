@@ -34,8 +34,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 	const [name, setName] = useState<string>('Iniciar sesión / Registrarse');
 	const router = useRouter();
 	const { q } = router.query;
-	const [queryInInput, setQueryInInput] = useState<string | undefined>(
-	);
+	const [queryInInput, setQueryInInput] = useState<string | undefined>();
 	const [tempMobile, setTempMobile] = useState<boolean>(true);
 
 	const maxPage = 40;
@@ -328,7 +327,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 					background-color: #fff;
 					background-clip: padding-box;
 					border: 1px solid #ced4da;
-					border-radius: 2px;
+					border-radius: 5px;
 				}
 
 				input {
@@ -470,7 +469,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 					position: absolute;
 					width: 100%;
 					margin-top: 1px;
-					border-radius: 2px;
+					border-radius: 5px;
 					background: #fff;
 					box-shadow: rgb(0 0 0 / 20%) 0 6px 16px 0;
 				}

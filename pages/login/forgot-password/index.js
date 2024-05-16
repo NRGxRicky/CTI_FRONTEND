@@ -168,7 +168,7 @@ const index = () => {
 						padding: 30px;
 						width: auto;
 						border: 1px solid #eaeaea;
-						border-radius: 2px;
+						border-radius: 5px;
 						text-align: center;
 					}
 
@@ -185,9 +185,9 @@ const index = () => {
 					.card__form__input {
 						padding: 15px 20px;
 						width: 100%;
-						border-radius: 2px;
+						border-radius: 5px;
 						border: 1px solid #eaeaea;
-						border-radius: 2px;
+						border-radius: 5px;
 						font-size: 14px;
 					}
 
@@ -196,7 +196,7 @@ const index = () => {
 						width: 100%;
 						padding: 15px;
 						background-color: #ff002c;
-						border-radius: 2px;
+						border-radius: 5px;
 						border: 0;
 						color: #ffffff;
 						font-weight: 600;

@@ -17,10 +17,7 @@ interface LoginMenuProps {
 	name: string;
 }
 
-const LoginMenu: React.FC<LoginMenuProps> = ({
-	setName,
-	name,
-}) => {
+const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 	const [username, setUsername] = useState<string>('');
 	const [password, setPassword] = useState<string>('');
 	const { loading, isAuthenticated, login, logout } = useAuth();
@@ -106,10 +103,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
 												<input type='submit' value='Iniciar Sesión' />
 											</div>
 										</form>
-										<Link
-											href={`/login/forgot-password/`}
-											legacyBehavior
-										>
+										<Link href={`/login/forgot-password/`} legacyBehavior>
 											<a onClick={() => dispacth(hideAll())}>
 												<div className='login-menu__forgot-password'>
 													¿Has olvidado tu contraseña?
@@ -219,7 +213,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
 						background-color: #ff002c;
 						border: 0;
 						height: 40px;
-						border-radius: 2px;
+						border-radius: 5px;
 						color: #ffffff;
 						font-weight: 600;
 						cursor: pointer;
@@ -229,7 +223,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
 						width: 100%;
 						height: 30px;
 						border: 1px solid #eaeaea;
-						border-radius: 2px;
+						border-radius: 5px;
 						color: rgb(114 114 114);
 						padding: 10px;
 						color: ;

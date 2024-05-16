@@ -25,7 +25,6 @@ const MobileNavBar = ({
 		(state) => state.showOpacityContainerReducer.navMobileSort
 	);
 
-
 	const dictSortLabel = {
 		'-ventas': 'Más vendidos',
 		'-visitas': 'Más relevantes',
@@ -78,7 +77,7 @@ const MobileNavBar = ({
 			filtersActive.filter_free_shipping;
 
 		setCounterFilters(counterFiltersInteger);
-	}, [])
+	}, []);
 
 	return (
 		<div>
@@ -263,7 +262,7 @@ const MobileNavBar = ({
 						min-height: 10%;
 						max-height: 90%;
 						background-color: #ffffff;
-						border-radius: 2px;
+						border-radius: 5px;
 						display: none;
 						transform: translateX(-50%) translateY(-50%);
 						overflow: auto;

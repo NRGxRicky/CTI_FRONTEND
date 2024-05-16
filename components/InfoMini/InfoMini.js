@@ -52,7 +52,7 @@ const InfoMini = () => {
 				{`
 					.info__mini {
 						width: 100%;
-						border-radius: 2px;
+						border-radius: 5px;
 					}
 
 					.info__mini__container {
@@ -66,7 +66,7 @@ const InfoMini = () => {
 						flex-direction: row;
 						align-items: center;
 						margin-top: 10px;
-						border-radius: 2px;
+						border-radius: 5px;
 					}
 
 					.info__mini__icon {

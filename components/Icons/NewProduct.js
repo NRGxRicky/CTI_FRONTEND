@@ -21,7 +21,7 @@ const NewProduct = ({ date }) => {
 							color: #fff;
 							font-weight: 600;
 							padding: 3px;
-							border-radius: 2px;
+							border-radius: 5px;
 						}
 					`}
 				</style>

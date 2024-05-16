@@ -13,8 +13,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 		return new Date(y, m + 1, 0).getDate();
 	};
 
-	const [labelTimeRemaining, setLabelTimeRemaining] =
-		useState('(Por $ 40.00)');
+	const [labelTimeRemaining, setLabelTimeRemaining] = useState('(Por $ 40.00)');
 	const [today, setToday] = useState(new Date());
 	const [shippingIntervalStart, setShippingIntervalStart] = useState(
 		addDays(today, 1)
@@ -35,19 +34,19 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 
 	const timeRemainingFunction = () => {
 		const newToday = new Date();
-		setToday(newToday)
+		setToday(newToday);
 		const dayOfWeek = newToday.toLocaleDateString('es-ES', {
 			weekday: 'long',
 		});
 		const currentHour = newToday.getHours();
 		const isWeekend = dayOfWeek !== 'sábado' || dayOfWeek !== 'domingo';
 
-		const isLaboral = 
+		const isLaboral =
 			dayOfWeek !== 'domingo' &&
 			dayOfWeek !== 'sabado' &&
 			currentHour >= 9 &&
 			currentHour < 18;
-		
+
 		let shippingStart;
 		if (currentHour > 13 && isWeekend) {
 			shippingStart = addDays(newToday, 1);
@@ -66,9 +65,8 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 			setLabelTimeRemaining(
 				` (Comprando dentro de ${hoursRemaining} horas, ${minutesRemaining} minutos por $ 40.00)`
 			);
-		}
-		else {
-			setLabelTimeRemaining(` (Por $40.00)`)
+		} else {
+			setLabelTimeRemaining(` (Por $40.00)`);
 		}
 
 		if (shippingStart) {
@@ -76,7 +74,6 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 			setShippingIntervalEnd(addDays(shippingStart, 5));
 		}
 	};
-
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -402,7 +399,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 						line-height: 2;
 						margin-top: 15px;
 					}
-					
+
 					.product__price__label {
 						margin-bottom: 10px;
 					}
@@ -569,7 +566,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 						background-color: #ffb116;
 						color: #ffffff;
 						font-weight: 600;
-						border-radius: 4px;
+						border-radius: 5px;
 						padding: 0 10px;
 						flex-grow: 1;
 					}
@@ -586,7 +583,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 						background-color: #ff002c;
 						color: #ffffff;
 						font-weight: 600;
-						border-radius: 4px;
+						border-radius: 5px;
 						flex-grow: 2;
 					}
 
@@ -607,7 +604,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 					.product__info {
 						flex-basis: 25%;
 						padding: 15px;
-						border-radius: 2px;
+						border-radius: 5px;
 					}
 
 					.product__price {
@@ -694,7 +691,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 
 						.product__specs__container {
 							border: 1px solid #eaeaea;
-							border-radius: 2px;
+							border-radius: 5px;
 							padding: 10px;
 						}
 						.product {

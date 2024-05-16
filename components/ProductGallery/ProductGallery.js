@@ -38,7 +38,7 @@ const ProductGallery = ({
 	const [parentDimensionsWidth, setParentDimensionsWidth] = useState(0);
 	const floatContainer = useRef();
 	const imgCurrentRef = useRef();
-	const [notImages, setNotImages] = useState(false)
+	const [notImages, setNotImages] = useState(false);
 
 	const makeDictImages = async (producto) => {
 		let dictImages = [];
@@ -241,11 +241,12 @@ const ProductGallery = ({
 
 	useEffect(() => {
 		if (current) {
-			current.url.s === '/images/not-available.png' && setLoaded(true)
-			current.url.s === '/images/not-available.png' ? setNotImages(true) : setNotImages(false);
+			current.url.s === '/images/not-available.png' && setLoaded(true);
+			current.url.s === '/images/not-available.png'
+				? setNotImages(true)
+				: setNotImages(false);
 		}
-
-	}, [current])
+	}, [current]);
 
 	stateDictImages.length === 0 && (
 		<div className='product__gallery__loader'>
@@ -455,7 +456,7 @@ const ProductGallery = ({
 						width: 50px;
 						height: 50px;
 						border: 0.5px solid #eaeaea;
-						border-radius: 4px;
+						border-radius: 5px;
 						padding: 5px;
 						display: flex;
 						align-items: center;

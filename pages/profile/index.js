@@ -765,7 +765,7 @@ const index = () => {
 					opacity: 1 !important;
 					z-index: 2;
 					margin-top: 20px;
-					border-radius: 2px;
+					border-radius: 5px;
 					cursor: pointer;
 				}
 				.profile__update__successful__message {
@@ -782,7 +782,7 @@ const index = () => {
 					flex-direction: column;
 					align-items: center;
 					justify-content: center;
-					border-radius: 2px;
+					border-radius: 5px;
 					font-size: 16px;
 				}
 
@@ -794,7 +794,7 @@ const index = () => {
 				.profile__section__footer__actions button {
 					padding: 10px;
 					margin-left: 10px;
-					border-radius: 2px;
+					border-radius: 5px;
 					font-weight: 600;
 					cursor: pointer;
 				}
@@ -860,7 +860,7 @@ const index = () => {
 
 				.profile__section__container {
 					border: 1px solid #eaeaea;
-					border-radius: 2px;
+					border-radius: 5px;
 					padding: 10px 20px;
 					background-color: #ffffff;
 				}

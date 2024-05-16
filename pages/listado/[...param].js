@@ -37,6 +37,7 @@ export const getServerSideProps = async (context) => {
 	let filter_available = false;
 	let filter_available_store = false;
 	let filter_free_shipping = false;
+	let filter_discount = false;
 	let brands = [];
 	let categories = [];
 	let attributes = [];
@@ -71,6 +72,8 @@ export const getServerSideProps = async (context) => {
 			filter_available =
 				context.query.filter_available.toLowerCase() === 'true';
 		}
+	} else {
+		filter_available = true;
 	}
 
 	if (context.query.filter_available_store) {
@@ -84,6 +87,13 @@ export const getServerSideProps = async (context) => {
 		if (context.query.filter_free_shipping) {
 			filter_free_shipping =
 				context.query.filter_free_shipping.toLowerCase() === 'true';
+		}
+	}
+
+	if (context.query.filter_discount) {
+		if (context.query.filter_discount) {
+			filter_discount =
+				context.query.filter_discount.toLowerCase() === 'true';
 		}
 	}
 
@@ -125,6 +135,7 @@ export const getServerSideProps = async (context) => {
 			filter_available,
 			filter_available_store,
 			filter_free_shipping,
+			filter_discount,
 			brands,
 			categories,
 			attributes,
@@ -142,6 +153,7 @@ const Listado = ({
 	filter_available,
 	filter_available_store,
 	filter_free_shipping,
+	filter_discount,
 	brands,
 	categories,
 	attributes,
@@ -156,6 +168,7 @@ const Listado = ({
 		filter_available: filter_available,
 		filter_available_store: filter_available_store,
 		filter_free_shipping: filter_free_shipping,
+		filter_discount: filter_discount,
 	};
 
 	const [tempMobile, setTempMobile] = useState(false);
@@ -175,7 +188,9 @@ const Listado = ({
 	const [hasMore, setHasMore] = useState(false);
 	const [itemsAvailables, setItemsAvailables] = useState(0);
 	const [itemsAvailableStore, setItemsAvailableStore] = useState(0);
-	const [itemsAvailablesFreeShipping, seiIemsAvailablesFreeShipping] =
+	const [itemsAvailablesFreeShipping, setItemsAvailablesFreeShipping] =
+		useState(0);
+	const [itemsAvailablesDiscount, setItemsAvailablesDiscount] =
 		useState(0);
 	const [brandsAvailables, setBrandsAvailables] = useState([]);
 	const [categoriesAvailables, setcategoriesAvailables] = useState([]);
@@ -257,6 +272,7 @@ const Listado = ({
 					filter_available,
 					filter_available_store,
 					filter_free_shipping,
+					filter_discount,
 					brands,
 					categories,
 					attributes,
@@ -305,15 +321,18 @@ const Listado = ({
 			filter_available,
 			filter_available_store,
 			filter_free_shipping,
+			filter_discount,
 			brands,
 			categories,
 			attributes,
 			marca,
 			categoria
 		);
+
 		setItemsAvailables(filters.available_count);
 		setItemsAvailableStore(filters.available_store_count);
-		seiIemsAvailablesFreeShipping(filters.free_shipping_count);
+		setItemsAvailablesFreeShipping(filters.free_shipping_count);
+		setItemsAvailablesDiscount(filters.available_discount);
 		setBrandsAvailables(filters.brands);
 		setcategoriesAvailables(filters.categories);
 		setAttributesAvailables(filters.attributes);
@@ -325,6 +344,7 @@ const Listado = ({
 		itemsAvailables,
 		itemsAvailableStore,
 		itemsAvailablesFreeShipping,
+		itemsAvailablesDiscount,
 		brandsAvailables,
 		categoriesAvailables,
 		attributesAvailables,
@@ -366,6 +386,7 @@ const Listado = ({
 				filter_available,
 				filter_available_store,
 				filter_free_shipping,
+				filter_discount,
 				brands,
 				categories,
 				attributes,
@@ -383,6 +404,7 @@ const Listado = ({
 					filter_available,
 					filter_available_store,
 					filter_free_shipping,
+					filter_discount,
 					brands,
 					categories,
 					attributes,
@@ -399,6 +421,7 @@ const Listado = ({
 					filter_available,
 					filter_available_store,
 					filter_free_shipping,
+					filter_discount,
 					brands,
 					categories,
 					attributes,
@@ -430,7 +453,6 @@ const Listado = ({
 		isMobile && setFirtsLoading(true);
 
 		if (categoria !== 'index') {
-			console.log(categoria);
 			let newNameCategory = String(categoria).split('index-').join('');
 			q
 				? setConvertTitle(
@@ -459,6 +481,7 @@ const Listado = ({
 		filter_available,
 		filter_available_store,
 		filter_free_shipping,
+		filter_discount,
 		brands,
 		categories,
 		attributes,
@@ -519,10 +542,12 @@ const Listado = ({
 						itemsAvailables={itemsAvailables}
 						itemsAvailableStore={itemsAvailableStore}
 						itemsAvailablesFreeShipping={itemsAvailablesFreeShipping}
+						itemsAvailablesDiscount={itemsAvailablesDiscount}
 						brandsAvailables={brandsAvailables}
 						origin_filter_available={filter_available}
 						origin_filter_available_store={filter_available_store}
 						origin_filter_free_shipping={filter_free_shipping}
+						origin_filter_discount={filter_discount}
 						origin_brands={brands}
 						categoriesAvailables={categoriesAvailables}
 						origin_categories={categories}
@@ -555,10 +580,12 @@ const Listado = ({
 										itemsAvailables={itemsAvailables}
 										itemsAvailableStore={itemsAvailableStore}
 										itemsAvailablesFreeShipping={itemsAvailablesFreeShipping}
+										itemsAvailablesDiscount={itemsAvailablesDiscount}
 										brandsAvailables={brandsAvailables}
 										origin_filter_available={filter_available}
 										origin_filter_available_store={filter_available_store}
 										origin_filter_free_shipping={filter_free_shipping}
+										origin_filter_discount={filter_discount}
 										origin_brands={brands}
 										categoriesAvailables={categoriesAvailables}
 										origin_categories={categories}
@@ -806,7 +833,7 @@ const Listado = ({
 						background-color: #ffb116;
 						color: #ffffff;
 						padding: 15px;
-						border-radius: 2px;
+						border-radius: 5px;
 						font-weight: 600;
 						font-size: 16px;
 						cursor: pointer;

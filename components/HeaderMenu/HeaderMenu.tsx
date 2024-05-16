@@ -17,10 +17,7 @@ const HeaderMenu = () => {
 					</Link>
 				</li>
 				<li>
-					<Link
-						href={`/listado/all/index-computo-monitores`}
-						legacyBehavior
-					>
+					<Link href={`/listado/all/index-computo-monitores`} legacyBehavior>
 						<a>Monitores</a>
 					</Link>
 				</li>
@@ -30,16 +27,13 @@ const HeaderMenu = () => {
 					</Link>
 				</li>
 				<li>
-					<Link
-						href={`/listado/all/index-almacenamiento`}
-						legacyBehavior
-					>
+					<Link href={`/listado/all/index-almacenamiento`} legacyBehavior>
 						<a>Almacenamiento</a>
 					</Link>
 				</li>
 				<li>
 					<Link
-						href={`/listado/all/index?q=&page_size=40&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas`}
+						href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas`}
 						legacyBehavior
 					>
 						<a>Lo más vendido</a>
@@ -47,14 +41,19 @@ const HeaderMenu = () => {
 				</li>
 				<li>
 					<Link
-						href={`/listado/all/index?q=&page_size=40&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-created`}
+						href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-created`}
 						legacyBehavior
 					>
 						<a>Novedades</a>
 					</Link>
 				</li>
 				<li>
-					<a>OFERTAS</a>
+					<Link
+						href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true`}
+						legacyBehavior
+					>
+						<a>OFERTAS</a>
+					</Link>
 				</li>
 			</ul>
 

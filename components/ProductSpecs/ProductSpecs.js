@@ -80,7 +80,7 @@ const ProductSpecs = ({ item = { specs: [] } }) => {
 						width: 100%;
 						margin-bottom: 20px;
 						border: 1px solid #f2f2f2;
-						border-radius: 2px;
+						border-radius: 5px;
 					}
 
 					.specs__table td {
@@ -92,7 +92,6 @@ const ProductSpecs = ({ item = { specs: [] } }) => {
 						padding: 10px 15px 30px 15px;
 						border: 1px solid #eaeaea;
 					}
-					
 				`}
 			</style>
 		</div>

@@ -96,7 +96,7 @@ const BestCategoriesMini = ({ parentCategorie, title }) => {
 
 							border: 1px solid #eaeaea;
 							margin-top: 10px;
-							border-radius: 2px;
+							border-radius: 5px;
 						}
 						.categories__mini__image {
 							position: relative;
