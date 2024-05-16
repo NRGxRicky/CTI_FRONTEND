@@ -89,16 +89,14 @@ const BrandSimilarMini = ({
 											</div>
 											<div className='brand__mini__item__content'>
 												<div className='brand__mini__item__price'>
+													<span>
+														$ {CurrencyFormat(item.precio_contado, 2, '.', ',')}
+													</span>
 													{item.precio_final_descuento > 0 && (
-														<>
-															<div className='text--off'>
-																<span className='price--compare'>
-																	$ {CurrencyFormat(item.precio_final)}
-																</span>
-															</div>
-														</>
+														<span className='price--compare text--off'>
+															$ {CurrencyFormat(item.precio_final)}
+														</span>
 													)}
-													$ {CurrencyFormat(item.precio_contado, 2, '.', ',')}
 												</div>
 												<div>{item.envio_gratis && <FreeShipping />}</div>
 												<div>
@@ -142,6 +140,9 @@ const BrandSimilarMini = ({
 					font-size: 18px;
 					font-weight: 600;
 					line-height: 1.5;
+					display: flex;
+					gap: 0.2rem;
+					align-items: center;
 				}
 					.brand__mini__item {
 						margin-top: 10px;

@@ -193,15 +193,6 @@ const CarouselProducts = ({
 														/>
 													</div>
 													<div className='card__carousel__price'>
-														{producto.precio_final_descuento > 0 && (
-															<>
-																<div className='text--off'>
-																	<span className='price--compare'>
-																		$ {CurrencyFormat(producto.precio_final)}
-																	</span>
-																</div>
-															</>
-														)}
 														<span>
 															${' '}
 															{CurrencyFormat(
@@ -211,6 +202,11 @@ const CarouselProducts = ({
 																','
 															)}
 														</span>
+														{producto.precio_final_descuento > 0 && (
+															<span className='price--compare text--off'>
+																$ {CurrencyFormat(producto.precio_final)}
+															</span>
+														)}
 													</div>
 													<div className='card__carousel__available'>
 														{!filter_available_store && (
@@ -407,6 +403,9 @@ const CarouselProducts = ({
 						width: 100%;
 						font-weight: 600;
 						font-size: 16px;
+						display: flex;
+						gap: 0.2rem;
+						align-items: center;
 					}
 
 					.card__carousel__title {

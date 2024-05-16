@@ -471,7 +471,13 @@ const Listado = ({
 				: setConvertTitle(
 						`Tienda de Marca ${Capitalize(String(marca).split('-').join(' '))}`
 				  );
-		} else {
+		} else if (!q && filter_discount) {
+			setConvertTitle(
+				`OFERTAS`
+			);
+		}
+		
+		else {
 			setConvertTitle(q);
 		}
 	}, [
@@ -568,7 +574,7 @@ const Listado = ({
 						<title>{`${convertTitle} | PCStore.mx`}</title>
 						<meta
 							name='description'
-							content={`Compra tu ${convertTitle} en PCStore.mx - Compra protegida, envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
+							content={`${convertTitle} en PCStore.mx - Compra protegida, envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
 						/>
 					</Head>
 					{!tempMobile ? (
