@@ -155,7 +155,6 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 									<Link
 										href={`/listado/${item.marca.slug}/index`}
 										legacyBehavior
-										
 									>
 										<a>
 											<span className='product__resume__detail'>
@@ -364,6 +363,9 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 									</a>
 									<a className='product__actions__buy'>Comprar</a>
 								</div>
+								<div className='product__seller_current'>
+									Vendido y enviado por <b>PCSTORE</b>
+								</div>
 
 								<InfoMini />
 							</div>
@@ -396,6 +398,11 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 
 			<style jsx>
 				{`
+					.product__seller_current {
+						line-height: 2;
+						margin-top: 15px;
+					}
+					
 					.product__price__label {
 						margin-bottom: 10px;
 					}
