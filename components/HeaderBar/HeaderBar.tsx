@@ -15,6 +15,7 @@ import { useAuth } from '../../hooks/auth';
 import TruncateManual from '../../hooks/TruncateManual';
 import HeaderMenu from '../HeaderMenu/HeaderMenu';
 import NavMobileMenu from '../NavMobileMenu/NavMobileMenu';
+import HeaderBarLocalStock from '../../components/HeaderBarLocalStock/HeaderBarLocalStock'; 
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import {
 	showOpacity,
@@ -229,7 +230,9 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 					{showLoginMenu && <LoginMenu setName={setName} name={name} />}
 					{!tempMobile && <HeaderMenu />}
 				</div>
+				<HeaderBarLocalStock />
 			</div>
+
 			<div
 				className='header-bar__mobile'
 				style={{ top: searchVisibleValue ? '0' : '-54px' }}

@@ -1,9 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import showOpacityContainerReducer from "./features/showOpacityContainerSlide"
+import locationSlide from "./features/locationSlide";
 
 export const store = configureStore({
     reducer: {
-       showOpacityContainerReducer
+        showOpacityContainerReducer,
+        locationSlide
+        
     }
 })
 

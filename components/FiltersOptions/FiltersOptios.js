@@ -34,9 +34,13 @@ const FiltersOptios = ({
 	const [showAttributesContainer, setShowAttributesContainer] = useState(false);
 	const [attributesCounter, setAttributesCounter] = useState(10);
 	const [internalLoading, setInternalLoading] = useState(true);
-	const dispacth = useAppDispatch();
+	const dispatch = useAppDispatch();
+
 	const mobileNavFilters = useAppSelector(
 		(state) => state.showOpacityContainerReducer.navMobileFilters
+	);
+	const headerLocationStock = useAppSelector(
+		(state) => state.locationSlide.headerLocationStock
 	);
 
 	const handdleAppendFilter = useCallback(
@@ -105,7 +109,8 @@ const FiltersOptios = ({
 	);
 
 	const handleFiltersToApply = async () => {
-		dispacth(hideAll());
+		dispatch(hideAll());
+		
 		await router.replace({
 			pathname: router.pathname,
 			query: { ...router.query, ...filtersActive, page: 1 },
@@ -113,7 +118,7 @@ const FiltersOptios = ({
 	};
 
 	const handleFiltersClear = async () => {
-		dispacth(hideAll());
+		dispatch(hideAll());
 		setFiltersActive({
 			brands: [],
 			categories: [],
@@ -156,7 +161,7 @@ const FiltersOptios = ({
 					<div className='nav__filters__header'>
 						<div
 							className='nav__filters__header__close'
-							onClick={() => dispacth(hideAll())}
+							onClick={() => dispatch(hideAll())}
 						>
 							<button className='close --close-fliters'></button>
 						</div>
@@ -186,18 +191,20 @@ const FiltersOptios = ({
 											tcontent={`Disponibles (${itemsAvailables})`}
 										/>
 									</div>
-								</div>
-								<div className='nav__filters__option__item'>
-									<div className={itemsAvailableStore < 1 && 'text--off'}>
-										<ToggleButon
-											tchecked={origin_filter_available_store}
-											tonChange={handdleAppendFilter}
-											tname='filter_available_store'
-											tdisabled={itemsAvailableStore > 0 ? false : true}
-											tcontent={`Entrega en Puebla (${itemsAvailableStore})`}
-										/>
 									</div>
-								</div>
+									{headerLocationStock &&
+										<div className='nav__filters__option__item'>
+											<div className={itemsAvailableStore < 1 && 'text--off'}>
+												<ToggleButon
+													tchecked={origin_filter_available_store}
+													tonChange={handdleAppendFilter}
+													tname='filter_available_store'
+													tdisabled={itemsAvailableStore > 0 ? false : true}
+													tcontent={`Entrega en Puebla (${itemsAvailableStore})`}
+												/>
+											</div>
+										</div>
+									}
 								<div className='nav__filters__option__item'>
 									<div
 										className={itemsAvailablesFreeShipping < 1 && 'text--off'}
@@ -213,9 +220,7 @@ const FiltersOptios = ({
 									</div>
 								</div>
 								<div className='nav__filters__option__item'>
-									<div
-										className={itemsAvailablesDiscount < 1 && 'text--off'}
-									>
+									<div className={itemsAvailablesDiscount < 1 && 'text--off'}>
 										<ToggleButon
 											tchecked={origin_filter_discount}
 											tonChange={handdleAppendFilter}

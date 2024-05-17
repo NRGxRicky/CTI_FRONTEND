@@ -25,6 +25,10 @@ const MobileNavBar = ({
 		(state) => state.showOpacityContainerReducer.navMobileSort
 	);
 
+	const headerLocationHeight = useAppSelector(
+		(state) => state.locationSlide.headerLocationStockHeight
+	);
+
 	const dictSortLabel = {
 		'-ventas': 'Más vendidos',
 		'-visitas': 'Más relevantes',
@@ -74,7 +78,8 @@ const MobileNavBar = ({
 			filtersActive.attributes.length +
 			filtersActive.filter_available +
 			filtersActive.filter_available_store +
-			filtersActive.filter_free_shipping;
+			filtersActive.filter_free_shipping + 
+			filtersActive.filter_discount;
 
 		setCounterFilters(counterFiltersInteger);
 	}, []);
@@ -83,7 +88,7 @@ const MobileNavBar = ({
 		<div>
 			<div
 				className='nav__container'
-				style={{ top: visibleNav ? '59px' : '-59px' }}
+				style={{ top: visibleNav ? 59 + headerLocationHeight : -59 - headerLocationHeight }}
 			>
 				<div className='nav'>
 					<div

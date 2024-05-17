@@ -26,10 +26,6 @@ const NavMobileMenu = () => {
 	);
 	const router = useRouter();
 
-	const bodyScroll = useAppSelector(
-		(state: any) => state.showOpacityContainerReducer.bodyScroll
-	);
-
 	const toggleMenu = () => {
 		if (!menuMobileOpen) {
 			dispacth(showNavMobileMenu());
@@ -47,7 +43,9 @@ const NavMobileMenu = () => {
 	}, [router.pathname, isMobile]);
 
 	return (
-		<nav className='header__mobile-nav-toggle col-xs-1 col-sm-1 col-md-1 col-lg-1'>
+		<nav
+			className='header__mobile-nav-toggle col-xs-1 col-sm-1 col-md-1 col-lg-1'
+		>
 			<button
 				className={`burger-button ${menuMobileOpen ? 'active' : ''}`}
 				onClick={toggleMenu}

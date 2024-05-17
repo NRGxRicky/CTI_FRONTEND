@@ -16,6 +16,7 @@ import CarouselProductsV2 from '../../components/Carousel/CarouselProductsV2';
 import Footer from '../../components/Footer/Footer';
 import ListProductsMobile from '../../components/LisProductsMobile/ListProductsMobile';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+
 import {
 	hideAll,
 	blockBodyScroll,
@@ -28,7 +29,6 @@ import {
 	isMobile,
 } from 'react-device-detect';
 import Capitalize from '../../hooks/CapitalizeTitle';
-import { isConstructorDeclaration } from 'typescript';
 
 export const getServerSideProps = async (context) => {
 	let order = '-visitas';
@@ -92,8 +92,7 @@ export const getServerSideProps = async (context) => {
 
 	if (context.query.filter_discount) {
 		if (context.query.filter_discount) {
-			filter_discount =
-				context.query.filter_discount.toLowerCase() === 'true';
+			filter_discount = context.query.filter_discount.toLowerCase() === 'true';
 		}
 	}
 
@@ -161,16 +160,6 @@ const Listado = ({
 	categoria,
 	page_size,
 }) => {
-	let defaultFilters = {
-		brands: brands,
-		categories: categories,
-		attributes: attributes,
-		filter_available: filter_available,
-		filter_available_store: filter_available_store,
-		filter_free_shipping: filter_free_shipping,
-		filter_discount: filter_discount,
-	};
-
 	const [tempMobile, setTempMobile] = useState(false);
 	const [loadingData, setLoadingData] = useState(false);
 	const [data, setData] = useState({ results: [] });
@@ -190,18 +179,32 @@ const Listado = ({
 	const [itemsAvailableStore, setItemsAvailableStore] = useState(0);
 	const [itemsAvailablesFreeShipping, setItemsAvailablesFreeShipping] =
 		useState(0);
-	const [itemsAvailablesDiscount, setItemsAvailablesDiscount] =
-		useState(0);
+	const [itemsAvailablesDiscount, setItemsAvailablesDiscount] = useState(0);
 	const [brandsAvailables, setBrandsAvailables] = useState([]);
 	const [categoriesAvailables, setcategoriesAvailables] = useState([]);
 	const [attributesAvailables, setAttributesAvailables] = useState([]);
-	const [filtersActive, setFiltersActive] = useState(defaultFilters);
-	const [filtersActiveMain, setFiltersActiveMain] = useState(defaultFilters);
 	const router = useRouter();
 	const { height, width } = WindowDimensions();
 	const [mobileScroll, setMobileScroll] = useState(0);
 	const [convertTitle, setConvertTitle] = useState(q);
-	const dispacth = useAppDispatch();
+	const dispatch = useAppDispatch();
+	const locationStockOnly = useAppSelector(
+		(state) => state.locationSlide.locationStockOnly
+	);
+
+	let defaultFilters = {
+		brands: brands,
+		categories: categories,
+		attributes: attributes,
+		filter_available: filter_available,
+		filter_available_store: locationStockOnly,
+		filter_free_shipping: filter_free_shipping,
+		filter_discount: filter_discount,
+	};
+
+	const [filtersActive, setFiltersActive] = useState(defaultFilters);
+	const [filtersActiveMain, setFiltersActiveMain] = useState(defaultFilters);
+
 	const dictSortLabel = {
 		'-ventas': 'Más vendidos',
 		'-visitas': 'Más relevantes',
@@ -214,7 +217,7 @@ const Listado = ({
 	const handleSort = async (order) => {
 		setInternalOrder(order);
 		setSecondLoading(true);
-		dispacth(hideAll());
+		dispatch(hideAll());
 		await router.replace({
 			pathname: router.pathname,
 			query: { ...router.query, order: order },
@@ -222,7 +225,7 @@ const Listado = ({
 	};
 
 	const handleFiltersClear = async () => {
-		dispacth(hideAll());
+		dispatch(hideAll());
 
 		await router.replace({
 			pathname: router.pathname,
@@ -270,7 +273,7 @@ const Listado = ({
 					order,
 					pageActual + 1,
 					filter_available,
-					filter_available_store,
+					locationStockOnly,
 					filter_free_shipping,
 					filter_discount,
 					brands,
@@ -297,7 +300,7 @@ const Listado = ({
 	};
 
 	const handleFiltersToApply = async () => {
-		dispacth(hideAll());
+		dispatch(hideAll());
 
 		await router.replace({
 			pathname: router.pathname,
@@ -319,7 +322,7 @@ const Listado = ({
 			'-visitas',
 			1,
 			filter_available,
-			filter_available_store,
+			locationStockOnly,
 			filter_free_shipping,
 			filter_discount,
 			brands,
@@ -384,7 +387,7 @@ const Listado = ({
 				order,
 				page,
 				filter_available,
-				filter_available_store,
+				locationStockOnly,
 				filter_free_shipping,
 				filter_discount,
 				brands,
@@ -402,7 +405,7 @@ const Listado = ({
 					order,
 					1,
 					filter_available,
-					filter_available_store,
+					locationStockOnly,
 					filter_free_shipping,
 					filter_discount,
 					brands,
@@ -419,7 +422,7 @@ const Listado = ({
 					order,
 					page,
 					filter_available,
-					filter_available_store,
+					locationStockOnly,
 					filter_free_shipping,
 					filter_discount,
 					brands,
@@ -472,12 +475,8 @@ const Listado = ({
 						`Tienda de Marca ${Capitalize(String(marca).split('-').join(' '))}`
 				  );
 		} else if (!q && filter_discount) {
-			setConvertTitle(
-				`OFERTAS`
-			);
-		}
-		
-		else {
+			setConvertTitle(`OFERTAS`);
+		} else {
 			setConvertTitle(q);
 		}
 	}, [
@@ -485,7 +484,7 @@ const Listado = ({
 		page,
 		order,
 		filter_available,
-		filter_available_store,
+		locationStockOnly,
 		filter_free_shipping,
 		filter_discount,
 		brands,
@@ -551,7 +550,7 @@ const Listado = ({
 						itemsAvailablesDiscount={itemsAvailablesDiscount}
 						brandsAvailables={brandsAvailables}
 						origin_filter_available={filter_available}
-						origin_filter_available_store={filter_available_store}
+						origin_filter_available_store={locationStockOnly}
 						origin_filter_free_shipping={filter_free_shipping}
 						origin_filter_discount={filter_discount}
 						origin_brands={brands}
@@ -589,7 +588,7 @@ const Listado = ({
 										itemsAvailablesDiscount={itemsAvailablesDiscount}
 										brandsAvailables={brandsAvailables}
 										origin_filter_available={filter_available}
-										origin_filter_available_store={filter_available_store}
+										origin_filter_available_store={locationStockOnly}
 										origin_filter_free_shipping={filter_free_shipping}
 										origin_filter_discount={filter_discount}
 										origin_brands={brands}
@@ -657,7 +656,7 @@ const Listado = ({
 											<>
 												<ListProducts
 													results={results}
-													filter_available_store={filter_available_store}
+													filter_available_store={locationStockOnly}
 												/>
 												<ListProductsPagination
 													pages={pages}
@@ -673,7 +672,7 @@ const Listado = ({
 								typeQuery={'-ventas'}
 								responsiveElements={1}
 								slideDimensions={'25%'}
-								filter_available_store={filter_available_store}
+								filter_available_store={locationStockOnly}
 								categoria={categoria}
 								marca={marca}
 								q={q}
@@ -693,7 +692,7 @@ const Listado = ({
 					) : (
 						<ListProductsMobile
 							results={results}
-							filter_available_store={filter_available_store}
+							filter_available_store={locationStockOnly}
 							hasMore={hasMore}
 							setMobileScroll={setMobileScroll}
 							loadMore={loadMore}
@@ -721,7 +720,7 @@ const Listado = ({
 						</div>
 						{data.count > 0 ||
 						filter_available ||
-						filter_available_store ||
+						locationStockOnly ||
 						filter_free_shipping ||
 						brands.length !== 0 ||
 						attributes.length !== 0 ||

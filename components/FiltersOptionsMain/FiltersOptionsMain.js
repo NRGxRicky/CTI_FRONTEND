@@ -3,6 +3,7 @@ import Capitalize from '../../hooks/CapitalizeTitle';
 import ToggleButon from '../ToggleButton/ToggleButon';
 import { useRouter } from 'next/router';
 import { Preloader, TailSpin } from 'react-preloader-icon';
+import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 
 const FiltersOptionsMain = ({
 	q,
@@ -40,6 +41,10 @@ const FiltersOptionsMain = ({
 	const handdleAppendFilter = ({ target: { name, checked } }) => {
 		setFiltersActive((prevState) => ({ ...prevState, [name]: checked }));
 	};
+
+	const headerLocationStock = useAppSelector(
+		(state) => state.locationSlide.headerLocationStock
+	);
 
 	const functionAppendDictionaryBrandFilter = (name, checked) => {
 		const copyState = filtersActive;
@@ -186,7 +191,7 @@ const FiltersOptionsMain = ({
 								Disponibles <span className='close'></span>
 							</span>
 						)}
-						{origin_filter_available_store && (
+						{headerLocationStock && (
 							<span
 								onClick={() => {
 									setFiltersActive((prevState) => ({
@@ -308,17 +313,19 @@ const FiltersOptionsMain = ({
 									/>
 								</div>
 							</div>
-							<div className='nav__filters__option__item'>
-								<div className={itemsAvailableStore < 1 && 'text--off'}>
-									<ToggleButon
-										tchecked={origin_filter_available_store}
-										tonChange={handdleAppendFilter}
-										tname='filter_available_store'
-										tdisabled={itemsAvailableStore > 0 ? false : true}
-										tcontent={`Entrega en Puebla (${itemsAvailableStore})`}
-									/>
+							{headerLocationStock && (
+								<div className='nav__filters__option__item'>
+									<div className={itemsAvailableStore < 1 && 'text--off'}>
+										<ToggleButon
+											tchecked={origin_filter_available_store}
+											tonChange={handdleAppendFilter}
+											tname='filter_available_store'
+											tdisabled={itemsAvailableStore > 0 ? false : true}
+											tcontent={`Entrega en Puebla (${itemsAvailableStore})`}
+										/>
+									</div>
 								</div>
-							</div>
+							)}
 							<div className='nav__filters__option__item'>
 								<div className={itemsAvailablesFreeShipping < 1 && 'text--off'}>
 									<ToggleButon
