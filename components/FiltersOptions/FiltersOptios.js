@@ -111,9 +111,7 @@ const FiltersOptios = ({
 
 	const handleFiltersToApply = async () => {
 		dispatch(hideAll());
-		filtersActive.filter_available_store !== origin_filter_available_store &&
-			dispatch(setLocationStockOnly(filtersActive.filter_available_store));
-		
+
 		await router.replace({
 			pathname: router.pathname,
 			query: { ...router.query, ...filtersActive, page: 1 },
@@ -194,20 +192,24 @@ const FiltersOptios = ({
 											tcontent={`Disponibles (${itemsAvailables})`}
 										/>
 									</div>
-									</div>
-									{headerLocationStock &&
-										<div className='nav__filters__option__item'>
-											<div className={itemsAvailableStore < 1 && 'text--off'}>
-												<ToggleButon
-													tchecked={origin_filter_available_store}
-													tonChange={handdleAppendFilter}
-													tname='filter_available_store'
-													tdisabled={itemsAvailableStore > 0 ? false : true}
-													tcontent={`Entrega en Puebla (${itemsAvailableStore})`}
-												/>
-											</div>
+								</div>
+								{headerLocationStock && (
+									<div className='nav__filters__option__item'>
+										<div className={itemsAvailableStore < 1 && 'text--off'}>
+											<ToggleButon
+												tchecked={origin_filter_available_store}
+												tonChange={() => {
+													dispatch(
+														setLocationStockOnly(!origin_filter_available_store)
+													);
+												}}
+												tname='filter_available_store'
+												tdisabled={itemsAvailableStore > 0 ? false : true}
+												tcontent={`Entrega en Puebla (${itemsAvailableStore})`}
+											/>
 										</div>
-									}
+									</div>
+								)}
 								<div className='nav__filters__option__item'>
 									<div
 										className={itemsAvailablesFreeShipping < 1 && 'text--off'}

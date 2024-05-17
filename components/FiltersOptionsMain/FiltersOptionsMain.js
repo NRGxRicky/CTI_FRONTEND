@@ -4,7 +4,7 @@ import ToggleButon from '../ToggleButton/ToggleButon';
 import { useRouter } from 'next/router';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
-
+import { setLocationStockOnly } from '../../lib/features/locationSlide';
 const FiltersOptionsMain = ({
 	q,
 	itemsAvailables,
@@ -37,6 +37,7 @@ const FiltersOptionsMain = ({
 	const [categoriesCounter, setCategoriesCounter] = useState(5);
 	const [brandsCounter, setBrandsCounter] = useState(5);
 	const [internalLoading, setInternalLoading] = useState(true);
+	const dispatch = useAppDispatch();
 
 	const handdleAppendFilter = ({ target: { name, checked } }) => {
 		setFiltersActive((prevState) => ({ ...prevState, [name]: checked }));
@@ -194,10 +195,12 @@ const FiltersOptionsMain = ({
 						{headerLocationStock && (
 							<span
 								onClick={() => {
-									setFiltersActive((prevState) => ({
-										...prevState,
-										filter_available_store: false,
-									}));
+										
+												dispatch(
+													setLocationStockOnly(
+														filtersActiveMain.filter_available_store
+													)
+												);
 								}}
 							>
 								Entrega en Puebla <span className='close'></span>
@@ -318,7 +321,11 @@ const FiltersOptionsMain = ({
 									<div className={itemsAvailableStore < 1 && 'text--off'}>
 										<ToggleButon
 											tchecked={origin_filter_available_store}
-											tonChange={handdleAppendFilter}
+											tonChange={() => {
+												dispatch(
+													setLocationStockOnly(!origin_filter_available_store)
+												)
+											}}
 											tname='filter_available_store'
 											tdisabled={itemsAvailableStore > 0 ? false : true}
 											tcontent={`Entrega en Puebla (${itemsAvailableStore})`}

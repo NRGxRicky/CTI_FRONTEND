@@ -42,7 +42,7 @@ const HeaderBarLocalStock = () => {
 					headerBarlocalcontainer.current?.offsetHeight
 				)
 			);
-	}, [dispatch, headerLocationStock]);
+	}, [dispatch, headerLocationStock, router]);
 
 	if (!router.pathname.startsWith('/listado')) {
 		return null;
