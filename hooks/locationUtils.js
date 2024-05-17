@@ -25,7 +25,7 @@ export function shouldRequestLocationPermission() {
 	const currentTime = new Date().getTime();
 	const timeDiff = currentTime - parseInt(lastPermissionTime, 10);
   const minTimeDiff = 15 * 60 * 1000; // 15 minutes
-  console.log(timeDiff >= minTimeDiff);
+
 	return timeDiff >= minTimeDiff;
 }
 

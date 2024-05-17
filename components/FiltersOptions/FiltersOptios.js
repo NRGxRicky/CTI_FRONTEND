@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
+import { setLocationStockOnly } from '../../lib/features/locationSlide';
 
 const FiltersOptios = ({
 	q,
@@ -110,6 +111,8 @@ const FiltersOptios = ({
 
 	const handleFiltersToApply = async () => {
 		dispatch(hideAll());
+		filtersActive.filter_available_store !== origin_filter_available_store &&
+			dispatch(setLocationStockOnly(filtersActive.filter_available_store));
 		
 		await router.replace({
 			pathname: router.pathname,

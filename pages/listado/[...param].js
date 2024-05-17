@@ -16,6 +16,7 @@ import CarouselProductsV2 from '../../components/Carousel/CarouselProductsV2';
 import Footer from '../../components/Footer/Footer';
 import ListProductsMobile from '../../components/LisProductsMobile/ListProductsMobile';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+import { setLocationStockOnly } from '../../lib/features/locationSlide';
 
 import {
 	hideAll,
@@ -226,6 +227,9 @@ const Listado = ({
 
 	const handleFiltersClear = async () => {
 		dispatch(hideAll());
+
+		filtersActive.filter_available_store !== origin_filter_available_store &&
+			dispatch(setLocationStockOnly(filtersActive.filter_available_store));
 
 		await router.replace({
 			pathname: router.pathname,
