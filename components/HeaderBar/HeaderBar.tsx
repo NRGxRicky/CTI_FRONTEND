@@ -467,7 +467,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 				}
 
 				.search-box {
-					z-index: 200;
+					z-index: 400;
 					padding: 0;
 					position: absolute;
 					width: 100%;
