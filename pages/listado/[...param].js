@@ -228,7 +228,7 @@ const Listado = ({
 	const handleFiltersClear = async () => {
 		dispatch(hideAll());
 
-		filtersActive.filter_available_store !== origin_filter_available_store &&
+		filtersActive.filter_available_store !== locationStockOnly &&
 			dispatch(setLocationStockOnly(filtersActive.filter_available_store));
 
 		await router.replace({
