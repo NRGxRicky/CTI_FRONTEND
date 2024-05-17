@@ -199,6 +199,7 @@ const FiltersOptios = ({
 											<ToggleButon
 												tchecked={origin_filter_available_store}
 												tonChange={() => {
+													dispatch(hideAll());
 													dispatch(
 														setLocationStockOnly(!origin_filter_available_store)
 													);

@@ -102,7 +102,7 @@ const HeaderBarLocalStock = () => {
 						flex-wrap: wrap;
 						padding: 5px;
 						font-size: 12px;
-						top: 2px;
+						top: 3px;
 						color: #ffffff;
             transition: 0.5s background-color ease-in-out;
 					}
