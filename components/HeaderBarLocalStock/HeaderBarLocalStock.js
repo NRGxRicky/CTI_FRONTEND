@@ -77,8 +77,7 @@ const HeaderBarLocalStock = () => {
 					<span>
 						<ToggleButton
 							tcontent={`${
-								locationStockOnly ? 'Mostrando' : 'Mostrar'
-							} solo inventario local )`}
+								locationStockOnly && '( Mostrando solo inventario local )'}
 							style={'checkbox green'}
 							tchecked={locationStockOnly}
 							tonChange={handleToggleLocationStockOnly}
