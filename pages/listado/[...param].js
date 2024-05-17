@@ -228,9 +228,6 @@ const Listado = ({
 	const handleFiltersClear = async () => {
 		dispatch(hideAll());
 
-		filtersActiveMain.filter_available_store !== locationStockOnly &&
-			dispatch(setLocationStockOnly(filtersActiveMain.filter_available_store));
-
 		await router.replace({
 			pathname: router.pathname,
 			query: { q, param: [marca, categoria] },
@@ -305,6 +302,9 @@ const Listado = ({
 
 	const handleFiltersToApply = async () => {
 		dispatch(hideAll());
+
+		filtersActiveMain.filter_available_store !== locationStockOnly &&
+			dispatch(setLocationStockOnly(filtersActiveMain.filter_available_store));
 
 		await router.replace({
 			pathname: router.pathname,
