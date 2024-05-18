@@ -77,7 +77,6 @@ const MobileNavBar = ({
 			filtersActive.categories.length +
 			filtersActive.attributes.length +
 			filtersActive.filter_available +
-			filtersActive.filter_available_store +
 			filtersActive.filter_free_shipping + 
 			filtersActive.filter_discount;
 

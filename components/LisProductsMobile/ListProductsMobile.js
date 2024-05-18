@@ -12,6 +12,7 @@ import { Preloader, TailSpin } from 'react-preloader-icon';
 import WindowDimensions from '../../hooks/WindowDimensions';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
+import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 
 const ListProductsMobile = ({
 	results,
@@ -27,6 +28,13 @@ const ListProductsMobile = ({
 	const { height, width } = WindowDimensions();
 	const [mobileInitialScrollY, setMobileInitialScrollY] = useState(0);
 	const mobileProductListContainter = useRef();
+	const headerLocationHeight = useAppSelector(
+		(state) => state.locationSlide.headerLocationStockHeight
+	);
+	const headerLocationStock = useAppSelector(
+		(state) => state.locationSlide.headerLocationStock
+	);
+
 	useEffect(() => {
 		mobileScroll &&
 			sessionStorage.setItem('scrollPosition', mobileScroll.toString());
@@ -67,7 +75,14 @@ const ListProductsMobile = ({
 				}
 				scrollThreshold={'10px'}
 			>
-				<div className='list__container__mobile_fix'></div>
+				<div
+					className='list__container__mobile_fix'
+					style={{
+						height: headerLocationStock
+							? 54 + headerLocationHeight
+							: 54,
+					}}
+				></div>
 				{results.map((producto) => (
 					<div
 						className='products-list__item'
@@ -182,10 +197,9 @@ const ListProductsMobile = ({
 			</InfiniteScroll>
 			<style jsx>
 				{`
-
-				.card__available {
-					justify-self: self-end;
-				}
+					.card__available {
+						justify-self: self-end;
+					}
 
 					.card__price {
 						display: flex;

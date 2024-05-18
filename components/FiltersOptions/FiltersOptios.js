@@ -36,6 +36,7 @@ const FiltersOptios = ({
 	const [attributesCounter, setAttributesCounter] = useState(10);
 	const [internalLoading, setInternalLoading] = useState(true);
 	const dispatch = useAppDispatch();
+	let copyState = filtersActive;
 
 	const mobileNavFilters = useAppSelector(
 		(state) => state.showOpacityContainerReducer.navMobileFilters
@@ -46,7 +47,7 @@ const FiltersOptios = ({
 
 	const handdleAppendFilter = useCallback(
 		({ target: { name, checked } }) => {
-			setFiltersActive((prevState) => ({ ...prevState, [name]: checked }));
+			copyState[name] = checked 
 		},
 		[filtersActive]
 	);
@@ -64,14 +65,13 @@ const FiltersOptios = ({
 					copyState['brands'] = copyState['brands'].filter((e) => e !== name);
 				}
 			}
-			setFiltersActive((prevState) => ({ ...prevState, ...copyState }));
+		
 		},
 		[filtersActive]
 	);
 
 	const handdleAppendDictionaryCategoryFilter = useCallback(
 		({ target: { name, checked } }) => {
-			let copyState = filtersActive;
 			if (!copyState['categories'].includes(name)) {
 				if (checked) {
 					copyState['categories'].push(name);
@@ -84,14 +84,13 @@ const FiltersOptios = ({
 					);
 				}
 			}
-			setFiltersActive((prevState) => ({ ...prevState, ...copyState }));
+		
 		},
 		[filtersActive]
 	);
 
 	const handdleAppendDictionaryAttributeFilter = useCallback(
 		({ target: { name, checked } }) => {
-			let copyState = filtersActive;
 			if (!copyState['attributes'].includes(name)) {
 				if (checked) {
 					copyState['attributes'].push(name);
@@ -104,7 +103,7 @@ const FiltersOptios = ({
 					);
 				}
 			}
-			setFiltersActive((prevState) => ({ ...prevState, ...copyState }));
+		
 		},
 		[filtersActive]
 	);
@@ -112,10 +111,7 @@ const FiltersOptios = ({
 	const handleFiltersToApply = async () => {
 		dispatch(hideAll());
 
-		await router.replace({
-			pathname: router.pathname,
-			query: { ...router.query, ...filtersActive, page: 1 },
-		});
+		setFiltersActive((prevState) => ({ ...prevState, ...copyState }));
 	};
 
 	const handleFiltersClear = async () => {
@@ -198,12 +194,7 @@ const FiltersOptios = ({
 										<div className={itemsAvailableStore < 1 && 'text--off'}>
 											<ToggleButon
 												tchecked={origin_filter_available_store}
-												tonChange={() => {
-													dispatch(hideAll());
-													dispatch(
-														setLocationStockOnly(!origin_filter_available_store)
-													);
-												}}
+												tonChange={handdleAppendFilter}
 												tname='filter_available_store'
 												tdisabled={itemsAvailableStore > 0 ? false : true}
 												tcontent={`Entrega en Puebla (${itemsAvailableStore})`}

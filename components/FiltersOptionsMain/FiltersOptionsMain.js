@@ -192,15 +192,12 @@ const FiltersOptionsMain = ({
 								Disponibles <span className='close'></span>
 							</span>
 						)}
-						{headerLocationStock && (
+						{headerLocationStock && origin_filter_available_store && (
 							<span
 								onClick={() => {
-										
-												dispatch(
-													setLocationStockOnly(
-														filtersActiveMain.filter_available_store
-													)
-												);
+									dispatch(
+										setLocationStockOnly(!origin_filter_available_store)
+									);
 								}}
 							>
 								Entrega en Puebla <span className='close'></span>
@@ -321,11 +318,7 @@ const FiltersOptionsMain = ({
 									<div className={itemsAvailableStore < 1 && 'text--off'}>
 										<ToggleButon
 											tchecked={origin_filter_available_store}
-											tonChange={() => {
-												dispatch(
-													setLocationStockOnly(!origin_filter_available_store)
-												)
-											}}
+											tonChange={handdleAppendFilter}
 											tname='filter_available_store'
 											tdisabled={itemsAvailableStore > 0 ? false : true}
 											tcontent={`Entrega en Puebla (${itemsAvailableStore})`}

@@ -189,9 +189,12 @@ const Listado = ({
 	const [mobileScroll, setMobileScroll] = useState(0);
 	const [convertTitle, setConvertTitle] = useState(q);
 	const dispatch = useAppDispatch();
+	const [applyFilters, setApplyFilters] = useState(false);
 	const locationStockOnly = useAppSelector(
 		(state) => state.locationSlide.locationStockOnly
 	);
+
+
 
 	let defaultFilters = {
 		brands: brands,
@@ -204,7 +207,6 @@ const Listado = ({
 	};
 
 	const [filtersActive, setFiltersActive] = useState(defaultFilters);
-	const [filtersActiveMain, setFiltersActiveMain] = useState(defaultFilters);
 
 	const dictSortLabel = {
 		'-ventas': 'Más vendidos',
@@ -227,6 +229,7 @@ const Listado = ({
 
 	const handleFiltersClear = async () => {
 		dispatch(hideAll());
+		dispatch(setLocationStockOnly(false))
 
 		await router.replace({
 			pathname: router.pathname,
@@ -305,16 +308,16 @@ const Listado = ({
 
 		await router.replace({
 			pathname: router.pathname,
-			query: { ...router.query, ...filtersActiveMain, page: 1 },
+			query: { ...router.query, ...filtersActive, page: 1 },
 		});
 	};
 
 	useEffect(() => {
 		setSecondLoading(true);
-		if (filtersActiveMain !== defaultFilters && !loadingData) {
+		if (filtersActive !== defaultFilters && !loadingData) {
 			handleFiltersToApply();
 		}
-	}, [filtersActiveMain]);
+	}, [filtersActive]);
 
 	const getFilters = async () => {
 		setLoadingFilters(true);
@@ -356,7 +359,7 @@ const Listado = ({
 
 	useEffect(() => {
 		getFilters();
-	}, [q, filtersActive, filtersActiveMain]);
+	}, [q, filtersActive]);
 
 	useEffect(() => {
 		setFirtsLoading(true);
@@ -440,14 +443,15 @@ const Listado = ({
 	};
 
 	useEffect(() => {
+		
 		setTotalItems(0);
 		setSecondLoading(true);
 		if (data.results.length === 0) {
 			setFirtsLoading(true);
 		}
+		setApplyFilters(false)
 		getData();
 		setFiltersActive(defaultFilters);
-		setFiltersActiveMain(defaultFilters);
 		setInternalOrder(order);
 
 		parseInt(page) === 1 && setPageActual(1);
@@ -460,21 +464,21 @@ const Listado = ({
 			let newNameCategory = String(categoria).split('index-').join('');
 			q
 				? setConvertTitle(
-						` | ${Capitalize(newNameCategory.split('-').join(' '))}`
-				  )
+					` | ${Capitalize(newNameCategory.split('-').join(' '))}`
+				)
 				: setConvertTitle(
-						`${Capitalize(String(newNameCategory).split('-').join(' '))}`
-				  );
+					`${Capitalize(String(newNameCategory).split('-').join(' '))}`
+				);
 		} else if (marca !== 'all') {
 			q
 				? setConvertTitle(
-						` | Tienda de Marca ${Capitalize(
-							String(marca).split('-').join(' ')
-						)}`
-				  )
+					` | Tienda de Marca ${Capitalize(
+						String(marca).split('-').join(' ')
+					)}`
+				)
 				: setConvertTitle(
-						`Tienda de Marca ${Capitalize(String(marca).split('-').join(' '))}`
-				  );
+					`Tienda de Marca ${Capitalize(String(marca).split('-').join(' '))}`
+				);
 		} else if (!q && filter_discount) {
 			setConvertTitle(`OFERTAS`);
 		} else {
@@ -485,15 +489,35 @@ const Listado = ({
 		page,
 		order,
 		filter_available,
-		locationStockOnly,
 		filter_free_shipping,
 		filter_discount,
+		filter_available_store,
 		brands,
 		categories,
 		attributes,
 		marca,
 		categoria,
+		applyFilters,
 	]);
+
+	useEffect(() => {
+		if (filtersActive.filter_available_store !== locationStockOnly) {
+			dispatch(setLocationStockOnly(filtersActive.filter_available_store));
+		}
+	}, [
+		filtersActive.filter_available_store
+	]);
+
+	useEffect(() => {
+		if (filtersActive.filter_available_store !== locationStockOnly) {
+			let copyState = filtersActive;
+			copyState.filter_available_store = locationStockOnly;
+			setFiltersActive((prevState) => ({
+				...prevState,
+				...copyState
+			}));
+		}
+	}, [locationStockOnly])
 
 	if (firstLoading) {
 		return (
@@ -598,8 +622,8 @@ const Listado = ({
 										attributesAvailables={attributesAvailables}
 										origin_attributes={attributes}
 										loading={loadingFilters}
-										filtersActive={filtersActiveMain}
-										setFiltersActive={setFiltersActiveMain}
+										filtersActive={filtersActive}
+										setFiltersActive={setFiltersActive}
 										marca={marca}
 										categoria={categoria}
 										handleFiltersClear={handleFiltersClear}
