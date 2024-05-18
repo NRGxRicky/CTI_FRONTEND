@@ -326,7 +326,7 @@ const NavMobileMenu = () => {
 					width: 90%;
 					background-color: #fff;
 					position: fixed;
-					z-index: 100;
+					z-index: 400;
 					transition: left 0.5s, opacity 0.5s;
 				}
 
