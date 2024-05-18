@@ -30,7 +30,7 @@ const OpacityContainer = () => {
 				className='opacity'
 				style={{
 					opacity: opacityContainerValue ? 0.7 : 0,
-					zIndex: opacityContainerValue ? 50 : -1,
+					zIndex: opacityContainerValue ? 100 : -1,
 				}}
 				onClick={() => {
 					dispatch(hideAll());

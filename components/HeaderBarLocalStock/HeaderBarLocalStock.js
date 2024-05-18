@@ -97,7 +97,7 @@ const HeaderBarLocalStock = () => {
 						align-items: center;
 						justify-content: center;
 						gap: 5px;
-						z-index: 300;
+						z-index: 1;
 						position: relative;
 						flex-wrap: wrap;
 						padding: 5px;

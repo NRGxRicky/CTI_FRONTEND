@@ -229,11 +229,15 @@ const Listado = ({
 
 	const handleFiltersClear = async () => {
 		dispatch(hideAll());
-		dispatch(setLocationStockOnly(false))
 
-		await router.replace({
-			pathname: router.pathname,
-			query: { q, param: [marca, categoria] },
+		setFiltersActive({
+			brands: [],
+			categories: [],
+			attributes: [],
+			filter_available: false,
+			filter_available_store: false,
+			filter_free_shipping: false,
+			filter_discount: false,
 		});
 	};
 

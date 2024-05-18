@@ -125,10 +125,6 @@ const FiltersOptios = ({
 			filter_free_shipping: false,
 			filter_discount: false,
 		});
-		await router.replace({
-			pathname: router.pathname,
-			query: { q, param: [marca, categoria], page: 1 },
-		});
 	};
 
 	useEffect(() => {
