@@ -18,8 +18,31 @@ import {
 	isBrowser,
 	isMobile,
 } from 'react-device-detect';
+import Capitalize from '../../hooks/CapitalizeTitle';
 
 const NavMobileMenu = () => {
+	const [data, setData] = useState({ results: [] });
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(false);
+
+	const fetchData = async () => {
+		try {
+			setLoading(true);
+			const data = await fetch(
+				`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=index`
+			);
+			setData(await data.json());
+		} catch (error) {
+			setError(error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchData();
+	}, []);
+
 	const dispacth = useAppDispatch();
 	const menuMobileOpen = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.navMobileMenu
@@ -43,9 +66,7 @@ const NavMobileMenu = () => {
 	}, [router.pathname, isMobile]);
 
 	return (
-		<nav
-			className='header__mobile-nav-toggle col-xs-1 col-sm-1 col-md-1 col-lg-1'
-		>
+		<nav className='header__mobile-nav-toggle col-xs-1 col-sm-1 col-md-1 col-lg-1'>
 			<button
 				className={`burger-button ${menuMobileOpen ? 'active' : ''}`}
 				onClick={toggleMenu}
@@ -63,58 +84,19 @@ const NavMobileMenu = () => {
 			>
 				<div className='mobile-menu__panel'>
 					<ul className='mobile-menu__list'>
-						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link href={`/listado/all/index-computadoras`} legacyBehavior>
-								<a className='mobile-menu__nav-link'>Computadoras</a>
-							</Link>
-						</li>
-						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link href={`/listado/all/index-impresion`} legacyBehavior>
-								<a className='mobile-menu__nav-link'>Impresoras</a>
-							</Link>
-						</li>
-						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link
-								href={`/listado/all/index-computo-monitores`}
-								legacyBehavior
+						{data.results.map((item, index) => (
+							<li
+								onClick={toggleMenu}
+								className='mobile-menu__nav-item'
+								key={index}
 							>
-								<a className='mobile-menu__nav-link'>Monitores</a>
-							</Link>
-						</li>
-						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link href={`/listado/all/index-memorias`} legacyBehavior>
-								<a className='mobile-menu__nav-link'>Memorias</a>
-							</Link>
-						</li>
-						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link href={`/listado/all/index-almacenamiento`} legacyBehavior>
-								<a className='mobile-menu__nav-link'>Almacenamiento</a>
-							</Link>
-						</li>
-						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link
-								href={`/listado/all/index?q=&page_size=40&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas`}
-								legacyBehavior
-							>
-								<a className='mobile-menu__nav-link'>Lo más vendido</a>
-							</Link>
-						</li>
-						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link
-								href={`/listado/all/index?q=&page_size=40&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-created`}
-								legacyBehavior
-							>
-								<a className='mobile-menu__nav-link'>Novedades</a>
-							</Link>
-						</li>
-						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link
-								href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true`}
-								legacyBehavior
-							>
-								<a className='mobile-menu__nav-link'>OFERTAS</a>
-							</Link>
-						</li>
+								<Link href={`/listado/all/${item.slug}`} legacyBehavior>
+									<a className='mobile-menu__nav-link'>
+										{Capitalize(item.name)}
+									</a>
+								</Link>
+							</li>
+						))}
 					</ul>
 					<ul className='mobile-menu__list text--off'>
 						<li className='mobile-menu__nav-item'>

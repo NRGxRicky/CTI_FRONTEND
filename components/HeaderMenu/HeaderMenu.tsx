@@ -1,36 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Capitalize from '../../hooks/CapitalizeTitle';
 
 const HeaderMenu = () => {
+	const [data, setData] = useState({ results: [] });
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(false);
+
+	const fetchData = async () => {
+		try {
+			setLoading(true);
+			const data = await fetch(
+				`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=index`
+			);
+			setData(await data.json());
+		} catch (error) {
+			setError(error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchData();
+	}, []);
+
+	data.results.length === 0 && <div></div>;
 
 	return (
 		<div className='header-menu'>
 			<ul className='header-menu__list text--off'>
-				<li>
-					<Link href={`/listado/all/index-computadoras`} legacyBehavior>
-						<a>Computadoras</a>
-					</Link>
-				</li>
-				<li>
-					<Link href={`/listado/all/index-impresion`} legacyBehavior>
-						<a>Impresoras</a>
-					</Link>
-				</li>
-				<li>
-					<Link href={`/listado/all/index-computo-monitores`} legacyBehavior>
-						<a>Monitores</a>
-					</Link>
-				</li>
-				<li>
-					<Link href={`/listado/all/index-memorias`} legacyBehavior>
-						<a>Memorias</a>
-					</Link>
-				</li>
-				<li>
-					<Link href={`/listado/all/index-almacenamiento`} legacyBehavior>
-						<a>Almacenamiento</a>
-					</Link>
-				</li>
+				{data.results.slice(0, 5).map((item, index) => (
+					<li key={index}>
+						<Link href={`/listado/all/${item.slug}`} legacyBehavior>
+							<a>{Capitalize(item.name)}</a>
+						</Link>
+					</li>
+				))}
 				<li>
 					<Link
 						href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas`}

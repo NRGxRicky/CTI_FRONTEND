@@ -17,6 +17,7 @@ const BrandSimilarMini = ({
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
+
 	const fetchData = async () => {
 		try {
 			setLoading(true);
@@ -30,6 +31,7 @@ const BrandSimilarMini = ({
 			setLoading(false);
 		}
 	};
+	
 	useEffect(() => {
 		fetchData();
 	}, []);
