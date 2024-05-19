@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import BreadcrumbArrow from '../BreadcrumbArrow/BreadcrumbArrow';
 import Capitalize from '../../hooks/CapitalizeTitle';
+import { useAppSelector } from '../../lib/hooks';
 
 const Navbar = ({
 	marca = null,
@@ -11,6 +12,11 @@ const Navbar = ({
 	breadcrumblist = [],
 	label = false
 }) => {
+
+	const maxPageResults = useAppSelector(
+		(state) => state.mobileSlide.maxPageResults
+	);
+
 	return (
 		<div className='navbar'>
 			<div className='text--off'>
@@ -24,7 +30,10 @@ const Navbar = ({
 				.map((bc, index) => (
 					<div key={index} className='text--off'>
 						<BreadcrumbArrow />
-						<Link href={`/listado/all/${bc.slug}`} legacyBehavior>
+						<Link
+							href={`/listado/all/${bc.slug}?page_size=${maxPageResults}`}
+							legacyBehavior
+						>
 							<a>{Capitalize(bc.name)}</a>
 						</Link>
 					</div>
@@ -32,7 +41,10 @@ const Navbar = ({
 			{marca && marca.nombre && (
 				<div className='text--off'>
 					<BreadcrumbArrow />
-					<Link href={`/listado/${marca.slug}/index`} legacyBehavior>
+					<Link
+						href={`/listado/${marca.slug}/index?page_size=${maxPageResults}`}
+						legacyBehavior
+					>
 						<a>{Capitalize(marca.nombre)}</a>
 					</Link>
 				</div>

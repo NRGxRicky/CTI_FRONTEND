@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
+import { useAppSelector } from '../../lib/hooks';
 
 const BestCategoriesMini = ({
 	parentCategorie,
@@ -11,6 +12,10 @@ const BestCategoriesMini = ({
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
+		const maxPageResults = useAppSelector(
+			(state) => state.mobileSlide.maxPageResults
+		);
+	
 	const fetchData = async () => {
 		try {
 			setLoading(true);
@@ -42,7 +47,7 @@ const BestCategoriesMini = ({
 						.slice(0, 4)
 						.map((categorie, index) => (
 							<Link
-								href={`/listado/all/${categorie.slug}`}
+								href={`/listado/all/${categorie.slug}?page_size=${maxPageResults}`}
 								key={index}
 								legacyBehavior
 							>

@@ -4,15 +4,7 @@ import { useAuth } from '../../../hooks/auth';
 import Router from 'next/router';
 import PostData from '../../../hooks/PosData';
 
-import {
-	BrowserView,
-	MobileView,
-	isBrowser,
-	isMobile,
-} from 'react-device-detect';
-
 const index = () => {
-	const [tempMobile, setTempMobile] = useState(false);
 	const { isAuthenticated, loading, accessToken } = useAuth();
 	const [changePassword, setChangePassword] = useState(false);
 	const [oldPassword, setOldPassword] = useState('');
@@ -54,10 +46,6 @@ const index = () => {
 	};
 
 	useEffect(() => {
-		setTempMobile(isMobile);
-	}, [isMobile]);
-
-	useEffect(() => {
 		if (
 			confirmNewPassword !== newPassword &&
 			newPassword !== '' &&
@@ -73,7 +61,7 @@ const index = () => {
 
 	return (
 		<div className='profile container'>
-			<UserNavLeft tempMobile={tempMobile} />
+			<UserNavLeft />
 			<div className='main-wrapper'>
 				<div className='profile__title'>
 					<div>Contraseña</div>

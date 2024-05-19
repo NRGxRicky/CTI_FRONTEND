@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
+import { useAppSelector } from '../../lib/hooks';
 
 const HeaderMenu = () => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
+
+	const maxPageResults = useAppSelector(
+		(state) => state.mobileSlide.maxPageResults
+	);
 
 	const fetchData = async () => {
 		try {
@@ -30,13 +35,19 @@ const HeaderMenu = () => {
 	return (
 		<div className='header-menu'>
 			<ul className='header-menu__list text--off'>
-				{data.results.slice(0, 8).filter((i) => i.slug !== 'index').map((item, index) => (
-					<li key={index}>
-						<Link href={`/listado/all/${item.slug}`} legacyBehavior>
-							<a>{Capitalize(item.name)}</a>
-						</Link>
-					</li>
-				))}
+				{data.results
+					.slice(0, 8)
+					.filter((i) => i.slug !== 'index')
+					.map((item, index) => (
+						<li key={index}>
+							<Link
+								href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
+								legacyBehavior
+							>
+								<a>{Capitalize(item.name)}</a>
+							</Link>
+						</li>
+					))}
 				<li>
 					<Link
 						href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true`}

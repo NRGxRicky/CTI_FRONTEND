@@ -1,12 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useAppSelector } from '../../lib/hooks';
 
-const UserNavLeft = ({ tempMobile }) => {
+const UserNavLeft = () => {
 	const router = useRouter();
+	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 
 	return (
-		<div className='nav-left' style={!tempMobile ? { marginTop: ' 58px' } : {}}>
+		<div className='nav-left' style={!mobileView ? { marginTop: ' 58px' } : {}}>
 			<div className='nav-left-container'>
 				<a
 					className={

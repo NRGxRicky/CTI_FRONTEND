@@ -4,13 +4,8 @@ import { useAuth } from '../../hooks/auth';
 import Router from 'next/router';
 import PostData from '../../hooks/PosData';
 import Link from 'next/link';
+import { useAppSelector } from '../../lib/hooks';
 
-import {
-	BrowserView,
-	MobileView,
-	isBrowser,
-	isMobile,
-} from 'react-device-detect';
 import UserNavLeft from '../../components/UserNavLeft/UserNavLeft';
 
 const index = () => {
@@ -26,11 +21,7 @@ const index = () => {
 	const [changeDomicilios, setChangeDomicilios] = useState(false);
 	const [error, setError] = useState(false);
 	const [update, setUpdate] = useState(false);
-	const [tempMobile, setTempMobile] = useState(false);
-
-	useEffect(() => {
-		setTempMobile(isMobile);
-	}, [isMobile]);
+		const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 
 	const HandleSubmit = async (e) => {
 		e.preventDefault();
@@ -82,7 +73,7 @@ const index = () => {
 	return (
 		<div>
 			<div className='profile container'>
-				<UserNavLeft tempMobile={tempMobile} />
+				<UserNavLeft />
 				<div className='main-wrapper'>
 					<div className='profile__title'>
 						<div>Mis datos</div>
@@ -111,7 +102,7 @@ const index = () => {
 								<div
 									className='profile__section__body'
 									style={
-										changeBasic || !tempMobile
+										changeBasic || !mobileView
 											? { display: 'block' }
 											: { display: 'none' }
 									}
@@ -194,7 +185,7 @@ const index = () => {
 										className='profile__section__body'
 										key={domicilio.id}
 										style={
-											changeDomicilios || !tempMobile
+											changeDomicilios || !mobileView
 												? { display: 'block' }
 												: { display: 'none' }
 										}
@@ -432,7 +423,7 @@ const index = () => {
 											className='profile__section__body'
 											key={facturacion.id}
 											style={
-												changeFacturacion || !tempMobile
+												changeFacturacion || !mobileView
 													? { display: 'block' }
 													: { display: 'none' }
 											}

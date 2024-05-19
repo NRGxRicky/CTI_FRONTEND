@@ -15,7 +15,7 @@ import { useAuth } from '../../hooks/auth';
 import TruncateManual from '../../hooks/TruncateManual';
 import HeaderMenu from '../HeaderMenu/HeaderMenu';
 import NavMobileMenu from '../NavMobileMenu/NavMobileMenu';
-import HeaderBarLocalStock from '../../components/HeaderBarLocalStock/HeaderBarLocalStock'; 
+import HeaderBarLocalStock from '../../components/HeaderBarLocalStock/HeaderBarLocalStock';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import {
 	showOpacity,
@@ -24,28 +24,30 @@ import {
 	showSearchBar,
 	showLoginMenuState,
 } from '../../lib/features/showOpacityContainerSlide';
+import { isMobile as detectIsMobile } from 'react-device-detect';
+import { setMobileView } from '../../lib/features/mobileSlide';
 
-interface HeaderBarProps {
-	isMobile: boolean;
-}
-
-const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
+const HeaderBar: React.FC = () => {
 	const textInput = useRef<HTMLInputElement | null>(null);
 	const searchButton = useRef<HTMLButtonElement | null>(null);
 	const [name, setName] = useState<string>('Iniciar sesión / Registrarse');
 	const router = useRouter();
 	const { q } = router.query;
 	const [queryInInput, setQueryInInput] = useState<string | undefined>();
-	const [tempMobile, setTempMobile] = useState<boolean>(true);
+	
+	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
+	const maxPageResults = useAppSelector((state) => state.mobileSlide.maxPageResults);
 
-	const maxPage = 40;
-	const mobileMaxPage = 6;
+	const dispatch = useAppDispatch();
+
+	useEffect(() => {
+		dispatch(setMobileView(detectIsMobile));
+	}, [detectIsMobile]);
 
 	const handleInputChange = (value: string) => {
 		setQueryInInput(value);
 	};
 
-	const dispacth = useAppDispatch();
 	const searchVisibleValue = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.searchBar
 	);
@@ -56,35 +58,30 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (queryInInput) {
-			const pageSize = tempMobile ? mobileMaxPage : maxPage;
 			await router.replace({
 				pathname: '/listado/all/index',
 				query: {
 					q: queryInInput,
-					page_size: pageSize,
+					page_size: maxPageResults,
 					page: 1,
 					filter_available: true,
 				},
 			});
 
-			dispacth(hideAll());
+			dispatch(hideAll());
 			textInput?.current?.blur();
 		}
 	};
 
 	const focusSearchInEnd = (e: ChangeEvent<HTMLInputElement>) => {
 		setQueryInInput(e.target.value);
-		dispacth(showOpacity());
+		dispatch(showOpacity());
 	};
 
 	const handleMobileSearch = () => {
-		dispacth(showSearchBar());
+		dispatch(showSearchBar());
 		textInput?.current?.focus();
 	};
-
-	useEffect(() => {
-		setTempMobile(isMobile);
-	}, [isMobile]);
 
 	useEffect(() => {
 		const storedName = localStorage.getItem('name');
@@ -94,12 +91,12 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 	}, []);
 
 	useEffect(() => {
-		showLoginMenu && dispacth(showLoginMenuState());
+		showLoginMenu && dispatch(showLoginMenuState());
 	}, [showLoginMenu]);
 
 	return (
 		<div>
-			<div className={`header-bar ${tempMobile ? 'header-bar--mobile' : ''}`}>
+			<div className={`header-bar ${mobileView ? 'header-bar--mobile' : ''}`}>
 				<div className='header-bar__container header-bar--left row around-xs middle-xs center-xs'>
 					<NavMobileMenu />
 					<div className='header-bar__section col-xs-2 col-sm-5 col-md-2 col-lg-2'>
@@ -183,8 +180,8 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 								className='header-bar__profile-icon'
 								onClick={() =>
 									showLoginMenu
-										? dispacth(hideAll())
-										: dispacth(showLoginMenuState())
+										? dispatch(hideAll())
+										: dispatch(showLoginMenuState())
 								}
 							>
 								<svg
@@ -228,7 +225,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 						</div>
 					</div>
 					{showLoginMenu && <LoginMenu setName={setName} name={name} />}
-					{!tempMobile && <HeaderMenu />}
+					{!mobileView && <HeaderMenu />}
 				</div>
 				<HeaderBarLocalStock />
 			</div>
@@ -242,7 +239,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 						<div className='header-bar__form-container header-bar__mobile__form-container'>
 							<div
 								className='header-bar__mobile__close'
-								onClick={() => dispacth(hideAll())}
+								onClick={() => dispatch(hideAll())}
 							>
 								<svg
 									className='header-bar__mobile__close__icon icon__ligth'
@@ -304,6 +301,10 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 					<InstantSearch queryInInput={queryInInput} />
 				</div>
 			</div>
+			<div
+				className='mobile__clear-fix'
+				style={{ height: mobileView ? '58px' : '0' }}
+			></div>
 
 			<style jsx>{`
 				.header-bar__profile-icon {

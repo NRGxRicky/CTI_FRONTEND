@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../hooks/auth';
 import Router from 'next/router';
-import {
-	BrowserView,
-	MobileView,
-	isBrowser,
-	isMobile,
-} from 'react-device-detect';
 
 export const getServerSideProps = async (context) => {
 	return {
@@ -17,12 +11,7 @@ export const getServerSideProps = async (context) => {
 };
 
 const token = ({ tokenRecovery }) => {
-	const [tempMobile, setTempMobile] = useState(false);
 	const { loading, isAuthenticated, login, logout } = useAuth();
-
-	useEffect(() => {
-		setTempMobile(isMobile);
-	}, [isMobile]);
 
 	if (!loading && isAuthenticated) Router.push('/');
 

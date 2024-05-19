@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import {
-	BrowserView,
-	MobileView,
-	isBrowser,
-	isMobile,
-} from 'react-device-detect';
+
 import PostData from '../../../hooks/PosData';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useAuth } from '../../../hooks/auth';
 import Router from 'next/router';
+import { useAppSelector } from '../../../lib/hooks';
 
 const index = () => {
-	const [tempMobile, setTempMobile] = useState(false);
 	const [email, setEmail] = useState('');
 	const [statusSend, setStatusSend] = useState(false);
 	const [loadingData, setLoadingData] = useState(false);
 	const [error, setError] = useState(false);
 	const { loading, isAuthenticated, login, logout } = useAuth();
 
+	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
+	
 	const HandleSubmit = async (e) => {
 		e.preventDefault();
 		setLoadingData(true);
@@ -44,16 +41,12 @@ const index = () => {
 		setLoadingData(false);
 	};
 
-	useEffect(() => {
-		setTempMobile(isMobile);
-	}, [isMobile]);
-
 	if (!loading && isAuthenticated) Router.push('/');
 
 	return (
 		<div
 			className={
-				!tempMobile
+				!mobileView
 					? 'forgot-password forgot-password__static'
 					: 'forgot-password'
 			}

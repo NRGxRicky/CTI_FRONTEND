@@ -20,15 +20,8 @@ import { setLocationStockOnly } from '../../lib/features/locationSlide';
 
 import {
 	hideAll,
-	blockBodyScroll,
 } from '../../lib/features/showOpacityContainerSlide';
 
-import {
-	BrowserView,
-	MobileView,
-	isBrowser,
-	isMobile,
-} from 'react-device-detect';
 import Capitalize from '../../hooks/CapitalizeTitle';
 
 export const getServerSideProps = async (context) => {
@@ -44,7 +37,7 @@ export const getServerSideProps = async (context) => {
 	let attributes = [];
 	let categoria = 'index';
 	let marca = 'all';
-	let page_size = 40;
+	let page_size = 0;
 
 	if (context.query.page_size) {
 		page_size = context.query.page_size;
@@ -161,7 +154,7 @@ const Listado = ({
 	categoria,
 	page_size,
 }) => {
-	const [tempMobile, setTempMobile] = useState(false);
+
 	const [loadingData, setLoadingData] = useState(false);
 	const [data, setData] = useState({ results: [] });
 	const [pageActual, setPageActual] = useState(parseInt(page));
@@ -193,8 +186,14 @@ const Listado = ({
 	const locationStockOnly = useAppSelector(
 		(state) => state.locationSlide.locationStockOnly
 	);
+	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
+	const maxPageResults = useAppSelector(
+		(state) => state.mobileSlide.maxPageResults
+	);
 
-
+	useEffect(() => {
+		itemsPerPage === 0 && setItemsPerPage(maxPageResults);
+	}, [mobileView]);
 
 	let defaultFilters = {
 		brands: brands,
@@ -289,7 +288,7 @@ const Listado = ({
 					attributes,
 					marca,
 					categoria,
-					page_size
+					itemsPerPage
 				);
 
 				if (moreResults.results.length > 0) {
@@ -383,13 +382,9 @@ const Listado = ({
 		setSecondLoading(false);
 	}, [data]);
 
-	useEffect(() => {
-		setTempMobile(isMobile);
-	}, [isMobile]);
-
 	const getData = async () => {
 		setLoadingData(true);
-		if (!isMobile) {
+		if (!mobileView) {
 			const datares = await fetchData(
 				q,
 				order,
@@ -403,7 +398,7 @@ const Listado = ({
 				attributes,
 				marca,
 				categoria,
-				page_size
+				itemsPerPage
 			);
 			setData(datares);
 		} else {
@@ -421,7 +416,7 @@ const Listado = ({
 					attributes,
 					marca,
 					categoria,
-					page_size * page
+					itemsPerPage * page
 				);
 				setData(datares);
 			} else {
@@ -438,7 +433,7 @@ const Listado = ({
 					attributes,
 					marca,
 					categoria,
-					page_size
+					itemsPerPage
 				);
 				setData(datares);
 			}
@@ -447,13 +442,12 @@ const Listado = ({
 	};
 
 	useEffect(() => {
-		
 		setTotalItems(0);
 		setSecondLoading(true);
 		if (data.results.length === 0) {
 			setFirtsLoading(true);
 		}
-		setApplyFilters(false)
+		setApplyFilters(false);
 		getData();
 		setFiltersActive(defaultFilters);
 		setInternalOrder(order);
@@ -462,32 +456,34 @@ const Listado = ({
 		parseInt(page) === 1 && sessionStorage.removeItem('scrollPosition');
 		parseInt(page) === 1 && setMobileScroll(0);
 		parseInt(page) === 1 && setLastUpdatedPage(1);
-		isMobile && setFirtsLoading(true);
+		mobileView && setFirtsLoading(true);
 
 		if (categoria !== 'index') {
 			let newNameCategory = String(categoria).split('index-').join('');
 			q
 				? setConvertTitle(
-					` | ${Capitalize(newNameCategory.split('-').join(' '))}`
-				)
+						` | ${Capitalize(newNameCategory.split('-').join(' '))}`
+				  )
 				: setConvertTitle(
-					`${Capitalize(String(newNameCategory).split('-').join(' '))}`
-				);
+						`${Capitalize(String(newNameCategory).split('-').join(' '))}`
+				  );
 		} else if (marca !== 'all') {
 			q
 				? setConvertTitle(
-					` | Tienda de Marca ${Capitalize(
-						String(marca).split('-').join(' ')
-					)}`
-				)
+						` | Tienda de Marca ${Capitalize(
+							String(marca).split('-').join(' ')
+						)}`
+				  )
 				: setConvertTitle(
-					`Tienda de Marca ${Capitalize(String(marca).split('-').join(' '))}`
-				);
+						`Tienda de Marca ${Capitalize(String(marca).split('-').join(' '))}`
+				  );
 		} else if (!q && filter_discount) {
 			setConvertTitle(`OFERTAS`);
 		} else {
 			setConvertTitle(q);
 		}
+
+		console.log('se llama principal')
 	}, [
 		q,
 		page,
@@ -502,15 +498,14 @@ const Listado = ({
 		marca,
 		categoria,
 		applyFilters,
+		itemsPerPage
 	]);
 
 	useEffect(() => {
 		if (filtersActive.filter_available_store !== locationStockOnly) {
 			dispatch(setLocationStockOnly(filtersActive.filter_available_store));
 		}
-	}, [
-		filtersActive.filter_available_store
-	]);
+	}, [filtersActive.filter_available_store]);
 
 	useEffect(() => {
 		if (filtersActive.filter_available_store !== locationStockOnly) {
@@ -518,10 +513,10 @@ const Listado = ({
 			copyState.filter_available_store = locationStockOnly;
 			setFiltersActive((prevState) => ({
 				...prevState,
-				...copyState
+				...copyState,
 			}));
 		}
-	}, [locationStockOnly])
+	}, [locationStockOnly]);
 
 	if (firstLoading) {
 		return (
@@ -562,7 +557,7 @@ const Listado = ({
 
 	return (
 		<div>
-			{tempMobile && (
+			{mobileView && (
 				<div>
 					<MobileNavBar
 						sortList={order}
@@ -605,7 +600,7 @@ const Listado = ({
 							content={`${convertTitle} en PCStore.mx - Compra protegida, envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
 						/>
 					</Head>
-					{!tempMobile ? (
+					{!mobileView ? (
 						<div className='container'>
 							<div className='list-products__aside'>
 								<div className='list-products__aside__filters'>
@@ -732,7 +727,7 @@ const Listado = ({
 			) : (
 				<div
 					className='list-products___container --no-results'
-					style={{ height: tempMobile ? height - 108 : 'calc(100vh - 108px)' }}
+					style={{ height: mobileView ? height - 108 : 'calc(100vh - 108px)' }}
 				>
 					<div>
 						<div>
@@ -782,7 +777,7 @@ const Listado = ({
 				</div>
 			)}
 
-			{!isMobile && <Footer />}
+			{!mobileView && <Footer />}
 			<style jsx>
 				{`
 					.list-products__products__loader {

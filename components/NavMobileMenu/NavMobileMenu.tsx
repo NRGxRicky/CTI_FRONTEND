@@ -25,6 +25,10 @@ const NavMobileMenu = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
 
+	const maxPageResults = useAppSelector(
+		(state) => state.mobileSlide.maxPageResults
+	);
+
 	const fetchData = async () => {
 		try {
 			setLoading(true);
@@ -92,7 +96,10 @@ const NavMobileMenu = () => {
 									className='mobile-menu__nav-item'
 									key={index}
 								>
-									<Link href={`/listado/all/${item.slug}`} legacyBehavior>
+									<Link
+										href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
+										legacyBehavior
+									>
 										<a className='mobile-menu__nav-link'>
 											{Capitalize(item.name)}
 										</a>

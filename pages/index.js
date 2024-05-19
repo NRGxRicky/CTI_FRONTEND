@@ -3,20 +3,17 @@ import Standard from '../components/Carousel/Standard';
 import Head from 'next/head';
 import CarouselProducts from '../components/Carousel/CarouselProducts';
 import CarouselBrand from '../components/Carousel/CarouselBrand';
-import { isMobile } from 'react-device-detect';
 import InfoPageFooter from '../components/InfoPageFooter/InfoPageFooter';
 import Footer from '../components/Footer/Footer';
+import { useAppSelector } from '../lib/hooks';
 
 const Home = () => {
 	const [responsiveElements, setResponsiveElements] = useState(6);
 	const [windowsSize, setWindowsSize] = useState(0);
 	const [slideDimensions, setSlideDimensions] = useState('100%');
-	const [tempMobile, setTempMobile] = useState(false);
 
-	useEffect(() => {
-		setTempMobile(isMobile);
-  }, [isMobile]);
-  
+	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
+
 	useEffect(() => {
 		const updateWindowDimensions = () => {
 			const newWidth = window.innerWidth;
@@ -56,7 +53,7 @@ const Home = () => {
 						<div className='section-products__title'>
 							<h1>RECOMENDADOS</h1>
 						</div>
-						<CarouselProducts typeQuery={'-visitas'} mobile={tempMobile} />
+						<CarouselProducts typeQuery={'-visitas'} mobile={mobileView} />
 					</div>
 				</div>
 				<div className='section best-categories'>
@@ -64,7 +61,7 @@ const Home = () => {
 						<div className='section-products__title'>
 							<h1>NUEVOS</h1>
 						</div>
-						<CarouselProducts typeQuery={'-created'} mobile={tempMobile} />
+						<CarouselProducts typeQuery={'-created'} mobile={mobileView} />
 					</div>
 				</div>
 				<div className='section best-brands'>
@@ -84,7 +81,7 @@ const Home = () => {
 						<div className='section-products__title'>
 							<h1>MÁS VENDIDOS</h1>
 						</div>
-						<CarouselProducts typeQuery={'-ventas'} mobile={tempMobile} />
+						<CarouselProducts typeQuery={'-ventas'} mobile={mobileView} />
 					</div>
 				</div>
 				<InfoPageFooter />

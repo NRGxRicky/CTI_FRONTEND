@@ -14,12 +14,6 @@ import ProductSpecs from '../components/ProductSpecs/ProductSpecs';
 import BestCategoriesMini from '../components/BestCategories/BestCategoriesMini';
 import BrandSimilarMini from '../components/BrandSimilarMini/BrandSimilarMini';
 
-import {
-	BrowserView,
-	MobileView,
-	isBrowser,
-	isMobile,
-} from 'react-device-detect';
 import CarouselProductsRelated from '../components/Carousel/CarouselProductsRelated';
 import Footer from '../components/Footer/Footer';
 import { useAppDispatch, useAppSelector } from '../lib/hooks';
@@ -34,7 +28,7 @@ export const getServerSideProps = async (context) => {
 
 const ProductItem = ({ item }) => {
 	const convertTitle = Capitalize(item.titulo);
-	const [tempMobile, setTempMobile] = useState(true);
+
 	const { height, width } = WindowDimensions();
 	const router = useRouter();
 	const urlCurrent = `https://pcstore.mx${router.asPath}`;
@@ -45,9 +39,7 @@ const ProductItem = ({ item }) => {
 		(state) => state.locationSlide.locationStockOnly
 	);
 
-	useEffect(() => {
-		setTempMobile(isMobile);
-	}, [isMobile]);
+	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 
 	return (
 		<div>
@@ -90,7 +82,7 @@ const ProductItem = ({ item }) => {
 				<meta property='og:site_name' content='PCStore.mx' />
 			</Head>
 			<div className='container'>
-				{!tempMobile && (
+				{!mobileView && (
 					<div className='product__breadcrumblist'>
 						<Navbar
 							marca={item.marca}
@@ -103,7 +95,7 @@ const ProductItem = ({ item }) => {
 					item={item}
 					width={width}
 					height={height}
-					tempMobile={tempMobile}
+					tempMobile={mobileView}
 					filter_available_store={headerLocationStock}
 				/>
 				{item.compatibleProductos.filter((p) => p.stock_total > 1).length >
@@ -125,7 +117,7 @@ const ProductItem = ({ item }) => {
 						filter_available_store={locationStockOnly}
 						q={''}
 						exclude={item.id}
-						mobile={tempMobile}
+						mobile={mobileView}
 						title={<h2>También te puede interesar</h2>}
 					/>
 				</div>
@@ -152,7 +144,7 @@ const ProductItem = ({ item }) => {
 					</div>
 				</div>
 				<div className='product__recommended__bk__off'>
-					{!tempMobile ? (
+					{!mobileView ? (
 						<CarouselProductsV2
 							typeQuery={'-ventas'}
 							responsiveElements={1}
@@ -162,7 +154,7 @@ const ProductItem = ({ item }) => {
 							filter_available_store={locationStockOnly}
 							q={''}
 							exclude={item.id}
-							mobile={tempMobile}
+							mobile={mobileView}
 							title={
 								<h2>
 									Otros clientes que vieron este producto también compraron
@@ -179,7 +171,7 @@ const ProductItem = ({ item }) => {
 							filter_available_store={locationStockOnly}
 							q={''}
 							exclude={item.id}
-							mobile={tempMobile}
+							mobile={mobileView}
 							title={
 								<h3>
 									Otros clientes que vieron este producto también compraron
