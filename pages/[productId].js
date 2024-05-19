@@ -141,6 +141,7 @@ const ProductItem = ({ item }) => {
 						<BestCategoriesMini
 							parentCategorie={item.parent__slug}
 							title={<h2>Categorías que te podrían interesar</h2>}
+							filter_available_store={locationStockOnly}
 						/>
 						<BrandSimilarMini
 							categoria={item.categoria}

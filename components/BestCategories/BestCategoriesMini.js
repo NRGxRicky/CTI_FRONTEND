@@ -3,7 +3,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
 
-const BestCategoriesMini = ({ parentCategorie, title }) => {
+const BestCategoriesMini = ({
+	parentCategorie,
+	title,
+	filter_available_store,
+}) => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
@@ -11,7 +15,7 @@ const BestCategoriesMini = ({ parentCategorie, title }) => {
 		try {
 			setLoading(true);
 			const data = await fetch(
-				`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=${parentCategorie}`
+				`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=${parentCategorie}&filter_available_store=${filter_available_store}`
 			);
 			setData(await data.json());
 		} catch (error) {
