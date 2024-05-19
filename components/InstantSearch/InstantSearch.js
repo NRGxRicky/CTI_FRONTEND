@@ -21,13 +21,16 @@ const InstantSearch = ({ queryInInput }) => {
 	const searchVisibleValue = useAppSelector(
 		(state) => state.showOpacityContainerReducer.searchBar
 	);
+	const locationStockOnly = useAppSelector(
+		(state) => state.locationSlide.locationStockOnly
+	);
 	const dispacth = useAppDispatch();
 
 	const fetchData = async () => {
 		try {
 			setLoading(true);
 			const data = await fetch(
-				`https://api.pccdnapi.com/listado/instantsearch/?q=${queryInInput}`
+				`https://api.pccdnapi.com/listado/instantsearch/?q=${queryInInput}&filter_available_store=${locationStockOnly}`
 			);
 			setData(await data.json());
 		} catch (error) {
