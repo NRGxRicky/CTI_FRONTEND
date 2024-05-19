@@ -30,29 +30,13 @@ const HeaderMenu = () => {
 	return (
 		<div className='header-menu'>
 			<ul className='header-menu__list text--off'>
-				{data.results.slice(0, 6).filter((i) => i.slug !== 'index').map((item, index) => (
+				{data.results.slice(0, 8).filter((i) => i.slug !== 'index').map((item, index) => (
 					<li key={index}>
 						<Link href={`/listado/all/${item.slug}`} legacyBehavior>
 							<a>{Capitalize(item.name)}</a>
 						</Link>
 					</li>
 				))}
-				<li>
-					<Link
-						href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas`}
-						legacyBehavior
-					>
-						<a>Lo más vendido</a>
-					</Link>
-				</li>
-				<li>
-					<Link
-						href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-created`}
-						legacyBehavior
-					>
-						<a>Novedades</a>
-					</Link>
-				</li>
 				<li>
 					<Link
 						href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true`}
