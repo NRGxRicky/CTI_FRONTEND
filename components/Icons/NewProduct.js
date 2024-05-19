@@ -15,9 +15,9 @@ const NewProduct = ({ date }) => {
 							font-size: 0.8rem;
 							position: absolute;
 							z-index: 1;
-							top: 0;
+							bottom: 0;
 							right: 0;
-							background-color: #ff002c;
+							background-color: #ffb116;
 							color: #fff;
 							font-weight: 600;
 							padding: 3px;
