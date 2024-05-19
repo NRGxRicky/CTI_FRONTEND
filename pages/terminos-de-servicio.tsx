@@ -535,7 +535,7 @@ const TerminosDeServicio = () => {
 								<br />
 								Las preguntas sobre los Términos del servicio deben enviarse a
 								nosotros en la dirección de correo electrónico
-								contacti@pcstore.mx.
+								contacto@pcstore.mx.
 								<br />
 								<br />
 								**Información de Contacto**
