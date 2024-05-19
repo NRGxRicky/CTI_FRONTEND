@@ -78,9 +78,7 @@ const ListProductsMobile = ({
 				<div
 					className='list__container__mobile_fix'
 					style={{
-						height: headerLocationStock
-							? 54 + headerLocationHeight
-							: 54,
+						height: headerLocationStock ? 54 + headerLocationHeight : 54,
 					}}
 				></div>
 				{results.map((producto) => (
@@ -130,6 +128,35 @@ const ListProductsMobile = ({
 												truncateText='…'
 												text={Capitalize(producto.titulo)}
 											/>
+										</div>
+
+										<div className='product__brand'>
+											<div className='product__brand__image'>
+												{producto.marca.imagen ? (
+													<Link
+														href={`/listado/${producto.marca.slug}/index`}
+														legacyBehavior
+													>
+														<Image
+															src={`${producto.marca.imagen}`}
+															fill
+															style={{ objectFit: 'contain' }}
+															alt={Capitalize(producto.marca.nombre)}
+															draggable='false'
+															sizes='auto'
+														/>
+													</Link>
+												) : (
+													<Link
+														href={`/listado/${producto.marca.slug}/index`}
+														legacyBehavior
+													>
+														<div className='text--off'>{`${Capitalize(
+															producto.marca.nombre
+														)}`}</div>
+													</Link>
+												)}
+											</div>
 										</div>
 										<div className='card__sku text--off'>
 											<TextTruncate
@@ -197,6 +224,21 @@ const ListProductsMobile = ({
 			</InfiniteScroll>
 			<style jsx>
 				{`
+					.product__brand__image {
+						position: relative;
+						max-width: 50px;
+						height: auto;
+						max-height: 50px;
+						min-height: 40px;
+						display: flex;
+						align-items: center;
+					}
+					.product__brand {
+						width: 100px;
+						font-size: 12px;
+						background-color: #ffffff;
+					}
+					
 					.card__available {
 						justify-self: self-end;
 					}
@@ -230,7 +272,7 @@ const ListProductsMobile = ({
 						position: relative;
 						width: 100%;
 						height: 100%;
-						gap: 10px;
+						gap: 5px;
 					}
 
 					.card__title {
@@ -242,7 +284,7 @@ const ListProductsMobile = ({
 					.card__sku {
 						height: auto;
 
-						line-height: 2;
+						line-height: 1;
 					}
 				`}
 			</style>

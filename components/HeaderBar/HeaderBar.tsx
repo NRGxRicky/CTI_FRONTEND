@@ -102,7 +102,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 			<div className={`header-bar ${tempMobile ? 'header-bar--mobile' : ''}`}>
 				<div className='header-bar__container header-bar--left row around-xs middle-xs center-xs'>
 					<NavMobileMenu />
-					<div className='header-bar__section col-xs-4 col-sm-5 col-md-2 col-lg-2'>
+					<div className='header-bar__section col-xs-2 col-sm-5 col-md-2 col-lg-2'>
 						<a className='header-bar__logo' href='/'>
 							<Image
 								src='/images/logo.png'
@@ -160,7 +160,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ isMobile }) => {
 							<InstantSearch queryInInput={queryInInput} />
 						</div>
 					</div>
-					<div className='header-bar__section header-bar--right col-xs-6 col-sm-6 col-md-4 col-lg-3'>
+					<div className='header-bar__section header-bar--right col-xs-8 col-sm-6 col-md-4 col-lg-3'>
 						<div
 							className='header-bar__section-icon'
 							onClick={handleMobileSearch}
