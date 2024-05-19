@@ -30,7 +30,7 @@ const HeaderMenu = () => {
 	return (
 		<div className='header-menu'>
 			<ul className='header-menu__list text--off'>
-				{data.results.slice(0, 5).map((item, index) => (
+				{data.results.slice(0, 5).filter((i) => i.slug !== 'index').map((item, index) => (
 					<li key={index}>
 						<Link href={`/listado/all/${item.slug}`} legacyBehavior>
 							<a>{Capitalize(item.name)}</a>

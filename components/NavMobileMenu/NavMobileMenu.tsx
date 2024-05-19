@@ -84,19 +84,21 @@ const NavMobileMenu = () => {
 			>
 				<div className='mobile-menu__panel'>
 					<ul className='mobile-menu__list'>
-						{data.results.map((item, index) => (
-							<li
-								onClick={toggleMenu}
-								className='mobile-menu__nav-item'
-								key={index}
-							>
-								<Link href={`/listado/all/${item.slug}`} legacyBehavior>
-									<a className='mobile-menu__nav-link'>
-										{Capitalize(item.name)}
-									</a>
-								</Link>
-							</li>
-						))}
+						{data.results
+							.filter((i) => i.slug !== 'index')
+							.map((item, index) => (
+								<li
+									onClick={toggleMenu}
+									className='mobile-menu__nav-item'
+									key={index}
+								>
+									<Link href={`/listado/all/${item.slug}`} legacyBehavior>
+										<a className='mobile-menu__nav-link'>
+											{Capitalize(item.name)}
+										</a>
+									</Link>
+								</li>
+							))}
 					</ul>
 					<ul className='mobile-menu__list text--off'>
 						<li className='mobile-menu__nav-item'>
