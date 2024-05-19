@@ -36,7 +36,7 @@ const CarouselProductsV3 = ({
 		try {
 			setLoading(true);
 			const data = await fetch(
-				`https://api.pccdnapi.com/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}`
+				`https://api.pccdnapi.com/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}&filter_available_store=${filter_available_store}`
 			);
 			setData(await data.json());
 		} catch (error) {
@@ -225,7 +225,13 @@ const CarouselProductsV3 = ({
 														)}
 														{filter_available_store && (
 															<div>
-																<span>
+																<span
+																	className={
+																		producto.stock_total > 0
+																			? 'text--green'
+																			: 'text--red'
+																	}
+																>
 																	{producto.stock_puebla}{' '}
 																	{producto.stock_puebla > 1
 																		? 'disponibles'

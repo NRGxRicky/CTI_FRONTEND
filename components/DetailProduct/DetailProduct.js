@@ -8,7 +8,13 @@ import Link from 'next/link';
 import ProductGalleryMobile from '../ProductGalleryMobile/ProductGalleryMobile';
 import InfoMini from '../InfoMini/InfoMini';
 
-const DetailProduct = ({ item, width, height, tempMobile = false }) => {
+const DetailProduct = ({
+	item,
+	width,
+	height,
+	tempMobile = false,
+	filter_available_store,
+}) => {
 	const lastday = function (y, m) {
 		return new Date(y, m + 1, 0).getDate();
 	};
@@ -316,7 +322,7 @@ const DetailProduct = ({ item, width, height, tempMobile = false }) => {
 											</span>
 										</div>
 									</div>
-									{item.stock_puebla > 0 && (
+									{item.stock_puebla > 0 && filter_available_store && (
 										<div className='product_resume__stock__local'>
 											<div className='shipping-local__icon'>
 												<Image

@@ -279,7 +279,7 @@ const ProductGalleryZoom = ({
 					.product__gallery_zoom {
 						width: 100%;
 						position: fixed;
-						z-index: 100;
+						z-index: 200;
 						inset: 1px;
 						padding: 4rem;
 						top: 0;

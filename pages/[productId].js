@@ -13,7 +13,7 @@ import CarouselProductsV2 from '../components/Carousel/CarouselProductsV2';
 import ProductSpecs from '../components/ProductSpecs/ProductSpecs';
 import BestCategoriesMini from '../components/BestCategories/BestCategoriesMini';
 import BrandSimilarMini from '../components/BrandSimilarMini/BrandSimilarMini';
-import InfoMini from '../components/InfoMini/InfoMini';
+
 import {
 	BrowserView,
 	MobileView,
@@ -22,6 +22,7 @@ import {
 } from 'react-device-detect';
 import CarouselProductsRelated from '../components/Carousel/CarouselProductsRelated';
 import Footer from '../components/Footer/Footer';
+import { useAppDispatch, useAppSelector } from '../lib/hooks';
 
 export const getServerSideProps = async (context) => {
 	const { productId } = context.query;
@@ -37,6 +38,12 @@ const ProductItem = ({ item }) => {
 	const { height, width } = WindowDimensions();
 	const router = useRouter();
 	const urlCurrent = `https://pcstore.mx${router.asPath}`;
+	const headerLocationStock = useAppSelector(
+		(state) => state.locationSlide.headerLocationStock
+	);
+	const locationStockOnly = useAppSelector(
+		(state) => state.locationSlide.locationStockOnly
+	);
 
 	useEffect(() => {
 		setTempMobile(isMobile);
@@ -97,6 +104,7 @@ const ProductItem = ({ item }) => {
 					width={width}
 					height={height}
 					tempMobile={tempMobile}
+					filter_available_store={headerLocationStock}
 				/>
 				{item.compatibleProductos.filter((p) => p.stock_total > 1).length >
 					0 && (
@@ -114,7 +122,7 @@ const ProductItem = ({ item }) => {
 						slideDimensions={'25%'}
 						categoria={item.parent__slug}
 						marca={'all'}
-						filter_available_store={false}
+						filter_available_store={locationStockOnly}
 						q={''}
 						exclude={item.id}
 						mobile={tempMobile}
@@ -138,6 +146,7 @@ const ProductItem = ({ item }) => {
 							categoria={item.categoria}
 							marca={item.marca}
 							item={item}
+							filter_available_store={locationStockOnly}
 						/>
 					</div>
 				</div>
@@ -149,7 +158,7 @@ const ProductItem = ({ item }) => {
 							slideDimensions={'25%'}
 							categoria={item.parent__slug}
 							marca={'all'}
-							filter_available_store={false}
+							filter_available_store={locationStockOnly}
 							q={''}
 							exclude={item.id}
 							mobile={tempMobile}
@@ -166,7 +175,7 @@ const ProductItem = ({ item }) => {
 							slideDimensions={'25%'}
 							categoria={item.parent__slug}
 							marca={'all'}
-							filter_available_store={false}
+							filter_available_store={locationStockOnly}
 							q={''}
 							exclude={item.id}
 							mobile={tempMobile}

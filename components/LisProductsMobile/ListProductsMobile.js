@@ -130,34 +130,7 @@ const ListProductsMobile = ({
 											/>
 										</div>
 
-										<div className='product__brand'>
-											<div className='product__brand__image'>
-												{producto.marca.imagen ? (
-													<Link
-														href={`/listado/${producto.marca.slug}/index`}
-														legacyBehavior
-													>
-														<Image
-															src={`${producto.marca.imagen}`}
-															fill
-															style={{ objectFit: 'contain' }}
-															alt={Capitalize(producto.marca.nombre)}
-															draggable='false'
-															sizes='auto'
-														/>
-													</Link>
-												) : (
-													<Link
-														href={`/listado/${producto.marca.slug}/index`}
-														legacyBehavior
-													>
-														<div className='text--off'>{`${Capitalize(
-															producto.marca.nombre
-														)}`}</div>
-													</Link>
-												)}
-											</div>
-										</div>
+										
 										<div className='card__sku text--off'>
 											<TextTruncate
 												line={2}

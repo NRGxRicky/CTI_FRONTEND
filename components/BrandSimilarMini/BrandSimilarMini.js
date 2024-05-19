@@ -12,6 +12,7 @@ const BrandSimilarMini = ({
 	typeQuery = '-visitas',
 	q = '',
 	item,
+	filter_available_store,
 }) => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
@@ -20,7 +21,7 @@ const BrandSimilarMini = ({
 		try {
 			setLoading(true);
 			const data = await fetch(
-				`https://api.pccdnapi.com/section?type=${typeQuery}&marca=${marca.slug}&categoria=${categoria.slug}&q=${q}`
+				`https://api.pccdnapi.com/section?type=${typeQuery}&marca=${marca.slug}&categoria=${categoria.slug}&q=${q}&filter_available_store=${filter_available_store}`
 			);
 			setData(await data.json());
 		} catch (error) {
