@@ -483,7 +483,6 @@ const Listado = ({
 			setConvertTitle(q);
 		}
 
-		console.log('se llama principal')
 	}, [
 		q,
 		page,
