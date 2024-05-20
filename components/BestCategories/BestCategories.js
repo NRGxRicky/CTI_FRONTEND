@@ -129,6 +129,7 @@ const BestCategories = () => {
 						.best-categories-carousel__header {
 							line-height: 4;
 							font-size: 16px;
+              margin-left: 20px;
 						}
 
 						.best-categories-carousel__title {
