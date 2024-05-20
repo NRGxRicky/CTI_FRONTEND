@@ -106,6 +106,14 @@ const NavMobileMenu = () => {
 									</Link>
 								</li>
 							))}
+						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
+							<Link
+								href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
+								legacyBehavior
+							>
+								<a className='mobile-menu__nav-link'>OFERTAS</a>
+							</Link>
+						</li>
 					</ul>
 					<ul className='mobile-menu__list text--off'>
 						<li className='mobile-menu__nav-item'>
