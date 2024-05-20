@@ -157,7 +157,7 @@ const BestCategories = () => {
 						}
 
 						.best-categories-carousel__item {
-							flex: 0 0 100%;
+							flex: 0 0 160px;
 							min-width: 0;
 							width: 160px;
 							display: flex;
