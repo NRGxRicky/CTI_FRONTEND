@@ -127,7 +127,7 @@ const BestCategories = () => {
 				<style jsx>
 					{`
 						.best-categories-carousel__header {
-							line-height: 4;
+							line-height: 3;
 							font-size: 16px;
               margin-left: 15px;
 						}
