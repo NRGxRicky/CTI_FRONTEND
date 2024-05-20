@@ -12,6 +12,8 @@ const BestCategoriesMini = ({
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
+	
+
 		const maxPageResults = useAppSelector(
 			(state) => state.mobileSlide.maxPageResults
 		);
@@ -29,6 +31,7 @@ const BestCategoriesMini = ({
 			setLoading(false);
 		}
 	};
+
 	useEffect(() => {
 		fetchData();
 	}, []);

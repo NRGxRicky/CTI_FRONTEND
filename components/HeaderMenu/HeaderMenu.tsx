@@ -30,7 +30,9 @@ const HeaderMenu = () => {
 		fetchData();
 	}, []);
 
-	data.results.length === 0 && <div></div>;
+	if (data.results.length === 0) {
+		return <div></div>;
+	}
 
 	return (
 		<div className='header-menu'>

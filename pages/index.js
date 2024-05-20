@@ -6,6 +6,7 @@ import CarouselBrand from '../components/Carousel/CarouselBrand';
 import InfoPageFooter from '../components/InfoPageFooter/InfoPageFooter';
 import Footer from '../components/Footer/Footer';
 import { useAppSelector } from '../lib/hooks';
+import BestCategories from '../components/BestCategories/BestCategories';
 
 const Home = () => {
 	const [responsiveElements, setResponsiveElements] = useState(6);
@@ -48,6 +49,7 @@ const Home = () => {
 			</Head>
 			<Standard />
 			<div className='container'>
+				<BestCategories />
 				<div className='section best'>
 					<div className='section-products'>
 						<div className='section-products__title'>

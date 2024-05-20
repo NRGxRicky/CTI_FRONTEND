@@ -11,7 +11,7 @@ import WindowDimensions from '../hooks/WindowDimensions';
 import CarouselProductsV3 from '../components/Carousel/CarouselProductsV3';
 import CarouselProductsV2 from '../components/Carousel/CarouselProductsV2';
 import ProductSpecs from '../components/ProductSpecs/ProductSpecs';
-import BestCategoriesMini from '../components/BestCategories/BestCategoriesMini';
+import BestCategoriesMini from '../components/BestCategoriesMini/BestCategoriesMini';
 import BrandSimilarMini from '../components/BrandSimilarMini/BrandSimilarMini';
 
 import CarouselProductsRelated from '../components/Carousel/CarouselProductsRelated';
