@@ -150,6 +150,7 @@ const BestCategories = () => {
 						.best-categories-carousel__container {
 							display: flex;
 							gap: 30px;
+              padding: 15px;
 						}
 
 						.best-categories-carousel__viewport {
