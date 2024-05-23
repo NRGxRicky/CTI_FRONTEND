@@ -91,6 +91,7 @@ const NavMobileMenu = () => {
 					<ul className='mobile-menu__list'>
 						{data.results
 							.filter((i) => i.slug !== 'index')
+							.filter((i) => i.portada)
 							.map((item, index) => (
 								<li
 									onClick={toggleMenu}

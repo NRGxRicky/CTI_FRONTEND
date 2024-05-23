@@ -89,6 +89,7 @@ const BestCategories = () => {
 					<div className='best-categories-carousel__container'>
 						{data.results
 							.filter((i) => i.slug !== 'index')
+							.filter((i) => i.portada)
 							.map((item, index) => (
 								<Link
 									href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
