@@ -119,7 +119,7 @@ const BestCategories = () => {
 
 											<div className='best-categories-carousel__title'>
 												<TextTruncate
-													line={1}
+													line={2}
 													element='span'
 													truncateText='…'
 													text={Capitalize(item.name)}

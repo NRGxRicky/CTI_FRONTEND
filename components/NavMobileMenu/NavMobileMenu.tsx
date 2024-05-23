@@ -104,7 +104,7 @@ const NavMobileMenu = () => {
 									>
 										<a className='mobile-menu__nav-link'>
 											<TextTruncate
-												line={1}
+												line={2}
 												element='span'
 												truncateText='…'
 												text={Capitalize(item.name)}
