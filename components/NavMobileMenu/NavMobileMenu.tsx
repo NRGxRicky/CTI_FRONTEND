@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import TextTruncate from 'react-text-truncate';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import {
 	showOpacity,
@@ -101,7 +102,12 @@ const NavMobileMenu = () => {
 										legacyBehavior
 									>
 										<a className='mobile-menu__nav-link'>
-											{Capitalize(item.name)}
+											<TextTruncate
+												line={1}
+												element='span'
+												truncateText='…'
+												text={Capitalize(item.name)}
+											/>
 										</a>
 									</Link>
 								</li>
