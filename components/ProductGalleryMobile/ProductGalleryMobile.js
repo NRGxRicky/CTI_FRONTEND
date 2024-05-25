@@ -4,7 +4,6 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import NewProduct from '../Icons/NewProduct';
-import TextTruncate from 'react-text-truncate';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
 import InnerImageZoom from 'react-inner-image-zoom';

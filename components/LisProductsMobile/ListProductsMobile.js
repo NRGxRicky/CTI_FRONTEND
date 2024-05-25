@@ -4,7 +4,7 @@ import { BrowserView, MobileView } from 'react-device-detect';
 import Link from 'next/link';
 import Image from 'next/image';
 import Capitalize from '../../hooks/CapitalizeTitle';
-import TextTruncate from 'react-text-truncate';
+import TruncateMarkup from 'react-truncate-markup';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
 import NewProduct from '../Icons/NewProduct';
@@ -122,22 +122,15 @@ const ListProductsMobile = ({
 									</div>
 									<div className='card__content'>
 										<div className='card__title'>
-											<TextTruncate
-												line={4}
-												element='span'
-												truncateText='…'
-												text={Capitalize(producto.titulo)}
-											/>
+											<TruncateMarkup lines={4}>
+												<span>{Capitalize(producto.titulo)}</span>
+											</TruncateMarkup>
 										</div>
 
-										
 										<div className='card__sku text--off'>
-											<TextTruncate
-												line={2}
-												element='span'
-												truncateText='…'
-												text={Capitalize(producto.modelo)}
-											/>
+											<TruncateMarkup lines={2}>
+												<span>{Capitalize(producto.modelo)}</span>
+											</TruncateMarkup>
 										</div>
 										<div className='card__price'>
 											<span>
@@ -211,7 +204,7 @@ const ListProductsMobile = ({
 						font-size: 12px;
 						background-color: #ffffff;
 					}
-					
+
 					.card__available {
 						justify-self: self-end;
 					}

@@ -4,7 +4,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import NewProduct from '../Icons/NewProduct';
-import TextTruncate from 'react-text-truncate';
+import TruncateMarkup from 'react-truncate-markup';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
 import { Preloader, TailSpin } from 'react-preloader-icon';
@@ -177,20 +177,14 @@ const CarouselProducts = ({
 												</div>
 												<div className='card__carousel__content'>
 													<div className='card__carousel__title'>
-														<TextTruncate
-															line={2}
-															element='span'
-															truncateText='…'
-															text={Capitalize(producto.titulo)}
-														/>
+														<TruncateMarkup lines={2}>
+															<span>{Capitalize(producto.titulo)}</span>
+														</TruncateMarkup>
 													</div>
 													<div className='card__carousel__sku text--off'>
-														<TextTruncate
-															line={3}
-															element='span'
-															truncateText='…'
-															text={Capitalize(producto.modelo)}
-														/>
+														<TruncateMarkup lines={2}>
+															<span>{Capitalize(producto.modelo)}</span>
+														</TruncateMarkup>
 													</div>
 													<div className='card__carousel__price'>
 														{producto.precio_final_descuento > 0 && (

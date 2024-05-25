@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
-import TextTruncate from 'react-text-truncate';
+import TruncateMarkup from 'react-truncate-markup';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import {
 	hideAll,
@@ -106,12 +106,11 @@ const MobileNavBar = ({
 								<path d='M874.8,687.4h-179V208.8H593v568.6l0,0V990L874.8,687.4z M292.3,312.6v478.6h102.8V10l-270,302.6H292.3z'></path>
 							</g>
 						</svg>
-						<TextTruncate
-							line={1}
-							element='span'
-							truncateText=' …'
-							text={`Ordenar: ${dictSortLabel[sortList]}`}
-						/>
+						<TruncateMarkup lines={1}>
+							<span>
+								{`Ordenar: ${dictSortLabel[sortList]}`}
+							</span>
+						</TruncateMarkup>
 					</div>
 					<div
 						className='nav__filters'

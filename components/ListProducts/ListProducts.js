@@ -4,7 +4,7 @@ import { BrowserView, MobileView } from 'react-device-detect';
 import Link from 'next/link';
 import Image from 'next/image';
 import Capitalize from '../../hooks/CapitalizeTitle';
-import TextTruncate from 'react-text-truncate';
+import TruncateMarkup from 'react-truncate-markup';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
 import NewProduct from '../Icons/NewProduct';
@@ -55,12 +55,9 @@ const ListProducts = ({ results, filter_available_store }) => {
 								</div>
 								<div className='card__content'>
 									<div className='card__title'>
-										<TextTruncate
-											line={3}
-											element='span'
-											truncateText='…'
-											text={Capitalize(producto.titulo)}
-										/>
+										<TruncateMarkup lines={3}>
+											<span>{Capitalize(producto.titulo)}</span>
+										</TruncateMarkup>
 									</div>
 									<div className='product__brand'>
 										<div className='product__brand__image'>
@@ -92,12 +89,9 @@ const ListProducts = ({ results, filter_available_store }) => {
 									</div>
 
 									<div className='card__sku text--off'>
-										<TextTruncate
-											line={2}
-											element='span'
-											truncateText='…'
-											text={Capitalize(producto.modelo)}
-										/>
+										<TruncateMarkup lines={2}>
+											<span>{Capitalize(producto.modelo)}</span>
+										</TruncateMarkup>
 									</div>
 									<div className='card__price'>
 										<span>

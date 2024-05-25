@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
-import TextTruncate from 'react-text-truncate';
+import TruncateMarkup from 'react-truncate-markup';
 
 const BrandSimilarMini = ({
 	marca = 'all',
@@ -105,12 +105,9 @@ const BrandSimilarMini = ({
 												</div>
 												<div>{item.envio_gratis && <FreeShipping />}</div>
 												<div>
-													<TextTruncate
-														line={2}
-														element='span'
-														truncateText='…'
-														text={Capitalize(item.titulo)}
-													/>
+													<TruncateMarkup lines={2}>
+														<span>{Capitalize(item.titulo)}</span>
+													</TruncateMarkup>
 												</div>
 											</div>
 										</div>

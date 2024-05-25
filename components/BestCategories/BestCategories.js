@@ -4,7 +4,6 @@ import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import { useAppSelector } from '../../lib/hooks';
 import useEmblaCarousel from 'embla-carousel-react';
-import TextTruncate from 'react-text-truncate';
 import TruncateMarkup from 'react-truncate-markup';
 
 const BestCategories = () => {
