@@ -408,6 +408,7 @@ const CarouselProducts = ({
 						height: auto;
 						margin-bottom: 5px;
 						font-weight: 600;
+						line-height: 1.5;
 					}
 					.card__carousel__available {
 						width: 100%;
