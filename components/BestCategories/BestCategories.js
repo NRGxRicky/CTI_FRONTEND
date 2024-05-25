@@ -5,6 +5,7 @@ import Capitalize from '../../hooks/CapitalizeTitle';
 import { useAppSelector } from '../../lib/hooks';
 import useEmblaCarousel from 'embla-carousel-react';
 import TextTruncate from 'react-text-truncate';
+import TruncateMarkup from 'react-truncate-markup';
 
 const BestCategories = () => {
 	const [data, setData] = useState({ results: [] });
@@ -118,12 +119,9 @@ const BestCategories = () => {
 											</div>
 
 											<div className='best-categories-carousel__title'>
-												<TextTruncate
-													line={2}
-													element='span'
-													truncateText='…'
-													text={Capitalize(item.name)}
-												/>
+												<TruncateMarkup lines={1}>
+													<span>{Capitalize(item.name)}</span>
+												</TruncateMarkup>
 											</div>
 										</div>
 									</a>
