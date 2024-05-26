@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Standard from '../components/Carousel/Standard';
 import Head from 'next/head';
 import CarouselProducts from '../components/Carousel/CarouselProducts';
@@ -9,35 +9,8 @@ import { useAppSelector } from '../lib/hooks';
 import BestCategories from '../components/BestCategories/BestCategories';
 
 const Home = () => {
-	const [responsiveElements, setResponsiveElements] = useState(1);
-	const [windowsSize, setWindowsSize] = useState(0);
-	const [slideDimensions, setSlideDimensions] = useState('100%');
-
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
-
-	useEffect(() => {
-		const updateWindowDimensions = () => {
-			const newWidth = window.innerWidth;
-			setWindowsSize(newWidth);
-			if (newWidth < 579) {
-				setResponsiveElements(2.5);
-			} else if (newWidth > 579 && newWidth < 1200) {
-				setResponsiveElements(1);
-			} else if (newWidth > 900) {
-				setResponsiveElements(1);
-			}
-		};
-		let dimensions = 100 / responsiveElements;
-		dimensions = dimensions + '%';
-		setSlideDimensions(dimensions);
-
-		window.addEventListener('resize', updateWindowDimensions);
-		if (windowsSize === 0) {
-			updateWindowDimensions();
-		}
-		return () => window.removeEventListener('resize', updateWindowDimensions);
-	}, [windowsSize]);
-
+	
 	return (
 		<div>
 			<Head>
@@ -68,7 +41,7 @@ const Home = () => {
 				</div>
 
 				<CarouselBrand
-					responsiveElements={responsiveElements}
+					mobile={mobileView}
 				/>
 
 				<div className='section best'>

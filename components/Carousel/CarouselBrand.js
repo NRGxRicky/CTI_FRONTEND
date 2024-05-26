@@ -4,7 +4,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { useAppSelector } from '../../lib/hooks';
 import Link from 'next/link';
 
-const CarouselBrand = ({ responsiveElements = 2, mobile = false }) => {
+const CarouselBrand = ({ responsiveElements = 4, mobile = false }) => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
