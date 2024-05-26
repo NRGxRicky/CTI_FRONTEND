@@ -255,7 +255,6 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 
 						.best-categories-carousel__title {
 							line-height: 2;
-							min-height: 30px;
 							font-weight: 600;
 							font-size: 16px;
 							width: 100%;
@@ -266,8 +265,8 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 
 						.best-categories-carousel__image {
 							position: relative;
-							height: 150px;
-							width: 150px;
+							height: 100px;
+							width: 100px;
 							background-color: #f7f7f7;
 							border-radius: 10px;
 							display: flex;
@@ -285,7 +284,7 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 						}
 
 						.best-categories-carousel__item {
-							flex: 0 0 170px;
+							flex: 0 0 110px;
 							min-width: 0;
 
 							display: flex;
