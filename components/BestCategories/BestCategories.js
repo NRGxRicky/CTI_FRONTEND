@@ -5,6 +5,7 @@ import Capitalize from '../../hooks/CapitalizeTitle';
 import { useAppSelector } from '../../lib/hooks';
 import useEmblaCarousel from 'embla-carousel-react';
 import TruncateMarkup from 'react-truncate-markup';
+import { relative } from 'path';
 
 const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 	const [data, setData] = useState({ results: [] });
@@ -99,7 +100,7 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 											href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
 											legacyBehavior
 										>
-											<a>
+											<a className='best-categories-carousel__a'>
 												<Image
 													src={
 														item.portada
@@ -187,6 +188,12 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 
 				<style jsx>
 					{`
+						.best-categories-carousel__a {
+							position: relative;
+							width: 100%;
+							height: 100%;
+						}
+
 						.carousel__button {
 							border-radius: 0 4px 4px 0;
 							justify-content: space-around;
