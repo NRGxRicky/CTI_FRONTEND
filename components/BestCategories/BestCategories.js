@@ -294,6 +294,7 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 						.best-categories-carousel {
 							margin-top: 20px;
 							margin-bottom: 20px;
+							min-height: 110px;
 						}
 					`}
 				</style>
