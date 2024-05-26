@@ -303,7 +303,7 @@ const HeaderBar: React.FC = () => {
 			</div>
 			<div
 				className='mobile__clear-fix'
-				style={{ height: mobileView ? '58px' : '0' }}
+				style={{ height: mobileView ? '60px' : '0' }}
 			></div>
 
 			<style jsx>{`

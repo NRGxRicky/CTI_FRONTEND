@@ -78,7 +78,7 @@ const ListProductsMobile = ({
 				<div
 					className='list__container__mobile_fix'
 					style={{
-						height: headerLocationStock ? 54 + headerLocationHeight : 54,
+						height: headerLocationStock ? 52 + headerLocationHeight : 52,
 					}}
 				></div>
 				{results.map((producto) => (
