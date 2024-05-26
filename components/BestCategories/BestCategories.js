@@ -82,20 +82,7 @@ const BestCategories = ({ mobile = false, responsiveElements = 3 }) => {
 		fetchData();
 	}, [data]);
 
-	if (data.results.length === 0) {
-		return (
-		<div className='best-categories-carousel'>
-			<style jsx>
-				{`
-					.best-categories-carousel {
-						margin-top: 20px;
-						margin-bottom: 20px;
-						min-height: 110px;
-					}
-				`}
-			</style>
-			</div>
-		)
+
 	}
 
 	return (
