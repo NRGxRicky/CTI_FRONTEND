@@ -9,7 +9,7 @@ import { useAppSelector } from '../lib/hooks';
 import BestCategories from '../components/BestCategories/BestCategories';
 
 const Home = () => {
-	const [responsiveElements, setResponsiveElements] = useState(6);
+	const [responsiveElements, setResponsiveElements] = useState(1);
 	const [windowsSize, setWindowsSize] = useState(0);
 	const [slideDimensions, setSlideDimensions] = useState('100%');
 
@@ -20,11 +20,11 @@ const Home = () => {
 			const newWidth = window.innerWidth;
 			setWindowsSize(newWidth);
 			if (newWidth < 579) {
-				setResponsiveElements(2);
+				setResponsiveElements(2.5);
 			} else if (newWidth > 579 && newWidth < 1200) {
-				setResponsiveElements(4);
+				setResponsiveElements(1);
 			} else if (newWidth > 900) {
-				setResponsiveElements(6);
+				setResponsiveElements(1);
 			}
 		};
 		let dimensions = 100 / responsiveElements;
@@ -49,7 +49,10 @@ const Home = () => {
 			</Head>
 			<Standard />
 			<div className='container'>
-				<BestCategories mobile={mobileView} />
+				<BestCategories
+					mobile={mobileView}
+
+				/>
 				<div className='section best'>
 					<div className='section-products'>
 						<div className='section-products__title'>

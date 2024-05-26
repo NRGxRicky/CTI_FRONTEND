@@ -6,7 +6,7 @@ import { useAppSelector } from '../../lib/hooks';
 import useEmblaCarousel from 'embla-carousel-react';
 import TruncateMarkup from 'react-truncate-markup';
 
-const BestCategories = ({ mobile = false }) => {
+const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
@@ -16,6 +16,7 @@ const BestCategories = ({ mobile = false }) => {
 		'carousel__button carousel__button-next carousel__button--color-ligth';
 
 	const [emblaRef, emblaApi] = useEmblaCarousel({
+		slidesToScroll: responsiveElements,
 		loop: false,
 	});
 
@@ -92,14 +93,13 @@ const BestCategories = ({ mobile = false }) => {
 							.filter((i) => i.slug !== 'index')
 							.filter((i) => i.portada)
 							.map((item, index) => (
-								<Link
-									href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
-									key={index}
-									legacyBehavior
-								>
-									<a>
-										<div className='best-categories-carousel__item'>
-											<div className='best-categories-carousel__image'>
+								<div className='best-categories-carousel__item' key={index}>
+									<div className='best-categories-carousel__image'>
+										<Link
+											href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
+											legacyBehavior
+										>
+											<a>
 												<Image
 													src={
 														item.portada
@@ -116,16 +116,23 @@ const BestCategories = ({ mobile = false }) => {
 													sizes='auto'
 													alt={Capitalize(item.name)}
 												/>
-											</div>
+											</a>
+										</Link>
+									</div>
 
-											<div className='best-categories-carousel__title'>
+									<div className='best-categories-carousel__title'>
+										<Link
+											href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
+											legacyBehavior
+										>
+											<a>
 												<TruncateMarkup lines={1}>
 													<span>{Capitalize(item.name)}</span>
 												</TruncateMarkup>
-											</div>
-										</div>
-									</a>
-								</Link>
+											</a>
+										</Link>
+									</div>
+								</div>
 							))}
 					</div>
 					<div
@@ -244,36 +251,42 @@ const BestCategories = ({ mobile = false }) => {
 							min-height: 30px;
 							font-weight: 600;
 							font-size: 16px;
+							width: 100%;
+							display: flex;
+							align-items: center;
+							justify-content: center;
 						}
 
 						.best-categories-carousel__image {
 							position: relative;
 							height: 150px;
-							width: 100%;
+							width: 150px;
 							background-color: #f7f7f7;
 							border-radius: 10px;
+							display: flex;
+							align-items: center;
+							justify-content: center;
 						}
 
 						.best-categories-carousel__container {
 							display: flex;
-							gap: 30px;
-							padding: 15px;
 						}
 
 						.best-categories-carousel__viewport {
 							overflow: hidden;
 							position: relative;
+							padding: 15px;
 						}
 
 						.best-categories-carousel__item {
-							flex: 0 0 160px;
+							flex: 0 0 170px;
 							min-width: 0;
-							width: 160px;
+
 							display: flex;
 							flex-direction: column;
 							justify-content: center;
 							align-items: center;
-							gap: 15px;
+							gap: 10px;
 						}
 
 						.best-categories-carousel {
