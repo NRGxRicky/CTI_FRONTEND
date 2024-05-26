@@ -4,7 +4,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { useAppSelector } from '../../lib/hooks';
 import Link from 'next/link';
 
-const CarouselBrand = ({ responsiveElements = 4, mobile = false }) => {
+const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
@@ -184,7 +184,7 @@ const CarouselBrand = ({ responsiveElements = 4, mobile = false }) => {
 			<style jsx>
 				{`
 					.brand__header {
-						margin: 20px 15px;
+						margin: 15px 0;
 						font-size: 16px;
 					}
 
@@ -205,11 +205,10 @@ const CarouselBrand = ({ responsiveElements = 4, mobile = false }) => {
 					}
 					.brand__carousel {
 						width: 100%;
-						height: 120px;
 						position: relative;
-						margin-top: 25px;
+						padding-top: 10px;
+						padding-left: 15px;
 						margin-bottom: 30px;
-					}
 
 					.brand____container {
 						display: flex;
@@ -219,36 +218,12 @@ const CarouselBrand = ({ responsiveElements = 4, mobile = false }) => {
 						width: 100%;
 						overflow: hidden;
 						position: relative;
-						padding: 0 15px;
 					}
 
 					.brand____slide {
 						position: relative;
-						height: 100px;
-						flex: 0 0 100px;
-					}
-					.brand__carousel__content {
-						width: 100%;
-						position: relative;
-						overflow: hidden;
-						max-width: 1350px;
-						margin: 0 auto;
-						-webkit-tap-highlight-color: transparent;
-						touch-action: pan-y;
-						user-drag: none;
-						user-select: none;
-						-moz-user-select: none;
-						-webkit-user-drag: none;
-						-webkit-user-select: none;
-						-ms-user-select: none;
-					}
 
-					.brand__carousel__container {
-						display: flex;
-						flex-direction: row;
-						flex-wrap: nowrap;
-						overflow: hidden;
-						position: relative;
+						flex: 0 0 100px;
 					}
 
 					.carousel__button {
