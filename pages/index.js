@@ -49,7 +49,7 @@ const Home = () => {
 			</Head>
 			<Standard />
 			<div className='container'>
-
+				<BestCategories mobile={mobileView} />
 				<div className='section best'>
 					<div className='section-products'>
 						<div className='section-products__title'>
