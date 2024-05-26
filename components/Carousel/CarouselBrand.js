@@ -1,12 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import useEmblaCarousel from 'embla-carousel-react';
+import { useAppSelector } from '../../lib/hooks';
+import Link from 'next/link';
 
-const CarouselBrand = ({
-	responsiveElements = 2,
-	slideDimensions = '50%',
-	mobile = false,
-}) => {
+const CarouselBrand = ({ responsiveElements = 2, mobile = false }) => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
@@ -15,9 +13,10 @@ const CarouselBrand = ({
 	const [emblaRef, emblaApi] = useEmblaCarousel({
 		slidesToScroll: responsiveElements,
 		loop: false,
-		containScroll: 'trimSnaps',
-		align: 'start',
 	});
+	const maxPageResults = useAppSelector(
+		(state) => state.mobileSlide.maxPageResults
+	);
 
 	const fetchData = async () => {
 		try {
@@ -32,7 +31,7 @@ const CarouselBrand = ({
 	};
 
 	let styleClass =
-		'brand__carousel__button carousel__button-next carousel__button--color-ligth';
+		'carousel__button carousel__button-next carousel__button--color-ligth';
 
 	if (mobile) {
 		styleClass = styleClass.concat(' brand__button__show_mobile');
@@ -72,7 +71,7 @@ const CarouselBrand = ({
 	useEffect(() => {
 		if (emblaApi) {
 			checkAllButons();
-			// Embla API is ready
+			//  API is ready
 			emblaApi.on('select', checkAllButons);
 		}
 	}, [emblaApi]);
@@ -83,10 +82,10 @@ const CarouselBrand = ({
 
 	if (loading) {
 		return (
-			<div className='embla'>
+			<div className=''>
 				<style jsx>
 					{`
-						.embla {
+						. {
 							position: relative;
 							width: 100%;
 							height: 200px;
@@ -98,102 +97,134 @@ const CarouselBrand = ({
 	}
 	return (
 		<div>
-			<div className='brand__embla'>
-				<div className='brand__embla__viewport' ref={emblaRef}>
-					<div className='brand__embla__container'>
+			<div className='brand__carousel'>
+				<div className='brand__header'>
+					<h1>LAS MEJORES MARCAS</h1>
+				</div>
+				<div className='brand____viewport' ref={emblaRef}>
+					<div className='brand____container'>
 						{data.results.map((brand) => (
-							<div
-								className='brand__embla__slide'
-								key={brand.id}
-								style={{ minWidth: slideDimensions }}
-							>
+							<div className='brand____slide' key={brand.id}>
 								<div className='brand__imagen'>
-									<Image
-										src={
-											brand.imagen ? brand.imagen : '/images/not-available.png'
-										}
-										fill
-										style={{ objectFit: 'contain' }}
-										draggable='false'
-										alt={brand.nombre}
-										sizes="auto"
-									/>
+									<Link
+										href={`/listado/${brand.slug}/index/?page_size=${maxPageResults}`}
+										legacyBehavior
+									>
+										<Image
+											src={
+												brand.imagen
+													? brand.imagen
+													: '/images/not-available.png'
+											}
+											fill
+											style={{
+												objectFit: 'contain',
+												mixBlendMode: 'multiply',
+												padding: 10,
+											}}
+											draggable='false'
+											alt={brand.nombre}
+											sizes='auto'
+										/>
+									</Link>
 								</div>
 							</div>
 						))}
 					</div>
-				</div>
-				<div
-					onClick={scrollNext}
-					className={styleClass}
-					style={!nextButton ? { opacity: '0' } : { opacity: '0.9' }}
-				>
-					<button
-						role='presentation'
-						type='button'
-						className='brand__button__nav'
-						tabIndex='-1'
+					<div
+						onClick={scrollNext}
+						className={styleClass}
+						style={
+							!nextButton || mobile ? { opacity: '0' } : { opacity: '0.9' }
+						}
 					>
-						<svg
-							className='brand__button_nav__icon'
-							width='14.6'
-							height='27'
-							viewBox='0 0 16 27'
-							xmlns='http://www.w3.org/2000/svg'
+						<button
+							role='presentation'
+							type='button'
+							className='button__nav'
+							tabIndex='-1'
 						>
-							<path d='M16 23.207L6.11 13.161 16 3.093 12.955 0 0 13.161l12.955 13.161z'></path>
-						</svg>
-					</button>
-				</div>
-				<div
-					onClick={scrollPrev}
-					className='brand__carousel__button brand__carousel__button-prev brand__carousel__button--color-ligth'
-					style={!prevButton ? { opacity: '0' } : { opacity: '0.9' }}
-				>
-					<button
-						role='presentation'
-						type='button'
-						className='brand__button__nav'
-						tabIndex='-1'
+							<svg
+								className='button_nav__icon'
+								width='14.6'
+								height='27'
+								viewBox='0 0 16 27'
+								xmlns='http://www.w3.org/1700/svg'
+							>
+								<path d='M16 23.207L6.11 13.161 16 3.093 12.955 0 0 13.161l12.955 13.161z'></path>
+							</svg>
+						</button>
+					</div>
+					<div
+						onClick={scrollPrev}
+						className='carousel__button carousel__button-prev carousel__button--color-ligth'
+						style={
+							!prevButton || mobile ? { opacity: '0' } : { opacity: '0.9' }
+						}
 					>
-						<svg
-							className='brand__button_nav__icon'
-							width='14.6'
-							height='27'
-							viewBox='0 0 16 27'
-							xmlns='http://www.w3.org/2000/svg'
+						<button
+							role='presentation'
+							type='button'
+							className='button__nav'
+							tabIndex='-1'
 						>
-							<path d='M16 23.207L6.11 13.161 16 3.093 12.955 0 0 13.161l12.955 13.161z'></path>
-						</svg>
-					</button>
+							<svg
+								className='button_nav__icon'
+								width='14.6'
+								height='27'
+								viewBox='0 0 16 27'
+								xmlns='http://www.w3.org/1700/svg'
+							>
+								<path d='M16 23.207L6.11 13.161 16 3.093 12.955 0 0 13.161l12.955 13.161z'></path>
+							</svg>
+						</button>
+					</div>
 				</div>
 			</div>
 			<style jsx>
 				{`
-					.brand__imagen {
-						position: relative;
-						width: 100%;
-						height: 100%;
-					}
-					.brand__embla {
-						width: 100%;
-						height: 200px;
-						postion: relative;
+					.brand__header {
+						margin: 20px 15px;
+						font-size: 16px;
 					}
 
-					.brand__embla__container {
+					.brand__header h1 {
+						font-size: 18px;
+					}
+
+					.brand__imagen {
+						position: relative;
+						height: 80px;
+						width: 80px;
+						background-color: #f7f7f7;
+						border-radius: 10px;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						cursor: pointer;
+					}
+					.brand__carousel {
+						width: 100%;
+						height: 120px;
+						position: relative;
+						margin-top: 25px;
+						margin-bottom: 30px;
+					}
+
+					.brand____container {
 						display: flex;
 					}
 
-					.brand__embla__viewport {
+					.brand____viewport {
 						width: 100%;
 						overflow: hidden;
+						position: relative;
 					}
 
-					.brand__embla__slide {
-						padding: 0 20px;
+					.brand____slide {
 						position: relative;
-						height: 200px;
+						height: 100px;
+						flex: 0 0 100px;
 					}
 					.brand__carousel__content {
 						width: 100%;
@@ -219,13 +250,13 @@ const CarouselBrand = ({
 						position: relative;
 					}
 
-					.brand__carousel__button {
+					.carousel__button {
 						border-radius: 0 4px 4px 0;
 						justify-content: space-around;
 						position: absolute;
-						top: calc(50% - 20px);
-						width: 47px;
-						height: 104px;
+						top: calc(50% - 47px);
+						width: 40px;
+						height: 75px;
 						box-shadow: 0 1px 5px 0 rgb(0 0 0 / 11%);
 						transition: opacity 0.2s ease-in;
 						display: flex;
@@ -233,29 +264,40 @@ const CarouselBrand = ({
 						cursor: pointer;
 						text-decoration: none;
 						opacity: 0;
+						user-select: none;
 					}
 
-					.brand__carousel__button-prev {
+					.button__nav {
+						background: none;
+						color: inherit;
+						border: none;
+						padding: 0;
+						font: inherit;
+						cursor: pointer;
+						user-select: none;
+					}
+
+					.carousel__button-prev {
 						left: 0;
 					}
 
-					.brand__carousel__button-next {
+					.carousel__button-next {
 						right: 0;
 						transform: rotate(180deg);
 					}
 
-					.brand__carousel__button--color-ligth {
+					.carousel__button--color-ligth {
 						background: #ffffff;
 						fill: #ff002c;
 					}
 
-					.brand__carousel__button--color-ligth:hover,
-					.brand__carcarousel__button--color-ligth:active {
+					.carousel__button--color-ligth:hover,
+					.carcarousel__button--color-ligth:active {
 						background: #ffffff;
 					}
 
 					@media only screen and (min-width: 48em) {
-						.brand__embla:hover .carousel__button {
+						.embla:hover .carousel__button {
 							opacity: 1;
 						}
 					}

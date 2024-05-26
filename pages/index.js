@@ -66,17 +66,10 @@ const Home = () => {
 						<CarouselProducts typeQuery={'-created'} mobile={mobileView} />
 					</div>
 				</div>
-				<div className='section best-brands'>
-					<div className='section-products'>
-						<div className='section-products__title'>
-							<h1>LAS MEJORES MARCAS</h1>
-						</div>
-						<CarouselBrand
-							responsiveElements={responsiveElements}
-							slideDimensions={slideDimensions}
-						/>
-					</div>
-				</div>
+
+				<CarouselBrand
+					responsiveElements={responsiveElements}
+				/>
 
 				<div className='section best'>
 					<div className='section-products'>
