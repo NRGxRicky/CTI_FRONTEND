@@ -83,8 +83,18 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 	}, [data]);
 
 	data.results.length < 1 && (
-		<div className='best-categories-carousel'></div>
-	)
+		<div className='best-categories-carousel'>
+			<style jsx>
+				{`
+					.best-categories-carousel {
+						margin-top: 20px;
+						margin-bottom: 20px;
+						min-height: 110px;
+					}
+				`}
+			</style>
+		</div>
+	);
 
 	return (
 		data.results.length > 1 && (
@@ -210,7 +220,6 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 							text-decoration: none;
 							opacity: 0;
 							user-select: none;
-							
 						}
 
 						.button__nav {
