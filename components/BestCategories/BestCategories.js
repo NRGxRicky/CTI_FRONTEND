@@ -5,7 +5,6 @@ import Capitalize from '../../hooks/CapitalizeTitle';
 import { useAppSelector } from '../../lib/hooks';
 import useEmblaCarousel from 'embla-carousel-react';
 import TruncateMarkup from 'react-truncate-markup';
-import { relative } from 'path';
 
 const BestCategories = ({ mobile = false, responsiveElements = 3 }) => {
 	const [data, setData] = useState({ results: [] });
@@ -82,6 +81,21 @@ const BestCategories = ({ mobile = false, responsiveElements = 3 }) => {
 		fetchData();
 	}, [data]);
 
+	if (data.results.length === 0) {
+		return (
+		<div className='best-categories-carousel'>
+			<style jsx>
+				{`
+					.best-categories-carousel {
+						margin-top: 20px;
+						margin-bottom: 20px;
+						min-height: 110px;
+					}
+				`}
+			</style>
+			</div>
+		)
+	}
 
 	return (
 		data.results.length > 1 && (
