@@ -82,6 +82,10 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 		fetchData();
 	}, [data]);
 
+	data.results.length < 1 && (
+		<div className='best-categories-carousel'></div>
+	)
+
 	return (
 		data.results.length > 1 && (
 			<div className='best-categories-carousel'>
