@@ -337,6 +337,7 @@ const CarouselProducts = ({
 						cursor: pointer;
 						text-decoration: none;
 						opacity: 0;
+						user-select: none;
 					}
 
 					.button__nav {

@@ -105,7 +105,6 @@ const HeaderBar: React.FC = () => {
 								src='/images/logo.png'
 								width='98'
 								height='42'
-								className='header-bar__logo'
 								sizes='auto'
 								style={{
 									width: '98',
@@ -113,6 +112,7 @@ const HeaderBar: React.FC = () => {
 								}}
 								alt='PcStore.mx'
 								priority={true}
+								draggable='false'
 							/>
 						</a>
 					</div>
@@ -376,6 +376,7 @@ const HeaderBar: React.FC = () => {
 				.header-bar__logo {
 					margin-right: 7px;
 					max-height: 42px;
+					user-select: none;
 				}
 
 				.header-bar__search-bar {
