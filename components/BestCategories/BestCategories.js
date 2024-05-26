@@ -82,7 +82,8 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 		fetchData();
 	}, [data]);
 
-	data.results.length < 1 && (
+	if (data.results.length === 0) {
+		return (
 		<div className='best-categories-carousel'>
 			<style jsx>
 				{`
@@ -93,8 +94,9 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 					}
 				`}
 			</style>
-		</div>
-	);
+			</div>
+		)
+	}
 
 	return (
 		data.results.length > 1 && (
