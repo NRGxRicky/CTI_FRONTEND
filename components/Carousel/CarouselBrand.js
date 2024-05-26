@@ -230,7 +230,7 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 						border-radius: 0 4px 4px 0;
 						justify-content: space-around;
 						position: absolute;
-						top: calc(50% - 47px);
+						top: calc(50% - 38px);
 						width: 40px;
 						height: 75px;
 						box-shadow: 0 1px 5px 0 rgb(0 0 0 / 11%);
