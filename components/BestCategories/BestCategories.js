@@ -282,7 +282,6 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 						.best-categories-carousel__viewport {
 							overflow: hidden;
 							position: relative;
-							padding: 15px;
 						}
 
 						.best-categories-carousel__item {
