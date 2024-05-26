@@ -281,7 +281,7 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 						}
 
 						.best-categories-carousel__item {
-							flex: 0 0 125px;
+							flex: 0 0 120px;
 							min-width: 0;
 
 							display: flex;
