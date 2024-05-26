@@ -85,9 +85,6 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 	return (
 		data.results.length > 1 && (
 			<div className='best-categories-carousel'>
-				<div className='best-categories-carousel__header'>
-					<h2>Las Mejores Categorías</h2>
-				</div>
 				<div className='best-categories-carousel__viewport' ref={emblaRef}>
 					<div className='best-categories-carousel__container'>
 						{data.results
@@ -199,8 +196,8 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 							justify-content: space-around;
 							position: absolute;
 							top: calc(50% - 52px);
-							width: 47px;
-							height: 104px;
+							width: 40px;
+							height: 75px;
 							box-shadow: 0 1px 5px 0 rgb(0 0 0 / 11%);
 							transition: opacity 0.2s ease-in;
 							display: flex;
@@ -209,7 +206,7 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 							text-decoration: none;
 							opacity: 0;
 							user-select: none;
-							border: 1px solid rgb(0 0 0 / 11%);
+							
 						}
 
 						.button__nav {
@@ -256,7 +253,7 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 						.best-categories-carousel__title {
 							line-height: 2;
 							font-weight: 600;
-							font-size: 16px;
+							font-size: 12px;
 							width: 100%;
 							display: flex;
 							align-items: center;
@@ -284,7 +281,7 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 						}
 
 						.best-categories-carousel__item {
-							flex: 0 0 110px;
+							flex: 0 0 130px;
 							min-width: 0;
 
 							display: flex;
@@ -296,6 +293,7 @@ const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
 
 						.best-categories-carousel {
 							margin-top: 20px;
+							margin-bottom: 20px;
 						}
 					`}
 				</style>

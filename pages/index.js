@@ -47,12 +47,11 @@ const Home = () => {
 					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
 				/>
 			</Head>
+			<div className='container'>
+				<BestCategories mobile={mobileView} />
+			</div>
 			<Standard />
 			<div className='container'>
-				<BestCategories
-					mobile={mobileView}
-
-				/>
 				<div className='section best'>
 					<div className='section-products'>
 						<div className='section-products__title'>
