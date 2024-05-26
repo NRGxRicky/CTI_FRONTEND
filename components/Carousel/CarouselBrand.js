@@ -219,6 +219,7 @@ const CarouselBrand = ({ responsiveElements = 2, mobile = false }) => {
 						width: 100%;
 						overflow: hidden;
 						position: relative;
+						padding: 0 15px;
 					}
 
 					.brand____slide {
