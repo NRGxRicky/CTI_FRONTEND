@@ -6,7 +6,7 @@ import { useAppSelector } from '../../lib/hooks';
 import useEmblaCarousel from 'embla-carousel-react';
 import TruncateMarkup from 'react-truncate-markup';
 
-const BestCategories = ({ mobile = false, responsiveElements = 3 }) => {
+const BestCategories = ({ mobile = false }) => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
@@ -16,7 +16,7 @@ const BestCategories = ({ mobile = false, responsiveElements = 3 }) => {
 		'carousel__button carousel__button-next carousel__button--color-ligth';
 
 	const [emblaRef, emblaApi] = useEmblaCarousel({
-		slidesToScroll: responsiveElements,
+		slidesToScroll: 3,
 		loop: false,
 	});
 
@@ -79,7 +79,7 @@ const BestCategories = ({ mobile = false, responsiveElements = 3 }) => {
 
 	useEffect(() => {
 		fetchData();
-	}, [data]);
+	}, []);
 
 	if (data.results.length === 0) {
 		return (
