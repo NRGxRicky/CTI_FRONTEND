@@ -7,7 +7,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import TruncateMarkup from 'react-truncate-markup';
 import { relative } from 'path';
 
-const BestCategories = ({ mobile = false, responsiveElements = 2 }) => {
+const BestCategories = ({ mobile = false, responsiveElements = 3 }) => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
