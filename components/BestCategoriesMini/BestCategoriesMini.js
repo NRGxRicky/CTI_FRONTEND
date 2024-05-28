@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import { useAppSelector } from '../../lib/hooks';
+import TruncateMarkup from 'react-truncate-markup';
 
 const BestCategoriesMini = ({
 	parentCategorie,
@@ -73,7 +74,9 @@ const BestCategoriesMini = ({
 											</div>
 										</div>
 										<div className='categories__mini__item__title'>
-											{Capitalize(categorie.name)}
+											<TruncateMarkup lines={1}>
+												<span>{Capitalize(categorie.name)}</span>
+											</TruncateMarkup>
 										</div>
 									</div>
 								</a>

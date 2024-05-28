@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 import { useAppSelector } from '../../lib/hooks';
 import Link from 'next/link';
 
@@ -10,10 +11,14 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 	const [error, setError] = useState(false);
 	const [prevButton, setPrevButton] = useState(true);
 	const [nextButton, setNextButton] = useState(true);
-	const [emblaRef, emblaApi] = useEmblaCarousel({
-		slidesToScroll: responsiveElements,
-		loop: false,
-	});
+	const [emblaRef, emblaApi] = useEmblaCarousel(
+		{
+			slidesToScroll: responsiveElements,
+			loop: false,
+		},
+		[Autoplay({ playOnInit: true, delay: 6000 })]
+	);
+
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
 	);
