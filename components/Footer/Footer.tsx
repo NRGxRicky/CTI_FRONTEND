@@ -37,27 +37,27 @@ const Footer: React.FC<FooterProps> = () => {
 							style={{ maxHeight: column1 ? '500px' : '0px' }}
 						>
 							<div className='footer__column__element'>
-								<Link href={`politicas-de-devolucion`} legacyBehavior>
+								<Link href={`/politicas-de-devolucion`} legacyBehavior>
 									<a>Políticas de Devolución</a>
 								</Link>
 							</div>
 							<div className='footer__column__element'>
-								<Link href={`terminos-de-servicio`} legacyBehavior>
+								<Link href={`/terminos-de-servicio`} legacyBehavior>
 									<a>Términos de Servicio</a>
 								</Link>
 							</div>
 							<div className='footer__column__element'>
-								<Link href={`aviso-de-privacidad`} legacyBehavior>
+								<Link href={`/aviso-de-privacidad`} legacyBehavior>
 									<a>Aviso de Privacidad</a>
 								</Link>
 							</div>
 							<div className='footer__column__element'>
-								<Link href={`politicas-de-envios`} legacyBehavior>
+								<Link href={`/politicas-de-envios`} legacyBehavior>
 									<a>Políticas de Envíos</a>
 								</Link>
 							</div>
 							<div className='footer__column__element'>
-								<Link href={`codigo-de-etica`} legacyBehavior>
+								<Link href={`/codigo-de-etica`} legacyBehavior>
 									<a>Código de Ética</a>
 								</Link>
 							</div>
