@@ -11,7 +11,7 @@ import CarouselProductsV4 from '../components/Carousel/CarouselProductsv4';
 
 const Home = () => {
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
-	
+
 	return (
 		<div>
 			<Head>
@@ -26,19 +26,7 @@ const Home = () => {
 				<BestCategories mobile={mobileView} />
 				<div className='section best'>
 					<div className='section-products'>
-						<div
-							className='section-products__title'
-							style={{
-								backgroundColor: '#474747',
-								color: '#fff',
-								borderRadius: '5px',
-								lineHeight: 1.5,
-								display: 'flex',
-								alignItems: 'center',
-								gap: '5px',
-								marginBottom: '5px'
-							}}
-						>
+						<div className='section-products__title section__offers'>
 							<h1>OFERTAS</h1>
 							<span>¡Aprovecha estas ofertas mientras están activas!</span>
 						</div>
@@ -92,6 +80,16 @@ const Home = () => {
 						background: #ffffff;
 					}
 
+					.section__offers {
+						color: #ff002c;
+						border-radius: 5px;
+						line-height: 1.5;
+						display: flex;
+						align-items: center;
+						gap: 20px;
+						margin-bottom: 5px;
+					}
+
 					h1 {
 						font-size: 18px;
 					}
@@ -99,6 +97,10 @@ const Home = () => {
 					@media only screen and (max-width: 48em) {
 						.button__show_mobile {
 							opacity: 1 !important;
+						}
+
+						.section__offers { 
+							border-radius: 0;
 						}
 					}
 				`}

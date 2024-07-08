@@ -209,7 +209,7 @@ const CarouselProductsV4 = ({
 													<div className='card__carousel__available'>
 														{!filter_available_store && (
 															<div>
-																<span>
+																<span className='text--green'>
 																	{producto.stock_total}{' '}
 																	{producto.stock_total > 1
 																		? 'disponibles'
@@ -219,7 +219,7 @@ const CarouselProductsV4 = ({
 														)}
 														{filter_available_store && (
 															<div>
-																<span>
+																<span className='text--green'>
 																	{producto.stock_puebla}{' '}
 																	{producto.stock_puebla > 1
 																		? 'disponibles'
@@ -375,6 +375,10 @@ const CarouselProductsV4 = ({
 							opacity: 1;
 						}
 					}
+					.on-sale {
+						border-top-left-radius: 0;
+						border-bottom-left-radius: 0;
+					}
 
 					.card__carousel {
 						width: 100%;
@@ -415,7 +419,7 @@ const CarouselProductsV4 = ({
 						font-weight: 600;
 						line-height: 1.5;
 					}
-					
+
 					.card__carousel__available {
 						width: 100%;
 						height: 20px;
