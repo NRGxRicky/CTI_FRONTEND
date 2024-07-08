@@ -220,6 +220,7 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 					}
 
 					.brand____viewport {
+						margin-top: 35px;
 						width: 100%;
 						overflow: hidden;
 						position: relative;

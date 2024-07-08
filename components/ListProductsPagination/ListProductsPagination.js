@@ -47,7 +47,7 @@ const ListProductsPagination = ({ pages, pageActive, refreshPage }) => {
 						onClick={() => {
 							refreshPage(parseInt(pageActive) - 1);
 						}}
-						className='pagination__item text--ligth'
+						className='pagination__item text--light'
 					>
 						Anterior
 					</div>
@@ -112,7 +112,7 @@ const ListProductsPagination = ({ pages, pageActive, refreshPage }) => {
 						onClick={() => {
 							refreshPage(parseInt(pageActive) + 1);
 						}}
-						className='pagination__item text--ligth'
+						className='pagination__item text--light'
 					>
 						Siguiente
 					</div>

@@ -161,7 +161,7 @@ const DetailProduct = ({
 									>
 										<a>
 											<span className='product__resume__detail'>
-												<span className='product__brand text--ligth'>
+												<span className='product__brand text--light'>
 													{item.marca.imagen ? (
 														<Image
 															src={item.marca.imagen}
@@ -212,14 +212,14 @@ const DetailProduct = ({
 						<div className='product__price__container__type_of_payments'>
 							<div className='product__price__item'>
 								<div className='product__price__header'>A un pago:</div>
-								<span className='text--ligth'>
+								<span className='text--light'>
 									$ {CurrencyFormat(item.precio_contado)}
 								</span>
 								<div className='product__tax text--off'>Incluye IVA</div>
 							</div>
 							<div className='product__price__item'>
 								<div className='product__price__header'>A MSI:</div>
-								<span className='text--ligth'>
+								<span className='text--light'>
 									${' '}
 									{item.precio_final_descuento > 0
 										? CurrencyFormat(item.precio_final_descuento)

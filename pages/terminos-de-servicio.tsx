@@ -12,12 +12,15 @@ const TerminosDeServicio = () => {
 					<div className='policy__body'>
 						<div className='policy__content'>
 							<p>
+								**TÉRMINOS DEL SERVICIO**
+								<br />
+								<br />
 								**GENERALIDADES**
 								<br />
 								<br />
-								PCSTORE.MX gestiona este sitio web. En todo el sitio, los
-								términos "nosotros", "nos" y "nuestro" se refieren en lo
-								sucesivo a PCSTORE.MX. PCSTORE.MX ofrece esta página web,
+								PCSTORE ONLINE SAS DE CV gestiona este sitio web. En todo el
+								sitio, los términos "nosotros", "nos" y "nuestro" se refieren en
+								lo sucesivo a PCSTORE.MX. PCSTORE.MX ofrece esta página web,
 								incluida toda la información, las herramientas y los servicios
 								que se ponen en este sitio a disposición suya, el usuario,
 								siempre y cuando acepte la totalidad de los términos,
@@ -57,6 +60,11 @@ const TerminosDeServicio = () => {
 								cambios. Su uso de la página web o el acceso a ella de forma
 								continuada después de la publicación de cualquier cambio
 								constituye la aceptación de dichos cambios.
+								<br />
+								<br />
+								Nuestra tienda está alojada en Shopify Inc. Nos proporcionan la
+								plataforma de comercio electrónico en línea que nos permite
+								venderle nuestros productos y servicios.
 								<br />
 								<br />
 								**SECCIÓN 1: TÉRMINOS DE LA TIENDA ONLINE**
@@ -509,8 +517,8 @@ const TerminosDeServicio = () => {
 								<br />
 								Estos Términos del servicio y cualquier acuerdo aparte mediante
 								el cual le brindemos servicios se regirán e interpretarán de
-								acuerdo con las leyes aplicables en los Estados Unidos
-								Mexicanos.
+								acuerdo con las leyes aplicables en el Estado de [Estado], EE.
+								UU.
 								<br />
 								<br />
 								**SECCIÓN 19: CAMBIOS EN LOS TÉRMINOS DEL SERVICIO**
@@ -537,19 +545,36 @@ const TerminosDeServicio = () => {
 								nosotros en la dirección de correo electrónico
 								contacto@pcstore.mx.
 								<br />
+							</p>
+							<p>
 								<br />
 								**Información de Contacto**
 								<br />
 								<br />
-								Responsable Legal: Crystian Ordoñez Sanchez
+								Responsable Legal: PCSTORE ONLINE SAS DE CV
 								<br />
-								Nombre de la Empresa: PCSTORE.MX
+								<a
+									data-encoded-tag-name='meta'
+									data-encoded-tag-value=''
+									data-encoded-attr-charset='dXRmLTg='
+								></a>
+								Nombre Comercial: PCSTORE.MX
 								<br />
 								Correo Electrónico: contacto@pcstore.mx
 								<br />
-								Número de Teléfono: 22 28 29 83 51
+								Número de Teléfono:{' '}
+								<a
+									data-encoded-tag-name='meta'
+									data-encoded-tag-value=''
+									data-encoded-attr-charset='dXRmLTg='
+								></a>
+								<span>22 28 29 83 51</span>
 								<br />
-								Número de Identificación Fiscal (RFC): OOSC911003QR0
+								Número de Identificación Fiscal (RFC):&nbsp;PON240523JD2
+							</p>
+							<p>
+								<br />
+								<br />
 							</p>
 						</div>
 					</div>

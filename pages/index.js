@@ -7,6 +7,7 @@ import InfoPageFooter from '../components/InfoPageFooter/InfoPageFooter';
 import Footer from '../components/Footer/Footer';
 import { useAppSelector } from '../lib/hooks';
 import BestCategories from '../components/BestCategories/BestCategories';
+import CarouselProductsV4 from '../components/Carousel/CarouselProductsv4';
 
 const Home = () => {
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
@@ -25,6 +26,27 @@ const Home = () => {
 				<BestCategories mobile={mobileView} />
 				<div className='section best'>
 					<div className='section-products'>
+						<div
+							className='section-products__title'
+							style={{
+								backgroundColor: '#474747',
+								color: '#fff',
+								borderRadius: '5px',
+								lineHeight: 1.5,
+								display: 'flex',
+								alignItems: 'center',
+								gap: '5px',
+								marginBottom: '5px'
+							}}
+						>
+							<h1>OFERTAS</h1>
+							<span>¡Aprovecha estas ofertas mientras están activas!</span>
+						</div>
+						<CarouselProductsV4 typeQuery={'-visitas'} mobile={mobileView} />
+					</div>
+				</div>
+				<div className='section best'>
+					<div className='section-products'>
 						<div className='section-products__title'>
 							<h1>RECOMENDADOS</h1>
 						</div>
@@ -40,9 +62,7 @@ const Home = () => {
 					</div>
 				</div>
 
-				<CarouselBrand
-					mobile={mobileView}
-				/>
+				<CarouselBrand mobile={mobileView} />
 
 				<div className='section best'>
 					<div className='section-products'>
@@ -60,13 +80,12 @@ const Home = () => {
 					.section {
 						position: relative;
 						margin-top: 20px;
-						border: 1px solid #eaeaea;
+
 						background: #ffffff;
 					}
 
 					.section-products__title {
 						padding: 15px 20px;
-						border-bottom: 1px solid #eaeaea;
 					}
 
 					.section-products {

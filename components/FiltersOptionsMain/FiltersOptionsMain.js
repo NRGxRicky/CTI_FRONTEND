@@ -172,7 +172,7 @@ const FiltersOptionsMain = ({
 							origin_attributes.length > 0 ||
 							origin_categories.length > 0) && (
 							<div
-								className='nav__filters__header__clear text--ligth'
+								className='nav__filters__header__clear text--light'
 								onClick={() => handleFiltersClear()}
 							>
 								LIMPIAR

@@ -34,7 +34,7 @@ const CodigoDeEtica = () => {
 							<p>
 								Este Código de Ética en materia de Comercio Electrónico
 								establece los valores y principios que PCSTORE.MX, representada
-								legalmente por Crystian Ordoñez Sanchez, deberá observar en las
+								legalmente por PCSTORE ONLINE SAS DE CV, deberá observar en las
 								actividades relacionadas con el comercio electrónico realizadas
 								en sus plataformas{' '}
 								<a href='https://pcstore.mx' target='_new'>
@@ -61,10 +61,10 @@ const CodigoDeEtica = () => {
 							<p>
 								El Código de Ética en materia de Comercio Electrónico es de
 								adopción voluntaria y aplicable a PCSTORE.MX, representada
-								legalmente por Crystian Ordoñez Sanchez, en las transacciones,
+								legalmente por PCSTORE ONLINE SAS DE CV, en las transacciones,
 								efectuadas a través del uso de medios electrónicos digitales en
 								el territorio nacional. PCSTORE.MX, representada legalmente por
-								Crystian Ordoñez Sanchez, se compromete a respetar que en todas
+								PCSTORE ONLINE SAS DE CV, se compromete a respetar que en todas
 								sus actividades de comercio electrónico se cumplan los
 								principios establecidos en el presente Código. El presente
 								Código de Ética en materia de Comercio Electrónico no será
@@ -519,8 +519,11 @@ const CodigoDeEtica = () => {
 									<b>Capítulo V. Derechos Humanos</b>
 								</span>
 							</p>
-							<br />
-							<br />
+							
+							<p>
+								<br />
+								<br />
+							</p>
 							<p>
 								<b>Artículo 11. Grupos vulnerables</b>
 							</p>
@@ -647,7 +650,9 @@ const CodigoDeEtica = () => {
 								contacto:
 							</p>
 							<p>
-								PCSTORE.MX: contacto@pcstore.mx Teléfono&nbsp;22 28 29 83 51.
+								Email: contacto@pcstore.mx
+								<br />
+								Teléfono: <span>22 28 29 83 51</span>.
 							</p>
 							<p>
 								<br />

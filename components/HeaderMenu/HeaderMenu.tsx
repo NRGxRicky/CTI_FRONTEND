@@ -38,8 +38,10 @@ const HeaderMenu = () => {
 		<div className='header-menu'>
 			<ul className='header-menu__list text--off'>
 				{data.results
-					.slice(0, 8)
+
 					.filter((i) => i.slug !== 'index')
+					.filter((i) => i.portada)
+					.slice(0, 8)
 					.map((item, index) => (
 						<li key={index}>
 							<Link

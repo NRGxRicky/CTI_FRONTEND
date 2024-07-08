@@ -78,7 +78,7 @@ const MobileNavBar = ({
 			filtersActive.attributes.length +
 			filtersActive.filter_available +
 			filtersActive.filter_available_store +
-			filtersActive.filter_free_shipping + 
+			filtersActive.filter_free_shipping +
 			filtersActive.filter_discount;
 
 		setCounterFilters(counterFiltersInteger);
@@ -88,7 +88,11 @@ const MobileNavBar = ({
 		<div>
 			<div
 				className='nav__container'
-				style={{ top: visibleNav ? 59 + headerLocationHeight : -59 - headerLocationHeight }}
+				style={{
+					top: visibleNav
+						? 59 + headerLocationHeight
+						: -59 - headerLocationHeight,
+				}}
 			>
 				<div className='nav'>
 					<div
@@ -107,9 +111,7 @@ const MobileNavBar = ({
 							</g>
 						</svg>
 						<TruncateMarkup lines={1}>
-							<span>
-								{`Ordenar: ${dictSortLabel[sortList]}`}
-							</span>
+							<span>{`Ordenar: ${dictSortLabel[sortList]}`}</span>
 						</TruncateMarkup>
 					</div>
 					<div
@@ -156,7 +158,7 @@ const MobileNavBar = ({
 							if (id === sortList) {
 								return (
 									<div
-										className='nav__sort__options--active text--ligth'
+										className='nav__sort__options--active text--light'
 										onClick={() => handleSort(id)}
 										key={id}
 									>

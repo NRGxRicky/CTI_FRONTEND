@@ -18,9 +18,7 @@ import ListProductsMobile from '../../components/LisProductsMobile/ListProductsM
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { setLocationStockOnly } from '../../lib/features/locationSlide';
 
-import {
-	hideAll,
-} from '../../lib/features/showOpacityContainerSlide';
+import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 
 import Capitalize from '../../hooks/CapitalizeTitle';
 
@@ -154,7 +152,6 @@ const Listado = ({
 	categoria,
 	page_size,
 }) => {
-
 	const [loadingData, setLoadingData] = useState(false);
 	const [data, setData] = useState({ results: [] });
 	const [pageActual, setPageActual] = useState(parseInt(page));
@@ -482,7 +479,6 @@ const Listado = ({
 		} else {
 			setConvertTitle(q);
 		}
-
 	}, [
 		q,
 		page,
@@ -497,7 +493,7 @@ const Listado = ({
 		marca,
 		categoria,
 		applyFilters,
-		itemsPerPage
+		itemsPerPage,
 	]);
 
 	useEffect(() => {
@@ -644,7 +640,7 @@ const Listado = ({
 											if (id === internalOrder) {
 												return (
 													<div
-														className='list-products__sort__option sort-active text--ligth bold'
+														className='list-products__sort__option sort-active text--light bold'
 														onClick={() => handleSort(id)}
 														key={id}
 													>
