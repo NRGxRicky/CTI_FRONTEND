@@ -45,7 +45,7 @@ export function handleLocationSuccess(pos) {
 			LAST_PERMISSION_TIME_KEY,
 			new Date().getTime().toString()
 		);
-		window.location.reload(true);
+		// window.location.reload(true);
 	}
 }
 
