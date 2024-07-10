@@ -94,21 +94,22 @@ const CarouselProductsRelated = ({
 		<div className='products__related'>
 			<div className='products__related__title'>{title}</div>
 			<div className='embla__categories'>
-				{sortData.map((categorie, index) =>
-					categorie === currentShow ? (
-						<span
-							className='embla__filter-active text--light bold'
-							key={index}
-							onClick={() => setCurrentShow(categorie)}
-						>
-							{Capitalize(categorie)}
-						</span>
-					) : (
-						<span key={index} onClick={() => setCurrentShow(categorie)}>
-							{Capitalize(categorie)}
-						</span>
-					)
-				)}
+				{sortData.map((categorie, index) => (
+					<div className='embla__categories__title' key={index}>
+						<TruncateMarkup lines={2}>
+							<span
+								className={
+									categorie === currentShow
+										? 'embla__filter-active text--light bold'
+										: ''
+								}
+								onClick={() => setCurrentShow(categorie)}
+							>
+								{Capitalize(categorie)}
+							</span>
+						</TruncateMarkup>
+					</div>
+				))}
 			</div>
 			<div className='embla'>
 				<div className='embla__viewport' ref={emblaRef}>
@@ -274,6 +275,16 @@ const CarouselProductsRelated = ({
 			</div>
 			<style jsx>
 				{`
+					.embla__categories__title {
+						max-width: 200px;
+						min-width: 80px;
+						margin-right: 30px;
+						width: auto;
+						align-items: center;
+						display: flex;
+
+					}
+
 					.product__price__label {
 						z-index: 1;
 						position: absolute;
@@ -298,7 +309,7 @@ const CarouselProductsRelated = ({
 						border-bottom: 1px solid #eaeaea;
 						display: flex;
 						align-content: center;
-						line-height: 2;
+						line-height: 1.5;
 						overflow-y: auto;
 						padding-left: 10px;
 					}

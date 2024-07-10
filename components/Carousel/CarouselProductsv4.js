@@ -424,6 +424,8 @@ const CarouselProductsV4 = ({
 						width: 100%;
 						height: 20px;
 						font-size: 12px;
+						line-height: 1.5;
+						font-weight: 600;
 					}
 
 					.card__carousel__sku {

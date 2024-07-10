@@ -27,7 +27,7 @@ const Home = () => {
 				<div className='section best'>
 					<div className='section-products'>
 						<div className='section-products__title section__offers'>
-							<h1>OFERTAS</h1>
+							<h1>🔥 OFERTAS</h1>
 							<span>¡Aprovecha estas ofertas mientras están activas!</span>
 						</div>
 						<CarouselProductsV4 typeQuery={'-visitas'} mobile={mobileView} />
@@ -99,7 +99,7 @@ const Home = () => {
 							opacity: 1 !important;
 						}
 
-						.section__offers { 
+						.section__offers {
 							border-radius: 0;
 						}
 					}
