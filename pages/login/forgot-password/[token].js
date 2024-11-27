@@ -133,6 +133,7 @@ const Token = ({ tokenRecovery }) => {
 										value={password}
 										onChange={(e) => setPassword(e.target.value)}
 										required
+										min={8}
 									/>
 									<button
 										type='button'
@@ -152,6 +153,7 @@ const Token = ({ tokenRecovery }) => {
 										value={confirmPassword}
 										onChange={(e) => setConfirmPassword(e.target.value)}
 										required
+										min={8}
 									/>
 									<button
 										type='button'
