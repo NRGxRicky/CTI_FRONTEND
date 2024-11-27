@@ -8,6 +8,7 @@ import Footer from '../components/Footer/Footer';
 import { useAppSelector } from '../lib/hooks';
 import BestCategories from '../components/BestCategories/BestCategories';
 import CarouselProductsV4 from '../components/Carousel/CarouselProductsv4';
+import BenefitCarousel from '../components/BenefitCarousel/BenefitCarousel';
 
 const Home = () => {
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
@@ -41,6 +42,9 @@ const Home = () => {
 						<CarouselProducts typeQuery={'-visitas'} mobile={mobileView} />
 					</div>
 				</div>
+
+				<BenefitCarousel />
+
 				<div className='section best-categories'>
 					<div className='section-products'>
 						<div className='section-products__title'>
@@ -77,6 +81,7 @@ const Home = () => {
 						/>
 					</div>
 				</div>
+
 				<InfoPageFooter />
 			</div>
 			<Footer />

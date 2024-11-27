@@ -299,7 +299,7 @@ const CarouselProducts = ({
 
 					.embla {
 						width: 100%;
-						max-height: 400px;
+						max-height: 450px;
 						position: relative;
 						height: 300px;
 					}
