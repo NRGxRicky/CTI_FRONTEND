@@ -346,7 +346,10 @@ const Footer: React.FC<FooterProps> = () => {
 					.footer__aside {
 						display: flex;
 						justify-content: center;
-						line-height: 4;
+						line-height: 2;
+						text-align: center;
+						padding: 10px;
+						margin-bottom: 20px;
 					}
 
 					.toggle-button {

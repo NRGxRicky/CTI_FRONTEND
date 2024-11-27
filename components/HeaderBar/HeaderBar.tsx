@@ -522,6 +522,10 @@ const HeaderBar: React.FC = () => {
 						z-index: 200;
 						position: fixed;
 					}
+
+					.mobile__clear-fix {
+						height: 60px !important;
+					}
 				}
 			`}</style>
 		</div>

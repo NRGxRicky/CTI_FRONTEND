@@ -43,8 +43,6 @@ const Home = () => {
 					</div>
 				</div>
 
-				<BenefitCarousel />
-
 				<div className='section best-categories'>
 					<div className='section-products'>
 						<div className='section-products__title'>
@@ -81,6 +79,8 @@ const Home = () => {
 						/>
 					</div>
 				</div>
+				
+				<BenefitCarousel />
 
 				<InfoPageFooter />
 			</div>
