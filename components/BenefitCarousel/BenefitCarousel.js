@@ -227,7 +227,8 @@ const BenefitCarousel = () => {
 				.carousel-container {
 					position: relative;
 					width: 100%;
-					margin: auto;
+					margin-top: 20px;
+
 				}
 				.carousel {
 					display: flex;

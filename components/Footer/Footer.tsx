@@ -21,7 +21,6 @@ const Footer: React.FC<FooterProps> = () => {
 	};
 	return (
 		<div className='footer'>
-			
 			<div className='container'>
 				<div className='footer__container'>
 					<div className='footer__column'>
@@ -254,6 +253,16 @@ const Footer: React.FC<FooterProps> = () => {
 								fill
 								style={{ objectFit: 'contain' }}
 								alt={'Mercado Pago'}
+								draggable='false'
+								sizes='auto'
+							/>
+						</div>
+						<div className='footer__column__element footer__column__element__payment'>
+							<Image
+								src='/images/logo-aplazo.png'
+								fill
+								style={{ objectFit: 'contain' }}
+								alt={'Aplazo'}
 								draggable='false'
 								sizes='auto'
 							/>
