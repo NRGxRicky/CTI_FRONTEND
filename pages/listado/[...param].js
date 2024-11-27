@@ -813,6 +813,7 @@ const Listado = ({
 
 					.list-products__aside {
 						display: flex;
+						margin-top: 20px;
 					}
 
 					.list-products__aside__filters {
