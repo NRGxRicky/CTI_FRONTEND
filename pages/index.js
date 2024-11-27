@@ -60,16 +60,43 @@ const Home = () => {
 						<CarouselProducts typeQuery={'-ventas'} mobile={mobileView} />
 					</div>
 				</div>
+
+				<div className='section best section-gamer'>
+					<div className='section-products'>
+						<div className='section-products__title section__offers'>
+							<h1>🎮 ZONA GAMER</h1>
+							<span>
+								Visita nuestra sección con todo lo que necesitas para tu Setup
+								Gamer.
+							</span>
+						</div>
+						<CarouselProducts
+							typeQuery={'-ventas'}
+							mobile={mobileView}
+							q={'gamer'}
+						/>
+					</div>
+				</div>
 				<InfoPageFooter />
 			</div>
 			<Footer />
+
 			<style jsx>
 				{`
+					.section-gamer .section-products__title {
+						background-color: #ff002c;
+						color: #fff;
+						border-bottom-left-radius: 0;
+						border-bottom-right-radius: 0;
+					}
+
+					.section-gamer {
+						border-radius: 5px;
+					}
+
 					.section {
 						position: relative;
 						margin-top: 20px;
-
-						background: #ffffff;
 					}
 
 					.section-products__title {
@@ -77,7 +104,6 @@ const Home = () => {
 					}
 
 					.section-products {
-						background: #ffffff;
 					}
 
 					.section__offers {

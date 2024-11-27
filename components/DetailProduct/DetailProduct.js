@@ -19,7 +19,7 @@ const DetailProduct = ({
 		return new Date(y, m + 1, 0).getDate();
 	};
 
-	const [labelTimeRemaining, setLabelTimeRemaining] = useState('(Por $ 40.00)');
+	const [labelTimeRemaining, setLabelTimeRemaining] = useState('');
 	const [today, setToday] = useState(new Date());
 	const [shippingIntervalStart, setShippingIntervalStart] = useState(
 		addDays(today, 1)
@@ -69,11 +69,14 @@ const DetailProduct = ({
 			const hoursRemaining = Math.floor(timeRemaining / 3600000);
 			const minutesRemaining = Math.floor((timeRemaining % 3600000) / 60000);
 			setLabelTimeRemaining(
-				` (Comprando dentro de ${hoursRemaining} horas, ${minutesRemaining} minutos por $ 40.00)`
+				` (Comprando dentro de ${hoursRemaining} horas, ${minutesRemaining} minutos)`
 			);
-		} else {
+		}
+		/* else {
+			
 			setLabelTimeRemaining(` (Por $40.00)`);
 		}
+		*/
 
 		if (shippingStart) {
 			setShippingIntervalStart(shippingStart);
@@ -232,8 +235,12 @@ const DetailProduct = ({
 							<span className='product_price__info_payment'>
 								Hasta{' '}
 								<span className='text--red'>
-									6 meses sin intereses de ${' '}
-									{CurrencyFormat(item.precio_final / 6)}
+									3 meses sin intereses de ${' '}
+									{CurrencyFormat(
+										item.precio_final_descuento > 0
+											? item.precio_final_descuento / 3
+											: item.precio_final / 3
+									)}
 								</span>
 							</span>
 							<div className='product_price__info_payment text--off'>

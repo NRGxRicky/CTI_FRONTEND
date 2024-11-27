@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import GoogleRatings from '../GoogleRatings/GoogleRatings';
 
 interface FooterProps {}
 
@@ -20,6 +21,7 @@ const Footer: React.FC<FooterProps> = () => {
 	};
 	return (
 		<div className='footer'>
+			
 			<div className='container'>
 				<div className='footer__container'>
 					<div className='footer__column'>
@@ -259,7 +261,8 @@ const Footer: React.FC<FooterProps> = () => {
 					</div>
 				</div>
 				<aside className='footer__aside'>
-					© 2024 PCStore.mx - Hecho en Puebla, Puebla con ❤️
+					© 2024 PCStore.mx - PCSTORE ONLINE SAS DE CV - Hecho en Puebla, Puebla
+					con ❤️
 				</aside>
 			</div>
 			<style jsx>

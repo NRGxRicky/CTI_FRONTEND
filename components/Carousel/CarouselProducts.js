@@ -143,7 +143,7 @@ const CarouselProducts = ({
 								<div className='embla__slide' key={producto.id}>
 									<Link href={`/${producto.slug}`} legacyBehavior>
 										<a>
-											<div className='card__carousel'>
+											<div className={'card__carousel'}>
 												<div className='card__carousel__content'>
 													{producto.precio_final_descuento > 0 && (
 														<>
