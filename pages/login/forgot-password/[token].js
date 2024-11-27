@@ -156,7 +156,7 @@ const Token = ({ tokenRecovery }) => {
 							display: flex;
 							justify-content: center;
 							align-items: center;
-							min-height: calc(100dvh - 80px);
+							min-height: calc(100dvh - 60px);
 							background-color: #f7f7f7;
 						}
 
