@@ -18,10 +18,12 @@ const Token = ({ tokenRecovery }) => {
 	const [strengthLevel, setStrengthLevel] = useState(0);
 	const [error, setError] = useState('');
 	const [loadingSubmit, setLoadingSubmit] = useState(false);
-	const [success, setSuccess] = useState(false); // Nuevo estado para manejar la respuesta exitosa
+	const [success, setSuccess] = useState(false);
 	const [message, setMessage] = useState('');
-	const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
-	const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Estado para confirmar la visibilidad de la contraseña
+	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const [isTokenExpired, setIsTokenExpired] = useState(false); // Nuevo estado para controlar si el token está expirado
+	const [checkToken, setCheckToken] = useState(false);
 
 	useEffect(() => {
 		const evaluatePasswordStrength = (password) => {
@@ -50,8 +52,36 @@ const Token = ({ tokenRecovery }) => {
 			setStrengthLevel(strengthLevel);
 		};
 
+		const checkTokenExpiration = async () => {
+			try {
+				// Hacer una solicitud a la API para verificar si el token ha expirado
+				const response = await fetch(
+					`https://api.pccdnapi.com/profile/password_reset/validate_token/`,
+					{
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ token: tokenRecovery }),
+					}
+				);
+
+				if (response.status === 404) {
+					setIsTokenExpired(true); // Si el token está expirado
+				}
+			} catch (error) {
+				console.error('Error al verificar el token:', error);
+				setError('Error al verificar el token.');
+			}
+
+			setCheckToken(true);
+		};
+
+		// Comprobar si el token está expirado
+		checkTokenExpiration();
+
 		if (password) evaluatePasswordStrength(password);
-	}, [password]);
+	}, [password, tokenRecovery]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -64,13 +94,11 @@ const Token = ({ tokenRecovery }) => {
 			return;
 		}
 
-		// Preparar los datos para el POST
 		const data = {
 			password: password,
 			token: tokenRecovery,
 		};
 
-		// Realizar el POST a la URL de django_rest_passwordreset
 		try {
 			const response = await fetch(
 				`https://api.pccdnapi.com/profile/password_reset/confirm/`,
@@ -91,7 +119,6 @@ const Token = ({ tokenRecovery }) => {
 				);
 			}
 
-			// Si la respuesta es exitosa, ocultamos el formulario y mostramos el mensaje
 			setSuccess(true);
 			setMessage('¡Contraseña actualizada correctamente!');
 		} catch (error) {
@@ -102,6 +129,66 @@ const Token = ({ tokenRecovery }) => {
 	};
 
 	if (!loading && isAuthenticated) Router.push('/');
+	if (!checkToken) {
+		return (<div></div>)
+	}
+	// Si el token está expirado, mostramos el mensaje de expiración y no el formulario
+	if (isTokenExpired) {
+		return (
+			<div className='container'>
+				<div className='forgot-password'>
+					<div className='forgot-password__container'>
+						<div className='forgot-password__title'>
+							<h2>El enlace de restablecimiento ha expirado</h2>
+						</div>
+						<p>
+							<div className='forgot-password__label'>
+								Lo sentimos, el enlace de restablecimiento de contraseña ha
+								expirado. Por favor, solicite uno nuevo.
+							</div>
+						</p>
+					</div>
+				</div>
+				<style jsx>
+					{`
+						.container {
+							width: 100%;
+							display: flex;
+							justify-content: center;
+							align-items: center;
+							min-height: calc(100vh - 80px);
+							background-color: #f7f7f7;
+						}
+
+						.forgot-password__title {
+							padding: 10px;
+							border-bottom: 1px solid #eaeaea;
+							text-align: center;
+							font-size: 20px;
+							color: #333;
+						}
+
+						.forgot-password__label {
+							padding: 10px;
+							font-size: 14px;
+							color: #666;
+							text-align: center;
+							line-height: 1.5;
+						}
+
+						.forgot-password {
+							width: 100%;
+							max-width: 400px;
+							background-color: #fff;
+							border-radius: 8px;
+							box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+							padding: 20px;
+						}
+					`}
+				</style>
+			</div>
+		);
+	}
 
 	return (
 		<div className='container'>
@@ -113,7 +200,6 @@ const Token = ({ tokenRecovery }) => {
 						</h2>
 					</div>
 
-					{/* Renderizar el texto solo si no ha tenido éxito */}
 					{!success && (
 						<div className='forgot-password__label'>
 							Hemos recibido su petición para restablecer el acceso a su cuenta.
@@ -121,7 +207,6 @@ const Token = ({ tokenRecovery }) => {
 						</div>
 					)}
 
-					{/* Mostrar el formulario solo si el estado 'success' es false */}
 					{!success ? (
 						<form onSubmit={handleSubmit} className='forgot-password__form'>
 							<div>
@@ -143,6 +228,15 @@ const Token = ({ tokenRecovery }) => {
 										{showPassword ? '🙈' : '👁️'}
 									</button>
 								</div>
+								<p
+									className={`password-length ${
+										password.length < 8 ? 'error' : ''
+									}`}
+								>
+									{password.length < 8
+										? 'La contraseña debe tener al menos 8 caracteres.'
+										: ``}
+								</p>
 							</div>
 							<div>
 								<label htmlFor='confirmPassword'>Confirmar Contraseña</label>
@@ -187,7 +281,7 @@ const Token = ({ tokenRecovery }) => {
 
 							<button
 								type='submit'
-								disabled={loadingSubmit}
+								disabled={loadingSubmit || password.length < 8}
 								className='button-submit'
 							>
 								{loadingSubmit ? 'Cargando...' : 'Restablecer Contraseña'}
@@ -234,6 +328,7 @@ const Token = ({ tokenRecovery }) => {
 						font-size: 14px;
 						color: #666;
 						text-align: center;
+						line-height: 1.5;
 					}
 
 					.forgot-password {
@@ -367,6 +462,15 @@ const Token = ({ tokenRecovery }) => {
 
 					.button-submit:hover:not(:disabled) {
 						background-color: #e6001e;
+					}
+
+					.password-length {
+						font-size: 14px;
+						color: #333;
+					}
+
+					.password-length.error {
+						color: #ff002c;
 					}
 				`}
 			</style>

@@ -137,9 +137,11 @@ const index = () => {
 
 					.login__back {
 						max-width: 460px;
+						line-height: 3;
 						cursor: pointer;
 						display: flex;
 						align-items: center;
+						padding-left: 10px;
 					}
 
 					.login__back__icon {
