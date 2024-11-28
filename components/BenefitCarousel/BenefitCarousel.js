@@ -228,7 +228,6 @@ const BenefitCarousel = () => {
 					position: relative;
 					width: 100%;
 					margin-top: 20px;
-
 				}
 				.carousel {
 					display: flex;
@@ -274,13 +273,15 @@ const BenefitCarousel = () => {
 				.card-title {
 					font-size: 18px;
 					font-weight: bold;
-					color: #333;
+					colecor: #333;
+					user-select: none;
 				}
 
 				.card-description {
 					font-size: 14px;
 					color: #777;
 					margin: 10px 0;
+					user-select: none;
 				}
 
 				@media (max-width: 768px) {
