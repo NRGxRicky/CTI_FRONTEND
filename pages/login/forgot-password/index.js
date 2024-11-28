@@ -67,62 +67,74 @@ const index = () => {
 					</div>
 				</a>
 			</Link>
-			<div className='card__form container'>
-				{loadingData ? (
-					<div className='card__form__loader'>
-						<Preloader
-							use={TailSpin}
-							size={30}
-							strokeWidth={8}
-							strokeColor='#FF002C'
-							duration={900}
-						/>
-					</div>
-				) : statusSend ? (
-					<div>
-						<div className='card__form__title'>
-							Enviamos un enlace de restablecimiento de contraseña a {email}
+			<div className='forgot-password__container'>
+				<div className='card__form'>
+					{loadingData ? (
+						<div className='card__form__loader'>
+							<Preloader
+								use={TailSpin}
+								size={30}
+								strokeWidth={8}
+								strokeColor='#FF002C'
+								duration={900}
+							/>
 						</div>
-						<div className='card__form__label'>
-							Revisa tu correo electrónico y has clic en el enlace para
-							establecer una nueva contraseña.
+					) : statusSend ? (
+						<div>
+							<div className='card__form__title'>
+								Enviamos un enlace de restablecimiento de contraseña a {email}
+							</div>
+							<div className='card__form__label'>
+								Revisa tu correo electrónico y has clic en el enlace para
+								establecer una nueva contraseña.
+							</div>
+							<div className='card__form__label'>
+								¿No has recibido el correo electrónico?
+							</div>
+							<div className='card__form__label'>
+								Vuelve a revisar tu bandeja de entrada en 10 minutos. También
+								podría estar en tu carpeta de correo no deseado.
+							</div>
 						</div>
-						<div className='card__form__label'>
-							¿No has recibido el correo electrónico?
+					) : (
+						<div>
+							<div className='card__form__title'>¿Olvidaste tu contraseña?</div>
+							<div className='card__form__label'>
+								Ingrese tu dirección de correo electrónico asociada con tu
+								cuenta.
+							</div>
+							<form onSubmit={(e) => HandleSubmit(e)}>
+								<input
+									className='card__form__input'
+									type='email'
+									placeholder='Correo electrónico'
+									required
+									onChange={(e) => setEmail(e.target.value)}
+								></input>
+								{error && (
+									<div className='card__form__error'>
+										<span>No existe una cuenta asociada a ese correo.</span>
+									</div>
+								)}
+								<button type='submit' className='card__form__submit'>
+									Continuar
+								</button>
+							</form>
 						</div>
-						<div className='card__form__label'>
-							Vuelve a revisar tu bandeja de entrada en 10 minutos. También
-							podría estar en tu carpeta de correo no deseado.
-						</div>
-					</div>
-				) : (
-					<div>
-						<div className='card__form__title'>¿Olvidaste tu contraseña?</div>
-						<div className='card__form__label'>
-							Ingrese tu dirección de correo electrónico asociada con tu cuenta.
-						</div>
-						<form onSubmit={(e) => HandleSubmit(e)}>
-							<input
-								className='card__form__input'
-								type='email'
-								placeholder='Correo electrónico'
-								required
-								onChange={(e) => setEmail(e.target.value)}
-							></input>
-							{error && (
-								<div className='card__form__error'>
-									<span>No existe una cuenta asociada a ese correo.</span>
-								</div>
-							)}
-							<button type='submit' className='card__form__submit'>
-								Continuar
-							</button>
-						</form>
-					</div>
-				)}
+					)}
+				</div>
 			</div>
 			<style jsx>
 				{`
+					.forgot-password__container {
+						width: 100%;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						min-height: calc(100dvh - 103px);
+						background-color: #f7f7f7;
+					}
+
 					.card__form__error {
 						color: red;
 						margin-top: 20px;
@@ -136,7 +148,7 @@ const index = () => {
 					}
 
 					.login__back {
-						max-width: 460px;
+						width: 100%;
 						line-height: 3;
 						cursor: pointer;
 						display: flex;
@@ -199,9 +211,7 @@ const index = () => {
 					}
 
 					@media only screen and (max-width: 60em) {
-						.forgot-password__static {
-							margin-top: 78px;
-						}
+
 					}
 				`}
 			</style>
