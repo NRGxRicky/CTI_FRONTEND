@@ -426,7 +426,7 @@ const Token = ({ tokenRecovery }) => {
 
 					.check-icon {
 						font-size: 30px;
-						color: white;
+						color: #ffffff;
 					}
 
 					.back-home-button {
@@ -448,7 +448,7 @@ const Token = ({ tokenRecovery }) => {
 						width: 100%;
 						padding: 12px;
 						background-color: #ff002c;
-						color: white;
+						color: #ffffff;
 						border: none;
 						border-radius: 6px;
 						cursor: pointer;

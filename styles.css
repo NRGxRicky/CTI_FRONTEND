@@ -1088,6 +1088,11 @@ input[type='search']::-webkit-search-results-decoration {
 	font-weight: 600;
 }
 
+button {
+    font-family: proxima-nova, sans-serif;
+
+}
+
 .button__nav,
 .brand__button__nav {
 	background: none;
