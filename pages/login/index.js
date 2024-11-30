@@ -1,0 +1,173 @@
+import React, { useState } from 'react';
+import { useAuth } from '../../hooks/auth';
+import Router from 'next/router';
+import EyeClose from '../../components/Icons/EyeClose';
+import EyeOpen from '../../components/Icons/EyeOpen';
+
+const Login = () => {
+	const { login, isAuthenticated } = useAuth();
+	const [username, setUsername] = useState('');
+	const [password, setPassword] = useState('');
+	const [showPassword, setShowPassword] = useState(false);
+	const [error, setError] = useState(false);
+	const [loading, setLoading] = useState(false);
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		setError(false);
+		setLoading(true);
+
+		try {
+			const resp = await login(username, password);
+			if (resp.status === 200) {
+				Router.push('/');
+			} else {
+				setError(true);
+			}
+		} catch (err) {
+			setError(true);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	if (isAuthenticated) {
+		Router.push('/');
+		return null;
+	}
+
+	return (
+		<div className='container'>
+			<div className='login-card'>
+				<h2>Iniciar Sesión</h2>
+				<form onSubmit={handleSubmit} className='login-form'>
+					<div className='form-group'>
+						<label htmlFor='username'>Usuario</label>
+						<input
+							type='text'
+							id='username'
+							value={username}
+							onChange={(e) => setUsername(e.target.value)}
+							required
+						/>
+					</div>
+					<div className='form-group'>
+						<label htmlFor='password'>Contraseña</label>
+						<div className='password-input-container'>
+							<input
+								type={showPassword ? 'text' : 'password'}
+								id='password'
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								required
+							/>
+							<button
+								type='button'
+								className='eye-icon'
+								onClick={() => setShowPassword(!showPassword)}
+							>
+								{showPassword ? <EyeClose /> : <EyeOpen />}
+							</button>
+						</div>
+					</div>
+					{error && <p className='error-message'>Credenciales incorrectas</p>}
+					<button type='submit' disabled={loading} className='login-button'>
+						{loading ? 'Cargando...' : 'Iniciar Sesión'}
+					</button>
+				</form>
+			</div>
+
+			<style jsx>{`
+				.container {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					min-height: 100vh;
+					background-color: #f7f7f7;
+				}
+
+				.login-card {
+					width: 100%;
+					max-width: 400px;
+					background: #fff;
+					padding: 20px;
+					border-radius: 8px;
+					box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+					text-align: center;
+				}
+
+				h2 {
+					margin-bottom: 20px;
+					color: #333;
+				}
+
+				.form-group {
+					margin-bottom: 15px;
+					text-align: left;
+				}
+
+				.form-group label {
+					display: block;
+					margin-bottom: 5px;
+					font-weight: bold;
+					color: #333;
+				}
+
+				.form-group input {
+					width: 100%;
+					padding: 12px;
+					border: 1px solid #ccc;
+					border-radius: 6px;
+					font-size: 14px;
+				}
+
+				.form-group input:focus {
+					outline: none;
+					border-color: #ff002c;
+				}
+
+				.password-input-container {
+					position: relative;
+				}
+
+				.eye-icon {
+					position: absolute;
+					right: 10px;
+					top: 50%;
+					transform: translateY(-50%);
+					background: none;
+					border: none;
+					cursor: pointer;
+					color: #ff002c;
+				}
+
+				.error-message {
+					color: #ff002c;
+					margin: 10px 0;
+				}
+
+				.login-button {
+					width: 100%;
+					padding: 12px;
+					background: #ff002c;
+					color: white;
+					border: none;
+					border-radius: 6px;
+					font-size: 16px;
+					cursor: pointer;
+				}
+
+				.login-button:disabled {
+					background: #eaeaea;
+					cursor: not-allowed;
+				}
+
+				.login-button:hover:not(:disabled) {
+					background: #e6001e;
+				}
+			`}</style>
+		</div>
+	);
+};
+
+export default Login;
