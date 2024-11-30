@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../hooks/auth';
 import Router from 'next/router';
+import EyeClose from '../../../components/Icons/EyeClose';
+import EyeOpen from '../../../components/Icons/EyeOpen';
+import CheckCircleGreen from '../../../components/Icons/CheckCircleGreen';
+
 
 export const getServerSideProps = async (context) => {
 	return {
@@ -130,7 +134,7 @@ const Token = ({ tokenRecovery }) => {
 
 	if (!loading && isAuthenticated) Router.push('/');
 	if (!checkToken) {
-		return (<div></div>)
+		return <div></div>;
 	}
 	// Si el token está expirado, mostramos el mensaje de expiración y no el formulario
 	if (isTokenExpired) {
@@ -225,7 +229,11 @@ const Token = ({ tokenRecovery }) => {
 										className='eye-icon'
 										onClick={() => setShowPassword(!showPassword)}
 									>
-										{showPassword ? '🙈' : '👁️'}
+										{showPassword ? (
+											<EyeClose />
+										) : (
+											<EyeOpen />
+										)}
 									</button>
 								</div>
 								<p
@@ -254,7 +262,7 @@ const Token = ({ tokenRecovery }) => {
 										className='eye-icon'
 										onClick={() => setShowConfirmPassword(!showConfirmPassword)}
 									>
-										{showConfirmPassword ? '🙈' : '👁️'}
+										{showConfirmPassword ? <EyeClose /> : <EyeOpen />}
 									</button>
 								</div>
 							</div>
@@ -289,8 +297,8 @@ const Token = ({ tokenRecovery }) => {
 						</form>
 					) : (
 						<div className='success-message'>
-							<div className='icon-circle'>
-								<span className='check-icon'>✔</span>
+								<div className='icon-circle'>
+									<CheckCircleGreen />
 							</div>
 							<p>{message}</p>
 							<button
@@ -388,7 +396,8 @@ const Token = ({ tokenRecovery }) => {
 						background: none;
 						border: none;
 						cursor: pointer;
-						font-size: 18px;
+						margin-top: 5px;
+						color: #ff002c;
 					}
 
 					.password-strength {
@@ -416,17 +425,10 @@ const Token = ({ tokenRecovery }) => {
 					.icon-circle {
 						width: 50px;
 						height: 50px;
-						background-color: #00b300;
-						border-radius: 50%;
 						display: flex;
 						justify-content: center;
 						align-items: center;
 						margin: 0 auto;
-					}
-
-					.check-icon {
-						font-size: 30px;
-						color: #ffffff;
 					}
 
 					.back-home-button {
