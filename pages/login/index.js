@@ -61,7 +61,7 @@ const Login = () => {
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								required
-								autoComplete='password'
+								autoComplete='current-password'
 							/>
 							<button
 								type='button'
