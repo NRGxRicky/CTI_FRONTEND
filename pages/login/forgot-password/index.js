@@ -51,7 +51,7 @@ const index = () => {
 					: 'forgot-password'
 			}
 		>
-			<Link href={`/`} legacyBehavior>
+			<Link href={`/login`} legacyBehavior>
 				<a>
 					<div className='login__back container'>
 						<svg

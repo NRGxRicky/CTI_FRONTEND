@@ -305,7 +305,7 @@ const Token = ({ tokenRecovery }) => {
 								onClick={() => Router.push('/')}
 								className='back-home-button'
 							>
-								Ir al Inicio
+								Iniciar Sesión
 							</button>
 						</div>
 					)}
