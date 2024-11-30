@@ -42,13 +42,14 @@ const Login = () => {
 				<h2>Iniciar Sesión</h2>
 				<form onSubmit={handleSubmit} className='login-form'>
 					<div className='form-group'>
-						<label htmlFor='username'>Usuario</label>
+						<label htmlFor='username'>Email</label>
 						<input
-							type='text'
+							type='email'
 							id='username'
 							value={username}
 							onChange={(e) => setUsername(e.target.value)}
 							required
+							autoComplete='username'
 						/>
 					</div>
 					<div className='form-group'>
@@ -60,6 +61,7 @@ const Login = () => {
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								required
+								autoComplete='password'
 							/>
 							<button
 								type='button'
@@ -70,7 +72,9 @@ const Login = () => {
 							</button>
 						</div>
 					</div>
-					{error && <p className='error-message'>Credenciales incorrectas</p>}
+					{error && (
+						<p className='error-message'>Correo y/o Contraseña incorrecta.</p>
+					)}
 					<button type='submit' disabled={loading} className='login-button'>
 						{loading ? 'Cargando...' : 'Iniciar Sesión'}
 					</button>
