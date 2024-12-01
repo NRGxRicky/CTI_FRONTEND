@@ -104,7 +104,7 @@ const Login = () => {
 					text-align: center;
 					font-weight: 600;
 					color: #ff002c;
-					line-height: 3;
+
 				}
 
 				.login-menu__title,
@@ -114,9 +114,8 @@ const Login = () => {
 
 				.login-menu__footer {
 					border-top: 1px solid #eaeaea;
-					margin-top: 10px;
-					padding: 20px;
-					line-height: 1.5;
+					padding: 10px;
+					line-height: 2;
 				}
 
 				.login-menu__forgot-password {

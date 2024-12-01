@@ -11,6 +11,8 @@ import {
 	showSearchBar,
 	showLoginMenuState,
 } from '../../lib/features/showOpacityContainerSlide';
+import EyeClose from '../../components/Icons/EyeClose';
+import EyeOpen from '../../components/Icons/EyeOpen';
 
 interface LoginMenuProps {
 	setName: React.Dispatch<React.SetStateAction<string>>;
@@ -22,6 +24,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 	const [password, setPassword] = useState<string>('');
 	const { loading, isAuthenticated, login, logout } = useAuth();
 	const [error, setError] = useState<boolean>(false);
+	const [showPassword, setShowPassword] = useState(false);
 	const dispacth = useAppDispatch();
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -89,15 +92,20 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 												</div>
 											</div>
 											<div className='login-menu__body__item login-menu__body__item__input'>
-												<div>
-													<input
-														type='password'
-														placeholder='Contraseña'
-														onChange={(e) => setPassword(e.target.value)}
-														autoComplete='current-password'
-														required
-													/>
-												</div>
+												<input
+													placeholder='Contraseña'
+													onChange={(e) => setPassword(e.target.value)}
+													autoComplete='current-password'
+													required
+													type={showPassword ? 'text' : 'password'}
+												/>
+												<button
+													type='button'
+													className='eye-icon'
+													onClick={() => setShowPassword(!showPassword)}
+												>
+													{showPassword ? <EyeClose /> : <EyeOpen />}
+												</button>
 											</div>
 											<div className='login-menu__body__item login-menu__body__item__button'>
 												<input type='submit' value='Iniciar Sesión' />
@@ -158,12 +166,24 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 			</div>
 			<style jsx>
 				{`
+					.eye-icon {
+						position: absolute;
+						right: 10px;
+						top: calc(50% + 2px);
+						transform: translateY(-50%);
+						background: none;
+						border: none;
+						cursor: pointer;
+						color: #ff002c;
+					}
+
 					.login-menu__body {
-						margin-top: 20px;
+						margin-top: 10px;
 					}
 					.login-menu__error {
 						line-height: 3;
 						color: #ff002c;
+						margin-top: 10px;
 					}
 
 					.login-menu__logout {
@@ -219,6 +239,10 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 						cursor: pointer;
 					}
 
+					.login-menu__body__item__input {
+						position: relative;
+					}
+
 					.login-menu__body__item__input input {
 						width: 100%;
 						height: 30px;
@@ -226,7 +250,6 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 						border-radius: 5px;
 						color: rgb(114 114 114);
 						padding: 10px;
-						color: ;
 					}
 
 					.login-menu__body__item input:focus,
