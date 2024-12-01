@@ -255,6 +255,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 					.login-menu__title,
 					.login-menu__register__title {
 						font-weight: 600;
+						text-align: center;
 					}
 
 					.login-menu__title {

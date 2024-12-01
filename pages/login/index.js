@@ -3,6 +3,7 @@ import { useAuth } from '../../hooks/auth';
 import Router from 'next/router';
 import EyeClose from '../../components/Icons/EyeClose';
 import EyeOpen from '../../components/Icons/EyeOpen';
+import Link from 'next/link';
 
 const Login = () => {
 	const { login, isAuthenticated } = useAuth();
@@ -79,14 +80,56 @@ const Login = () => {
 						{loading ? 'Cargando...' : 'Iniciar Sesión'}
 					</button>
 				</form>
+				<Link href={`/login/forgot-password/`} legacyBehavior>
+					<a onClick={() => dispacth(hideAll())}>
+						<div className='login-menu__forgot-password'>
+							¿Has olvidado tu contraseña?
+						</div>
+					</a>
+				</Link>
+				<div className='login-menu__footer'>
+					<div className='login-menu__register'>
+						<div className='login-menu__register__title'>
+							¿No tienes una cuenta?
+						</div>
+						<div className='login-menu__register__action-register'>
+							Registrate
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<style jsx>{`
+				.login-menu__register__action-register {
+					text-align: center;
+					font-weight: 600;
+					color: #ff002c;
+					line-height: 3;
+				}
+
+				.login-menu__title,
+				.login-menu__register__title {
+					font-weight: 600;
+				}
+
+				.login-menu__footer {
+					border-top: 1px solid #eaeaea;
+					margin-top: 10px;
+					padding: 20px;
+					line-height: 1.5;
+				}
+
+				.login-menu__forgot-password {
+					color: #ff002c;
+					text-align: center;
+					line-height: 4;
+				}
+
 				.container {
 					display: flex;
 					justify-content: center;
 					align-items: center;
-					min-height: 100vh;
+					min-height: calc(100dvh - 61px);
 					background-color: #f7f7f7;
 				}
 
@@ -103,6 +146,8 @@ const Login = () => {
 				h2 {
 					margin-bottom: 20px;
 					color: #333;
+					line-height: 3;
+					border-bottom: 1px solid #eaeaea;
 				}
 
 				.form-group {
