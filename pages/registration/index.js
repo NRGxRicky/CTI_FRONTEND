@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../hooks/auth';
 import Router from 'next/router';
 import Link from 'next/link';
 import EyeClose from '../../components/Icons/EyeClose';
@@ -10,7 +11,9 @@ const Register = () => {
 		password: '',
 		confirmPassword: '',
 		offers: true,
-	});
+  });
+  
+  const { isAuthenticated } = useAuth();
 	const [passwordStrength, setPasswordStrength] = useState('');
 	const [strengthLevel, setStrengthLevel] = useState(0);
 	const [error, setError] = useState(null);
@@ -94,6 +97,11 @@ const Register = () => {
 			setLoading(false);
 		}
 	};
+
+  	if (isAuthenticated) {
+			Router.push('/');
+			return null;
+		}
 
 	return (
 		<div className='container'>
@@ -225,7 +233,7 @@ const Register = () => {
 					color: #ff002c;
 					margin: 10px 0;
           line-height: 2;
-          
+
 				}
 
 				.register-card {
