@@ -225,6 +225,7 @@ const Register = () => {
 					color: #ff002c;
 					margin: 10px 0;
           line-height: 2;
+          
 				}
 
 				.register-card {
