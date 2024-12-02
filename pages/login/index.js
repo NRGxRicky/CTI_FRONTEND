@@ -93,7 +93,9 @@ const Login = () => {
 							¿No tienes una cuenta?
 						</div>
 						<div className='login-menu__register__action-register'>
-							Registrate
+							<Link href={'/registration'} legacyBehavior>
+								<a>Registrate</a>
+							</Link>
 						</div>
 					</div>
 				</div>
@@ -104,7 +106,6 @@ const Login = () => {
 					text-align: center;
 					font-weight: 600;
 					color: #ff002c;
-
 				}
 
 				.login-menu__title,

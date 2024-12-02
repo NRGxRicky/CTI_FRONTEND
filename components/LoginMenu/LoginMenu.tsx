@@ -125,7 +125,9 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 												¿No tienes una cuenta?
 											</div>
 											<div className='login-menu__register__action-register'>
-												Registrate
+												<Link href={'/registration'} legacyBehavior>
+													<a onClick={() => dispacth(hideAll())}>Registrate</a>
+												</Link>
 											</div>
 										</div>
 									</div>
