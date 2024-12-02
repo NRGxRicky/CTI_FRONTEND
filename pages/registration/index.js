@@ -73,19 +73,27 @@ const Register = () => {
 			setError('Las contraseñas no coinciden.');
 			setLoading(false);
 			return;
-		}
+    }
+    
+    console.log(formData.name)
 
 		try {
-			const response = await fetch('/api/register/', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					name: formData.name, // Enviar el nombre
-					email: formData.email,
-					password: formData.password,
-					offers: formData.offers,
-				}),
-			});
+			const response = await fetch(
+				'https://api.pccdnapi.com/profile/register/',
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						nombres: formData.name, // Enviar el nombre
+						email: formData.email,
+            password: formData.password,
+            confirm_password: formData.confirmPassword,
+						offers: formData.offers,
+					}),
+				}
+      );
+      
+      console.log( await response.json())
 
 			if (response.ok) {
 				Router.push('/login');
