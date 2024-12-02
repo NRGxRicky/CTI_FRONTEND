@@ -7,13 +7,14 @@ import EyeOpen from '../../components/Icons/EyeOpen';
 
 const Register = () => {
 	const [formData, setFormData] = useState({
+		name: '', // Campo para el nombre
 		email: '',
 		password: '',
 		confirmPassword: '',
 		offers: true,
-  });
-  
-  const { isAuthenticated } = useAuth();
+	});
+
+	const { loading: authLoading, isAuthenticated } = useAuth();
 	const [passwordStrength, setPasswordStrength] = useState('');
 	const [strengthLevel, setStrengthLevel] = useState(0);
 	const [error, setError] = useState(null);
@@ -79,6 +80,7 @@ const Register = () => {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
+					name: formData.name, // Enviar el nombre
 					email: formData.email,
 					password: formData.password,
 					offers: formData.offers,
@@ -96,9 +98,14 @@ const Register = () => {
 		} finally {
 			setLoading(false);
 		}
-	};
+  };
+  
+  if (authLoading) {
+    return <div></div>
+  }
 
-  	if (isAuthenticated) {
+
+		if (isAuthenticated) {
 			Router.push('/');
 			return null;
 		}
@@ -108,6 +115,18 @@ const Register = () => {
 			<div className='register-card'>
 				<h2>Crear Cuenta</h2>
 				<form onSubmit={handleSubmit} className='register-form'>
+					<div className='form-group'>
+						<label htmlFor='name'>Nombre</label>
+						<input
+							type='text'
+							id='name'
+							name='name'
+							value={formData.name}
+							onChange={handleChange}
+							required
+							autoComplete='name'
+						/>
+					</div>
 					<div className='form-group'>
 						<label htmlFor='email'>Correo Electrónico</label>
 						<input
@@ -232,8 +251,7 @@ const Register = () => {
 				.error-message {
 					color: #ff002c;
 					margin: 10px 0;
-          line-height: 2;
-
+					line-height: 2;
 				}
 
 				.register-card {
@@ -335,6 +353,11 @@ const Register = () => {
 				.strength-bar {
 					height: 6px;
 					border-radius: 5px;
+				}
+
+				.checkbox-group label {
+					cursor: pointer;
+					user-select: none;
 				}
 
 				.checkbox-group input[type='checkbox'] {
