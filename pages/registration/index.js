@@ -22,7 +22,7 @@ const Register = () => {
 	const [loading, setLoading] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-	const [success, setSuccess] = useState(true);
+	const [success, setSuccess] = useState(false);
 
 	useEffect(() => {
 		const evaluatePasswordStrength = (password) => {
