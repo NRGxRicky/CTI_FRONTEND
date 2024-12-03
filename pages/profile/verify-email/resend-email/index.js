@@ -9,6 +9,7 @@ const ResendVerificationEmail = () => {
 		isAuthenticated,
 		isVerified,
 		username,
+		accessToken
 	} = useAuth();
 	const [status, setStatus] = useState(null); // 'success', 'error', or null
 	const [loading, setLoading] = useState(false);
@@ -20,13 +21,18 @@ const ResendVerificationEmail = () => {
 
 		try {
 			const response = await fetch(
-				'https://api.pccdnapi.com/profile/resend-verification/',
+				'https://api.pccdnapi.com/profile/resend-verification-email/',
 				{
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ username }),
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${accessToken}`,
+					},
+			
 				}
 			);
+
+			console.log(await response.json())
 
 			if (response.ok) {
 				setStatus('success');
@@ -58,9 +64,6 @@ const ResendVerificationEmail = () => {
 							Se ha enviado un nuevo correo de verificación a{' '}
 							<strong>{username}</strong>.
 						</p>
-						<Link href='/login'>
-							<a className='resend-button'>Iniciar Sesión</a>
-						</Link>
 					</div>
 				) : (
 					<form onSubmit={handleSubmit} className='resend-form'>
@@ -167,9 +170,10 @@ const ResendVerificationEmail = () => {
 				.success-message {
 					color: #333;
 				}
-
+				
 				.success-message p {
 					margin-bottom: 20px;
+					line-height: 1.5;
 				}
 
 				.error-message {
