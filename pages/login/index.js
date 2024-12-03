@@ -4,6 +4,7 @@ import Router from 'next/router';
 import EyeClose from '../../components/Icons/EyeClose';
 import EyeOpen from '../../components/Icons/EyeOpen';
 import Link from 'next/link';
+import Head from 'next/head';
 
 const Login = () => {
 	const { login, isAuthenticated } = useAuth();
@@ -39,6 +40,16 @@ const Login = () => {
 
 	return (
 		<div className='container'>
+			<Head>
+				<title>
+					Iniciar Sesión | PCStore.mx: Tu tienda en Tecnología, Cómputo,
+					Accesorios
+				</title>
+				<meta
+					name='description'
+					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
+				/>
+			</Head>
 			<div className='login-card'>
 				<h2>Iniciar Sesión</h2>
 				<form onSubmit={handleSubmit} className='login-form'>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-
+import Head from 'next/head';
 import PostData from '../../../hooks/PosData';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useAuth } from '../../../hooks/auth';
@@ -51,6 +51,16 @@ const index = () => {
 					: 'forgot-password'
 			}
 		>
+			<Head>
+				<title>
+					¿Olvidaste tu contraseña? | PCStore.mx: Tu tienda en Tecnología,
+					Cómputo, Accesorios
+				</title>
+				<meta
+					name='description'
+					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
+				/>
+			</Head>
 			<Link href={`/login`} legacyBehavior>
 				<a>
 					<div className='login__back container'>
@@ -211,7 +221,6 @@ const index = () => {
 					}
 
 					@media only screen and (max-width: 60em) {
-
 					}
 				`}
 			</style>

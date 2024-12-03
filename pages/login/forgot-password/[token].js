@@ -4,7 +4,7 @@ import Router from 'next/router';
 import EyeClose from '../../../components/Icons/EyeClose';
 import EyeOpen from '../../../components/Icons/EyeOpen';
 import CheckCircleGreen from '../../../components/Icons/CheckCircleGreen';
-
+import Head from 'next/head';
 
 export const getServerSideProps = async (context) => {
 	return {
@@ -139,6 +139,16 @@ const Token = ({ tokenRecovery }) => {
 	if (isTokenExpired) {
 		return (
 			<div className='container'>
+				<Head>
+					<title>
+						El enlace de restablecimiento ha expirado | PCStore.mx: Tu tienda en
+						Tecnología, Cómputo, Accesorios
+					</title>
+					<meta
+						name='description'
+						content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
+					/>
+				</Head>
 				<div className='forgot-password'>
 					<div className='forgot-password__container'>
 						<div className='forgot-password__title'>
@@ -195,6 +205,16 @@ const Token = ({ tokenRecovery }) => {
 
 	return (
 		<div className='container'>
+			<Head>
+				<title>
+					Nueva Contraseña | PCStore.mx: Tu tienda en Tecnología, Cómputo,
+					Accesorios
+				</title>
+				<meta
+					name='description'
+					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
+				/>
+			</Head>
 			<div className='forgot-password'>
 				<div className='forgot-password__container'>
 					<div className='forgot-password__title'>
@@ -228,11 +248,7 @@ const Token = ({ tokenRecovery }) => {
 										className='eye-icon'
 										onClick={() => setShowPassword(!showPassword)}
 									>
-										{showPassword ? (
-											<EyeClose />
-										) : (
-											<EyeOpen />
-										)}
+										{showPassword ? <EyeClose /> : <EyeOpen />}
 									</button>
 								</div>
 								<p
@@ -296,8 +312,8 @@ const Token = ({ tokenRecovery }) => {
 						</form>
 					) : (
 						<div className='success-message'>
-								<div className='icon-circle'>
-									<CheckCircleGreen />
+							<div className='icon-circle'>
+								<CheckCircleGreen />
 							</div>
 							<p>{message}</p>
 							<button

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import EyeClose from '../../components/Icons/EyeClose';
 import EyeOpen from '../../components/Icons/EyeOpen';
 import CheckCircleGreen from '../../components/Icons/CheckCircleGreen';
+import Head from 'next/head';
 
 const Register = () => {
 	const [formData, setFormData] = useState({
@@ -132,6 +133,16 @@ const Register = () => {
 
 	return (
 		<div className='container'>
+			<Head>
+				<title>
+					Crear Cuenta | PCStore.mx: Tu tienda en Tecnología, Cómputo,
+					Accesorios
+				</title>
+				<meta
+					name='description'
+					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
+				/>
+			</Head>
 			{success ? (
 				<div className='register-card'>
 					<h2>¡Cuenta creada con éxito!</h2>

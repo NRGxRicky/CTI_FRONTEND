@@ -1,9 +1,20 @@
 import React from 'react';
 import Footer from '../components/Footer/Footer';
+import Head from 'next/head';
 
 const PoliticasDeDevolucion = () => {
 	return (
 		<div>
+			<Head>
+				<title>
+					Política de Devolución | PCStore.mx: Tu tienda en Tecnología,
+					Cómputo, Accesorios
+				</title>
+				<meta
+					name='description'
+					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
+				/>
+			</Head>
 			<div className='container'>
 				<div className='policy__container'>
 					<div className='policy__title'>

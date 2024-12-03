@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import CheckCircleGreen from '../../../components/Icons/CheckCircleGreen';
-
+import Head from 'next/head';
 const VerifyEmail = () => {
 	const [status, setStatus] = useState('loading'); // 'loading', 'success', 'error'
 	const router = useRouter();
@@ -46,6 +46,16 @@ const VerifyEmail = () => {
 
 	return (
 		<div className='container'>
+			<Head>
+				<title>
+					¡Cuenta Verificada! | PCStore.mx: Tu tienda en Tecnología, Cómputo,
+					Accesorios
+				</title>
+				<meta
+					name='description'
+					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
+				/>
+			</Head>
 			{status === 'success' ? (
 				<div className='verify-card'>
 					<h2>¡Cuenta Verificada!</h2>
@@ -53,7 +63,8 @@ const VerifyEmail = () => {
 						<CheckCircleGreen />
 					</div>
 					<p className='success-label'>
-						Tu cuenta ha sido verificada correctamente. Ahora puedes usar tu cuenta.
+						Tu cuenta ha sido verificada correctamente. Ahora puedes usar tu
+						cuenta.
 					</p>
 					<Link href='/' legacyBehavior>
 						<a className='verify-button'>Ir al inicio</a>

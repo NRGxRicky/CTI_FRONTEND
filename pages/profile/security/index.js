@@ -3,6 +3,7 @@ import UserNavLeft from '../../../components/UserNavLeft/UserNavLeft';
 import { useAuth } from '../../../hooks/auth';
 import Router from 'next/router';
 import PostData from '../../../hooks/PosData';
+import Head from 'next/head';
 
 const index = () => {
 	const { isAuthenticated, loading, accessToken } = useAuth();
@@ -61,6 +62,13 @@ const index = () => {
 
 	return (
 		<div className='profile container'>
+			<Head>
+				<title>Seguridad | PCStore.mx: Tu tienda en Tecnología, Cómputo, Accesorios</title>
+				<meta
+					name='description'
+					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
+				/>
+			</Head>
 			<UserNavLeft />
 			<div className='main-wrapper'>
 				<div className='profile__title'>

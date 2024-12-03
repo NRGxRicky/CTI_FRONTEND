@@ -5,7 +5,7 @@ import Router from 'next/router';
 import PostData from '../../hooks/PosData';
 import Link from 'next/link';
 import { useAppSelector } from '../../lib/hooks';
-
+import Head from 'next/head';
 import UserNavLeft from '../../components/UserNavLeft/UserNavLeft';
 
 const index = () => {
@@ -72,6 +72,16 @@ const index = () => {
 
 	return (
 		<div>
+			<Head>
+				<title>
+					Mi Perfil | PCStore.mx: Tu tienda en Tecnología, Cómputo,
+					Accesorios
+				</title>
+				<meta
+					name='description'
+					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
+				/>
+			</Head>
 			<div className='profile container'>
 				<UserNavLeft />
 				<div className='main-wrapper'>

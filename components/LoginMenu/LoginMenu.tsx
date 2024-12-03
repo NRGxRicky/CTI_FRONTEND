@@ -60,7 +60,7 @@ const LoginMenu: React.FC = () => {
 						<div>
 							<div className='login-menu__header'>
 								<div className='login-menu__title --capitalize'>
-									Bienvenid@{' '}
+									Hola{' '}
 									{isAuthenticated &&
 										nombres !== null &&
 										TruncateManual(nombres, 10)}
