@@ -110,7 +110,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			const responseUserData = await fetchDataUser(accessToken);
 			if (responseUserData.ok) {
 				const dataUser = await responseUserData.json();
-				console.log(dataUser);
 				setUsername(dataUser.username);
 				setIsverified(dataUser.is_verified);
 				setNombres(dataUser.nombres);
@@ -228,8 +227,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 		if (resp.ok) {
 			const tokenData = await resp.json();
-			setIsverified(tokenData.is_verified);
-			setUsername(username);
 			handleNewToken(tokenData);
 		} else {
 			setNotAuthenticated();
