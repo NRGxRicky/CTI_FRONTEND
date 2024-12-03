@@ -66,7 +66,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 					) : (
 						<div>
 							<div className='login-menu__header'>
-								<div className='login-menu__title'>
+								<div className='login-menu__title --capitalize'>
 									Bienvenido{' '}
 									{isAuthenticated && name !== null && TruncateManual(name, 10)}
 								</div>

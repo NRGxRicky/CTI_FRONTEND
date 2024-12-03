@@ -4,6 +4,7 @@ import Router from 'next/router';
 import Link from 'next/link';
 import EyeClose from '../../components/Icons/EyeClose';
 import EyeOpen from '../../components/Icons/EyeOpen';
+import CheckCircleGreen from '../../components/Icons/CheckCircleGreen';
 
 const Register = () => {
 	const [formData, setFormData] = useState({
@@ -14,13 +15,14 @@ const Register = () => {
 		offers: true,
 	});
 
-	const { loading: authLoading, isAuthenticated } = useAuth();
+	const { loading: authLoading, isAuthenticated, login } = useAuth();
 	const [passwordStrength, setPasswordStrength] = useState('');
 	const [strengthLevel, setStrengthLevel] = useState(0);
 	const [error, setError] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const [success, setSuccess] = useState(false);
 
 	useEffect(() => {
 		const evaluatePasswordStrength = (password) => {
@@ -73,9 +75,7 @@ const Register = () => {
 			setError('Las contraseñas no coinciden.');
 			setLoading(false);
 			return;
-    }
-    
-    console.log(formData.name)
+		}
 
 		try {
 			const response = await fetch(
@@ -86,17 +86,15 @@ const Register = () => {
 					body: JSON.stringify({
 						nombres: formData.name, // Enviar el nombre
 						email: formData.email,
-            password: formData.password,
-            confirm_password: formData.confirmPassword,
+						password: formData.password,
+						confirm_password: formData.confirmPassword,
 						offers: formData.offers,
 					}),
 				}
-      );
-      
-      console.log( await response.json())
+			);
 
 			if (response.ok) {
-				Router.push('/login');
+				setSuccess(true);
 			} else {
 				const data = await response.json();
 				setError(data.detail || 'Ocurrió un error durante el registro.');
@@ -106,146 +104,176 @@ const Register = () => {
 		} finally {
 			setLoading(false);
 		}
-  };
-  
-  if (authLoading) {
-    return <div></div>
-  }
+	};
 
-
-		if (isAuthenticated) {
-			Router.push('/');
-			return null;
+	const beforeLogin = async () => {
+		try {
+			const resp = await login(formData.email, formData.password);
+			if (resp.status === 200) {
+				Router.push('/');
+			} else {
+				setError(true);
+			}
+		} catch (err) {
+			setError(true);
+		} finally {
+			setLoading(false);
 		}
+	};
+
+	if (authLoading) {
+		return <div></div>;
+	}
+
+	if (isAuthenticated) {
+		Router.push('/');
+		return null;
+	}
 
 	return (
 		<div className='container'>
-			<div className='register-card'>
-				<h2>Crear Cuenta</h2>
-				<form onSubmit={handleSubmit} className='register-form'>
-					<div className='form-group'>
-						<label htmlFor='name'>Nombre</label>
-						<input
-							type='text'
-							id='name'
-							name='name'
-							value={formData.name}
-							onChange={handleChange}
-							required
-							autoComplete='name'
-						/>
+			{success ? (
+				<div className='register-card'>
+					<h2>¡Cuenta creada con éxito!</h2>
+					<div className='icon-circle'>
+						<CheckCircleGreen />
 					</div>
-					<div className='form-group'>
-						<label htmlFor='email'>Correo Electrónico</label>
-						<input
-							type='email'
-							id='email'
-							name='email'
-							value={formData.email}
-							onChange={handleChange}
-							required
-							autoComplete='email'
-						/>
-					</div>
-					<div className='form-group'>
-						<label htmlFor='password'>Contraseña</label>
-						<div className='password-input-container'>
+					<p className='success-label'>
+						Revisa tu correo para verificar tu cuenta.
+					</p>
+					<button onClick={() => beforeLogin()} className='register-button'>
+						Iniciar Sesión
+					</button>
+				</div>
+			) : (
+				<div className='register-card'>
+					<h2>Crear Cuenta</h2>
+					<form onSubmit={handleSubmit} className='register-form'>
+						<div className='form-group'>
+							<label htmlFor='name'>Nombre</label>
 							<input
-								type={showPassword ? 'text' : 'password'}
-								id='password'
-								name='password'
-								value={formData.password}
+								type='text'
+								id='name'
+								name='name'
+								value={formData.name}
 								onChange={handleChange}
 								required
-								autoComplete='new-password'
+                  autoComplete='name'
+                  className='--capitalize'
 							/>
-							<button
-								type='button'
-								className='eye-icon'
-								onClick={() => setShowPassword(!showPassword)}
-							>
-								{showPassword ? <EyeClose /> : <EyeOpen />}
-							</button>
 						</div>
-						<div className='password-strength'>
-							<p>Fortaleza de la contraseña: {passwordStrength}</p>
-							<div className='strength-bar-background'>
-								<div
-									className='strength-bar'
-									style={{
-										width: `${strengthLevel}%`,
-										backgroundColor:
-											strengthLevel === 100
-												? '#00b300'
-												: strengthLevel >= 60
-												? '#ff9900'
-												: '#ff002c',
-									}}
-								></div>
+						<div className='form-group'>
+							<label htmlFor='email'>Correo Electrónico</label>
+							<input
+								type='email'
+								id='email'
+								name='email'
+								value={formData.email}
+								onChange={handleChange}
+								required
+								autoComplete='email'
+							/>
+						</div>
+						<div className='form-group'>
+							<label htmlFor='password'>Contraseña</label>
+							<div className='password-input-container'>
+								<input
+									type={showPassword ? 'text' : 'password'}
+									id='password'
+									name='password'
+									value={formData.password}
+									onChange={handleChange}
+									required
+									autoComplete='new-password'
+								/>
+								<button
+									type='button'
+									className='eye-icon'
+									onClick={() => setShowPassword(!showPassword)}
+								>
+									{showPassword ? <EyeClose /> : <EyeOpen />}
+								</button>
+							</div>
+							<div className='password-strength'>
+								<p>Fortaleza de la contraseña: {passwordStrength}</p>
+								<div className='strength-bar-background'>
+									<div
+										className='strength-bar'
+										style={{
+											width: `${strengthLevel}%`,
+											backgroundColor:
+												strengthLevel === 100
+													? '#00b300'
+													: strengthLevel >= 60
+													? '#ff9900'
+													: '#ff002c',
+										}}
+									></div>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div className='form-group'>
-						<label htmlFor='confirmPassword'>Confirmar Contraseña</label>
-						<div className='password-input-container'>
-							<input
-								type={showConfirmPassword ? 'text' : 'password'}
-								id='confirmPassword'
-								name='confirmPassword'
-								value={formData.confirmPassword}
-								onChange={handleChange}
-								required
-								autoComplete='new-password'
-							/>
-							<button
-								type='button'
-								className='eye-icon'
-								onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-							>
-								{showConfirmPassword ? <EyeClose /> : <EyeOpen />}
-							</button>
+						<div className='form-group'>
+							<label htmlFor='confirmPassword'>Confirmar Contraseña</label>
+							<div className='password-input-container'>
+								<input
+									type={showConfirmPassword ? 'text' : 'password'}
+									id='confirmPassword'
+									name='confirmPassword'
+									value={formData.confirmPassword}
+									onChange={handleChange}
+									required
+									autoComplete='new-password'
+								/>
+								<button
+									type='button'
+									className='eye-icon'
+									onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+								>
+									{showConfirmPassword ? <EyeClose /> : <EyeOpen />}
+								</button>
+							</div>
 						</div>
+						<div className='form-group checkbox-group'>
+							<label>
+								<input
+									type='checkbox'
+									name='offers'
+									checked={formData.offers}
+									onChange={handleChange}
+								/>
+								Deseo recibir ofertas y descuentos.
+							</label>
+						</div>
+						<div className='form-group'>
+							<p className='terms'>
+								Al crear una cuenta, aceptas el{' '}
+								<Link href='/aviso-de-privacidad' legacyBehavior>
+									<a target='_blank'>Aviso de Privacidad</a>
+								</Link>{' '}
+								y los{' '}
+								<Link href='/terminos-de-servicio' legacyBehavior>
+									<a target='_blank'>Términos de Uso</a>
+								</Link>
+								.
+							</p>
+						</div>
+						{error && <p className='error-message'>{error}</p>}
+						<button
+							type='submit'
+							disabled={loading || strengthLevel < 30}
+							className='register-button'
+						>
+							{loading ? 'Registrando...' : 'Crear Cuenta'}
+						</button>
+					</form>
+					<div className='register-menu__footer'>
+						<span>¿Ya tienes una cuenta? </span>
+						<Link href='/login' legacyBehavior>
+							<a className='login-link'>Inicia Sesión</a>
+						</Link>
 					</div>
-					<div className='form-group checkbox-group'>
-						<label>
-							<input
-								type='checkbox'
-								name='offers'
-								checked={formData.offers}
-								onChange={handleChange}
-							/>
-							Deseo recibir ofertas y descuentos.
-						</label>
-					</div>
-					<div className='form-group'>
-						<p className='terms'>
-							Al crear una cuenta, aceptas el{' '}
-							<Link href='/aviso-de-privacidad' legacyBehavior>
-								<a target='_blank'>Aviso de Privacidad</a>
-							</Link>{' '}
-							y los{' '}
-							<Link href='/terminos-de-servicio' legacyBehavior>
-								<a target='_blank'>Términos de Uso</a>
-							</Link>
-							.
-						</p>
-					</div>
-					{error && <p className='error-message'>{error}</p>}
-					<button
-						type='submit'
-						disabled={loading || strengthLevel < 30}
-						className='register-button'
-					>
-						{loading ? 'Registrando...' : 'Crear Cuenta'}
-					</button>
-				</form>
-				<div className='register-menu__footer'>
-					<span>¿Ya tienes una cuenta? </span>
-					<Link href='/login' legacyBehavior>
-						<a className='login-link'>Inicia Sesión</a>
-					</Link>
 				</div>
-			</div>
+			)}
 
 			<style jsx>{`
 				.container {
@@ -439,6 +467,20 @@ const Register = () => {
 					color: #ff002c;
 					font-weight: 600;
 					text-decoration: none;
+				}
+
+				.icon-circle {
+					width: 50px;
+					height: 50px;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					margin: 0 auto;
+				}
+
+				.success-label {
+					text-align: center;
+					line-height: 4;
 				}
 			`}</style>
 		</div>

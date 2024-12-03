@@ -201,7 +201,7 @@ const HeaderBar: React.FC = () => {
 									/>
 								</svg>
 								{name !== 'Iniciar sesión / Registrarse' ? (
-									<span>{TruncateManual(name, 10)}</span>
+									<span className='--capitalize'>{TruncateManual(name, 10)}</span>
 								) : (
 									<span>{name}</span>
 								)}

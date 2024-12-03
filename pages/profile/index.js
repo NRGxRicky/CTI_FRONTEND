@@ -119,6 +119,7 @@ const index = () => {
 											disabled={!changeBasic}
 											autoComplete='given-name'
 											required
+											className='--capitalize'
 										/>
 									</div>
 									<div className='profile__section__item'>
@@ -132,6 +133,7 @@ const index = () => {
 											disabled={!changeBasic}
 											required
 											autoComplete='family-name'
+											className='--capitalize'
 										/>
 									</div>
 								</div>
