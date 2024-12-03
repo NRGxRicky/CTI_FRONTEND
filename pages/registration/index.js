@@ -22,7 +22,7 @@ const Register = () => {
 	const [loading, setLoading] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-	const [success, setSuccess] = useState(false);
+	const [success, setSuccess] = useState(true);
 
 	useEffect(() => {
 		const evaluatePasswordStrength = (password) => {
@@ -141,6 +141,13 @@ const Register = () => {
 					<p className='success-label'>
 						Revisa tu correo para verificar tu cuenta.
 					</p>
+					<div className='card__form__label'>
+						¿No has recibido el correo electrónico?
+					</div>
+					<div className='card__form__label'>
+						Vuelve a revisar tu bandeja de entrada en 10 minutos. También podría
+						estar en tu carpeta de correo no deseado.
+					</div>
 					<button onClick={() => beforeLogin()} className='register-button'>
 						Iniciar Sesión
 					</button>
@@ -158,8 +165,8 @@ const Register = () => {
 								value={formData.name}
 								onChange={handleChange}
 								required
-                  autoComplete='name'
-                  className='--capitalize'
+								autoComplete='name'
+								className='--capitalize'
 							/>
 						</div>
 						<div className='form-group'>
@@ -481,6 +488,10 @@ const Register = () => {
 				.success-label {
 					text-align: center;
 					line-height: 4;
+				}
+
+				.card__form__label {
+					margin-bottom: 20px;
 				}
 			`}</style>
 		</div>
