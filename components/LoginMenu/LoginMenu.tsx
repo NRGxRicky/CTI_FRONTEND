@@ -22,7 +22,7 @@ interface LoginMenuProps {
 const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 	const [username, setUsername] = useState<string>('');
 	const [password, setPassword] = useState<string>('');
-	const { loading, isAuthenticated, login, logout } = useAuth();
+	const { loading, isAuthenticated, login, logout, isVerified } = useAuth();
 	const [error, setError] = useState<boolean>(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const dispacth = useAppDispatch();
@@ -134,6 +134,25 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 								</div>
 							) : (
 								<div>
+									{!isVerified && (
+										<a href='#'>
+											<div className='alert'>
+												<svg
+													xmlns='http://www.w3.org/2000/svg'
+													fill='#ff002c'
+													viewBox='0 0 24 24'
+													width='50'
+													height='50'
+												>
+													<path d='M1 21h22L12 2 1 21zm13-3h-4v-2h4v2zm0-4h-4v-4h4v4z' />
+												</svg>
+												<span>
+													Atención: se requiere verificación de tu Email. Haz
+													clic aquí para más detalles.
+												</span>
+											</div>
+										</a>
+									)}
 									<div className='login-menu__body login-menu__body__logged-in'>
 										<div className='login-menu__body__item'>
 											<span>Mis compras</span>

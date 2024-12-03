@@ -55,6 +55,7 @@ interface AuthContextProps {
 	logout: () => void;
 	getToken: () => Promise<string | undefined>;
 	accessToken: string;
+	isVerified: boolean;
 }
 
 const AuthContext = createContext<AuthContextProps>({
@@ -64,6 +65,7 @@ const AuthContext = createContext<AuthContextProps>({
 	logout: () => {},
 	getToken: async () => undefined,
 	accessToken: '',
+	isVerified: false,
 });
 
 interface AuthProviderProps {
@@ -73,6 +75,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const [loading, setLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const [isVerified, setIsverified] = useState(false);
 	const [accessToken, setAccessToken] = useState('');
 	const [refreshTokenValue, setRefreshToken] = useState('');
 	const [accessTokenExpiry, setAccessTokenExpiry] = useState<number | null>(
@@ -184,6 +187,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		if (resp.ok) {
 			const tokenData = await resp.json();
 			localStorage.setItem('name', tokenData.name);
+			setIsverified(tokenData.is_verified);
 			handleNewToken(tokenData);
 		} else {
 			setNotAuthenticated();
@@ -215,6 +219,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		logout,
 		getToken,
 		accessToken,
+		isVerified
 	};
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
