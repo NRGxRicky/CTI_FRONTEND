@@ -76,23 +76,25 @@ const index = () => {
 				<UserNavLeft />
 				<div className='main-wrapper'>
 					{!isVerified && (
-						<a href='#'>
-							<div className='alert'>
-								<svg
-									xmlns='http://www.w3.org/2000/svg'
-									fill='#ff002c'
-									viewBox='0 0 24 24'
-									width='24'
-									height='24'
-								>
-									<path d='M1 21h22L12 2 1 21zm13-3h-4v-2h4v2zm0-4h-4v-4h4v4z' />
-								</svg>
-								<span>
-									Atención: se requiere verificación de tu Email. Haz clic aquí
-									para más detalles.
-								</span>
-							</div>
-						</a>
+						<Link href={'/profile/verify-email/resend-email'} legacyBehavior>
+							<a>
+								<div className='alert'>
+									<svg
+										xmlns='http://www.w3.org/2000/svg'
+										fill='#ff002c'
+										viewBox='0 0 24 24'
+										width='24'
+										height='24'
+									>
+										<path d='M1 21h22L12 2 1 21zm13-3h-4v-2h4v2zm0-4h-4v-4h4v4z' />
+									</svg>
+									<span>
+										Atención: se requiere verificación de tu Email. Haz clic
+										aquí para más detalles.
+									</span>
+								</div>
+							</a>
+						</Link>
 					)}
 					<div className='profile__title'>
 						<div>Mis datos</div>

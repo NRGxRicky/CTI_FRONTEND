@@ -61,7 +61,9 @@ const LoginMenu: React.FC = () => {
 							<div className='login-menu__header'>
 								<div className='login-menu__title --capitalize'>
 									Bienvenido{' '}
-									{isAuthenticated && nombres !== null && TruncateManual(nombres, 10)}
+									{isAuthenticated &&
+										nombres !== null &&
+										TruncateManual(nombres, 10)}
 								</div>
 							</div>
 							{error && (
@@ -128,23 +130,28 @@ const LoginMenu: React.FC = () => {
 							) : (
 								<div>
 									{!isVerified && (
-										<a href='#'>
-											<div className='alert'>
-												<svg
-													xmlns='http://www.w3.org/2000/svg'
-													fill='#ff002c'
-													viewBox='0 0 24 24'
-													width='50'
-													height='50'
-												>
-													<path d='M1 21h22L12 2 1 21zm13-3h-4v-2h4v2zm0-4h-4v-4h4v4z' />
-												</svg>
-												<span>
-													Atención: se requiere verificación de tu Email. Haz
-													clic aquí para más detalles.
-												</span>
-											</div>
-										</a>
+										<Link
+											href={'/profile/verify-email/resend-email'}
+											legacyBehavior
+										>
+											<a>
+												<div className='alert'>
+													<svg
+														xmlns='http://www.w3.org/2000/svg'
+														fill='#ff002c'
+														viewBox='0 0 24 24'
+														width='50'
+														height='50'
+													>
+														<path d='M1 21h22L12 2 1 21zm13-3h-4v-2h4v2zm0-4h-4v-4h4v4z' />
+													</svg>
+													<span>
+														Atención: se requiere verificación de tu Email. Haz
+														clic aquí para más detalles.
+													</span>
+												</div>
+											</a>
+										</Link>
 									)}
 									<div className='login-menu__body login-menu__body__logged-in'>
 										<div className='login-menu__body__item'>
