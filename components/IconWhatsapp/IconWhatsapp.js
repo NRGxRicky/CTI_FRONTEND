@@ -21,6 +21,7 @@ const IconWhatsapp = () => {
 						src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/240px-WhatsApp.svg.png'
 						width='50'
 						height='50'
+						alt='WhatsApp'
 					/>
 				</a>
 			</div>
