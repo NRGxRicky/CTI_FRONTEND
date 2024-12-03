@@ -134,7 +134,7 @@ const LoginMenu: React.FC = () => {
 											href={'/profile/verify-email/resend-email'}
 											legacyBehavior
 										>
-											<a>
+													<a onClick={() => dispacth(hideAll())}>
 												<div className='alert'>
 													<svg
 														xmlns='http://www.w3.org/2000/svg'
