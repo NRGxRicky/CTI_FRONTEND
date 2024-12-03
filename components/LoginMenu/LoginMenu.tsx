@@ -14,15 +14,11 @@ import {
 import EyeClose from '../../components/Icons/EyeClose';
 import EyeOpen from '../../components/Icons/EyeOpen';
 
-interface LoginMenuProps {
-	setName: React.Dispatch<React.SetStateAction<string>>;
-	name: string;
-}
 
-const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
+const LoginMenu: React.FC = () => {
 	const [username, setUsername] = useState<string>('');
 	const [password, setPassword] = useState<string>('');
-	const { loading, isAuthenticated, login, logout, isVerified } = useAuth();
+	const { loading, isAuthenticated, login, logout, isVerified, nombres } = useAuth();
 	const [error, setError] = useState<boolean>(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const dispacth = useAppDispatch();
@@ -31,9 +27,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 		e.preventDefault();
 		try {
 			const resp = await login(username, password);
-
 			if (resp.status === 200) {
-				setName(localStorage.getItem('name') || '');
 				setError(false);
 				dispacth(hideAll());
 			} else {
@@ -46,7 +40,6 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 
 	const handleLogout = () => {
 		logout();
-		setName('Iniciar sesión / Registrarse');
 	};
 
 	return (
@@ -68,7 +61,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ setName, name }) => {
 							<div className='login-menu__header'>
 								<div className='login-menu__title --capitalize'>
 									Bienvenido{' '}
-									{isAuthenticated && name !== null && TruncateManual(name, 10)}
+									{isAuthenticated && nombres !== null && TruncateManual(nombres, 10)}
 								</div>
 							</div>
 							{error && (

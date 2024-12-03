@@ -74,7 +74,6 @@ const Token = ({ tokenRecovery }) => {
 					setIsTokenExpired(true); // Si el token está expirado
 				}
 			} catch (error) {
-				console.error('Error al verificar el token:', error);
 				setError('Error al verificar el token.');
 			}
 

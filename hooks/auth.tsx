@@ -32,9 +32,19 @@ const fetchToken = async (
 
 		return response;
 	} catch (error) {
-		console.error('Error in fetchToken:', error);
 		return { ok: false } as Response;
 	}
+};
+
+const fetchDataUser = (token: string): Promise<Response> => {
+	const url = makeUrl('/profile/user-details/');
+	return fetch(url, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+	});
 };
 
 const fetchNewToken = (refresh: string): Promise<Response> => {
@@ -56,6 +66,8 @@ interface AuthContextProps {
 	getToken: () => Promise<string | undefined>;
 	accessToken: string;
 	isVerified: boolean;
+	username: string;
+	nombres: string;
 }
 
 const AuthContext = createContext<AuthContextProps>({
@@ -66,6 +78,8 @@ const AuthContext = createContext<AuthContextProps>({
 	getToken: async () => undefined,
 	accessToken: '',
 	isVerified: false,
+	username: '',
+	nombres: '',
 });
 
 interface AuthProviderProps {
@@ -75,8 +89,10 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const [loading, setLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [isVerified, setIsverified] = useState(false);
+	const [isVerified, setIsverified] = useState(true);
 	const [accessToken, setAccessToken] = useState('');
+	const [username, setUsername] = useState('');
+	const [nombres, setNombres] = useState('Iniciar sesión / Registrarse');
 	const [refreshTokenValue, setRefreshToken] = useState('');
 	const [accessTokenExpiry, setAccessTokenExpiry] = useState<number | null>(
 		null
@@ -86,6 +102,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const setNotAuthenticated = () => {
 		setIsAuthenticated(false);
 		setLoading(false);
+	};
+
+	const setDataUser = async () => {
+	
+		if (isAuthenticated) {
+			const responseUserData = await fetchDataUser(accessToken);
+			if (responseUserData.ok) {
+				const dataUser = await responseUserData.json();
+				console.log(dataUser);
+				setUsername(dataUser.username);
+				setIsverified(dataUser.is_verified);
+				setNombres(dataUser.nombres);
+			}
+		}
+		else {
+			setUsername('');
+			setIsverified(false);
+			setNombres('Iniciar sesión / Registrarse');
+		}
 	};
 
 	const accessTokenIsValid = async (): Promise<boolean> => {
@@ -107,6 +142,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		setAccessTokenExpiry(Number(expireCookie));
 
 		const nowDate = Date.now();
+
 		if (Number(expireCookie) <= nowDate || accessToken === '') {
 			const response = await refreshToken(cookies.tk_refresh);
 			return response;
@@ -115,6 +151,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			setLoading(false);
 			return true;
 		}
+
+		
 	};
 
 	const initAuth = async () => {
@@ -125,6 +163,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	useEffect(() => {
 		initAuth();
 	}, []);
+
+	useEffect(() => {
+		setDataUser();
+	}, [isAuthenticated])
 
 	const refreshToken = async (refresh: string): Promise<boolean> => {
 		if (!refresh || refresh === 'undefined') {
@@ -144,7 +186,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			handleNewToken(tokenData);
 			return true;
 		} catch (error) {
-			console.error('Error in refreshToken:', error);
 			setNotAuthenticated();
 			return false;
 		}
@@ -186,8 +227,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 		if (resp.ok) {
 			const tokenData = await resp.json();
-			localStorage.setItem('name', tokenData.name);
 			setIsverified(tokenData.is_verified);
+			setUsername(username);
 			handleNewToken(tokenData);
 		} else {
 			setNotAuthenticated();
@@ -205,11 +246,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	};
 
 	const logout = () => {
+		removeCookie('tk_refresh');
 		setAccessToken('');
 		setAccessTokenExpiry(null);
 		setNotAuthenticated();
-		removeCookie('tk_refresh');
-		localStorage.removeItem('name');
+		
 	};
 
 	const value: AuthContextProps = {
@@ -219,7 +260,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		logout,
 		getToken,
 		accessToken,
-		isVerified
+		isVerified,
+		username,
+		nombres,
 	};
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

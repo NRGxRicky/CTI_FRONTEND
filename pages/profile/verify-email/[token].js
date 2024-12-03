@@ -23,8 +23,6 @@ const VerifyEmail = () => {
 					headers: { 'Content-Type': 'application/json' },
 				}
       );
-      
-      console.log(await response.json())
 
 			if (response.ok) {
 				setStatus('success');

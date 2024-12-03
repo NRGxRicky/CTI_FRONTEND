@@ -30,11 +30,10 @@ import { setMobileView } from '../../lib/features/mobileSlide';
 const HeaderBar: React.FC = () => {
 	const textInput = useRef<HTMLInputElement | null>(null);
 	const searchButton = useRef<HTMLButtonElement | null>(null);
-	const [name, setName] = useState<string>('Iniciar sesión / Registrarse');
 	const router = useRouter();
 	const { q } = router.query;
 	const [queryInInput, setQueryInInput] = useState<string | undefined>();
-	
+	const { nombres, loading } = useAuth();
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 	const maxPageResults = useAppSelector((state) => state.mobileSlide.maxPageResults);
 
@@ -83,12 +82,6 @@ const HeaderBar: React.FC = () => {
 		textInput?.current?.focus();
 	};
 
-	useEffect(() => {
-		const storedName = localStorage.getItem('name');
-		if (typeof window !== 'undefined' && storedName !== null) {
-			setName(storedName);
-		}
-	}, []);
 
 	useEffect(() => {
 		showLoginMenu && dispatch(showLoginMenuState());
@@ -200,11 +193,15 @@ const HeaderBar: React.FC = () => {
 										d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
 									/>
 								</svg>
-								{name !== 'Iniciar sesión / Registrarse' ? (
-									<span className='--capitalize'>{TruncateManual(name, 10)}</span>
-								) : (
-									<span>{name}</span>
-								)}
+								{!loading &&
+									nombres !== 'Iniciar sesión / Registrarse' ? (
+										<span className='--capitalize'>
+											{TruncateManual(nombres, 10)}
+										</span>
+									) : (
+										<span>{nombres}</span>
+									)
+								}
 							</div>
 						</div>
 						<div className='header-bar__section-icon'>
@@ -224,7 +221,7 @@ const HeaderBar: React.FC = () => {
 							</div>
 						</div>
 					</div>
-					{showLoginMenu && <LoginMenu setName={setName} name={name} />}
+					{showLoginMenu && <LoginMenu />}
 					{!mobileView && <HeaderMenu />}
 				</div>
 				<HeaderBarLocalStock />
