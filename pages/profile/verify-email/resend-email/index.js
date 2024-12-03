@@ -4,7 +4,12 @@ import { useAuth } from '../../../../hooks/auth';
 import Router from 'next/router';
 
 const ResendVerificationEmail = () => {
-  const { loading: authLoading, isAuthenticated, isVerified, username } = useAuth();
+	const {
+		loading: authLoading,
+		isAuthenticated,
+		isVerified,
+		username,
+	} = useAuth();
 	const [status, setStatus] = useState(null); // 'success', 'error', or null
 	const [loading, setLoading] = useState(false);
 
@@ -39,6 +44,10 @@ const ResendVerificationEmail = () => {
 
 	if (!authLoading && !isAuthenticated) Router.push('/');
 
+	if (!authLoading && isVerified) {
+		Router.push('/');
+	}
+	
 	return (
 		<div className='container'>
 			<div className='resend-card'>
@@ -47,7 +56,7 @@ const ResendVerificationEmail = () => {
 					<div className='success-message'>
 						<p>
 							Se ha enviado un nuevo correo de verificación a{' '}
-							<strong>{email}</strong>.
+							<strong>{username}</strong>.
 						</p>
 						<Link href='/login'>
 							<a className='resend-button'>Iniciar Sesión</a>
@@ -84,7 +93,7 @@ const ResendVerificationEmail = () => {
 					margin-top: 15px;
 					line-height: 1.5;
 				}
-				
+
 				.container {
 					display: flex;
 					justify-content: center;

@@ -133,7 +133,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		if (!expireCookie) {
 			setCookies('tk_expire', Date.now().toString(), {
 				path: '/',
-				sameSite: true,
+				sameSite: 'strict',
 				secure: true,
 			});
 		}
@@ -201,7 +201,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 		setCookies('tk_expire', convertExpireDate.toString(), {
 			path: '/',
-			sameSite: true,
+			sameSite: 'strict',
 			secure: true,
 		});
 
@@ -209,9 +209,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			setRefreshToken(data.refresh);
 			setCookies('tk_refresh', data.refresh, {
 				path: '/',
-				sameSite: true,
+				sameSite: 'strict', // O lax/none según sea necesario
 				secure: true,
 			});
+
 		}
 
 		setIsAuthenticated(true);
@@ -246,7 +247,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	};
 
 	const logout = () => {
-		removeCookie('tk_refresh');
+		removeCookie('tk_refresh', {
+			path: '/',
+			sameSite: 'strict', // Usa el mismo valor que al establecerla
+			secure: true,
+		});
 		setAccessToken('');
 		setAccessTokenExpiry(null);
 		setNotAuthenticated();
