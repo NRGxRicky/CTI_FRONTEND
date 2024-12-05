@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import ProductGallery from '../ProductGallery/ProductGallery';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import ProductGalleryMobile from '../ProductGalleryMobile/ProductGalleryMobile';
 import InfoMini from '../InfoMini/InfoMini';
+import ProductsButtonsActions from '../ProductsButtonsActions/ProductsButtonsActions';
 
 const DetailProduct = ({
 	item,
@@ -22,11 +23,12 @@ const DetailProduct = ({
 	const [labelTimeRemaining, setLabelTimeRemaining] = useState('');
 	const [today, setToday] = useState(new Date());
 	const [shippingIntervalStart, setShippingIntervalStart] = useState(
-		addDays(today, 1)
+		addDays(today, 2)
 	);
 	const [shippingIntervalEnd, setShippingIntervalEnd] = useState(
 		addDays(today, 5)
 	);
+	const [cartQuantity, setCartQuantity] = useState(1);
 
 	function addDays(d, qty) {
 		let dd = d.getDate();
@@ -81,6 +83,39 @@ const DetailProduct = ({
 		if (shippingStart) {
 			setShippingIntervalStart(shippingStart);
 			setShippingIntervalEnd(addDays(shippingStart, 5));
+		}
+	};
+
+	const handleIncrement = () => {
+		setCartQuantity((prev) => {
+			const newQuantity = prev + 1;
+			if (newQuantity > item.stock_total) {
+				return item.stock_total
+			}
+				else {
+				return newQuantity;
+			}
+		});
+	};
+
+	const handleDecrement = () => {
+		setCartQuantity((prev) => {
+			const newQuantity = prev > 1 ? prev - 1 : 1;
+			return newQuantity;
+		});
+	};
+
+	const handleInputChange = (e) => {
+		const value = parseInt(e.target.value, 10);
+		if (!isNaN(value) && value > 0) {
+			if (value > item.stock_total) {
+				setCartQuantity(item.stock_total);
+			}
+			else {
+				setCartQuantity(value);
+			}
+		} else {
+			setCartQuantity(1);
 		}
 	};
 
@@ -279,7 +314,7 @@ const DetailProduct = ({
 											) : (
 												<FreeShipping
 													modeCard={true}
-													label={`Recíbelo por $129.00 entre el ${Capitalize(
+													label={`Recíbelo por $${item.costo_envio} entre el ${Capitalize(
 														shippingIntervalStart.toLocaleDateString('es-ES', {
 															weekday: 'long',
 														})
@@ -308,17 +343,25 @@ const DetailProduct = ({
 											<span className='bold'>Cantidad:</span>
 										</div>
 										<div className='product__resume__stock__action'>
-											<span className='product_resume__stock__action__quantity'>
+											<span
+												className='product_resume__stock__action__quantity'
+												onClick={handleIncrement}
+											>
 												<span>+</span>
 											</span>
 											<input
 												type='number'
-												defaultValue={1}
+												value={cartQuantity}
 												pattern='[0-9]*'
+												onChange={handleInputChange}
 												className='bold product_resume__stock__action__quantity_current no-spin'
 												min={1}
+												max={item.stock_total}
 											/>
-											<span className='product_resume__stock__action__quantity'>
+											<span
+												className='product_resume__stock__action__quantity'
+												onClick={handleDecrement}
+											>
 												<span>-</span>
 											</span>
 										</div>
@@ -329,6 +372,7 @@ const DetailProduct = ({
 											</span>
 										</div>
 									</div>
+
 									{item.stock_puebla > 0 && filter_available_store && (
 										<div className='product_resume__stock__local'>
 											<div className='shipping-local__icon'>
@@ -367,12 +411,8 @@ const DetailProduct = ({
 									)}
 								</div>
 
-								<div className='product__actions'>
-									<a className='product__actions__add-to-cart'>
-										Añadir al Carrito
-									</a>
-									<a className='product__actions__buy'>Comprar</a>
-								</div>
+								<ProductsButtonsActions product={item} quantity={cartQuantity} />
+
 								<div className='product__seller_current'>
 									Vendido y enviado por <b>PCSTORE</b>
 								</div>
@@ -562,43 +602,6 @@ const DetailProduct = ({
 						display: flex;
 						align-items: center;
 					}
-					.product__actions {
-						margin-top: 15px;
-						display: flex;
-						gap: 10px;
-					}
-
-					.product__actions__add-to-cart {
-						line-height: 48px;
-						height: 48px;
-						position: relative;
-						min-width: 150px;
-						text-align: center;
-						font-size: 16px;
-						cursor: pointer;
-						background-color: #ffb116;
-						color: #ffffff;
-						font-weight: 600;
-						border-radius: 5px;
-						padding: 0 10px;
-						flex-grow: 1;
-					}
-
-					.product__actions__buy {
-						line-height: 48px;
-						height: 48px;
-						position: relative;
-						padding: 0 10px;
-						min-width: 150px;
-						text-align: center;
-						font-size: 16px;
-						cursor: pointer;
-						background-color: #ff002c;
-						color: #ffffff;
-						font-weight: 600;
-						border-radius: 5px;
-						flex-grow: 2;
-					}
 
 					.product {
 						display: flex;
@@ -714,14 +717,6 @@ const DetailProduct = ({
 						.product__title h1 {
 							font-size: 18px;
 							border: 0;
-						}
-
-						.product__actions {
-							flex-wrap: wrap;
-						}
-						.product__actions__add-to-cart,
-						.product__actions__buy {
-							flex: 0 0 100%;
 						}
 
 						.--show-mobile {

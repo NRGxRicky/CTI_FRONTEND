@@ -32,8 +32,6 @@ const ResendVerificationEmail = () => {
 				}
 			);
 
-			console.log(await response.json())
-
 			if (response.ok) {
 				setStatus('success');
 			} else {

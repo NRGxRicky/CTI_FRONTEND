@@ -9,7 +9,8 @@ export const showOpacityContainerSlide = createSlice({
 		navMobileMenu: false,
 		navMobileSort: false,
 		navMobileFilters: false,
-		bodyScroll: false
+		bodyScroll: false,
+		cart: false,
 	},
 	reducers: {
 		showOpacity: (state) => {
@@ -26,6 +27,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileSort = false;
 			state.navMobileFilters = false;
 			state.bodyScroll = false;
+			state.cart = false;
 		},
 		showSearchBar: (state) => {
 			state.searchBar = true;
@@ -34,6 +36,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileMenu = false;
 			state.navMobileSort = false;
 			state.navMobileFilters = false;
+			state.cart = false;
 		},
 		showLoginMenuState: (state) => {
 			state.searchBar = false;
@@ -42,6 +45,16 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileMenu = false;
 			state.navMobileSort = false;
 			state.navMobileFilters = false;
+			state.cart = false;
+		},
+		showCart: (state) => {
+			state.searchBar = false;
+			state.opacityConatiner = true;
+			state.loginMenu = false;
+			state.navMobileMenu = false;
+			state.navMobileSort = false;
+			state.navMobileFilters = false;
+			state.cart = true;
 		},
 		showNavMobileMenu: (state) => {
 			state.searchBar = false;
@@ -51,6 +64,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileSort = false;
 			state.navMobileFilters = false;
 			state.bodyScroll = true;
+			state.cart = false;
 		},
 		showNavMobileSort: (state) => {
 			state.searchBar = false;
@@ -59,6 +73,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileMenu = false;
 			state.navMobileSort = true;
 			state.navMobileFilters = false;
+			state.cart = false;
 		},
 		showNavMobileFilters: (state) => {
 			state.searchBar = false;
@@ -67,13 +82,14 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileMenu = false;
 			state.navMobileSort = false;
 			state.navMobileFilters = true;
+			state.cart = false;
 		},
 		blockBodyScroll: (state) => {
-			state.bodyScroll = true
+			state.bodyScroll = true;
 		},
 		unlockBodyScroll: (state) => {
-			state.bodyScroll = false
-		}
+			state.bodyScroll = false;
+		},
 	},
 });
 
@@ -87,7 +103,8 @@ export const {
 	showNavMobileSort,
 	showNavMobileFilters,
 	blockBodyScroll,
-	unlockBodyScroll
+	unlockBodyScroll,
+	showCart
 } = showOpacityContainerSlide.actions;
 
 export default showOpacityContainerSlide.reducer;

@@ -341,7 +341,7 @@ const LoginMenu: React.FC = () => {
 
 					@media only screen and (max-width: 62em) {
 						.login-menu {
-							top: 58px;
+							top: 61px;
 							position: fixed;
 						}
 					}

@@ -1,10 +1,11 @@
 // import App from 'next/app'
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../components/Layout/Layout';
 import '../styles.css';
 import Head from 'next/head';
 import { AuthProvider } from '../hooks/auth';
+import { CartProvider } from '../context/CartContext';
 import GoogleAnalytics from '../components/GoogleAnalytics/GoogleAnalytics';
 import NextTopLoader from 'nextjs-toploader';
 
@@ -37,9 +38,11 @@ function MyApp({ Component, pageProps }) {
 				/>
 			</Head>
 			<AuthProvider>
-				<Layout>
-					<Component {...pageProps} />
-				</Layout>
+				<CartProvider>
+					<Layout>
+						<Component {...pageProps} />
+					</Layout>
+				</CartProvider>
 			</AuthProvider>
 		</>
 	);

@@ -23,9 +23,12 @@ import {
 	hideAll,
 	showSearchBar,
 	showLoginMenuState,
+	showCart,
 } from '../../lib/features/showOpacityContainerSlide';
 import { isMobile as detectIsMobile } from 'react-device-detect';
 import { setMobileView } from '../../lib/features/mobileSlide';
+import CartSummaryMini from '../CartSummaryMini/CartSummaryMini';
+import useCart from '../../hooks/useCart';
 
 const HeaderBar: React.FC = () => {
 	const textInput = useRef<HTMLInputElement | null>(null);
@@ -35,7 +38,10 @@ const HeaderBar: React.FC = () => {
 	const [queryInInput, setQueryInInput] = useState<string | undefined>();
 	const { nombres, loading } = useAuth();
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
-	const maxPageResults = useAppSelector((state) => state.mobileSlide.maxPageResults);
+	const maxPageResults = useAppSelector(
+		(state) => state.mobileSlide.maxPageResults
+	);
+	const { cart } = useCart();
 
 	const dispatch = useAppDispatch();
 
@@ -52,6 +58,10 @@ const HeaderBar: React.FC = () => {
 	);
 	const showLoginMenu = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.loginMenu
+	);
+
+	const showSummaryCartmini = useAppSelector(
+		(state: any) => state.showOpacityContainerReducer.cart
 	);
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -81,7 +91,6 @@ const HeaderBar: React.FC = () => {
 		dispatch(showSearchBar());
 		textInput?.current?.focus();
 	};
-
 
 	useEffect(() => {
 		showLoginMenu && dispatch(showLoginMenuState());
@@ -193,19 +202,22 @@ const HeaderBar: React.FC = () => {
 										d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
 									/>
 								</svg>
-								{!loading &&
-									nombres !== 'Iniciar sesión / Registrarse' ? (
-										<span className='--capitalize'>
-											{TruncateManual(nombres, 10)}
-										</span>
-									) : (
-										<span>{nombres}</span>
-									)
-								}
+								{!loading && nombres !== 'Iniciar sesión / Registrarse' ? (
+									<span className='--capitalize'>
+										{TruncateManual(nombres, 10)}
+									</span>
+								) : (
+									<span>{nombres}</span>
+								)}
 							</div>
 						</div>
 						<div className='header-bar__section-icon'>
-							<div className='header-bar__cart'>
+							<div
+								className='header-bar__cart'
+								onClick={() =>
+									showSummaryCartmini ? dispatch(hideAll()) : dispatch(showCart())
+								}
+							>
 								<svg
 									className='header-bar__icon icon__ligth'
 									width='24'
@@ -218,9 +230,15 @@ const HeaderBar: React.FC = () => {
 									<path d='M10 22C11.1046 22 12 21.1046 12 20C12 18.8954 11.1046 18 10 18C8.89543 18 8 18.8954 8 20C8 21.1046 8.89543 22 10 22Z' />
 									<path d='M19 20C19 21.1046 18.1046 22 17 22C15.8954 22 15 21.1046 15 20C15 18.8954 15.8954 18 17 18C18.1046 18 19 18.8954 19 20Z' />
 								</svg>
+								{cart.length > 0 && (
+									<span className='header-bar__cart-counter'>
+										{cart.length}
+									</span>
+								)}
 							</div>
 						</div>
 					</div>
+					{showSummaryCartmini && <CartSummaryMini />}
 					{showLoginMenu && <LoginMenu />}
 					{!mobileView && <HeaderMenu />}
 				</div>
@@ -304,6 +322,31 @@ const HeaderBar: React.FC = () => {
 			></div>
 
 			<style jsx>{`
+				.header-bar__cart {
+					display: block;
+					position: relative;
+				}
+				.header-bar__cart-counter {
+					left: 5px;
+					top: -10px;
+					background-color: #ff002c;
+					border-radius: 15px;
+					border: 2px solid #fff;
+					color: #ffffff !important;
+					width: 1.5rem;
+					height: 1.5rem;
+					display: flex !important;
+					align-items: center !important;
+					justify-content: center !important;
+					font-size: 0.7rem;
+					line-height: 1.3rem;
+					z-index: 200;
+					display: block !important;
+					margin: 0 !important;
+					text-align: center !important;
+					position: absolute !important;
+				}
+
 				.header-bar__profile-icon {
 					display: flex;
 					align-items: center;
