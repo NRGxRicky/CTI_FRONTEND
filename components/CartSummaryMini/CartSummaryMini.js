@@ -7,7 +7,9 @@ import TruncateMarkup from 'react-truncate-markup';
 
 const CartSummaryMini = () => {
 	const { cart, removeFromCart, clearCart, subtotal, shipping, total } =
-		useCart();
+    useCart();
+  
+  console.log(cart)
 
 	return (
 		<div className='cart-summary'>
@@ -38,6 +40,10 @@ const CartSummaryMini = () => {
 			) : (
 				<>
 					<div className='cart-header'>
+						<span>
+							Tienes {cart.reduce((total, item) => total + item.quantity, 0)}{' '}
+							artículos en tu carrito
+						</span>
 						<button onClick={clearCart} className='clear-cart-button'>
 							Borrar todos
 						</button>
@@ -98,7 +104,9 @@ const CartSummaryMini = () => {
 							<span>$ {CurrencyFormat(shipping, 2, '.', ',')}</span>
 						</div>
 						<div className='summary-row total'>
-							<span>Total</span>
+							<span>
+								Total <span className='iva text--off'>(Incluye IVA)</span>
+							</span>
 							<span>$ {CurrencyFormat(total, 2, '.', ',')}</span>
 						</div>
 					</div>
@@ -155,7 +163,7 @@ const CartSummaryMini = () => {
 				}
 				.cart-header {
 					display: flex;
-					justify-content: flex-end;
+					justify-content: space-between;
 					margin-bottom: 15px;
 				}
 				.clear-cart-button {
@@ -167,7 +175,6 @@ const CartSummaryMini = () => {
 				}
 				.cart-items {
 					flex-grow: 1;
-					max-height: 200px;
 					overflow-y: auto;
 					margin-bottom: 15px;
 				}
@@ -269,6 +276,10 @@ const CartSummaryMini = () => {
 				.view-cart-button:hover {
 					background: #e00028;
 				}
+
+        .iva {
+          font-size: 14px;
+        }
 
         @media only screen and (max-width: 62em) { 
           .cart-summary {
