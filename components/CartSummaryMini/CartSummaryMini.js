@@ -284,7 +284,7 @@ const CartSummaryMini = () => {
         @media only screen and (max-width: 62em) { 
           .cart-summary {
             width: 100%;
-            height: calc(90dvh - 61px);
+            height: calc(100dvh - 61px);
         }
 			`}</style>
 		</div>
