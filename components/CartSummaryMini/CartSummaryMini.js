@@ -114,7 +114,7 @@ const CartSummaryMini = () => {
 					background: #fff;
 					box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 					border-bottom-left-radius: 2px;
-						border-bottom-right-radius: 2px;
+					border-bottom-right-radius: 2px;
 					padding: 20px;
 					display: flex;
 					flex-direction: column;
@@ -135,6 +135,7 @@ const CartSummaryMini = () => {
 					font-weight: bold;
 					font-size: 16px;
 					min-height: 200px;
+          height: 100%;
 					position: relative;
 				}
 				.cart-header {
