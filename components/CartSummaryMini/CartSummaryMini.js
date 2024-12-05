@@ -210,12 +210,15 @@ const CartSummaryMini = () => {
 					color: #ff002c;
 				}
 				.remove-item-button {
-					background: none;
-					border: none;
-					color: #ff002c;
-					cursor: pointer;
-					font-size: 18px;
-				}
+          background: none;
+          border: none;
+          color: #ff002c !important;  
+          cursor: pointer;
+          font-size: 18px;
+          line-height: 1; 
+          display: inline-block; /  
+        }
+
 				.cart-summary-details {
 					border-top: 1px solid #f0f0f0;
 					padding-top: 10px;
