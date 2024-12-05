@@ -122,7 +122,22 @@ const CartSummaryMini = () => {
 					top: 59px;
 					right: 0;
 					z-index: 1000;
+          min-height: 200px;
 				}
+
+        .cart-summary:before {
+						content: '';
+						position: absolute;
+						top: -6px;
+						right: 5%;
+						width: 0px;
+						height: 0px;
+						border-left: 6px solid transparent;
+						border-right: 6px solid transparent;
+						border-bottom: 6px solid rgb(255, 255, 255);
+						clear: both;
+						transform: translate(-50%);
+        }
 
 				.empty-cart {
 					display: flex;
@@ -134,7 +149,6 @@ const CartSummaryMini = () => {
 					color: #666;
 					font-weight: bold;
 					font-size: 16px;
-					min-height: 200px;
           height: 100%;
 					position: relative;
 				}
@@ -247,7 +261,7 @@ const CartSummaryMini = () => {
         @media only screen and (max-width: 62em) { 
           .cart-summary {
             width: 100%;
-            min-height: calc(90dvh - 61px);
+            height: calc(90dvh - 61px);
         }
 			`}</style>
 		</div>
