@@ -123,6 +123,7 @@ const CartSummaryMini = () => {
 					right: 0;
 					z-index: 1000;
           min-height: 200px;
+          justify-content: space-between;
 				}
 
         .cart-summary:before {
