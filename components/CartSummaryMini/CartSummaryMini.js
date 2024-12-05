@@ -267,6 +267,11 @@ const CartSummaryMini = () => {
             width: 100%;
             height: calc(90dvh - 61px);
         }
+        @supports (-webkit-appearance: none) {
+          .remove-item-button {
+              color: #ff002c !important;
+          }
+        }
 			`}</style>
 		</div>
 	);
