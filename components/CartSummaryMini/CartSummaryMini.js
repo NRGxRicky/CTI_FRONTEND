@@ -78,22 +78,22 @@ const CartSummaryMini = () => {
 									<div className='item-price'>
 										$ {CurrencyFormat(item.product.precio_final, 2, '.', ',')}
 									</div>
-									<button
+									<a
 										onClick={() => removeFromCart(item.id)}
 										className='remove-item-button'
 									>
-										✖
-									</button>
+										<span className='close'></span>
+									</a>
 								</div>
 							</div>
 						))}
 					</div>
 					<div className='cart-summary-details'>
-						<div className='summary-row'>
+						<div className='summary-row text--off'>
 							<span>Subtotal</span>
 							<span>$ {CurrencyFormat(subtotal, 2, '.', ',')}</span>
 						</div>
-						<div className='summary-row'>
+						<div className='summary-row text--off'>
 							<span>Envío</span>
 							<span>$ {CurrencyFormat(shipping, 2, '.', ',')}</span>
 						</div>
@@ -207,16 +207,24 @@ const CartSummaryMini = () => {
 				}
 				.item-price {
 					font-weight: bold;
-					color: #ff002c;
 				}
 				.remove-item-button {
-          background: none;
-          border: none;
-          color: #ff002c !important;  
           cursor: pointer;
-          font-size: 18px;
+          font-size: 12px;
           line-height: 1; 
-          display: inline-block; /  
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+
+        .close {
+          	height: 12px;
+						width: 12px;
+            color: #ff002c;
+            display: block !important;
         }
 
 				.cart-summary-details {
@@ -266,11 +274,6 @@ const CartSummaryMini = () => {
           .cart-summary {
             width: 100%;
             height: calc(90dvh - 61px);
-        }
-        @supports (-webkit-appearance: none) {
-          .remove-item-button {
-              color: #ff002c !important;
-          }
         }
 			`}</style>
 		</div>
