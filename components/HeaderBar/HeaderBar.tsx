@@ -348,6 +348,7 @@ const HeaderBar: React.FC = () => {
 					width: 24px;
 					height: 24px;
 					display: block !important;
+					margin-left: 0 !important;
 				}
 				.header-bar__cart {
 					display: flex;

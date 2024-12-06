@@ -12,7 +12,6 @@ const CartSummaryMini = () => {
 	const { cart, removeFromCart, clearCart, subtotal, shipping, total } =
 		useCart();
 	const dispatch = useAppDispatch();
-	console.log(cart);
 
 	return (
 		<div className='cart-summary'>

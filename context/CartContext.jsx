@@ -72,8 +72,6 @@ export const CartProvider = ({ children }) => {
 				if (response.ok) {
 					const newItem = await response.json();
 
-					console.log(newItem)
-
 					setShipping(newItem.shipping_cost);
 
 					setCart((prevCart) => {
@@ -184,13 +182,16 @@ export const CartProvider = ({ children }) => {
 	const clearCart = async () => {
 		if (isAuthenticated) {
 			try {
-				await fetch('https://api.pccdnapi.com/cart/clear/', {
+				const response = await fetch('https://api.pccdnapi.com/cart/clear/', {
 					method: 'POST',
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
 					},
 				});
-				setCart([]);
+
+				const backendCart = await response.json();
+
+				setCart(backendCart.cart_items);
 			} catch (error) {
 				console.error('Error clearing backend cart:', error);
 			}

@@ -12,7 +12,7 @@ const GoogleRatings = ({ placeId, apiKey }) => {
 					`https://maps.googleapis.com/maps/api/place/details/json?placeid=${placeId}&key=${apiKey}`
 				);
 				const data = await response.json();
-				console.log(data)
+
 				if (data.status === 'OK') {
 					setRatings(data.result.reviews || []); // Obtener las calificaciones
 				} else {
