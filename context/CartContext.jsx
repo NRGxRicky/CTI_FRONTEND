@@ -1,6 +1,5 @@
-import { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { useAuth } from '../hooks/auth';
-import useCart from '../hooks/useCart';
 
 const CartContext = createContext();
 
@@ -73,6 +72,8 @@ export const CartProvider = ({ children }) => {
 				if (response.ok) {
 					const newItem = await response.json();
 
+					console.log(newItem)
+
 					setShipping(newItem.shipping_cost);
 
 					setCart((prevCart) => {
@@ -82,7 +83,7 @@ export const CartProvider = ({ children }) => {
 						if (existingItem) {
 							return prevCart.map((item) =>
 								item.product.id === product.id
-									? { ...item, quantity: item.quantity + quantity }
+									? { ...item, quantity: newItem.cart_items.quantity }
 									: item
 							);
 						} else {

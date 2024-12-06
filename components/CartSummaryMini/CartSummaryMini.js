@@ -4,12 +4,15 @@ import Capitalize from '../../hooks/CapitalizeTitle';
 import Image from 'next/image';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import TruncateMarkup from 'react-truncate-markup';
+import Link from 'next/link';
+import { useAppDispatch } from '../../lib/hooks';
+import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 
 const CartSummaryMini = () => {
 	const { cart, removeFromCart, clearCart, subtotal, shipping, total } =
-    useCart();
-  
-  console.log(cart)
+		useCart();
+	const dispatch = useAppDispatch();
+	console.log(cart);
 
 	return (
 		<div className='cart-summary'>
@@ -52,27 +55,41 @@ const CartSummaryMini = () => {
 						{cart.map((item) => (
 							<div key={item.id} className='cart-item'>
 								<div className='item-details'>
-									<div className='item-image'>
-										<Image
-											src={
-												item.product.imagen1s
-													? `https://api.pccdnapi.com${item.product.imagen1s}`
-													: '/images/not-available.png'
-											}
-											fill
-											style={{ objectFit: 'contain' }}
-											alt={Capitalize(item.product.titulo)}
-											draggable='false'
-											sizes='auto'
-											priority={true}
-										/>
-									</div>
+									<Link legacyBehavior href={`/${item.product.slug}`}>
+										<a>
+											<div
+												className='item-image'
+												onClick={() => dispatch(hideAll())}
+											>
+												<Image
+													src={
+														item.product.imagen1s
+															? `https://api.pccdnapi.com${item.product.imagen1s}`
+															: '/images/not-available.png'
+													}
+													fill
+													style={{ objectFit: 'contain' }}
+													alt={Capitalize(item.product.titulo)}
+													draggable='false'
+													sizes='auto'
+													priority={true}
+												/>
+											</div>
+										</a>
+									</Link>
 									<div>
-										<div className='item-name'>
-											<TruncateMarkup lines={1}>
-												<span>{Capitalize(item.product.titulo)}</span>
-											</TruncateMarkup>
-										</div>
+										<Link legacyBehavior href={`/${item.product.slug}`}>
+											<a>
+												<div
+													className='item-name'
+													onClick={() => dispatch(hideAll())}
+												>
+													<TruncateMarkup lines={1}>
+														<span>{Capitalize(item.product.titulo)}</span>
+													</TruncateMarkup>
+												</div>
+											</a>
+										</Link>
 										<div className='item-sku'>{item.product.sku}</div>
 										<div className='item-stock'>
 											Disponible: {item.product.stock_total} Pzs.

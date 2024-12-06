@@ -29,6 +29,7 @@ import { isMobile as detectIsMobile } from 'react-device-detect';
 import { setMobileView } from '../../lib/features/mobileSlide';
 import CartSummaryMini from '../CartSummaryMini/CartSummaryMini';
 import useCart from '../../hooks/useCart';
+import CurrencyFormat from '../../hooks/CurrencyFormat';
 
 const HeaderBar: React.FC = () => {
 	const textInput = useRef<HTMLInputElement | null>(null);
@@ -41,7 +42,7 @@ const HeaderBar: React.FC = () => {
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
 	);
-	const { cart } = useCart();
+	const { cart, shipping } = useCart();
 
 	const dispatch = useAppDispatch();
 
@@ -243,6 +244,19 @@ const HeaderBar: React.FC = () => {
 								) : (
 									<span className='close cart-close'></span>
 								)}
+								<span>
+									${' '}
+									{cart.length > 0
+										? CurrencyFormat(
+												cart.reduce(
+													(total, item) =>
+														parseFloat(total) +
+														parseFloat(item.product.precio_final),
+													0
+												) + shipping
+										  )
+										: CurrencyFormat(0)}
+								</span>
 							</div>
 						</div>
 					</div>
@@ -330,16 +344,15 @@ const HeaderBar: React.FC = () => {
 			></div>
 
 			<style jsx>{`
-
 				.cart-close {
 					width: 24px;
 					height: 24px;
 					display: block !important;
-
 				}
 				.header-bar__cart {
-					display: block;
+					display: flex;
 					position: relative;
+					align-items: center;
 				}
 				.header-bar__cart-counter {
 					left: 5px;

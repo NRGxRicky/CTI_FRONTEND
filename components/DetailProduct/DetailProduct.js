@@ -314,7 +314,9 @@ const DetailProduct = ({
 											) : (
 												<FreeShipping
 													modeCard={true}
-													label={`Recíbelo por $${item.costo_envio} entre el ${Capitalize(
+													label={`Recíbelo por $${
+														item.costo_envio
+													} entre el ${Capitalize(
 														shippingIntervalStart.toLocaleDateString('es-ES', {
 															weekday: 'long',
 														})
@@ -345,9 +347,9 @@ const DetailProduct = ({
 										<div className='product__resume__stock__action'>
 											<span
 												className='product_resume__stock__action__quantity'
-												onClick={handleIncrement}
+												onClick={handleDecrement}
 											>
-												<span>+</span>
+												<span>-</span>
 											</span>
 											<input
 												type='number'
@@ -358,11 +360,12 @@ const DetailProduct = ({
 												min={1}
 												max={item.stock_total}
 											/>
+
 											<span
 												className='product_resume__stock__action__quantity'
-												onClick={handleDecrement}
+												onClick={handleIncrement}
 											>
-												<span>-</span>
+												<span>+</span>
 											</span>
 										</div>
 										<div>
@@ -411,7 +414,10 @@ const DetailProduct = ({
 									)}
 								</div>
 
-								<ProductsButtonsActions product={item} quantity={cartQuantity} />
+								<ProductsButtonsActions
+									product={item}
+									quantity={cartQuantity}
+								/>
 
 								<div className='product__seller_current'>
 									Vendido y enviado por <b>PCSTORE</b>
