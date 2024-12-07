@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import useCart from '../../hooks/useCart';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import Image from 'next/image';
@@ -12,6 +12,35 @@ const CartSummaryMini = () => {
 	const { cart, removeFromCart, clearCart, subtotal, shipping, total } =
 		useCart();
 	const dispatch = useAppDispatch();
+	const cartItemsRef = useRef(null);
+	const [showScrollUp, setShowScrollUp] = useState(false);
+	const [showScrollDown, setShowScrollDown] = useState(false);
+
+	useEffect(() => {
+		const checkScroll = () => {
+			if (cartItemsRef.current) {
+				const { scrollTop, scrollHeight, clientHeight } = cartItemsRef.current;
+				setShowScrollUp(scrollTop > 0);
+				setShowScrollDown(scrollTop + clientHeight  < scrollHeight);
+			}
+		};
+
+		checkScroll();
+		cartItemsRef.current?.addEventListener('scroll', checkScroll);
+		return () =>
+			cartItemsRef.current?.removeEventListener('scroll', checkScroll);
+	}, [cart]);
+
+	// Desplazar hacia arriba o abajo
+	const scroll = (direction) => {
+		if (cartItemsRef.current) {
+			const scrollAmount = 100; // Ajusta la cantidad de desplazamiento
+			cartItemsRef.current.scrollBy({
+				top: direction * scrollAmount,
+				behavior: 'smooth',
+			});
+		}
+	};
 
 	return (
 		<div className='cart-summary'>
@@ -50,69 +79,84 @@ const CartSummaryMini = () => {
 							Borrar todos
 						</button>
 					</div>
-					<div className='cart-items'>
-						{cart.map((item) => (
-							<div key={item.id} className='cart-item'>
-								<div className='item-details'>
-									<Link legacyBehavior href={`/${item.product.slug}`}>
-										<a>
-											<div
-												className='item-image'
-												onClick={() => dispatch(hideAll())}
-											>
-												<Image
-													src={
-														item.product.imagen1s
-															? item.product.imagen1xs.includes(
-																	'https://api.pccdnapi.com'
-															  )
-																? item.product.imagen1xs
-																: `https://api.pccdnapi.com${item.product.imagen1xs}`
-															: '/images/not-available.png'
-													}
-													fill
-													style={{ objectFit: 'contain' }}
-													alt={Capitalize(item.product.titulo)}
-													draggable='false'
-													sizes='auto'
-													priority={true}
-												/>
-											</div>
-										</a>
-									</Link>
-									<div>
+					<div className='cart-body'>
+						{/* Flecha hacia arriba */}
+						{showScrollUp && (
+							<div className='scroll-arrow up' onClick={() => scroll(-1)}>
+								↑
+							</div>
+						)}
+						<div className='cart-items' ref={cartItemsRef}>
+							{cart.map((item) => (
+								<div key={item.id} className='cart-item'>
+									<div className='item-details'>
 										<Link legacyBehavior href={`/${item.product.slug}`}>
 											<a>
 												<div
-													className='item-name'
+													className='item-image'
 													onClick={() => dispatch(hideAll())}
 												>
-													<TruncateMarkup lines={1}>
-														<span>{Capitalize(item.product.titulo)}</span>
-													</TruncateMarkup>
+													<Image
+														src={
+															item.product.imagen1s
+																? item.product.imagen1xs.includes(
+																		'https://api.pccdnapi.com'
+																  )
+																	? item.product.imagen1xs
+																	: `https://api.pccdnapi.com${item.product.imagen1xs}`
+																: '/images/not-available.png'
+														}
+														fill
+														style={{ objectFit: 'contain' }}
+														alt={Capitalize(item.product.titulo)}
+														draggable='false'
+														sizes='auto'
+														priority={true}
+													/>
 												</div>
 											</a>
 										</Link>
-										<div className='item-sku'>{item.product.sku}</div>
-										<div className='item-stock'>
-											Disponible: {item.product.stock_total} Pzs.
+										<div>
+											<Link legacyBehavior href={`/${item.product.slug}`}>
+												<a>
+													<div
+														className='item-name'
+														onClick={() => dispatch(hideAll())}
+													>
+														<TruncateMarkup lines={1}>
+															<span>{Capitalize(item.product.titulo)}</span>
+														</TruncateMarkup>
+													</div>
+												</a>
+											</Link>
+											<div className='item-sku'>{item.product.sku}</div>
+											<div className='item-stock'>
+												Disponible: {item.product.stock_total} Pzs.
+											</div>
 										</div>
 									</div>
-								</div>
-								<div className='item-actions'>
-									<div className='item-quantity'>{item.quantity} Pza.</div>
-									<div className='item-price'>
-										$ {CurrencyFormat(item.product.precio_final, 2, '.', ',')}
+									<div className='item-actions'>
+										<div className='item-quantity'>{item.quantity} Pza.</div>
+										<div className='item-price'>
+											$ {CurrencyFormat(item.product.precio_final, 2, '.', ',')}
+										</div>
+										<a
+											onClick={() => removeFromCart(item.id)}
+											className='remove-item-button'
+										>
+											<span className='close'></span>
+										</a>
 									</div>
-									<a
-										onClick={() => removeFromCart(item.id)}
-										className='remove-item-button'
-									>
-										<span className='close'></span>
-									</a>
 								</div>
+							))}
+						</div>
+
+						{/* Flecha hacia abajo */}
+						{showScrollDown && (
+							<div className='scroll-arrow down' onClick={() => scroll(1)}>
+								↓
 							</div>
-						))}
+						)}
 					</div>
 					<div className='cart-summary-details'>
 						<div className='summary-row text--off'>
@@ -137,6 +181,32 @@ const CartSummaryMini = () => {
 				</>
 			)}
 			<style jsx>{`
+				.cart-body {
+					position: relative;
+				}
+				.scroll-arrow {
+					position: absolute;
+					width: 100%;
+					text-align: center;
+					font-size: 20px;
+					cursor: pointer;
+					background-color: rgba(255, 255, 255, 0.8);
+					color: #ff002c;
+					z-index: 2;
+					padding: 5px 0;
+				}
+
+				.scroll-arrow.up {
+					top: 0;
+				}
+
+				.scroll-arrow.down {
+					bottom: 0;
+				}
+
+				.cart-items {
+					position: relative;
+				}
 
 				.cart__counter-label {
 					font-size: 12px;
@@ -224,6 +294,8 @@ const CartSummaryMini = () => {
 				.item-name {
 					font-weight: bold;
 					margin-bottom: 5px;
+					padding-right: 15px;
+					max-width: 250px;
 				}
 				.item-sku,
 				.item-stock {
@@ -237,9 +309,12 @@ const CartSummaryMini = () => {
 				}
 				.item-quantity {
 					font-weight: bold;
+					min-width: 40px;
 				}
 				.item-price {
 					font-weight: bold;
+					min-width: 75px;
+					text-align: right;
 				}
 				.remove-item-button {
           cursor: pointer;
