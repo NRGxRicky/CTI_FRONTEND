@@ -1,31 +1,32 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/auth';
 import useCart from '../../hooks/useCart'; // Importa el hook personalizado
-import {
-	showCart,
-} from '../../lib/features/showOpacityContainerSlide';
+import { showCart } from '../../lib/features/showOpacityContainerSlide';
 import { useAppDispatch } from '../../lib/hooks';
 
 const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const { isAuthenticated } = useAuth(); // Accede a la autenticación
 	const { addToCart: addProductToCart, syncCart } = useCart(); // Obtén las funciones del contexto del carrito
-  
-  const dispatch = useAppDispatch();
+
+	const dispatch = useAppDispatch();
+
+	const scrollToCartSummary = () => {
+		document.body.scrollTo({ top: 0, behavior: 'smooth' });
+	};
 
 	const addToCart = async () => {
-    setIsLoading(true);
+		setIsLoading(true);
 		try {
-
 			// Si el usuario está autenticado, agrega el producto al backend
 			await addProductToCart(product, quantity, isAuthenticated);
-			
 		} catch (error) {
 			console.error('Error al añadir al carrito:', error);
 			alert('Hubo un error al añadir el producto al carrito.');
 		} finally {
-      setIsLoading(false);
-      dispatch(showCart());
+			setIsLoading(false);
+			dispatch(showCart());
+			scrollToCartSummary();
 		}
 	};
 
@@ -48,7 +49,7 @@ const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 					className={`product__actions__add-to-cart ${
 						isLoading ? 'disabled' : ''
 					}`}
-          onClick={addToCart}
+					onClick={addToCart}
 				>
 					{isLoading ? 'Añadiendo...' : 'Añadir al Carrito'}
 				</a>

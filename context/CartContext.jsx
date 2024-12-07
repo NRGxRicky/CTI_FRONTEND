@@ -12,6 +12,9 @@ export const CartProvider = ({ children }) => {
 	const [total, setTotal] = useState(0);
 	const router = useRouter();
 
+	// Función para desplazar y enfocar CartSummaryMini
+
+
 	// Sincronizar carrito local con backend cuando el usuario se autentica
 	useEffect(() => {
 		const syncCartWithBackend = async () => {
@@ -149,7 +152,7 @@ export const CartProvider = ({ children }) => {
 
 				if (response.ok) {
 					const newItem = await response.json();
-					setCart((prevCart) => [...prevCart, newItem.cart_items]);
+					setCart(newItem.cart_items);
 					setShipping(newItem.shipping_cost);
 				}
 			} catch (error) {
@@ -172,7 +175,6 @@ export const CartProvider = ({ children }) => {
 	};
 
 	const removeFromCart = async (productId) => {
-
 		if (isAuthenticated) {
 			try {
 				const response = await fetch(
@@ -187,13 +189,12 @@ export const CartProvider = ({ children }) => {
 
 				if (response.ok) {
 					const backendCart = await response.json();
-					setCart(backendCart.cart_items)
+					setCart(backendCart.cart_items);
 				}
 			} catch (error) {
 				console.error('Error removing item from cart:', error);
 			}
 		} else {
-
 			setCart((prevCart) =>
 				prevCart.filter((item) => item.product.id !== productId)
 			);

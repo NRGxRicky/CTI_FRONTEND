@@ -42,7 +42,7 @@ const CartSummaryMini = () => {
 			) : (
 				<>
 					<div className='cart-header'>
-						<span>
+						<span className='cart__counter-label'>
 							Tienes {cart.reduce((total, item) => total + item.quantity, 0)}{' '}
 							artículos en tu carrito
 						</span>
@@ -51,7 +51,7 @@ const CartSummaryMini = () => {
 						</button>
 					</div>
 					<div className='cart-items'>
-							{cart.map((item) => (
+						{cart.map((item) => (
 							<div key={item.id} className='cart-item'>
 								<div className='item-details'>
 									<Link legacyBehavior href={`/${item.product.slug}`}>
@@ -63,9 +63,11 @@ const CartSummaryMini = () => {
 												<Image
 													src={
 														item.product.imagen1s
-															? item.product.imagen1s.includes('https://api.pccdnapi.com')
-																? item.product.imagen1s
-																: `https://api.pccdnapi.com${item.product.imagen1s}`
+															? item.product.imagen1xs.includes(
+																	'https://api.pccdnapi.com'
+															  )
+																? item.product.imagen1xs
+																: `https://api.pccdnapi.com${item.product.imagen1xs}`
 															: '/images/not-available.png'
 													}
 													fill
@@ -135,6 +137,10 @@ const CartSummaryMini = () => {
 				</>
 			)}
 			<style jsx>{`
+
+				.cart__counter-label {
+					font-size: 12px;
+				}
 				.cart-summary {
 					width: 40%;
 					background: #fff;
