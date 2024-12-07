@@ -183,6 +183,7 @@ const CartSummaryMini = () => {
 			<style jsx>{`
 				.cart-body {
 					position: relative;
+					max-height: 50dvh;
 				}
 				.scroll-arrow {
 					position: absolute;
@@ -271,7 +272,8 @@ const CartSummaryMini = () => {
 					flex-grow: 1;
 					overflow-y: auto;
 					margin-bottom: 15px;
-          max-height: 50dvh;
+          max-height: 100%;
+					position: relative;
 				}
 
 				.cart-item {
