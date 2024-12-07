@@ -1,27 +1,27 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { useAuth } from '../hooks/auth';
+import { useRouter } from 'next/router';
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-	const { isAuthenticated, accessToken, logout } = useAuth();
+	const { isAuthenticated, accessToken } = useAuth();
 	const [cart, setCart] = useState([]);
 	const [subtotal, setSubtotal] = useState(0);
 	const [shipping, setShipping] = useState(129);
 	const [total, setTotal] = useState(0);
+	const router = useRouter();
 
 	// Sincronizar carrito local con backend cuando el usuario se autentica
 	useEffect(() => {
 		const syncCartWithBackend = async () => {
 			if (!isAuthenticated) {
-				// Usuario no autenticado: cargar carrito local
 				const localCart = JSON.parse(localStorage.getItem('cart')) || [];
 				setCart(localCart);
 				return;
 			}
 
 			try {
-				// Obtener el carrito del backend
 				let backendCartResponse = await fetch(
 					'https://api.pccdnapi.com/cart/',
 					{
@@ -38,14 +38,12 @@ export const CartProvider = ({ children }) => {
 				const localCart = JSON.parse(localStorage.getItem('cart')) || [];
 				let needsUpdate = false;
 
-				// Sincronizar artículos locales con el backend
 				for (const localItem of localCart) {
 					const existingItem = backendCart.cart_items.find(
 						(item) => item.product.id === localItem.product.id
 					);
 
 					if (!existingItem) {
-						// Agregar artículo local al backend
 						const addItemResponse = await fetch(
 							'https://api.pccdnapi.com/cart/',
 							{
@@ -67,7 +65,6 @@ export const CartProvider = ({ children }) => {
 					}
 				}
 
-				// Si se actualizó el backend, volver a obtener el carrito
 				if (needsUpdate) {
 					backendCartResponse = await fetch('https://api.pccdnapi.com/cart/', {
 						headers: { Authorization: `Bearer ${accessToken}` },
@@ -78,7 +75,6 @@ export const CartProvider = ({ children }) => {
 					}
 				}
 
-				// Actualizar carrito con datos del backend y limpiar carrito local
 				setCart(backendCart.cart_items);
 				setShipping(backendCart.shipping_cost);
 				localStorage.removeItem('cart');
@@ -90,7 +86,39 @@ export const CartProvider = ({ children }) => {
 		syncCartWithBackend();
 	}, [isAuthenticated, accessToken]);
 
-	// Guardar carrito local en localStorage
+	// Actualizar carrito al cambiar de ruta
+	useEffect(() => {
+		const handleRouteChange = () => {
+			if (!isAuthenticated) {
+				const localCart = JSON.parse(localStorage.getItem('cart')) || [];
+				setCart(localCart);
+			} else {
+				(async () => {
+					try {
+						const response = await fetch('https://api.pccdnapi.com/cart/', {
+							headers: { Authorization: `Bearer ${accessToken}` },
+						});
+
+						if (response.ok) {
+							const backendCart = await response.json();
+							setCart(backendCart.cart_items);
+							setShipping(backendCart.shipping_cost);
+						}
+					} catch (error) {
+						console.error('Error fetching cart on route change:', error);
+					}
+				})();
+			}
+		};
+
+		router.events.on('routeChangeComplete', handleRouteChange);
+
+		return () => {
+			router.events.off('routeChangeComplete', handleRouteChange);
+		};
+	}, [router.events, isAuthenticated, accessToken]);
+
+	// Guardar carrito local
 	useEffect(() => {
 		if (!isAuthenticated) {
 			localStorage.setItem('cart', JSON.stringify(cart));
@@ -107,7 +135,6 @@ export const CartProvider = ({ children }) => {
 		setTotal(preSubtotal + shipping);
 	}, [cart, shipping]);
 
-	// Agregar al carrito
 	const addToCart = async (product, quantity = 1) => {
 		if (isAuthenticated) {
 			try {
@@ -122,57 +149,30 @@ export const CartProvider = ({ children }) => {
 
 				if (response.ok) {
 					const newItem = await response.json();
-
+					setCart((prevCart) => [...prevCart, newItem.cart_items]);
 					setShipping(newItem.shipping_cost);
-
-					setCart((prevCart) => {
-						const existingItem = prevCart.find(
-							(item) => item.product.id === product.id
-						);
-						if (existingItem) {
-							return prevCart.map((item) =>
-								item.product.id === product.id
-									? { ...item, quantity: newItem.cart_items.quantity }
-									: item
-							);
-						} else {
-							return [...prevCart, newItem.cart_items];
-						}
-					});
 				}
 			} catch (error) {
 				console.error('Error adding to backend cart:', error);
 			}
 		} else {
-			const existingItem = cart.find((item) => item.id === product.id);
+			const existingItem = cart.find((item) => item.product.id === product.id);
 			if (existingItem) {
-				let finalQuantity = existingItem.quantity + quantity;
-				if (finalQuantity > product.stock_total) {
-					finalQuantity = product.stock_total;
-				}
-				setCart(
-					cart.map((item) =>
-						item.id === product.id ? { ...item, quantity: finalQuantity } : item
+				setCart((prevCart) =>
+					prevCart.map((item) =>
+						item.product.id === product.id
+							? { ...item, quantity: item.quantity + quantity }
+							: item
 					)
 				);
 			} else {
-				setCart([...cart, { id: product.id, product: product, quantity }]);
+				setCart([...cart, { id: product.id, product, quantity }]);
 			}
 		}
 	};
 
-	// Eliminar carrito local al cerrar sesión
-	useEffect(() => {
-		const clearLocalCartOnLogout = () => {
-			if (!isAuthenticated) {
-				localStorage.removeItem('cart');
-			}
-		};
-		clearLocalCartOnLogout();
-	}, [isAuthenticated]);
-
-	// Eliminar del carrito
 	const removeFromCart = async (productId) => {
+
 		if (isAuthenticated) {
 			try {
 				const response = await fetch(
@@ -186,80 +186,27 @@ export const CartProvider = ({ children }) => {
 				);
 
 				if (response.ok) {
-					const newCart = await response.json();
-
-					setShipping(newCart.shipping_cost);
-					setCart((prevCart) =>
-						prevCart.filter((item) => item.id !== productId)
-					);
+					const backendCart = await response.json();
+					setCart(backendCart.cart_items)
 				}
 			} catch (error) {
-				console.error('Error removing from backend cart:', error);
+				console.error('Error removing item from cart:', error);
 			}
 		} else {
-			setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
-		}
-	};
 
-	// Vaciar el carrito
-	const clearCart = async () => {
-		if (isAuthenticated) {
-			try {
-				const response = await fetch('https://api.pccdnapi.com/cart/clear/', {
-					method: 'POST',
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-					},
-				});
-
-				const backendCart = await response.json();
-
-				setCart(backendCart.cart_items);
-			} catch (error) {
-				console.error('Error clearing backend cart:', error);
-			}
-		} else {
-			setCart([]);
-		}
-	};
-
-	const updateQuantity = async (productId, newQuantity) => {
-		if (isAuthenticated) {
-			try {
-				const response = await fetch('https://api.pccdnapi.com/cart/', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${accessToken}`,
-					},
-					body: JSON.stringify({
-						product_id: productId,
-						quantity: newQuantity,
-					}),
-				});
-
-				if (response.ok) {
-					const updatedCart = await response.json();
-					setCart((prevCart) =>
-						prevCart.map((item) =>
-							item.product.id === productId
-								? { ...item, quantity: newQuantity }
-								: item
-						)
-					);
-					setShipping(updatedCart.shipping_cost);
-				}
-			} catch (error) {
-				console.error('Error updating quantity:', error);
-			}
-		} else {
 			setCart((prevCart) =>
-				prevCart.map((item) =>
-					item.product.id === productId
-						? { ...item, quantity: newQuantity }
-						: item
-				)
+				prevCart.filter((item) => item.product.id !== productId)
 			);
+		}
+	};
+
+	const clearCart = () => {
+		setCart([]);
+		if (isAuthenticated) {
+			fetch('https://api.pccdnapi.com/cart/clear/', {
+				method: 'POST',
+				headers: { Authorization: `Bearer ${accessToken}` },
+			});
 		}
 	};
 
@@ -268,7 +215,6 @@ export const CartProvider = ({ children }) => {
 			value={{
 				cart,
 				addToCart,
-				updateQuantity,
 				removeFromCart,
 				clearCart,
 				subtotal,

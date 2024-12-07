@@ -51,7 +51,7 @@ const CartSummaryMini = () => {
 						</button>
 					</div>
 					<div className='cart-items'>
-						{cart.map((item) => (
+							{cart.map((item) => (
 							<div key={item.id} className='cart-item'>
 								<div className='item-details'>
 									<Link legacyBehavior href={`/${item.product.slug}`}>
@@ -63,9 +63,7 @@ const CartSummaryMini = () => {
 												<Image
 													src={
 														item.product.imagen1s
-															? item.product.imagen1s.includes(
-																	'https://api.pccdnapi.com'
-															  )
+															? item.product.imagen1s.includes('https://api.pccdnapi.com')
 																? item.product.imagen1s
 																: `https://api.pccdnapi.com${item.product.imagen1s}`
 															: '/images/not-available.png'
