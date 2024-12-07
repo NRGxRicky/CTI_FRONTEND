@@ -363,7 +363,7 @@ const HeaderBar: React.FC = () => {
 			<style jsx>{`
 				.header-bar__cart-icon {
 					position: relative;
-					margin-top: 2px;
+					margin-top: 3px;
 				}
 
 				.header-bar__section__icons {
