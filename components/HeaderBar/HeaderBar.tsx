@@ -260,16 +260,17 @@ const HeaderBar: React.FC = () => {
 											${' '}
 											{cart.length > 0
 												? CurrencyFormat(
-														cart.reduce(
-															(total, item) =>
-																parseFloat(total) +
-																parseFloat(
-																	item.product.precio_final * item.quantity
-																),
-															0
-														) + shipping
+														(
+															cart.reduce(
+																(total, item) =>
+																	parseFloat(total) +
+																	parseFloat(item.product.precio_final) *
+																		parseFloat(item.quantity),
+																0
+															) + shipping
+														).toString()
 												  )
-												: CurrencyFormat(0)}
+												: CurrencyFormat('0')}
 										</span>
 									</div>
 								</div>
