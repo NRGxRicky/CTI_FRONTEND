@@ -129,6 +129,11 @@ const DetailProduct = ({
 	if (item === null) {
 		return null;
 	}
+
+	useEffect(() => {
+		setCartQuantity(1)
+
+	}, [item])
 	return (
 		<div className='product'>
 			<div className='product__gallery'>

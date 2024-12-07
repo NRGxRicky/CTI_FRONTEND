@@ -16,14 +16,10 @@ const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 	const addToCart = async () => {
     setIsLoading(true);
 		try {
-			if (isAuthenticated) {
-				// Si el usuario está autenticado, agrega el producto al backend
-				await addProductToCart(product, quantity, true);
-			} else {
-				// Si el usuario no está autenticado, utiliza almacenamiento local
-				await addProductToCart(product, quantity, false);
-				alert('Producto añadido al carrito (localmente).');
-			}
+
+			// Si el usuario está autenticado, agrega el producto al backend
+			await addProductToCart(product, quantity, isAuthenticated);
+			
 		} catch (error) {
 			console.error('Error al añadir al carrito:', error);
 			alert('Hubo un error al añadir el producto al carrito.');

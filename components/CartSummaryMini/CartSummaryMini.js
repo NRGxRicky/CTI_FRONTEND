@@ -63,7 +63,11 @@ const CartSummaryMini = () => {
 												<Image
 													src={
 														item.product.imagen1s
-															? `https://api.pccdnapi.com${item.product.imagen1s}`
+															? item.product.imagen1s.includes(
+																	'https://api.pccdnapi.com'
+															  )
+																? item.product.imagen1s
+																: `https://api.pccdnapi.com${item.product.imagen1s}`
 															: '/images/not-available.png'
 													}
 													fill
@@ -127,8 +131,8 @@ const CartSummaryMini = () => {
 						</div>
 					</div>
 					<div className='cart-actions'>
-						<button className='quote-button'>Crear cotización</button>
-						<button className='view-cart-button'>Ver carrito de compras</button>
+						{/* <button className='quote-button'>Crear cotización</button> */}
+						<button className='view-cart-button'>Comprar Carrito</button>
 					</div>
 				</>
 			)}
@@ -193,7 +197,9 @@ const CartSummaryMini = () => {
 					flex-grow: 1;
 					overflow-y: auto;
 					margin-bottom: 15px;
+          max-height: 50dvh;
 				}
+
 				.cart-item {
 					display: flex;
 					justify-content: space-between;
@@ -302,6 +308,10 @@ const CartSummaryMini = () => {
             width: 100%;
             height: calc(100dvh - 61px);
         }
+
+        .cart-items {
+				  max-height: unset;
+				}
 			`}</style>
 		</div>
 	);

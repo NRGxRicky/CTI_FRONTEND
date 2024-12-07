@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/auth';
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-	const { isAuthenticated, accessToken } = useAuth();
+	const { isAuthenticated, accessToken, logout } = useAuth();
 	const [cart, setCart] = useState([]);
 	const [subtotal, setSubtotal] = useState(0);
 	const [shipping, setShipping] = useState(129);
@@ -13,24 +13,77 @@ export const CartProvider = ({ children }) => {
 	// Sincronizar carrito local con backend cuando el usuario se autentica
 	useEffect(() => {
 		const syncCartWithBackend = async () => {
-			if (isAuthenticated) {
-				try {
-					const response = await fetch('https://api.pccdnapi.com/cart/', {
+			if (!isAuthenticated) {
+				// Usuario no autenticado: cargar carrito local
+				const localCart = JSON.parse(localStorage.getItem('cart')) || [];
+				setCart(localCart);
+				return;
+			}
+
+			try {
+				// Obtener el carrito del backend
+				let backendCartResponse = await fetch(
+					'https://api.pccdnapi.com/cart/',
+					{
+						headers: { Authorization: `Bearer ${accessToken}` },
+					}
+				);
+
+				if (!backendCartResponse.ok) {
+					console.error('Error fetching backend cart.');
+					return;
+				}
+
+				let backendCart = await backendCartResponse.json();
+				const localCart = JSON.parse(localStorage.getItem('cart')) || [];
+				let needsUpdate = false;
+
+				// Sincronizar artículos locales con el backend
+				for (const localItem of localCart) {
+					const existingItem = backendCart.cart_items.find(
+						(item) => item.product.id === localItem.product.id
+					);
+
+					if (!existingItem) {
+						// Agregar artículo local al backend
+						const addItemResponse = await fetch(
+							'https://api.pccdnapi.com/cart/',
+							{
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json',
+									Authorization: `Bearer ${accessToken}`,
+								},
+								body: JSON.stringify({
+									product_id: localItem.product.id,
+									quantity: localItem.quantity,
+								}),
+							}
+						);
+
+						if (addItemResponse.ok) {
+							needsUpdate = true;
+						}
+					}
+				}
+
+				// Si se actualizó el backend, volver a obtener el carrito
+				if (needsUpdate) {
+					backendCartResponse = await fetch('https://api.pccdnapi.com/cart/', {
 						headers: { Authorization: `Bearer ${accessToken}` },
 					});
 
-					if (response.ok) {
-						const backendCart = await response.json();
-
-						setCart(backendCart.cart_items);
-						setShipping(backendCart.shipping_cost)
+					if (backendCartResponse.ok) {
+						backendCart = await backendCartResponse.json();
 					}
-				} catch (error) {
-					console.error('Error syncing cart with backend:', error);
 				}
-			} else {
-				const localCart = JSON.parse(localStorage.getItem('cart')) || [];
-				setCart(localCart);
+
+				// Actualizar carrito con datos del backend y limpiar carrito local
+				setCart(backendCart.cart_items);
+				setShipping(backendCart.shipping_cost);
+				localStorage.removeItem('cart');
+			} catch (error) {
+				console.error('Error syncing cart with backend:', error);
 			}
 		};
 
@@ -44,20 +97,18 @@ export const CartProvider = ({ children }) => {
 		}
 	}, [cart, isAuthenticated]);
 
-
+	// Calcular subtotal, envío y total
 	useEffect(() => {
-		// Calcular subtotal, envío y total
 		const preSubtotal = cart.reduce(
 			(acc, item) => acc + item.quantity * item.product.precio_final,
 			0
 		);
-		setSubtotal(preSubtotal) // Envío gratuito si el subtotal es mayor a $1000
+		setSubtotal(preSubtotal);
 		setTotal(preSubtotal + shipping);
-	}, [cart])
+	}, [cart, shipping]);
 
 	// Agregar al carrito
 	const addToCart = async (product, quantity = 1) => {
-
 		if (isAuthenticated) {
 			try {
 				const response = await fetch('https://api.pccdnapi.com/cart/', {
@@ -87,63 +138,38 @@ export const CartProvider = ({ children }) => {
 						} else {
 							return [...prevCart, newItem.cart_items];
 						}
-					
 					});
 				}
 			} catch (error) {
 				console.error('Error adding to backend cart:', error);
 			}
 		} else {
-			const existingItem = cart.find((item) => item.product_id === product.id);
+			const existingItem = cart.find((item) => item.id === product.id);
 			if (existingItem) {
+				let finalQuantity = existingItem.quantity + quantity;
+				if (finalQuantity > product.stock_total) {
+					finalQuantity = product.stock_total;
+				}
 				setCart(
 					cart.map((item) =>
-						item.product_id === product.id
-							? { ...item, quantity: item.quantity + quantity }
-							: item
+						item.id === product.id ? { ...item, quantity: finalQuantity } : item
 					)
 				);
 			} else {
-				setCart([...cart, { product_id: product.id, quantity }]);
+				setCart([...cart, { id: product.id, product: product, quantity }]);
 			}
 		}
 	};
 
-	// Actualizar cantidad
-	const updateQuantity = async (productId, newQuantity) => {
-		if (isAuthenticated) {
-			try {
-				await fetch(`https://api.pccdnapi.com/cart/`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${accessToken}`,
-					},
-					body: JSON.stringify({
-						product_id: productId,
-						quantity: newQuantity,
-					}),
-				});
-				setCart((prevCart) =>
-					prevCart.map((item) =>
-						item.product.id === productId
-							? { ...item, quantity: newQuantity }
-							: item
-					)
-				);
-			} catch (error) {
-				console.error('Error updating quantity:', error);
+	// Eliminar carrito local al cerrar sesión
+	useEffect(() => {
+		const clearLocalCartOnLogout = () => {
+			if (!isAuthenticated) {
+				localStorage.removeItem('cart');
 			}
-		} else {
-			setCart((prevCart) =>
-				prevCart.map((item) =>
-					item.product_id === productId
-						? { ...item, quantity: newQuantity }
-						: item
-				)
-			);
-		}
-	};
+		};
+		clearLocalCartOnLogout();
+	}, [isAuthenticated]);
 
 	// Eliminar del carrito
 	const removeFromCart = async (productId) => {
@@ -170,11 +196,8 @@ export const CartProvider = ({ children }) => {
 			} catch (error) {
 				console.error('Error removing from backend cart:', error);
 			}
-		
 		} else {
-			setCart((prevCart) =>
-				prevCart.filter((item) => item.product_id !== productId)
-			);
+			setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
 		}
 	};
 
@@ -200,10 +223,50 @@ export const CartProvider = ({ children }) => {
 		}
 	};
 
+	const updateQuantity = async (productId, newQuantity) => {
+		if (isAuthenticated) {
+			try {
+				const response = await fetch('https://api.pccdnapi.com/cart/', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${accessToken}`,
+					},
+					body: JSON.stringify({
+						product_id: productId,
+						quantity: newQuantity,
+					}),
+				});
+
+				if (response.ok) {
+					const updatedCart = await response.json();
+					setCart((prevCart) =>
+						prevCart.map((item) =>
+							item.product.id === productId
+								? { ...item, quantity: newQuantity }
+								: item
+						)
+					);
+					setShipping(updatedCart.shipping_cost);
+				}
+			} catch (error) {
+				console.error('Error updating quantity:', error);
+			}
+		} else {
+			setCart((prevCart) =>
+				prevCart.map((item) =>
+					item.product.id === productId
+						? { ...item, quantity: newQuantity }
+						: item
+				)
+			);
+		}
+	};
+
 	return (
 		<CartContext.Provider
 			value={{
-				cart, // Alias para cart
+				cart,
 				addToCart,
 				updateQuantity,
 				removeFromCart,

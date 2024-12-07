@@ -30,6 +30,7 @@ import { setMobileView } from '../../lib/features/mobileSlide';
 import CartSummaryMini from '../CartSummaryMini/CartSummaryMini';
 import useCart from '../../hooks/useCart';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
+import { relative } from 'path';
 
 const HeaderBar: React.FC = () => {
 	const textInput = useRef<HTMLInputElement | null>(null);
@@ -100,163 +101,178 @@ const HeaderBar: React.FC = () => {
 	return (
 		<div>
 			<div className={`header-bar ${mobileView ? 'header-bar--mobile' : ''}`}>
-				<div className='header-bar__container header-bar--left row around-xs middle-xs center-xs'>
-					<NavMobileMenu />
-					<div className='header-bar__section col-xs-2 col-sm-5 col-md-2 col-lg-2'>
-						<a className='header-bar__logo' href='/'>
-							<Image
-								src='/images/logo.png'
-								width='98'
-								height='42'
-								sizes='auto'
-								style={{
-									width: '98',
-									height: 'auto',
-								}}
-								alt='PcStore.mx'
-								priority={true}
-								draggable='false'
-							/>
-						</a>
-					</div>
-					<div className='header-bar__search-bar col-xs-6 col-sm-6 col-md-6 col-lg-7'>
-						<div className='header-bar__box'>
-							<form onSubmit={(e) => handleSubmit(e)}>
-								<div className='header-bar__form-container'>
-									<input
-										onFocus={focusSearchInEnd}
-										onChange={(e) => handleInputChange(e.target.value)}
-										className='header-bar__input'
-										type='search'
-										name='q'
-										placeholder='Buscar...'
-										defaultValue={q}
-										autoComplete='off'
-										required
-									/>
-									<button
-										type='submit'
-										className='header-bar__button-search'
-										ref={searchButton}
-									>
-										<svg
-											className='header-bar__icon'
-											width='25'
-											height='20'
-											viewBox='5 0 20 20'
-											fill='none'
-											xmlns='http://www.w3.org/2000/svg'
+				<div className='header-bar__container'>
+					<div className='header-bar__primary header-bar--left row around-xs middle-xs center-xs'>
+						<NavMobileMenu />
+						<div className='header-bar__section col-xs-2 col-sm-5 col-md-2 col-lg-2'>
+							<a className='header-bar__logo' href='/'>
+								<Image
+									src='/images/logo.png'
+									width='98'
+									height='42'
+									sizes='auto'
+									style={{
+										width: '98',
+										height: 'auto',
+									}}
+									alt='PcStore.mx'
+									priority={true}
+									draggable='false'
+								/>
+							</a>
+						</div>
+						<div className='header-bar__search-bar col-xs-6 col-sm-6 col-md-5 col-lg-6'>
+							<div className='header-bar__box'>
+								<form onSubmit={(e) => handleSubmit(e)}>
+									<div className='header-bar__form-container'>
+										<input
+											onFocus={focusSearchInEnd}
+											onChange={(e) => handleInputChange(e.target.value)}
+											className='header-bar__input'
+											type='search'
+											name='q'
+											placeholder='Buscar...'
+											defaultValue={q}
+											autoComplete='off'
+											required
+										/>
+										<button
+											type='submit'
+											className='header-bar__button-search'
+											ref={searchButton}
 										>
-											<path
-												d='M18.319 14.4326C20.7628 11.2941 20.542 6.75347 17.6569 3.86829C14.5327 0.744098 9.46734 0.744098 6.34315 3.86829C3.21895 6.99249 3.21895 12.0578 6.34315 15.182C9.22833 18.0672 13.769 18.2879 16.9075 15.8442C16.921 15.8595 16.9351 15.8745 16.9497 15.8891L21.1924 20.1317C21.5829 20.5223 22.2161 20.5223 22.6066 20.1317C22.9971 19.7412 22.9971 19.1081 22.6066 18.7175L18.364 14.4749C18.3493 14.4603 18.3343 14.4462 18.319 14.4326ZM16.2426 5.28251C18.5858 7.62565 18.5858 11.4246 16.2426 13.7678C13.8995 16.1109 10.1005 16.1109 7.75736 13.7678C5.41421 11.4246 5.41421 7.62565 7.75736 5.28251C10.1005 2.93936 13.8995 2.93936 16.2426 5.28251Z'
-												fill='currentColor'
-											/>
-										</svg>
-									</button>
-								</div>
-							</form>
-						</div>
-						<div className='col-sm-1 col-md-6 col-lg-7 search-box'>
-							<InstantSearch queryInInput={queryInInput} />
-						</div>
-					</div>
-					<div className='header-bar__section header-bar--right col-xs-8 col-sm-6 col-md-4 col-lg-3'>
-						<div
-							className='header-bar__section-icon'
-							onClick={handleMobileSearch}
-						>
-							<div className='header-bar__mobile__search-icon'>
-								<svg
-									className='header-bar__icon icon__ligth'
-									width='25'
-									height='25'
-									viewBox='0 0 23 23'
-									fill='none'
-									xmlns='http://www.w3.org/2000/svg'
-								>
-									<path d='M18.319 14.4326C20.7628 11.2941 20.542 6.75347 17.6569 3.86829C14.5327 0.744098 9.46734 0.744098 6.34315 3.86829C3.21895 6.99249 3.21895 12.0578 6.34315 15.182C9.22833 18.0672 13.769 18.2879 16.9075 15.8442C16.921 15.8595 16.9351 15.8745 16.9497 15.8891L21.1924 20.1317C21.5829 20.5223 22.2161 20.5223 22.6066 20.1317C22.9971 19.7412 22.9971 19.1081 22.6066 18.7175L18.364 14.4749C18.3493 14.4603 18.3343 14.4462 18.319 14.4326ZM16.2426 5.28251C18.5858 7.62565 18.5858 11.4246 16.2426 13.7678C13.8995 16.1109 10.1005 16.1109 7.75736 13.7678C5.41421 11.4246 5.41421 7.62565 7.75736 5.28251C10.1005 2.93936 13.8995 2.93936 16.2426 5.28251Z' />
-								</svg>
+											<svg
+												className='header-bar__icon'
+												width='25'
+												height='20'
+												viewBox='5 0 20 20'
+												fill='none'
+												xmlns='http://www.w3.org/2000/svg'
+											>
+												<path
+													d='M18.319 14.4326C20.7628 11.2941 20.542 6.75347 17.6569 3.86829C14.5327 0.744098 9.46734 0.744098 6.34315 3.86829C3.21895 6.99249 3.21895 12.0578 6.34315 15.182C9.22833 18.0672 13.769 18.2879 16.9075 15.8442C16.921 15.8595 16.9351 15.8745 16.9497 15.8891L21.1924 20.1317C21.5829 20.5223 22.2161 20.5223 22.6066 20.1317C22.9971 19.7412 22.9971 19.1081 22.6066 18.7175L18.364 14.4749C18.3493 14.4603 18.3343 14.4462 18.319 14.4326ZM16.2426 5.28251C18.5858 7.62565 18.5858 11.4246 16.2426 13.7678C13.8995 16.1109 10.1005 16.1109 7.75736 13.7678C5.41421 11.4246 5.41421 7.62565 7.75736 5.28251C10.1005 2.93936 13.8995 2.93936 16.2426 5.28251Z'
+													fill='currentColor'
+												/>
+											</svg>
+										</button>
+									</div>
+								</form>
+							</div>
+							<div className='col-sm-1 col-md-5 col-lg-6 search-box'>
+								<InstantSearch queryInInput={queryInInput} />
 							</div>
 						</div>
-						<div className='header-bar__section-icon'>
+						<div className='header-bar__section header-bar__section__icons header-bar--right col-xs-8 col-sm-6 col-md-5 col-lg-4'>
 							<div
-								className='header-bar__profile-icon'
-								onClick={() =>
-									showLoginMenu
-										? dispatch(hideAll())
-										: dispatch(showLoginMenuState())
-								}
+								className='header-bar__section-icon'
+								onClick={handleMobileSearch}
 							>
-								<svg
-									className='header-bar__icon icon__ligth'
-									fill='none'
-									width='25'
-									height='25'
-									stroke='#ffffff'
-									viewBox='0 0 25 25'
-									xmlns='http://www.w3.org/2000/svg'
-								>
-									<path
-										strokeLinecap='round'
-										strokeLinejoin='round'
-										strokeWidth={2}
-										d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
-									/>
-								</svg>
-								{!loading && nombres !== 'Iniciar sesión / Registrarse' ? (
-									<span className='--capitalize'>
-										{TruncateManual(nombres, 10)}
-									</span>
-								) : (
-									<span>{nombres}</span>
-								)}
+								<div className='header-bar__mobile__search-icon'>
+									<svg
+										className='header-bar__icon icon__ligth'
+										width='25'
+										height='25'
+										viewBox='0 0 25 25'
+										fill='none'
+										xmlns='http://www.w3.org/2000/svg'
+									>
+										<path d='M18.319 14.4326C20.7628 11.2941 20.542 6.75347 17.6569 3.86829C14.5327 0.744098 9.46734 0.744098 6.34315 3.86829C3.21895 6.99249 3.21895 12.0578 6.34315 15.182C9.22833 18.0672 13.769 18.2879 16.9075 15.8442C16.921 15.8595 16.9351 15.8745 16.9497 15.8891L21.1924 20.1317C21.5829 20.5223 22.2161 20.5223 22.6066 20.1317C22.9971 19.7412 22.9971 19.1081 22.6066 18.7175L18.364 14.4749C18.3493 14.4603 18.3343 14.4462 18.319 14.4326ZM16.2426 5.28251C18.5858 7.62565 18.5858 11.4246 16.2426 13.7678C13.8995 16.1109 10.1005 16.1109 7.75736 13.7678C5.41421 11.4246 5.41421 7.62565 7.75736 5.28251C10.1005 2.93936 13.8995 2.93936 16.2426 5.28251Z' />
+									</svg>
+								</div>
 							</div>
-						</div>
-						<div className='header-bar__section-icon'>
+							<div className='header-bar__section-icon'>
+								<div
+									className='header-bar__profile-icon'
+									onClick={() =>
+										showLoginMenu
+											? dispatch(hideAll())
+											: dispatch(showLoginMenuState())
+									}
+								>
+									<svg
+										className='header-bar__icon icon__ligth'
+										fill='none'
+										width='25'
+										height='25'
+										stroke='#ffffff'
+										viewBox='0 0 25 25'
+										xmlns='http://www.w3.org/2000/svg'
+									>
+										<path
+											strokeLinecap='round'
+											strokeLinejoin='round'
+											strokeWidth={2}
+											d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
+										/>
+									</svg>
+									{!loading && nombres !== 'Iniciar sesión / Registrarse' ? (
+										<span className='--capitalize'>
+											{TruncateManual(nombres, 10)}
+										</span>
+									) : (
+										<span>{nombres}</span>
+									)}
+								</div>
+							</div>
 							<div
-								className='header-bar__cart'
+								className='header-bar__section-icon'
+								style={{
+									zIndex: showSummaryCartmini ? 2000 : 0,
+									backgroundColor: '#fff',
+								}}
 								onClick={() =>
 									showSummaryCartmini
 										? dispatch(hideAll())
 										: dispatch(showCart())
 								}
 							>
-								{!showSummaryCartmini ? (
-									<>
-										<svg
-											className='header-bar__icon icon__ligth'
-											width='24'
-											height='24'
-											viewBox='0 0 24 24'
-											fill='none'
-											xmlns='http://www.w3.org/2000/svg'
-										>
-											<path d='M5.79166 2H1V4H4.2184L6.9872 16.6776H7V17H20V16.7519L22.1932 7.09095L22.5308 6H6.6552L6.08485 3.38852L5.79166 2ZM19.9869 8H7.092L8.62081 15H18.3978L19.9869 8Z' />
-											<path d='M10 22C11.1046 22 12 21.1046 12 20C12 18.8954 11.1046 18 10 18C8.89543 18 8 18.8954 8 20C8 21.1046 8.89543 22 10 22Z' />
-											<path d='M19 20C19 21.1046 18.1046 22 17 22C15.8954 22 15 21.1046 15 20C15 18.8954 15.8954 18 17 18C18.1046 18 19 18.8954 19 20Z' />
-										</svg>
-										{cart.length > 0 && (
-											<span className='header-bar__cart-counter'>
-												{cart.reduce((total, item) => total + item.quantity, 0)}
-											</span>
-										)}
-									</>
-								) : (
-									<span className='close cart-close'></span>
-								)}
-								<span>
-									${' '}
-									{cart.length > 0
-										? CurrencyFormat(
-												cart.reduce(
-													(total, item) =>
-														parseFloat(total) +
-														parseFloat(item.product.precio_final),
-													0
-												) + shipping
-										  )
-										: CurrencyFormat(0)}
-								</span>
+								<div className='header-bar__cart'>
+									{!showSummaryCartmini ? (
+										<div className='header-bar__cart-icon'>
+											<svg
+												className='header-bar__icon icon__ligth'
+												width='25'
+												height='25'
+												viewBox='0 0 25 25'
+												fill='none'
+												xmlns='http://www.w3.org/2000/svg'
+											>
+												<path d='M5.79166 2H1V4H4.2184L6.9872 16.6776H7V17H20V16.7519L22.1932 7.09095L22.5308 6H6.6552L6.08485 3.38852L5.79166 2ZM19.9869 8H7.092L8.62081 15H18.3978L19.9869 8Z' />
+												<path d='M10 22C11.1046 22 12 21.1046 12 20C12 18.8954 11.1046 18 10 18C8.89543 18 8 18.8954 8 20C8 21.1046 8.89543 22 10 22Z' />
+												<path d='M19 20C19 21.1046 18.1046 22 17 22C15.8954 22 15 21.1046 15 20C15 18.8954 15.8954 18 17 18C18.1046 18 19 18.8954 19 20Z' />
+											</svg>
+											{cart.length > 0 && (
+												<span className='header-bar__cart-counter'>
+													{cart.reduce(
+														(total, item) => total + item.quantity,
+														0
+													)}
+												</span>
+											)}
+										</div>
+									) : (
+										<div className='header-bar__cart-icon'>
+											<span className='close cart-close'></span>
+										</div>
+									)}
+									<div className='header-bar__cart-total'>
+										<span>
+											${' '}
+											{cart.length > 0
+												? CurrencyFormat(
+														cart.reduce(
+															(total, item) =>
+																parseFloat(total) +
+																parseFloat(
+																	item.product.precio_final * item.quantity
+																),
+															0
+														) + shipping
+												  )
+												: CurrencyFormat(0)}
+										</span>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -344,9 +360,28 @@ const HeaderBar: React.FC = () => {
 			></div>
 
 			<style jsx>{`
+				.header-bar__cart-icon {
+					position: relative;
+				}
+
+				.header-bar__section__icons {
+					position: relative;
+					display: flex;
+					align-items: center;
+					justify-content: right;
+
+					gap: 25px;
+				}
+
+				.header-bar__primary {
+					width: 100%;
+					display: flex;
+					align-items: center;
+				}
+
 				.cart-close {
-					width: 24px;
-					height: 24px;
+					width: 25px;
+					height: 25px;
 					display: block !important;
 					margin-left: 0 !important;
 				}
@@ -354,9 +389,11 @@ const HeaderBar: React.FC = () => {
 					display: flex;
 					position: relative;
 					align-items: center;
+					border-radius: 2px;
+					max-height: 25px;
 				}
 				.header-bar__cart-counter {
-					left: 5px;
+					left: 10px;
 					top: -10px;
 					background-color: #ff002c;
 					border-radius: 15px;
@@ -379,6 +416,7 @@ const HeaderBar: React.FC = () => {
 				.header-bar__profile-icon {
 					display: flex;
 					align-items: center;
+					max-height: 25px;
 				}
 				.--close-search {
 					width: 20px;
@@ -440,6 +478,7 @@ const HeaderBar: React.FC = () => {
 					padding: 5px 0;
 					max-width: 1350px;
 					margin: 0 auto;
+					align-items: center;
 				}
 
 				.header-bar__logo {
@@ -494,9 +533,11 @@ const HeaderBar: React.FC = () => {
 				}
 
 				.header-bar__section-icon {
-					display: inline-block;
+					align-items: center;
 					color: #474747;
-					margin: 0 10px;
+					display: flex;
+					align-items: center;
+					min-height: 42px;
 				}
 
 				.header-bar__icon {
@@ -522,6 +563,7 @@ const HeaderBar: React.FC = () => {
 
 				.header-bar__mobile__search-icon {
 					display: block;
+					max-height: 25px;
 				}
 
 				.header-bar__mobile {
@@ -572,6 +614,10 @@ const HeaderBar: React.FC = () => {
 					.header-bar__mobile__search-icon,
 					.header-bar__mobile {
 						display: none;
+					}
+
+					.header-bar__cart {
+						padding: 0 10px;
 					}
 				}
 

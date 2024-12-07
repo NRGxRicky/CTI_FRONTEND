@@ -105,7 +105,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	};
 
 	const setDataUser = async () => {
-	
 		if (isAuthenticated) {
 			const responseUserData = await fetchDataUser(accessToken);
 			if (responseUserData.ok) {
@@ -114,8 +113,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 				setIsverified(dataUser.is_verified);
 				setNombres(dataUser.nombres);
 			}
-		}
-		else {
+		} else {
 			setUsername('');
 			setIsverified(false);
 			setNombres('Iniciar sesión / Registrarse');
@@ -150,8 +148,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			setLoading(false);
 			return true;
 		}
-
-		
 	};
 
 	const initAuth = async () => {
@@ -165,7 +161,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 	useEffect(() => {
 		setDataUser();
-	}, [isAuthenticated])
+	}, [isAuthenticated]);
 
 	const refreshToken = async (refresh: string): Promise<boolean> => {
 		if (!refresh || refresh === 'undefined') {
@@ -208,10 +204,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			setRefreshToken(data.refresh);
 			setCookies('tk_refresh', data.refresh, {
 				path: '/',
-				sameSite: 'strict', // O lax/none según sea necesario
+				sameSite: 'strict',
 				secure: true,
 			});
-
 		}
 
 		setIsAuthenticated(true);
@@ -228,6 +223,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		if (resp.ok) {
 			const tokenData = await resp.json();
 			handleNewToken(tokenData);
+
+			// Notifica a otras pestañas sobre el inicio de sesión
+			localStorage.setItem('login', Date.now().toString());
 		} else {
 			setNotAuthenticated();
 		}
@@ -246,14 +244,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const logout = () => {
 		removeCookie('tk_refresh', {
 			path: '/',
-			sameSite: 'strict', // Usa el mismo valor que al establecerla
+			sameSite: 'strict',
 			secure: true,
 		});
 		setAccessToken('');
 		setAccessTokenExpiry(null);
 		setNotAuthenticated();
-		
+
+		// Notifica a otras pestañas
+		localStorage.setItem('logout', Date.now().toString());
 	};
+
+	// Listener para sincronizar entre pestañas
+	useEffect(() => {
+		const handleStorageChange = (event: StorageEvent) => {
+			if (event.key === 'logout') {
+				// Cerrar sesión en otras pestañas
+				setNotAuthenticated();
+			}
+
+			if (event.key === 'login') {
+				// Intentar revalidar sesión si otra pestaña inició sesión
+				initAuth();
+			}
+		};
+
+		window.addEventListener('storage', handleStorageChange);
+
+		return () => {
+			window.removeEventListener('storage', handleStorageChange);
+		};
+	}, []);
 
 	const value: AuthContextProps = {
 		isAuthenticated,
