@@ -15,13 +15,19 @@ const CartSummaryMini = () => {
 	const cartItemsRef = useRef(null);
 	const [showScrollUp, setShowScrollUp] = useState(false);
 	const [showScrollDown, setShowScrollDown] = useState(false);
+	const [arrowUp, setArrowUp] = useState(0);
+	const [arrowDown, setArrowDown] = useState(0);
 
 	useEffect(() => {
 		const checkScroll = () => {
 			if (cartItemsRef.current) {
 				const { scrollTop, scrollHeight, clientHeight } = cartItemsRef.current;
+				setArrowUp(scrollTop);
+				setArrowDown(0 - scrollTop);
 				setShowScrollUp(scrollTop > 0);
-				setShowScrollDown(scrollTop + clientHeight  < scrollHeight);
+				setShowScrollDown(scrollTop + clientHeight < scrollHeight);
+
+			
 			}
 		};
 
@@ -79,85 +85,92 @@ const CartSummaryMini = () => {
 							Borrar todos
 						</button>
 					</div>
-					<div className='cart-body'>
+
+					<div className='cart-items' ref={cartItemsRef}>
 						{/* Flecha hacia arriba */}
 						{showScrollUp && (
-							<div className='scroll-arrow up' onClick={() => scroll(-1)}>
+							<div
+								className='scroll-arrow up'
+								onClick={() => scroll(-1)}
+								style={{ top: arrowUp }}
+							>
 								↑
 							</div>
 						)}
-						<div className='cart-items' ref={cartItemsRef}>
-							{cart.map((item) => (
-								<div key={item.id} className='cart-item'>
-									<div className='item-details'>
+						{cart.map((item) => (
+							<div key={item.id} className='cart-item'>
+								<div className='item-details'>
+									<Link legacyBehavior href={`/${item.product.slug}`}>
+										<a>
+											<div
+												className='item-image'
+												onClick={() => dispatch(hideAll())}
+											>
+												<Image
+													src={
+														item.product.imagen1s
+															? item.product.imagen1xs.includes(
+																	'https://api.pccdnapi.com'
+															  )
+																? item.product.imagen1xs
+																: `https://api.pccdnapi.com${item.product.imagen1xs}`
+															: '/images/not-available.png'
+													}
+													fill
+													style={{ objectFit: 'contain' }}
+													alt={Capitalize(item.product.titulo)}
+													draggable='false'
+													sizes='auto'
+													priority={true}
+												/>
+											</div>
+										</a>
+									</Link>
+									<div>
 										<Link legacyBehavior href={`/${item.product.slug}`}>
 											<a>
 												<div
-													className='item-image'
+													className='item-name'
 													onClick={() => dispatch(hideAll())}
 												>
-													<Image
-														src={
-															item.product.imagen1s
-																? item.product.imagen1xs.includes(
-																		'https://api.pccdnapi.com'
-																  )
-																	? item.product.imagen1xs
-																	: `https://api.pccdnapi.com${item.product.imagen1xs}`
-																: '/images/not-available.png'
-														}
-														fill
-														style={{ objectFit: 'contain' }}
-														alt={Capitalize(item.product.titulo)}
-														draggable='false'
-														sizes='auto'
-														priority={true}
-													/>
+													<TruncateMarkup lines={1}>
+														<span>{Capitalize(item.product.titulo)}</span>
+													</TruncateMarkup>
 												</div>
 											</a>
 										</Link>
-										<div>
-											<Link legacyBehavior href={`/${item.product.slug}`}>
-												<a>
-													<div
-														className='item-name'
-														onClick={() => dispatch(hideAll())}
-													>
-														<TruncateMarkup lines={1}>
-															<span>{Capitalize(item.product.titulo)}</span>
-														</TruncateMarkup>
-													</div>
-												</a>
-											</Link>
-											<div className='item-sku'>{item.product.sku}</div>
-											<div className='item-stock'>
-												Disponible: {item.product.stock_total} Pzs.
-											</div>
+										<div className='item-sku'>{item.product.sku}</div>
+										<div className='item-stock'>
+											Disponible: {item.product.stock_total} Pzs.
 										</div>
-									</div>
-									<div className='item-actions'>
-										<div className='item-quantity'>{item.quantity} Pza.</div>
-										<div className='item-price'>
-											$ {CurrencyFormat(item.product.precio_final, 2, '.', ',')}
-										</div>
-										<a
-											onClick={() => removeFromCart(item.id)}
-											className='remove-item-button'
-										>
-											<span className='close'></span>
-										</a>
 									</div>
 								</div>
-							))}
-						</div>
-
+								<div className='item-actions'>
+									<div className='item-quantity'>{item.quantity} Pza.</div>
+									<div className='item-price'>
+										$ {CurrencyFormat(item.product.precio_final, 2, '.', ',')}
+									</div>
+									<a
+										onClick={() => removeFromCart(item.id)}
+										className='remove-item-button'
+									>
+										<span className='close'></span>
+									</a>
+								</div>
+							</div>
+						))}
 						{/* Flecha hacia abajo */}
 						{showScrollDown && (
-							<div className='scroll-arrow down' onClick={() => scroll(1)}>
+							<div
+								className='scroll-arrow down'
+								onClick={() => scroll(1)}
+								style={{ bottom: arrowDown }}
+							>
 								↓
 							</div>
 						)}
 					</div>
+
 					<div className='cart-summary-details'>
 						<div className='summary-row text--off'>
 							<span>Subtotal</span>
@@ -181,10 +194,7 @@ const CartSummaryMini = () => {
 				</>
 			)}
 			<style jsx>{`
-				.cart-body {
-					position: relative;
-					max-height: 50dvh;
-				}
+
 				.scroll-arrow {
 					position: absolute;
 					width: 100%;
@@ -195,18 +205,6 @@ const CartSummaryMini = () => {
 					color: #ff002c;
 					z-index: 2;
 					padding: 5px 0;
-				}
-
-				.scroll-arrow.up {
-					top: 0;
-				}
-
-				.scroll-arrow.down {
-					bottom: 0;
-				}
-
-				.cart-items {
-					position: relative;
 				}
 
 				.cart__counter-label {
@@ -227,6 +225,7 @@ const CartSummaryMini = () => {
 					z-index: 1000;
           min-height: 200px;
           justify-content: space-between;
+					max-height: 50dvh;
 				}
 
         .cart-summary:before {
@@ -270,10 +269,10 @@ const CartSummaryMini = () => {
 				}
 				.cart-items {
 					flex-grow: 1;
-					overflow-y: auto;
+					max-height: auto;
 					margin-bottom: 15px;
-          max-height: 100%;
 					position: relative;
+					overflow-y: auto;
 				}
 
 				.cart-item {
@@ -390,7 +389,7 @@ const CartSummaryMini = () => {
             height: calc(100dvh - 61px);
         }
 
-        .cart-items {
+        .cart-summary {
 				  max-height: unset;
 				}
 			`}</style>
