@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import useCart from '../../hooks/useCart';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import Image from 'next/image';
@@ -18,19 +18,17 @@ const CartSummaryMini = () => {
 	const [arrowUp, setArrowUp] = useState(0);
 	const [arrowDown, setArrowDown] = useState(0);
 
-	useEffect(() => {
-		const checkScroll = () => {
-			if (cartItemsRef.current) {
-				const { scrollTop, scrollHeight, clientHeight } = cartItemsRef.current;
-				setArrowUp(scrollTop);
-				setArrowDown(0 - scrollTop);
-				setShowScrollUp(scrollTop > 0);
-				setShowScrollDown(scrollTop + clientHeight < scrollHeight);
+	const checkScroll = () => {
+		if (cartItemsRef.current) {
+			const { scrollTop, scrollHeight, clientHeight } = cartItemsRef.current;
+			setArrowUp(scrollTop);
+			setArrowDown(0 - scrollTop);
+			setShowScrollUp(scrollTop > 0);
+			setShowScrollDown(scrollTop + clientHeight < scrollHeight);
+		}
+	};
 
-			
-			}
-		};
-
+	useLayoutEffect(() => {
 		checkScroll();
 		cartItemsRef.current?.addEventListener('scroll', checkScroll);
 		return () =>
@@ -47,6 +45,14 @@ const CartSummaryMini = () => {
 			});
 		}
 	};
+
+	useLayoutEffect(() => {
+		const timeout = setTimeout(() => {
+			checkScroll(); // Asegura que se calcule correctamente
+		}, 0);
+
+		return () => clearTimeout(timeout);
+	}, [cart]); // Escucha cambios en el carrito
 
 	return (
 		<div className='cart-summary'>
@@ -225,7 +231,7 @@ const CartSummaryMini = () => {
 					z-index: 1000;
           min-height: 200px;
           justify-content: space-between;
-					max-height: 50dvh;
+					max-height: 75dvh;
 				}
 
         .cart-summary:before {
@@ -269,7 +275,6 @@ const CartSummaryMini = () => {
 				}
 				.cart-items {
 					flex-grow: 1;
-					max-height: auto;
 					margin-bottom: 15px;
 					position: relative;
 					overflow-y: auto;
@@ -319,10 +324,10 @@ const CartSummaryMini = () => {
 				}
 				.remove-item-button {
           cursor: pointer;
-          font-size: 12px;
+          font-size: 14px;
           line-height: 1; 
-          width: 20px;
-          height: 20px;
+          width: 30px;
+          height: 30px;
           display: flex;
           align-items: center;
           justify-content: center;

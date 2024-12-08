@@ -161,10 +161,16 @@ export const CartProvider = ({ children }) => {
 		} else {
 			const existingItem = cart.find((item) => item.product.id === product.id);
 			if (existingItem) {
+				let finalQuantity = existingItem.quantity + quantity;
+
+				if (finalQuantity > product.stock_total) {
+					finalQuantity = product.stock_total;
+				}
+
 				setCart((prevCart) =>
 					prevCart.map((item) =>
 						item.product.id === product.id
-							? { ...item, quantity: item.quantity + quantity }
+							? { ...item, quantity: finalQuantity }
 							: item
 					)
 				);
@@ -174,6 +180,44 @@ export const CartProvider = ({ children }) => {
 		}
 	};
 
+	// Actualizar cantidad
+	const updateQuantity = async (productId, newQuantity) => {
+		if (isAuthenticated) {
+			try {
+				await fetch(`https://api.pccdnapi.com/cart/`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${accessToken}`,
+					},
+					body: JSON.stringify({
+						product_id: productId,
+						quantity: newQuantity,
+					}),
+				});
+				setCart((prevCart) =>
+					prevCart.map((item) =>
+						item.product.id === productId
+							? { ...item, quantity: newQuantity }
+							: item
+					)
+				);
+			} catch (error) {
+				console.error('Error updating quantity:', error);
+			}
+		} else {
+			setCart((prevCart) =>
+				prevCart.map((item) =>
+					item.product_id === productId
+						? { ...item, quantity: newQuantity }
+						: item
+				)
+			);
+		}
+	};
+
+	
+	// Eliminar del carrito
 	const removeFromCart = async (productId) => {
 		if (isAuthenticated) {
 			try {
