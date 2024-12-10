@@ -7,9 +7,10 @@ import TruncateMarkup from 'react-truncate-markup';
 import Link from 'next/link';
 import { useAppDispatch } from '../../lib/hooks';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
+import { Preloader, TailSpin } from 'react-preloader-icon';
 
 const CartSummaryMini = () => {
-	const { cart, removeFromCart, clearCart, subtotal, shipping, total } =
+	const { cart, removeFromCart, clearCart, subtotal, shipping, total, loading } =
 		useCart();
 	const dispatch = useAppDispatch();
 	const cartItemsRef = useRef(null);
@@ -199,7 +200,45 @@ const CartSummaryMini = () => {
 					</div>
 				</>
 			)}
+			{loading && (
+				<div className='cart__loading'>
+					<div className='cart__loading__container'>
+						<Preloader
+							use={TailSpin}
+							size={30}
+							strokeWidth={8}
+							strokeColor='#FF002C'
+							duration={900}
+						/>
+					</div>
+				</div>
+			)}
 			<style jsx>{`
+
+				.cart__loading {
+					position: absolute;
+					background: #0f0f0f;
+					width: 100%;
+					height: 100%;
+					top: 0px;
+					left: 0px;
+					opacity: 0.8;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+
+				.cart__loading__container {
+					position: relative;
+					height: 200px;
+					width: 50%;
+					background-color: #fff;
+					opacity: 1;
+					border-radius: 2px;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
 
 				.scroll-arrow {
 					position: absolute;
