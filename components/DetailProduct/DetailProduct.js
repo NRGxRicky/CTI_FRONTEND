@@ -8,6 +8,7 @@ import Link from 'next/link';
 import ProductGalleryMobile from '../ProductGalleryMobile/ProductGalleryMobile';
 import InfoMini from '../InfoMini/InfoMini';
 import ProductsButtonsActions from '../ProductsButtonsActions/ProductsButtonsActions';
+import { useAuth } from '../../hooks/auth';
 
 const DetailProduct = ({
 	item,
@@ -29,6 +30,7 @@ const DetailProduct = ({
 		addDays(today, 5)
 	);
 	const [cartQuantity, setCartQuantity] = useState(1);
+	const { cartMsi } = useAuth();
 
 	function addDays(d, qty) {
 		let dd = d.getDate();
@@ -253,14 +255,22 @@ const DetailProduct = ({
 					)}
 					<div className='product__price'>
 						<div className='product__price__container__type_of_payments'>
-							<div className='product__price__item'>
+							<div
+								className={`product__price__item ${
+									cartMsi ? 'payment-disable' : 'payment-enable'
+								}`}
+							>
 								<div className='product__price__header'>A un pago:</div>
 								<span className='text--light'>
 									$ {CurrencyFormat(item.precio_contado)}
 								</span>
 								<div className='product__tax text--off'>Incluye IVA</div>
 							</div>
-							<div className='product__price__item'>
+							<div
+								className={`product__price__item ${
+									!cartMsi ? 'payment-disable' : 'payment-enable'
+								}`}
+							>
 								<div className='product__price__header'>A MSI:</div>
 								<span className='text--light'>
 									${' '}
@@ -459,6 +469,12 @@ const DetailProduct = ({
 
 			<style jsx>
 				{`
+					.payment-enable {
+						border-color: #ff002c !important;
+						background-color: #ffe7eb;
+					}
+
+
 					.product__seller_current {
 						line-height: 2;
 						margin-top: 15px;
@@ -475,6 +491,7 @@ const DetailProduct = ({
 						justify-content: space-between;
 						flex-wrap: nowrap;
 						gap: 10px;
+						cursor: pointer;
 					}
 					.product__price__item {
 						line-height: 1.5 !important;

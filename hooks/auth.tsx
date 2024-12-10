@@ -68,6 +68,7 @@ interface AuthContextProps {
 	isVerified: boolean;
 	username: string;
 	nombres: string;
+	cartMsi: boolean;
 }
 
 const AuthContext = createContext<AuthContextProps>({
@@ -80,6 +81,7 @@ const AuthContext = createContext<AuthContextProps>({
 	isVerified: false,
 	username: '',
 	nombres: '',
+	cartMsi: false,
 });
 
 interface AuthProviderProps {
@@ -90,6 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const [loading, setLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [isVerified, setIsverified] = useState(true);
+	const [cartMsi, setCartMsi] = useState(false);
 	const [accessToken, setAccessToken] = useState('');
 	const [username, setUsername] = useState('');
 	const [nombres, setNombres] = useState('Iniciar sesión / Registrarse');
@@ -112,10 +115,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 				setUsername(dataUser.username);
 				setIsverified(dataUser.is_verified);
 				setNombres(dataUser.nombres);
+				setCartMsi(dataUser.cart_msi)
 			}
 		} else {
 			setUsername('');
 			setIsverified(false);
+			setCartMsi(false);
 			setNombres('Iniciar sesión / Registrarse');
 		}
 	};
@@ -286,6 +291,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		isVerified,
 		username,
 		nombres,
+		cartMsi
 	};
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
