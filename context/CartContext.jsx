@@ -1,11 +1,17 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, {
+	createContext,
+	useState,
+	useEffect,
+	useLayoutEffect,
+} from 'react';
 import { useAuth } from '../hooks/auth';
 import { useRouter } from 'next/router';
+import GetShippingCost from '../hooks/GetShippingCost';
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-	const { isAuthenticated, accessToken, cartMsi } = useAuth();
+	const { isAuthenticated, accessToken, cartMsi, updateDataUser } = useAuth();
 	const [cart, setCart] = useState([]);
 	const [subtotal, setSubtotal] = useState(0);
 	const [shipping, setShipping] = useState(129);
@@ -42,6 +48,9 @@ export const CartProvider = ({ children }) => {
 
 				let backendCart = await backendCartResponse.json();
 				const localCart = JSON.parse(localStorage.getItem('cart')) || [];
+				const localCartMsi =
+					JSON.parse(localStorage.getItem('cart_msi')) || false;
+
 				let needsUpdate = false;
 
 				for (const localItem of localCart) {
@@ -79,11 +88,14 @@ export const CartProvider = ({ children }) => {
 					if (backendCartResponse.ok) {
 						backendCart = await backendCartResponse.json();
 					}
+
+					updateDataUser(localCartMsi);
 				}
 
 				setCart(backendCart.cart_items);
 				setShipping(backendCart.shipping_cost);
 				localStorage.removeItem('cart');
+				localStorage.removeItem('cart_msi');
 			} catch (error) {
 				console.error('Error syncing cart with backend:', error);
 			}
@@ -125,12 +137,38 @@ export const CartProvider = ({ children }) => {
 		};
 	}, [router.events, isAuthenticated, accessToken]);
 
-	// Guardar carrito local
 	useEffect(() => {
-		if (!isAuthenticated) {
+		// Verifica si estás en el cliente antes de acceder a localStorage
+		if (typeof window !== 'undefined' && !isAuthenticated) {
 			localStorage.setItem('cart', JSON.stringify(cart));
 		}
 	}, [cart, isAuthenticated]);
+
+	useEffect(() => {
+		// Verifica si estás en el cliente antes de acceder a localStorage
+		if (typeof window !== 'undefined' && !isAuthenticated) {
+			// Obtener el valor de localCartMsi y convertirlo a booleano si existe
+			const localCartMsi = localStorage.getItem('cart_msi');
+			const parsedLocalCartMsi = localCartMsi
+				? JSON.parse(localCartMsi)
+				: false;
+
+			// Si el valor actual en localStorage es diferente del estado, sincronízalos
+			if (parsedLocalCartMsi !== cartMsi) {
+				localStorage.setItem('cart_msi', JSON.stringify(cartMsi));
+			}
+		}
+	}, [cartMsi]);
+
+	// Calcular Peso total local
+	useEffect(() => {
+		if (!isAuthenticated) {
+			let pesoTotal = parseFloat(0);
+			cart.map((item) => (pesoTotal += parseFloat(item.product.peso * item.quantity)));
+			const costoEnvio = GetShippingCost(pesoTotal)
+			setShipping(costoEnvio);
+		}
+	}, [cart]);
 
 	// Calcular subtotal, envío y total
 	useEffect(() => {

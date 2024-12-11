@@ -5,6 +5,8 @@ import React, {
 	useContext,
 	ReactNode,
 	createContext,
+	Dispatch,
+	SetStateAction
 } from 'react';
 import { useCookies } from 'react-cookie';
 
@@ -85,6 +87,7 @@ interface AuthContextProps {
 	nombres: string;
 	cartMsi: boolean;
 	updateDataUser: (CartStatus: boolean) => void;
+	setCartMsi: Dispatch<SetStateAction<boolean>>;
 }
 
 const AuthContext = createContext<AuthContextProps>({
@@ -99,6 +102,7 @@ const AuthContext = createContext<AuthContextProps>({
 	nombres: '',
 	cartMsi: false,
 	updateDataUser: async () => undefined,
+	setCartMsi: () => {},
 });
 
 interface AuthProviderProps {
@@ -109,7 +113,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const [loading, setLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [isVerified, setIsverified] = useState(true);
-	const [cartMsi, setCartMsi] = useState(false);
+	const [cartMsi, setCartMsi] = useState<boolean>(() => {
+		if (typeof window !== 'undefined') {
+			const storedValue = localStorage.getItem('cart_msi');
+			return storedValue ? JSON.parse(storedValue) : false;
+		}
+		return false; // Valor predeterminado para el entorno no navegador
+	});
 	const [accessToken, setAccessToken] = useState('');
 	const [username, setUsername] = useState('');
 	const [nombres, setNombres] = useState('Iniciar sesión / Registrarse');
@@ -137,7 +147,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		} else {
 			setUsername('');
 			setIsverified(false);
-			setCartMsi(false);
 			setNombres('Iniciar sesión / Registrarse');
 		}
 	};
@@ -322,6 +331,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		username,
 		nombres,
 		cartMsi,
+		setCartMsi,
 		updateDataUser
 	};
 

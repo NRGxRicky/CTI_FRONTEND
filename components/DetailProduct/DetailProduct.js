@@ -32,7 +32,12 @@ const DetailProduct = ({
 		addDays(today, 5)
 	);
 	const [cartQuantity, setCartQuantity] = useState(1);
+	const [internalCartMsi, setInternalCartMsi] = useState(false)
 	const { cartMsi } = useAuth();
+
+	useEffect(() => {
+		setInternalCartMsi(cartMsi);
+	},[cartMsi])
 
 	const dispatch = useAppDispatch();
 
@@ -261,10 +266,10 @@ const DetailProduct = ({
 						<div className='product__price__container__type_of_payments'>
 							<div
 								className={`product__price__item ${
-									cartMsi ? 'payment-disable' : 'payment-enable'
+									internalCartMsi ? 'payment-disable' : 'payment-enable'
 								}`}
 								onClick={() => {
-									cartMsi && dispatch(showPaymentsChange());
+									internalCartMsi && dispatch(showPaymentsChange());
 								}}
 							>
 								<div className='product__price__header'>A un pago:</div>
@@ -275,10 +280,10 @@ const DetailProduct = ({
 							</div>
 							<div
 								className={`product__price__item ${
-									!cartMsi ? 'payment-disable' : 'payment-enable'
+									!internalCartMsi ? 'payment-disable' : 'payment-enable'
 								}`}
 								onClick={() => {
-									!cartMsi && dispatch(showPaymentsChange());
+									!internalCartMsi && dispatch(showPaymentsChange());
 								}}
 							>
 								<div className='product__price__header'>A MSI:</div>
