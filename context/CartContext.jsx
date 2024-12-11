@@ -48,8 +48,6 @@ export const CartProvider = ({ children }) => {
 
 				let backendCart = await backendCartResponse.json();
 				const localCart = JSON.parse(localStorage.getItem('cart')) || [];
-				const localCartMsi =
-					JSON.parse(localStorage.getItem('cart_msi')) || false;
 
 				let needsUpdate = false;
 
@@ -89,7 +87,7 @@ export const CartProvider = ({ children }) => {
 						backendCart = await backendCartResponse.json();
 					}
 
-					updateDataUser(localCartMsi);
+					updateDataUser(cartMsi);
 				}
 
 				setCart(backendCart.cart_items);
