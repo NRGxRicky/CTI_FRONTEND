@@ -47,6 +47,21 @@ const fetchDataUser = (token: string): Promise<Response> => {
 	});
 };
 
+const fetchUpdateDataUser = (token: string, cart_msi: boolean): Promise<Response> => {
+	const url = makeUrl('/profile/user-details/');
+	return fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({
+			cart_msi: cart_msi,
+		}),
+		
+	});
+};
+
 const fetchNewToken = (refresh: string): Promise<Response> => {
 	const url = makeUrl('/token/refresh/');
 	return fetch(url, {
@@ -69,6 +84,7 @@ interface AuthContextProps {
 	username: string;
 	nombres: string;
 	cartMsi: boolean;
+	updateDataUser: (CartStatus: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextProps>({
@@ -82,6 +98,7 @@ const AuthContext = createContext<AuthContextProps>({
 	username: '',
 	nombres: '',
 	cartMsi: false,
+	updateDataUser: async () => undefined,
 });
 
 interface AuthProviderProps {
@@ -124,6 +141,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			setNombres('Iniciar sesión / Registrarse');
 		}
 	};
+
+	const updateDataUser = async (cartStatus: boolean) => {
+		if (isAuthenticated) {
+			const responseUpdateDataUser = await fetchUpdateDataUser(accessToken, cartStatus);
+			if (responseUpdateDataUser.ok) {
+				const dataUser = await responseUpdateDataUser.json();
+				setCartMsi(dataUser.cart_msi);
+			}
+		}
+		else {
+			setCartMsi(cartStatus)
+		}
+	}
 
 	const accessTokenIsValid = async (): Promise<boolean> => {
 		if (!cookies || !cookies.tk_refresh) {
@@ -291,7 +321,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		isVerified,
 		username,
 		nombres,
-		cartMsi
+		cartMsi,
+		updateDataUser
 	};
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -9,6 +9,8 @@ import ProductGalleryMobile from '../ProductGalleryMobile/ProductGalleryMobile';
 import InfoMini from '../InfoMini/InfoMini';
 import ProductsButtonsActions from '../ProductsButtonsActions/ProductsButtonsActions';
 import { useAuth } from '../../hooks/auth';
+import { showPaymentsChange } from '../../lib/features/showOpacityContainerSlide';
+import { useAppDispatch } from '../../lib/hooks';
 
 const DetailProduct = ({
 	item,
@@ -31,6 +33,8 @@ const DetailProduct = ({
 	);
 	const [cartQuantity, setCartQuantity] = useState(1);
 	const { cartMsi } = useAuth();
+
+	const dispatch = useAppDispatch();
 
 	function addDays(d, qty) {
 		let dd = d.getDate();
@@ -259,6 +263,9 @@ const DetailProduct = ({
 								className={`product__price__item ${
 									cartMsi ? 'payment-disable' : 'payment-enable'
 								}`}
+								onClick={() => {
+									cartMsi && dispatch(showPaymentsChange());
+								}}
 							>
 								<div className='product__price__header'>A un pago:</div>
 								<span className='text--light'>
@@ -270,6 +277,9 @@ const DetailProduct = ({
 								className={`product__price__item ${
 									!cartMsi ? 'payment-disable' : 'payment-enable'
 								}`}
+								onClick={() => {
+									!cartMsi && dispatch(showPaymentsChange());
+								}}
 							>
 								<div className='product__price__header'>A MSI:</div>
 								<span className='text--light'>
@@ -280,6 +290,9 @@ const DetailProduct = ({
 								</span>
 								<div className='product__tax text--off'>Incluye IVA</div>
 							</div>
+						</div>
+						<div className='payments-change__label-help text--off'>
+							*Haz clic en la opción que prefieras.
 						</div>
 						<div className='product__price__item'>
 							<span className='product_price__info_payment'>
@@ -469,11 +482,20 @@ const DetailProduct = ({
 
 			<style jsx>
 				{`
+					.payments-change__label-help {
+						font-size: 12px;
+						font-weight: 300;
+						line-height: 2;
+					}
+
+					.payment-disable {
+						cursor: pointer;
+					}
+
 					.payment-enable {
 						border-color: #ff002c !important;
 						background-color: #ffe7eb;
 					}
-
 
 					.product__seller_current {
 						line-height: 2;
@@ -491,7 +513,6 @@ const DetailProduct = ({
 						justify-content: space-between;
 						flex-wrap: nowrap;
 						gap: 10px;
-						cursor: pointer;
 					}
 					.product__price__item {
 						line-height: 1.5 !important;
