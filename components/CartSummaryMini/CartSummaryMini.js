@@ -6,8 +6,9 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import TruncateMarkup from 'react-truncate-markup';
 import Link from 'next/link';
 import { useAppDispatch } from '../../lib/hooks';
-import { hideAll } from '../../lib/features/showOpacityContainerSlide';
+import { hideAll, showPaymentsChange } from '../../lib/features/showOpacityContainerSlide';
 import { Preloader, TailSpin } from 'react-preloader-icon';
+import { useAuth } from '../../hooks/auth';
 
 const CartSummaryMini = () => {
 	const { cart, removeFromCart, clearCart, subtotal, shipping, total, loading } =
@@ -18,6 +19,7 @@ const CartSummaryMini = () => {
 	const [showScrollDown, setShowScrollDown] = useState(false);
 	const [arrowUp, setArrowUp] = useState(0);
 	const [arrowDown, setArrowDown] = useState(0);
+	const { cartMsi } = useAuth();
 
 	const checkScroll = () => {
 		if (cartItemsRef.current) {
@@ -83,6 +85,20 @@ const CartSummaryMini = () => {
 				</div>
 			) : (
 				<>
+					<div className='cart__change-payment'>
+						<span
+							className='cart__change-payment__action'
+							onClick={() => {
+								dispatch(showPaymentsChange());
+							}}
+						>
+							Cambiar modo de carrito:
+						</span>
+						<span className='payments-change__label-status'>
+							{' '}
+							{cartMsi ? 'MSI/Pagos' : 'Contado'}
+						</span>
+					</div>
 					<div className='cart-header'>
 						<span className='cart__counter-label'>
 							Tienes {cart.reduce((total, item) => total + item.quantity, 0)}{' '}
@@ -214,6 +230,28 @@ const CartSummaryMini = () => {
 				</div>
 			)}
 			<style jsx>{`
+
+					.payments-change__label-status {
+						font-size: 12px;
+						font-weight: 300;
+						margin-left: 5px;
+						border-radius: 5px;
+						background-color: #ff002c;
+						color: #fff;
+						padding: 2px 5px;
+					}
+
+				.cart__change-payment__action {
+					text-decoration: underline;
+				}
+
+				.cart__change-payment {
+					font-size: 12px;
+					margin-bottom: 10px;
+					color: #ff002c
+				}
+
+
 
 				.cart__loading {
 					position: absolute;

@@ -35,7 +35,7 @@ const PaymentsChange = () => {
 						Estás a punto de cambiar la forma de pago predeterminada de tu
 						carrito:
 					</span>
-					<span className='payments-change__label-status text--off'>
+					<span className='payments-change__label-status'>
 						{payment ? 'MSI/Pagos' : 'Contado'}
 					</span>
 					<div className='payments-change__label-help text--off'>
@@ -159,7 +159,7 @@ const PaymentsChange = () => {
 						background-color: #fff;
 						min-width: 100px;
 						min-height: 100px;
-						max-width: 50dvw;
+						max-width: 75dvw;
             max-height: calc(100dvh - 61px);
 						border-radius: 5px;
 						padding: 0 20px 30px 20px;
@@ -198,12 +198,13 @@ const PaymentsChange = () => {
 						font-weight: 600;
 						font-size: 16px;
 						border-bottom: 1px solid #eaeaea;
+            padding: 15px 10px
 
 					}
 
 					.payments-change__option__header span {
-						line-height: 3;
-						margin-left: 20px;
+						line-height: 1.5;
+					
 					}
 
 					.payments-change__option__body {

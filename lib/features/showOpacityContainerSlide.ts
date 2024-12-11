@@ -59,6 +59,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileSort = false;
 			state.navMobileFilters = false;
 			state.cart = true;
+			state.PaymentsChange = false;
 		},
 		showPaymentsChange: (state) => {
 		state.searchBar = false;
@@ -67,6 +68,7 @@ export const showOpacityContainerSlide = createSlice({
 		state.navMobileMenu = false;
 		state.navMobileSort = false;
 		state.navMobileFilters = false;
+		state.cart = false;
 		state.PaymentsChange = true;
 		},
 
