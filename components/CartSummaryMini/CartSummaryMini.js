@@ -95,7 +95,6 @@ const CartSummaryMini = () => {
 							Cambiar modo de carrito:
 						</span>
 						<span className='payments-change__label-status'>
-							{' '}
 							{cartMsi ? 'MSI/Pagos' : 'Contado'}
 						</span>
 					</div>
@@ -171,7 +170,22 @@ const CartSummaryMini = () => {
 								<div className='item-actions'>
 									<div className='item-quantity'>{item.quantity} Pza.</div>
 									<div className='item-price'>
-										$ {CurrencyFormat(item.product.precio_final, 2, '.', ',')}
+										{item.product.precio_final_descuento > 0 && (
+											<span className='price--compare text--off'>
+												$ {CurrencyFormat(item.product.precio_final)}
+											</span>
+										)}
+										${' '}
+										{CurrencyFormat(
+											!cartMsi
+												? item.product.precio_contado
+												: item.product.precio_final_descuento > 0
+												? item.product.precio_final_descuento
+												: item.product.precio_final,
+											2,
+											'.',
+											','
+										)}
 									</div>
 									<a
 										onClick={() => removeFromCart(item.id)}
@@ -231,6 +245,10 @@ const CartSummaryMini = () => {
 			)}
 			<style jsx>{`
 
+					.price--compare {
+						font-size: 12px !important;
+					}
+
 					.payments-change__label-status {
 						font-size: 12px;
 						font-weight: 300;
@@ -243,6 +261,7 @@ const CartSummaryMini = () => {
 
 				.cart__change-payment__action {
 					text-decoration: underline;
+					cursor: pointer !important;
 				}
 
 				.cart__change-payment {
@@ -398,6 +417,8 @@ const CartSummaryMini = () => {
 					font-weight: bold;
 					min-width: 75px;
 					text-align: right;
+					display: flex;
+					flex-direction: column;
 				}
 				.remove-item-button {
           cursor: pointer;

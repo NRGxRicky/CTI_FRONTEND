@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-	const { isAuthenticated, accessToken } = useAuth();
+	const { isAuthenticated, accessToken, cartMsi } = useAuth();
 	const [cart, setCart] = useState([]);
 	const [subtotal, setSubtotal] = useState(0);
 	const [shipping, setShipping] = useState(129);
@@ -15,11 +15,10 @@ export const CartProvider = ({ children }) => {
 
 	// Función para desplazar y enfocar CartSummaryMini
 
-
 	// Sincronizar carrito local con backend cuando el usuario se autentica
 	useEffect(() => {
 		const syncCartWithBackend = async () => {
-			setLoading(true)
+			setLoading(true);
 			if (!isAuthenticated) {
 				const localCart = JSON.parse(localStorage.getItem('cart')) || [];
 				setCart(localCart);
@@ -136,16 +135,23 @@ export const CartProvider = ({ children }) => {
 	// Calcular subtotal, envío y total
 	useEffect(() => {
 		const preSubtotal = cart.reduce(
-			(acc, item) => acc + item.quantity * item.product.precio_final,
+			(acc, item) =>
+				acc +
+				item.quantity *
+					(!cartMsi
+						? item.product.precio_contado
+						: item.product.precio_final_descuento > 0
+						? item.product.precio_final_descuento
+						: item.product.precio_final),
 			0
 		);
 		setSubtotal(preSubtotal);
 		setTotal(preSubtotal + shipping);
-	}, [cart, shipping]);
+	}, [cart, shipping, cartMsi]);
 
 	// Agregar al Carrito
 	const addToCart = async (product, quantity = 1) => {
-		setLoading(true)
+		setLoading(true);
 		if (isAuthenticated) {
 			try {
 				const response = await fetch('https://api.pccdnapi.com/cart/', {
@@ -185,7 +191,7 @@ export const CartProvider = ({ children }) => {
 				setCart([...cart, { id: product.id, product, quantity }]);
 			}
 		}
-		setLoading(false)
+		setLoading(false);
 	};
 
 	// Actualizar cantidad
@@ -224,10 +230,9 @@ export const CartProvider = ({ children }) => {
 		}
 	};
 
-	
 	// Eliminar del carrito
 	const removeFromCart = async (productId) => {
-		setLoading(true)
+		setLoading(true);
 		if (isAuthenticated) {
 			try {
 				const response = await fetch(
@@ -252,11 +257,11 @@ export const CartProvider = ({ children }) => {
 				prevCart.filter((item) => item.product.id !== productId)
 			);
 		}
-		setLoading(false)
+		setLoading(false);
 	};
 
 	const clearCart = () => {
-		setLoading(true)
+		setLoading(true);
 		setCart([]);
 		if (isAuthenticated) {
 			fetch('https://api.pccdnapi.com/cart/clear/', {
@@ -264,7 +269,7 @@ export const CartProvider = ({ children }) => {
 				headers: { Authorization: `Bearer ${accessToken}` },
 			});
 		}
-		setLoading(false)
+		setLoading(false);
 	};
 
 	return (
@@ -277,7 +282,7 @@ export const CartProvider = ({ children }) => {
 				subtotal,
 				shipping,
 				total,
-				loading
+				loading,
 			}}
 		>
 			{children}

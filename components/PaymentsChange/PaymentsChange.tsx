@@ -243,6 +243,10 @@ const PaymentsChange = () => {
 						border-color: #ff002c !important;
 					}
 
+          .payments-change__option:hover {
+            border-color: #ff002c !important;
+          }
+
 					.payment-enable .payments-change__option__header {
 						background-color: #ff002c;
 						color: #fff;
