@@ -86,9 +86,9 @@ export const CartProvider = ({ children }) => {
 					if (backendCartResponse.ok) {
 						backendCart = await backendCartResponse.json();
 					}
-
-					updateDataUser(cartMsi);
 				}
+
+				updateDataUser(cartMsi);
 
 				setCart(backendCart.cart_items);
 				setShipping(backendCart.shipping_cost);
