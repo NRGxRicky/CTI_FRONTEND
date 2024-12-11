@@ -157,9 +157,10 @@ const PaymentsChange = () => {
 
 					.payments-change__container {
 						background-color: #fff;
-						min-width: 200px;
-						min-height: 200px;
+						min-width: 100px;
+						min-height: 100px;
 						max-width: 50dvw;
+            max-height: calc(100dvh - 61px);
 						border-radius: 5px;
 						padding: 0 20px 30px 20px;
 					}
@@ -190,6 +191,7 @@ const PaymentsChange = () => {
 					.payments-change__option {
 						border: 1px solid #eaeaea;
 						border-radius: 5px;
+            width: 100%;
 					}
 
 					.payments-change__option__header {
@@ -221,8 +223,8 @@ const PaymentsChange = () => {
 						position: relative;
 						max-width: 200px;
 						max-height: 200px;
-						min-height: 75px;
-						min-width: 75px;
+						min-height: 50px;
+						min-width: 50px;
 						border: 1px solid #eaeaea;
 						border-radius: 5px;
 					}
@@ -269,7 +271,7 @@ const PaymentsChange = () => {
             flex-wrap: wrap;
           }
           .payments-change__header {
-            font-size: 16px;
+            font-size: 14px;
           }
 
           .payments-change__option__item__label {
