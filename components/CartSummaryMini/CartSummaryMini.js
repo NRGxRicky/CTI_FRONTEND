@@ -226,7 +226,9 @@ const CartSummaryMini = () => {
 					</div>
 					<div className='cart-actions'>
 						{/* <button className='quote-button'>Crear cotización</button> */}
-						<button className='view-cart-button'>Comprar Carrito</button>
+						<Link href={`/carrito`}legacyBehavior>
+							<button className='view-cart-button' onClick={()=> dispatch(hideAll())}>Comprar Carrito</button>
+						</Link>
 					</div>
 				</>
 			)}

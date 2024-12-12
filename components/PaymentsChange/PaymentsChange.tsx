@@ -39,7 +39,7 @@ const PaymentsChange = () => {
 						{payment ? 'MSI/Pagos' : 'Contado'}
 					</span>
 					<div className='payments-change__label-help text--off'>
-						Haz clic en la opción que prefieras.
+						Haz clic en la opción de pago que prefieras.
 					</div>
 				</div>
 				<div className='payments-change__body'>
@@ -97,8 +97,8 @@ const PaymentsChange = () => {
 								</div>
 								<div className='payments-change__option__item__label'>
 									<span>
-										Hasta 3 MSI con tarjetas participantes o hasta 12 pagos con
-										Mercado Crédito.
+										Hasta 3 MSI con tarjetas participantes Mercado Pago o
+										hasta 12 pagos con Mercado Crédito.
 									</span>
 								</div>
 							</div>

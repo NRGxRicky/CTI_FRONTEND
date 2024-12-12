@@ -68,11 +68,11 @@ const DetailProduct = ({
 
 		let shippingStart;
 		if (currentHour > 13 && isWeekend) {
-			shippingStart = addDays(newToday, 1);
-		} else if (dayOfWeek === 'sábado') {
-			shippingStart = addDays(newToday, 3);
-		} else if (dayOfWeek === 'domingo') {
 			shippingStart = addDays(newToday, 2);
+		} else if (dayOfWeek === 'sábado') {
+			shippingStart = addDays(newToday, 4);
+		} else if (dayOfWeek === 'domingo') {
+			shippingStart = addDays(newToday, 3);
 		}
 
 		const endTime = new Date();
@@ -297,7 +297,7 @@ const DetailProduct = ({
 							</div>
 						</div>
 						<div className='payments-change__label-help text--off'>
-							*Haz clic en la opción que prefieras.
+							*Haz clic en la opción de pago que prefieras.
 						</div>
 						<div className='product__price__item'>
 							<span className='product_price__info_payment'>
@@ -600,8 +600,7 @@ const DetailProduct = ({
 						width: 100%;
 					}
 					.product_resume__stock__action__available {
-						margin-left: 20px;
-						font-size: 14px;
+						font-size: 12px;
 					}
 
 					.product_resume__stock__action__quantity_current {
@@ -613,7 +612,6 @@ const DetailProduct = ({
 					.product__resume__stock__action {
 						width: 90px;
 						display: flex;
-						margin-left: 20px;
 						border: 1px solid #ff002c;
 						border-radius: 25px;
 						background-color: #ffffff;
@@ -637,9 +635,11 @@ const DetailProduct = ({
 						width: 100%;
 						display: flex;
 						align-items: center;
+						justify-content: space-between;
 						margin-top: 20px;
 						font-size: 16px;
 					}
+
 					.product__specs__container h3 {
 						margin-top: 20px;
 						margin-bottom: 20px;

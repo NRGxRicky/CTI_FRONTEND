@@ -3,10 +3,10 @@ import { useAuth } from '../../hooks/auth';
 import useCart from '../../hooks/useCart'; // Importa el hook personalizado
 import { showCart } from '../../lib/features/showOpacityContainerSlide';
 import { useAppDispatch } from '../../lib/hooks';
+import Router from 'next/router';
 
 const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 	const [isLoading, setIsLoading] = useState(false);
-	const { isAuthenticated } = useAuth(); // Accede a la autenticación
 	const { addToCart: addProductToCart, syncCart } = useCart(); // Obtén las funciones del contexto del carrito
 
 	const dispatch = useAppDispatch();
@@ -19,7 +19,7 @@ const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 		setIsLoading(true);
 		try {
 			// Si el usuario está autenticado, agrega el producto al backend
-			await addProductToCart(product, quantity, isAuthenticated);
+			await addProductToCart(product, quantity);
 		} catch (error) {
 			console.error('Error al añadir al carrito:', error);
 			alert('Hubo un error al añadir el producto al carrito.');
@@ -32,10 +32,10 @@ const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 
 	const buyNow = async () => {
 		try {
-			if (isAuthenticated) {
-				// Opción para sincronizar el carrito antes de proceder a la compra
-				await syncCart();
-			}
+			// Opción para sincronizar el carrito antes de proceder a la compra
+			await addProductToCart(product, quantity, false);
+			Router.push('/carrito');
+
 			alert('Función de "Comprar Ahora" en desarrollo.');
 		} catch (error) {
 			console.error('Error al procesar la compra:', error);
@@ -53,9 +53,9 @@ const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 				>
 					{isLoading ? 'Añadiendo...' : 'Añadir al Carrito'}
 				</a>
-				<a className='product__actions__buy' onClick={buyNow}>
+				{/*<a className='product__actions__buy' onClick={buyNow}>
 					Comprar
-				</a>
+				</a>*/}
 			</div>
 			<style jsx>
 				{`
