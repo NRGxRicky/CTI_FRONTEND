@@ -30,7 +30,6 @@ import { setMobileView } from '../../lib/features/mobileSlide';
 import CartSummaryMini from '../CartSummaryMini/CartSummaryMini';
 import useCart from '../../hooks/useCart';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
-import { relative } from 'path';
 
 const HeaderBar: React.FC = () => {
 	const textInput = useRef<HTMLInputElement | null>(null);
@@ -38,12 +37,12 @@ const HeaderBar: React.FC = () => {
 	const router = useRouter();
 	const { q } = router.query;
 	const [queryInInput, setQueryInInput] = useState<string | undefined>();
-	const { nombres, loading } = useAuth();
+	const { nombres, loading, isAuthenticated } = useAuth();
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
 	);
-	const { cart, total } = useCart();
+	const { cart, total, localcheckBackend } = useCart();
 
 	const dispatch = useAppDispatch();
 
@@ -65,6 +64,11 @@ const HeaderBar: React.FC = () => {
 	const showSummaryCartmini = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.cart
 	);
+
+	const handleShowSummaryCartmini = () => {
+		localcheckBackend();
+		dispatch(showCart())
+	}
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -223,7 +227,7 @@ const HeaderBar: React.FC = () => {
 								onClick={() =>
 									showSummaryCartmini
 										? dispatch(hideAll())
-										: dispatch(showCart())
+										: handleShowSummaryCartmini()
 								}
 							>
 								<div className='header-bar__cart'>

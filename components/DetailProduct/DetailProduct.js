@@ -613,7 +613,7 @@ const DetailProduct = ({
 						width: 90px;
 						display: flex;
 						border: 1px solid #ff002c;
-						border-radius: 25px;
+						border-radius: 5px;
 						background-color: #ffffff;
 					}
 					.product_resume__stock__action__quantity {
@@ -635,7 +635,7 @@ const DetailProduct = ({
 						width: 100%;
 						display: flex;
 						align-items: center;
-						justify-content: space-between;
+						justify-content: space-evenly;
 						margin-top: 20px;
 						font-size: 16px;
 					}

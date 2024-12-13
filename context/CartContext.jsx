@@ -19,7 +19,25 @@ export const CartProvider = ({ children }) => {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 
-	// Función para desplazar y enfocar CartSummaryMini
+	// Funcion revision carrito local con backend
+	const localcheckBackend = async (cartLocal = cart) => {
+		if (cartLocal.length > 0) {
+			const response = await fetch('https://api.pccdnapi.com/cart/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					cart: cartLocal,
+				}),
+			});
+			if (response.ok) {
+				const backendCart = await response.json();
+				setCart(backendCart.cart_items);
+				setShipping(backendCart.shipping_cost);
+			}
+		}
+	};
 
 	// Sincronizar carrito local con backend cuando el usuario se autentica
 	useEffect(() => {
@@ -103,6 +121,13 @@ export const CartProvider = ({ children }) => {
 		syncCartWithBackend();
 	}, [isAuthenticated, accessToken]);
 
+	// Revisar Carrito local
+	useEffect(() => {
+		if (!isAuthenticated) {
+			localcheckBackend(cart);
+		}
+	}, []);
+
 	// Actualizar carrito al cambiar de ruta
 	useEffect(() => {
 		const handleRouteChange = () => {
@@ -162,8 +187,10 @@ export const CartProvider = ({ children }) => {
 	useEffect(() => {
 		if (!isAuthenticated) {
 			let pesoTotal = parseFloat(0);
-			cart.map((item) => (pesoTotal += parseFloat(item.product.peso * item.quantity)));
-			const costoEnvio = GetShippingCost(pesoTotal)
+			cart.map(
+				(item) => (pesoTotal += parseFloat(item.product.peso * item.quantity))
+			);
+			const costoEnvio = GetShippingCost(pesoTotal);
 			setShipping(costoEnvio);
 		}
 	}, [cart]);
@@ -216,15 +243,16 @@ export const CartProvider = ({ children }) => {
 					finalQuantity = product.stock_total;
 				}
 
-				setCart((prevCart) =>
-					prevCart.map((item) =>
+				const prevCart = 
+					cart.map((item) =>
 						item.product.id === product.id
 							? { ...item, quantity: finalQuantity }
 							: item
-					)
-				);
+					);
+				localcheckBackend(prevCart);
 			} else {
-				setCart([...cart, { id: product.id, product, quantity }]);
+				const prevCart = [...cart, { id: product.id, product, quantity }];
+				localcheckBackend(prevCart);
 			}
 		}
 		setLoading(false);
@@ -319,6 +347,7 @@ export const CartProvider = ({ children }) => {
 				shipping,
 				total,
 				loading,
+				localcheckBackend,
 			}}
 		>
 			{children}

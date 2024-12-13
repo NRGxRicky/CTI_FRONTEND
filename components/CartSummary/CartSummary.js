@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
@@ -7,8 +7,12 @@ import Capitalize from '../../hooks/CapitalizeTitle';
 
 
 const CartSummary = () => {
-	const { cart, subtotal, shipping, total, clearCart } = useCart();
+	const { cart, subtotal, shipping, total, clearCart, localcheckBackend } =
+		useCart();
 
+	useEffect(() => {
+		localcheckBackend()
+	}, [])
 	
 	return (
 		<div className='checkout-summary'>
