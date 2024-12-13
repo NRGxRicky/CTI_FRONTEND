@@ -4,18 +4,28 @@ import Link from 'next/link';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import useCart from '../../hooks/useCart';
 import Capitalize from '../../hooks/CapitalizeTitle';
-
+import StatusBarCart from '../StatusBarCart/StatusBarCart';
 
 const CartSummary = () => {
 	const { cart, subtotal, shipping, total, clearCart, localcheckBackend } =
 		useCart();
 
 	useEffect(() => {
-		localcheckBackend()
-	}, [])
-	
+		localcheckBackend();
+	}, []);
+
 	return (
 		<div className='checkout-summary'>
+			<StatusBarCart
+				steps={[
+					{ key: 'cart', label: 'Carrito', link: '/carrito' },
+					{ key: 'shipping', label: 'Envío' },
+					{ key: 'payment', label: 'Pago' },
+					{ key: 'confirm', label: 'Confirmación' },
+				]}
+				activeStep='cart'
+			/>
+
 			<h1>Resumen del Pedido</h1>
 			{cart.length === 0 ? (
 				<div className='empty-cart'>
@@ -30,7 +40,15 @@ const CartSummary = () => {
 							<div key={item.id} className='cart-item'>
 								<div className='item-image'>
 									<Image
-										src={item.product.imagen1xs || '/images/not-available.png'}
+										src={
+											item.product.imagen1s
+												? item.product.imagen1xs.includes(
+														'https://api.pccdnapi.com'
+												  )
+													? item.product.imagen1xs
+													: `https://api.pccdnapi.com${item.product.imagen1xs}`
+												: '/images/not-available.png'
+										}
 										alt={Capitalize(item.product.titulo)}
 										width={50}
 										height={50}
