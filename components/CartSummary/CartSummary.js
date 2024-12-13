@@ -5,6 +5,7 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import useCart from '../../hooks/useCart';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import StatusBarCart from '../StatusBarCart/StatusBarCart';
+import Head from 'next/head';
 
 const CartSummary = () => {
 	const { cart, subtotal, shipping, total, clearCart, localcheckBackend } =
@@ -16,6 +17,16 @@ const CartSummary = () => {
 
 	return (
 		<div className='checkout-summary'>
+			<Head>
+				<title>
+					Carrito | PCStore.mx: Tu tienda en Tecnología, Cómputo,
+					Accesorios
+				</title>
+				<meta
+					name='description'
+					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
+				/>
+			</Head>
 			<StatusBarCart
 				steps={[
 					{ key: 'cart', label: 'Carrito', link: '/carrito' },

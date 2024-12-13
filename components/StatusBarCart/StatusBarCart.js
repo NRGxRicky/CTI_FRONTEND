@@ -20,7 +20,7 @@ const StatusBarCart = ({ steps = [], activeStep = 'cart' }) => {
 						) : (
 							<p>{step.label}</p>
 						)}
-						{index < steps.length - 1 && <div className='line'></div>}
+						<div className='line'></div>
 					</div>
 				);
 			})}
