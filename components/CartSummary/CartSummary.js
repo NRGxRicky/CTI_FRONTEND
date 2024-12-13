@@ -52,7 +52,7 @@ const CartSummary = () => {
 					<p>
 						Tu carrito está vacío. Regresa a la tienda para añadir productos.
 					</p>
-					<Link hre={'/'} legacyBehavior>
+					<Link href={'/'} legacyBehavior>
 						<a>
 							<button className='button__go-to-home'>Ir al inicio</button>
 						</a>
