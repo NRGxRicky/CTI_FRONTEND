@@ -52,7 +52,11 @@ const CartSummary = () => {
 					<p>
 						Tu carrito está vacío. Regresa a la tienda para añadir productos.
 					</p>
-					<button className='button__go-to-home'>Ir al inicio</button>
+					<Link hre={'/'} legacyBehavior>
+						<a>
+							<button className='button__go-to-home'>Ir al inicio</button>
+						</a>
+					</Link>
 				</div>
 			) : (
 				<>
@@ -206,8 +210,7 @@ const CartSummary = () => {
 				}
 
 				.clear-cart,
-				.proceed-checkout
-				 {
+				.proceed-checkout {
 					flex: 1;
 					background: #ff002c;
 					color: #fff;
