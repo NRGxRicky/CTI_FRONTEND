@@ -380,7 +380,7 @@ const CartSummary = () => {
 
 			<style jsx>{`
 				.cart__loading {
-					position: absolute;
+					position: fixed;
 					background: #0f0f0f;
 					width: 100%;
 					height: calc(100% - 61px);
