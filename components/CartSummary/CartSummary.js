@@ -543,7 +543,6 @@ const CartSummary = () => {
 				}
 
 				.cart-items {
-					margin-bottom: 20px;
 					flex: 1;
 					width: 100%;
 				}
@@ -561,6 +560,10 @@ const CartSummary = () => {
 					flex-wrap: wrap;
 				}
 
+				.cart-item:last-child {
+					margin-bottom: 0;
+				}
+
 				.item-image {
 					min-width: 50px;
 					min-height: 50px;
@@ -568,7 +571,6 @@ const CartSummary = () => {
 					position: relative;
 					max-width: 100px;
 					max-height: 100px;
-				
 				}
 
 				.item-details {
@@ -664,11 +666,11 @@ const CartSummary = () => {
 				}
 
 				@media only screen and (max-width: 62em) {
-					.summary-details { 
+					.summary-details {
 						flex: 100%;
 					}
 
-					.item-price { 
+					.item-price {
 						flex: 50%;
 					}
 
@@ -682,7 +684,6 @@ const CartSummary = () => {
 					.cart__counter-label {
 						font-size: 12px;
 					}
-					
 				}
 			`}</style>
 		</div>
