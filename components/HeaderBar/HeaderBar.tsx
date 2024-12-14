@@ -448,7 +448,7 @@ const HeaderBar: React.FC = () => {
 
 				.header-bar {
 					margin: 0;
-					max-width: 100%;
+					max-width: 100dvw;
 					background-color: #fff;
 					position: relative;
 					padding: 2px 0;
