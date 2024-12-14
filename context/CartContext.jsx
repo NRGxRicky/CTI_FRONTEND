@@ -21,6 +21,7 @@ export const CartProvider = ({ children }) => {
 
 	// Funcion revision carrito local con backend
 	const localcheckBackend = async (cartLocal = cart) => {
+		setLoading(true);
 		if (cartLocal.length > 0) {
 			const response = await fetch('https://api.pccdnapi.com/cart/', {
 				method: 'POST',
@@ -37,6 +38,7 @@ export const CartProvider = ({ children }) => {
 				setShipping(backendCart.shipping_cost);
 			}
 		}
+		setLoading(false);
 	};
 
 	// Sincronizar carrito local con backend cuando el usuario se autentica
@@ -213,7 +215,7 @@ export const CartProvider = ({ children }) => {
 	}, [cart, shipping, cartMsi]);
 
 	// Agregar al Carrito
-	const addToCart = async (product, quantity = 1) => {
+	const addToCart = async (product, quantity = 1, updateQuantity = false) => {
 		setLoading(true);
 		if (isAuthenticated) {
 			try {
@@ -223,7 +225,11 @@ export const CartProvider = ({ children }) => {
 						'Content-Type': 'application/json',
 						Authorization: `Bearer ${accessToken}`,
 					},
-					body: JSON.stringify({ product_id: product.id, quantity }),
+					body: JSON.stringify({
+						product_id: product.id,
+						quantity,
+						update_quantity: updateQuantity,
+					}),
 				});
 
 				if (response.ok) {
@@ -237,18 +243,21 @@ export const CartProvider = ({ children }) => {
 		} else {
 			const existingItem = cart.find((item) => item.product.id === product.id);
 			if (existingItem) {
-				let finalQuantity = existingItem.quantity + quantity;
-
+				let finalQuantity = 0;
+				if (updateQuantity) {
+					finalQuantity = quantity;
+				} else {
+					finalQuantity = existingItem.quantity + quantity;
+				}
 				if (finalQuantity > product.stock_total) {
 					finalQuantity = product.stock_total;
 				}
 
-				const prevCart = 
-					cart.map((item) =>
-						item.product.id === product.id
-							? { ...item, quantity: finalQuantity }
-							: item
-					);
+				const prevCart = cart.map((item) =>
+					item.product.id === product.id
+						? { ...item, quantity: finalQuantity }
+						: item
+				);
 				localcheckBackend(prevCart);
 			} else {
 				const prevCart = [...cart, { id: product.id, product, quantity }];

@@ -9,46 +9,121 @@ import { useAppDispatch } from '../../lib/hooks';
 import { showPaymentsChange } from '../../lib/features/showOpacityContainerSlide';
 import TruncateMarkup from 'react-truncate-markup';
 import { useAuth } from '../../hooks/auth';
+import { Preloader, TailSpin } from 'react-preloader-icon';
+import useDebounce from '../../hooks/useDebounce';
 
 const CartSummary = () => {
-	const { cart, subtotal, shipping, total, clearCart, localcheckBackend } =
-		useCart();
-	const { cartMsi } = useAuth();
+	const {
+		cart,
+		subtotal,
+		shipping,
+		total,
+		localcheckBackend,
+		removeFromCart,
+		addToCart,
+		loading,
+	} = useCart();
+
+	const [isLoading, setIsLoading] = useState(false);
+	const { cartMsi, isAuthenticated } = useAuth();
 	const dispatch = useAppDispatch();
-	const [cartQuantity, setCartQuantity] = useState(1);
+	const [inputValues, setInputValues] = useState({});
+	const debouncedInputValues = useDebounce(inputValues, 1200);
 
 	useEffect(() => {
 		localcheckBackend();
 	}, []);
 
-	const handleIncrement = () => {
-		setCartQuantity((prev) => {
-			const newQuantity = prev + 1;
-			if (newQuantity > item.stock_total) {
-				return item.stock_total;
-			} else {
-				return newQuantity;
+	const handleIncrement = async (item) => {
+		setIsLoading(true);
+		try {
+			const newQuantity = item.quantity + 1;
+			if (newQuantity <= item.product.stock_total) {
+				isAuthenticated
+					? await addToCart(item.product, newQuantity, true)
+					: await addToCart(item, newQuantity, true);
+
+				// Sincroniza inputValues con el nuevo valor
+				setInputValues((prev) => ({
+					...prev,
+					[item.id]: newQuantity,
+				}));
 			}
-		});
+		} catch (error) {
+			console.error('Error al añadir al carrito:', error);
+			alert('Hubo un error al añadir el producto al carrito.');
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
-	const handleDecrement = () => {
-		setCartQuantity((prev) => {
-			const newQuantity = prev > 1 ? prev - 1 : 1;
-			return newQuantity;
-		});
+	const handleDecrement = async (item) => {
+		setIsLoading(true);
+		try {
+			const newQuantity = item.quantity - 1;
+			if (newQuantity >= 1) {
+				isAuthenticated
+					? await addToCart(item.product, newQuantity, true)
+					: await addToCart(item, newQuantity, true);
+
+				// Sincroniza inputValues con el nuevo valor
+				setInputValues((prev) => ({
+					...prev,
+					[item.id]: newQuantity,
+				}));
+			}
+		} catch (error) {
+			console.error('Error al decrementar el carrito:', error);
+			alert('Hubo un error al decrementar el producto del carrito.');
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
-	const handleInputChange = (e) => {
-		const value = parseInt(e.target.value, 10);
-		if (!isNaN(value) && value > 0) {
-			if (value > item.stock_total) {
-				setCartQuantity(item.stock_total);
-			} else {
-				setCartQuantity(value);
+	useEffect(() => {
+		const updateCart = async () => {
+			setIsLoading(true);
+			try {
+				for (const [itemId, quantity] of Object.entries(debouncedInputValues)) {
+					const item = cart.find((i) => i.id === parseInt(itemId, 10));
+					if (!item) continue;
+
+					// Si el campo está vacío, asegúrate de restaurarlo a 1
+					const validQuantity =
+						quantity === '' || quantity === 0
+							? 1
+							: Math.min(quantity, item.product.stock_total);
+
+					if (validQuantity !== item.quantity) {
+						isAuthenticated
+							? await addToCart(item.product, validQuantity, true)
+							: await addToCart(item, validQuantity, true);
+
+						// Asegúrate de actualizar inputValues con el valor ajustado
+						setInputValues((prev) => ({
+							...prev,
+							[item.id]: validQuantity,
+						}));
+					}
+				}
+			} catch (error) {
+				console.error('Error al actualizar el carrito:', error);
+				alert('Hubo un error al actualizar el carrito.');
+			} finally {
+				setIsLoading(false);
 			}
-		} else {
-			setCartQuantity(1);
+		};
+
+		updateCart();
+	}, [debouncedInputValues]);
+
+	const handleInputChange = (e, item) => {
+		const value = e.target.value; // Captura el valor como string para permitir valores vacíos
+		if (value === '' || (!isNaN(value) && parseInt(value, 10) > 0)) {
+			setInputValues((prev) => ({
+				...prev,
+				[item.id]: value === '' ? '' : parseInt(value, 10), // Permitir vacío o convertir a número
+			}));
 		}
 	};
 
@@ -157,30 +232,58 @@ const CartSummary = () => {
 										<p>{item.product.sku}</p>
 										<p>
 											Precio unitario: $
-											{CurrencyFormat(item.product.precio_final, 2, '.', ',')}
+
+											{CurrencyFormat(
+												!cartMsi
+													? item.product.precio_contado
+													: item.product.precio_final_descuento > 0
+													? item.product.precio_final_descuento
+													: item.product.precio_final,
+												2,
+												'.',
+												','
+											)}
 										</p>
 									</div>
 									<div className='item-quantity'>
 										<div className='product__resume__stock__action'>
 											<span
 												className='product_resume__stock__action__quantity'
-												onClick={handleDecrement}
+												onClick={() => handleDecrement(item)}
 											>
 												<span>-</span>
 											</span>
 											<input
 												type='number'
-												value={cartQuantity}
 												pattern='[0-9]*'
-												onChange={handleInputChange}
 												className='bold product_resume__stock__action__quantity_current no-spin'
 												min={1}
-												max={item.stock_total}
+												value={
+													inputValues[item.id] !== undefined
+														? inputValues[item.id]
+														: item.quantity
+												} // Permitir valores vacíos
+												max={item.product.stock_total}
+												onChange={(e) => handleInputChange(e, item)}
+												onBlur={() => {
+													// Si el campo queda vacío, restaura a 1
+													if (
+														inputValues[item.id] === '' ||
+														inputValues[item.id] === 0
+													) {
+														setInputValues((prev) => ({
+															...prev,
+															[item.id]: 1, // Restaura a 1 si el campo está vacío
+														}));
+														isAuthenticated
+															? addToCart(item.product, 1, true)
+															: addToCart(item, 1, true); // Actualiza en el carrito
+													}
+												}}
 											/>
-
 											<span
 												className='product_resume__stock__action__quantity'
-												onClick={handleIncrement}
+												onClick={() => handleIncrement(item)}
 											>
 												<span>+</span>
 											</span>
@@ -193,21 +296,26 @@ const CartSummary = () => {
 									<div className='item-price'>
 										{item.product.precio_final_descuento > 0 && (
 											<span className='price--compare text--off'>
-												$ {CurrencyFormat(item.product.precio_final)}
+												${' '}
+												{CurrencyFormat(
+													item.product.precio_final * item.quantity
+												)}
 											</span>
 										)}
 										${' '}
 										{CurrencyFormat(
 											!cartMsi
-												? item.product.precio_contado
+												? item.product.precio_contado * item.quantity
 												: item.product.precio_final_descuento > 0
-												? item.product.precio_final_descuento
-												: item.product.precio_final,
+												? item.product.precio_final_descuento * item.quantity
+												: item.product.precio_final * item.quantity,
 											2,
 											'.',
 											','
 										)}
-										<div className='item-delete'>Eliminar</div>
+										<div className='item-delete'>
+											<a onClick={() => removeFromCart(item.id)}>Eliminar</a>
+										</div>
 									</div>
 								</div>
 							))}
@@ -219,7 +327,10 @@ const CartSummary = () => {
 									<span>Resumen del Carrito</span>
 								</div>
 								<div className='summary-row'>
-									<span>{cart.length} Producto(s):</span>
+									<span>
+										{cart.reduce((total, item) => total + item.quantity, 0)}{' '}
+										Producto(s):
+									</span>
 									<span>${CurrencyFormat(subtotal, 2, '.', ',')}</span>
 								</div>
 								<div className='summary-row'>
@@ -247,8 +358,47 @@ const CartSummary = () => {
 					</div> */}
 				</>
 			)}
+			{loading && (
+				<div className='cart__loading'>
+					<div className='cart__loading__container'>
+						<Preloader
+							use={TailSpin}
+							size={30}
+							strokeWidth={8}
+							strokeColor='#FF002C'
+							duration={900}
+						/>
+					</div>
+				</div>
+			)}
 
 			<style jsx>{`
+				.cart__loading {
+					position: absolute;
+					background: #0f0f0f;
+					width: 100%;
+					height: 100%;
+					top: 0px;
+					left: 0px;
+					opacity: 0.8;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					z-index: 1000;
+				}
+
+				.cart__loading__container {
+					position: relative;
+					height: 25%;
+					width: 25%;
+					background-color: #fff;
+					opacity: 1;
+					border-radius: 2px;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+
 				.price--compare {
 					font-size: 12px !important;
 				}
@@ -274,6 +424,7 @@ const CartSummary = () => {
 					font-size: 12px;
 					color: #ff002c;
 					font-weight: 300;
+					cursor: pointer;
 				}
 				.item-stock {
 					font-size: 12px;

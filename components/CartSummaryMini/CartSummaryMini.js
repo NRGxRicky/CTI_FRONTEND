@@ -6,13 +6,23 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import TruncateMarkup from 'react-truncate-markup';
 import Link from 'next/link';
 import { useAppDispatch } from '../../lib/hooks';
-import { hideAll, showPaymentsChange } from '../../lib/features/showOpacityContainerSlide';
+import {
+	hideAll,
+	showPaymentsChange,
+} from '../../lib/features/showOpacityContainerSlide';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useAuth } from '../../hooks/auth';
 
 const CartSummaryMini = () => {
-	const { cart, removeFromCart, clearCart, subtotal, shipping, total, loading } =
-		useCart();
+	const {
+		cart,
+		removeFromCart,
+		clearCart,
+		subtotal,
+		shipping,
+		total,
+		loading,
+	} = useCart();
 	const dispatch = useAppDispatch();
 	const cartItemsRef = useRef(null);
 	const [showScrollUp, setShowScrollUp] = useState(false);
@@ -172,16 +182,19 @@ const CartSummaryMini = () => {
 									<div className='item-price'>
 										{item.product.precio_final_descuento > 0 && (
 											<span className='price--compare text--off'>
-												$ {CurrencyFormat(item.product.precio_final)}
+												${' '}
+												{CurrencyFormat(
+													item.product.precio_final * item.quantity
+												)}
 											</span>
 										)}
 										${' '}
 										{CurrencyFormat(
 											!cartMsi
-												? item.product.precio_contado
+												? item.product.precio_contado * item.quantity
 												: item.product.precio_final_descuento > 0
-												? item.product.precio_final_descuento
-												: item.product.precio_final,
+												? item.product.precio_final_descuento * item.quantity
+												: item.product.precio_final * item.quantity,
 											2,
 											'.',
 											','
@@ -226,8 +239,13 @@ const CartSummaryMini = () => {
 					</div>
 					<div className='cart-actions'>
 						{/* <button className='quote-button'>Crear cotización</button> */}
-						<Link href={`/carrito`}legacyBehavior>
-							<button className='view-cart-button' onClick={()=> dispatch(hideAll())}>Comprar Carrito</button>
+						<Link href={`/carrito`} legacyBehavior>
+							<button
+								className='view-cart-button'
+								onClick={() => dispatch(hideAll())}
+							>
+								Comprar Carrito
+							</button>
 						</Link>
 					</div>
 				</>
@@ -285,6 +303,7 @@ const CartSummaryMini = () => {
 					display: flex;
 					justify-content: center;
 					align-items: center;
+					z-index: 1000;
 				}
 
 				.cart__loading__container {

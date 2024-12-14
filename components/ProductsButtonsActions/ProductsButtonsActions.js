@@ -7,7 +7,7 @@ import Router from 'next/router';
 
 const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 	const [isLoading, setIsLoading] = useState(false);
-	const { addToCart: addProductToCart, syncCart } = useCart(); // Obtén las funciones del contexto del carrito
+	const { addToCart: addProductToCart } = useCart(); // Obtén las funciones del contexto del carrito
 
 	const dispatch = useAppDispatch();
 
