@@ -88,18 +88,19 @@ const CartSummary = () => {
 					const item = cart.find((i) => i.id === parseInt(itemId, 10));
 					if (!item) continue;
 
-					// Si el campo está vacío, asegúrate de restaurarlo a 1
-					const validQuantity =
-						quantity === '' || quantity === 0
-							? 1
-							: Math.min(quantity, item.product.stock_total);
+					// Valida la cantidad contra el stock disponible
+					const validQuantity = Math.min(
+						quantity === '' || quantity === 0 ? 1 : quantity,
+						item.product.stock_total
+					);
 
+					// Solo realiza la actualización si la cantidad es diferente
 					if (validQuantity !== item.quantity) {
 						isAuthenticated
 							? await addToCart(item.product, validQuantity, true)
 							: await addToCart(item, validQuantity, true);
 
-						// Asegúrate de actualizar inputValues con el valor ajustado
+						// Asegúrate de sincronizar inputValues con el valor ajustado
 						setInputValues((prev) => ({
 							...prev,
 							[item.id]: validQuantity,
@@ -118,13 +119,16 @@ const CartSummary = () => {
 	}, [debouncedInputValues]);
 
 	const handleInputChange = (e, item) => {
-		const value = e.target.value; // Captura el valor como string para permitir valores vacíos
-		if (value === '' || (!isNaN(value) && parseInt(value, 10) > 0)) {
-			setInputValues((prev) => ({
-				...prev,
-				[item.id]: value === '' ? '' : parseInt(value, 10), // Permitir vacío o convertir a número
-			}));
-		}
+		const value = e.target.value; // Permite capturar valores vacíos
+		const parsedValue = parseInt(value, 10);
+
+		setInputValues((prev) => ({
+			...prev,
+			[item.id]:
+				value === '' || isNaN(parsedValue) || parsedValue <= 0
+					? ''
+					: parsedValue,
+		}));
 	};
 
 	return (
@@ -232,7 +236,6 @@ const CartSummary = () => {
 										<p>{item.product.sku}</p>
 										<p>
 											Precio unitario: $
-
 											{CurrencyFormat(
 												!cartMsi
 													? item.product.precio_contado
@@ -262,22 +265,25 @@ const CartSummary = () => {
 													inputValues[item.id] !== undefined
 														? inputValues[item.id]
 														: item.quantity
-												} // Permitir valores vacíos
+												}
 												max={item.product.stock_total}
 												onChange={(e) => handleInputChange(e, item)}
 												onBlur={() => {
-													// Si el campo queda vacío, restaura a 1
-													if (
-														inputValues[item.id] === '' ||
-														inputValues[item.id] === 0
-													) {
+													const quantity = inputValues[item.id] || 0;
+													const validQuantity = Math.min(
+														quantity === '' || quantity === 0 ? 1 : quantity,
+														item.product.stock_total
+													);
+
+													// Si el valor no es válido, actualízalo a un valor permitido
+													if (quantity !== validQuantity) {
 														setInputValues((prev) => ({
 															...prev,
-															[item.id]: 1, // Restaura a 1 si el campo está vacío
+															[item.id]: validQuantity,
 														}));
 														isAuthenticated
-															? addToCart(item.product, 1, true)
-															: addToCart(item, 1, true); // Actualiza en el carrito
+															? addToCart(item.product, validQuantity, true)
+															: addToCart(item, validQuantity, true);
 													}
 												}}
 											/>
