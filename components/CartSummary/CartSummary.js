@@ -383,8 +383,8 @@ const CartSummary = () => {
 					position: absolute;
 					background: #0f0f0f;
 					width: 100%;
-					height: 100%;
-					top: 0px;
+					height: calc(100% - 61px);
+					top: 61px;
 					left: 0px;
 					opacity: 0.8;
 					display: flex;
