@@ -447,27 +447,18 @@ const CartSummary = () => {
 					gap: 10px;
 				}
 				.item-quantity {
-					max-width: 100%;
-					min-width: 50px;
 					flex: 1;
 					display: flex;
-					align-items: center;
 					flex-direction: column;
 					gap: 10px;
 				}
 				.product_resume__stock__action__quantity_current {
-					max-width: 30px;
-					max-height: 30px;
-					min-width: 10px;
-					min-height: 10px;
-					height: auto;
-					width: auto;
 					text-align: center;
 					border: 0;
 				}
 
 				.product__resume__stock__action {
-					width: 100%;
+					width: 90px;
 					display: flex;
 					border: 1px solid #ff002c;
 					border-radius: 5px;
@@ -477,8 +468,6 @@ const CartSummary = () => {
 				}
 				.product_resume__stock__action__quantity {
 					font-size: 18px;
-					max-width: 100%;
-					min-width: 10px;
 					height: 30px;
 					width: 30px;
 					display: flex;
@@ -569,6 +558,7 @@ const CartSummary = () => {
 					width: 100%;
 					justify-content: space-between;
 					align-items: center;
+					flex-wrap: wrap;
 				}
 
 				.item-image {
@@ -578,7 +568,7 @@ const CartSummary = () => {
 					position: relative;
 					max-width: 100px;
 					max-height: 100px;
-					flex: 1;
+				
 				}
 
 				.item-details {
@@ -596,7 +586,7 @@ const CartSummary = () => {
 					color: #666;
 				}
 				.summary-details {
-					flex: 0.3;
+					flex: 0.4;
 					width: 100%;
 				}
 
@@ -671,6 +661,28 @@ const CartSummary = () => {
 
 				.proceed-checkout:hover {
 					background: #e00028;
+				}
+
+				@media only screen and (max-width: 62em) {
+					.summary-details { 
+						flex: 100%;
+					}
+
+					.item-price { 
+						flex: 50%;
+					}
+
+					.item-details {
+						flex: 60%;
+					}
+
+					.item-quantity {
+						flex: 40%;
+					}
+					.cart__counter-label {
+						font-size: 12px;
+					}
+					
 				}
 			`}</style>
 		</div>
