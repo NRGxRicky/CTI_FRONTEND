@@ -1,32 +1,59 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import useCart from '../../hooks/useCart';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import StatusBarCart from '../StatusBarCart/StatusBarCart';
-import Head from 'next/head';
+import { useAppDispatch } from '../../lib/hooks';
+import { showPaymentsChange } from '../../lib/features/showOpacityContainerSlide';
+import TruncateMarkup from 'react-truncate-markup';
+import { useAuth } from '../../hooks/auth';
 
 const CartSummary = () => {
 	const { cart, subtotal, shipping, total, clearCart, localcheckBackend } =
 		useCart();
+	const { cartMsi } = useAuth();
+	const dispatch = useAppDispatch();
+	const [cartQuantity, setCartQuantity] = useState(1);
 
 	useEffect(() => {
 		localcheckBackend();
 	}, []);
 
+	const handleIncrement = () => {
+		setCartQuantity((prev) => {
+			const newQuantity = prev + 1;
+			if (newQuantity > item.stock_total) {
+				return item.stock_total;
+			} else {
+				return newQuantity;
+			}
+		});
+	};
+
+	const handleDecrement = () => {
+		setCartQuantity((prev) => {
+			const newQuantity = prev > 1 ? prev - 1 : 1;
+			return newQuantity;
+		});
+	};
+
+	const handleInputChange = (e) => {
+		const value = parseInt(e.target.value, 10);
+		if (!isNaN(value) && value > 0) {
+			if (value > item.stock_total) {
+				setCartQuantity(item.stock_total);
+			} else {
+				setCartQuantity(value);
+			}
+		} else {
+			setCartQuantity(1);
+		}
+	};
+
 	return (
 		<div className='checkout-summary'>
-			<Head>
-				<title>
-					Carrito | PCStore.mx: Tu tienda en Tecnología, Cómputo, Accesorios
-				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
-			</Head>
-
 			{cart.length === 0 ? (
 				<div className='empty-cart'>
 					<svg
@@ -69,68 +96,282 @@ const CartSummary = () => {
 						]}
 						activeStep='cart'
 					/>
-					<h1>Resumen del Pedido</h1>
-					<div className='cart-items'>
-						{cart.map((item) => (
-							<div key={item.id} className='cart-item'>
-								<div className='item-image'>
-									<Image
-										src={
-											item.product.imagen1s
-												? item.product.imagen1xs.includes(
-														'https://api.pccdnapi.com'
-												  )
-													? item.product.imagen1xs
-													: `https://api.pccdnapi.com${item.product.imagen1xs}`
-												: '/images/not-available.png'
-										}
-										alt={Capitalize(item.product.titulo)}
-										width={50}
-										height={50}
-										objectFit='contain'
-									/>
+					<div className='cart-header'>
+						<div>
+							<span className='cart__counter-label text--off'>
+								Tienes {cart.reduce((total, item) => total + item.quantity, 0)}{' '}
+								artículo(s) en tu carrito:
+							</span>
+						</div>
+						<div className='cart__change-payment'>
+							<span
+								className='cart__change-payment__action'
+								onClick={() => {
+									dispatch(showPaymentsChange());
+								}}
+							>
+								Cambiar modo de carrito:
+							</span>
+							<span className='payments-change__label-status'>
+								{cartMsi ? 'MSI/Pagos' : 'Contado'}
+							</span>
+						</div>
+					</div>
+
+					<div className='cart-body'>
+						<div className='cart-items'>
+							{cart.map((item) => (
+								<div key={item.id} className='cart-item'>
+									<div className='item-image'>
+										<Link href={`/${item.product.slug}`} legacyBehavior>
+											<a>
+												<Image
+													src={
+														item.product.imagen1s
+															? item.product.imagen1xs.includes(
+																	'https://api.pccdnapi.com'
+															  )
+																? item.product.imagen1xs
+																: `https://api.pccdnapi.com${item.product.imagen1xs}`
+															: '/images/not-available.png'
+													}
+													alt={Capitalize(item.product.titulo)}
+													fill
+													style={{ objectFit: 'contain' }}
+													draggable='false'
+													sizes='auto'
+													priority={true}
+												/>
+											</a>
+										</Link>
+									</div>
+
+									<div className='item-details'>
+										<Link href={`/${item.product.slug}`} legacyBehavior>
+											<a>
+												<TruncateMarkup lines={1}>
+													<h3>{Capitalize(item.product.titulo)}</h3>
+												</TruncateMarkup>
+											</a>
+										</Link>
+										<p>{item.product.sku}</p>
+										<p>
+											Precio unitario: $
+											{CurrencyFormat(item.product.precio_final, 2, '.', ',')}
+										</p>
+									</div>
+									<div className='item-quantity'>
+										<div className='product__resume__stock__action'>
+											<span
+												className='product_resume__stock__action__quantity'
+												onClick={handleDecrement}
+											>
+												<span>-</span>
+											</span>
+											<input
+												type='number'
+												value={cartQuantity}
+												pattern='[0-9]*'
+												onChange={handleInputChange}
+												className='bold product_resume__stock__action__quantity_current no-spin'
+												min={1}
+												max={item.stock_total}
+											/>
+
+											<span
+												className='product_resume__stock__action__quantity'
+												onClick={handleIncrement}
+											>
+												<span>+</span>
+											</span>
+										</div>
+										<div className='item-stock text--off'>
+											Disponible: {item.product.stock_total}
+										</div>
+									</div>
+
+									<div className='item-price'>
+										{item.product.precio_final_descuento > 0 && (
+											<span className='price--compare text--off'>
+												$ {CurrencyFormat(item.product.precio_final)}
+											</span>
+										)}
+										${' '}
+										{CurrencyFormat(
+											!cartMsi
+												? item.product.precio_contado
+												: item.product.precio_final_descuento > 0
+												? item.product.precio_final_descuento
+												: item.product.precio_final,
+											2,
+											'.',
+											','
+										)}
+										<div className='item-delete'>Eliminar</div>
+									</div>
 								</div>
-								<div className='item-details'>
-									<Link href={`/${item.product.slug}`} legacyBehavior>
-										<a>
-											<h3>{Capitalize(item.product.titulo)}</h3>
-										</a>
-									</Link>
-									<p>Cantidad: {item.quantity}</p>
-									<p>
-										Precio unitario: $
-										{CurrencyFormat(item.product.precio_final, 2, '.', ',')}
-									</p>
+							))}
+						</div>
+
+						<div className='summary-details'>
+							<div className='summary-details__content'>
+								<div className='summary-details__title'>
+									<span>Resumen del Carrito</span>
 								</div>
+								<div className='summary-row'>
+									<span>{cart.length} Producto(s):</span>
+									<span>${CurrencyFormat(subtotal, 2, '.', ',')}</span>
+								</div>
+								<div className='summary-row'>
+									<span>Envío:</span>
+									<span>${CurrencyFormat(shipping, 2, '.', ',')}</span>
+								</div>
+								<div className='summary-row total'>
+									<div className='summary-row__total'>
+										<span>Total:</span>
+										<span className='summary-row iva text--off'>
+											(Incluye IVA)
+										</span>
+									</div>
+									<span>${CurrencyFormat(total, 2, '.', ',')}</span>
+								</div>
+								<button className='proceed-checkout'>Proceder al Pago</button>
 							</div>
-						))}
-					</div>
-
-					<div className='summary-details'>
-						<div className='summary-row'>
-							<span>Subtotal:</span>
-							<span>${CurrencyFormat(subtotal, 2, '.', ',')}</span>
-						</div>
-						<div className='summary-row'>
-							<span>Envío:</span>
-							<span>${CurrencyFormat(shipping, 2, '.', ',')}</span>
-						</div>
-						<div className='summary-row total'>
-							<span>Total (Incluye IVA):</span>
-							<span>${CurrencyFormat(total, 2, '.', ',')}</span>
 						</div>
 					</div>
 
-					<div className='checkout-actions'>
+					{/*div className='checkout-actions'>
 						<button onClick={clearCart} className='clear-cart'>
 							Vaciar Carrito
 						</button>
-						<button className='proceed-checkout'>Proceder al Pago</button>
-					</div>
+					</div> */}
 				</>
 			)}
 
 			<style jsx>{`
+				.price--compare {
+					font-size: 12px !important;
+				}
+				.cart-header {
+					display: flex;
+					width: 100;
+					justify-content: space-between;
+				}
+
+				.summary-row__total {
+					display: flex;
+					gap: 10px;
+					margin-top: 10px;
+				}
+
+				.summary-details__title {
+					font-size: 16px;
+					font-weight: 600;
+					margin-bottom: 20px;
+				}
+
+				.item-delete {
+					font-size: 12px;
+					color: #ff002c;
+					font-weight: 300;
+				}
+				.item-stock {
+					font-size: 12px;
+				}
+
+				.item-price {
+					text-align: right;
+					font-size: 16px;
+					font-weight: 600;
+					flex: 1;
+					display: flex;
+					flex-direction: column;
+					justify-content: space-evenly;
+					gap: 10px;
+				}
+				.item-quantity {
+					max-width: 100%;
+					min-width: 50px;
+					flex: 1;
+					display: flex;
+					align-items: center;
+					flex-direction: column;
+					gap: 10px;
+				}
+				.product_resume__stock__action__quantity_current {
+					max-width: 30px;
+					max-height: 30px;
+					min-width: 10px;
+					min-height: 10px;
+					height: auto;
+					width: auto;
+					text-align: center;
+					border: 0;
+				}
+
+				.product__resume__stock__action {
+					width: 100%;
+					display: flex;
+					border: 1px solid #ff002c;
+					border-radius: 5px;
+					background-color: #ffffff;
+					justify-content: space-between;
+					padding: 0 5px;
+				}
+				.product_resume__stock__action__quantity {
+					font-size: 18px;
+					max-width: 100%;
+					min-width: 10px;
+					height: 30px;
+					width: 30px;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+
+				.product_resume__stock__action__quantity:hover,
+				.product_resume__stock__action__quantity:active {
+					color: #ff002c;
+					cursor: pointer;
+				}
+				.product__resume__stock {
+					width: 100%;
+					display: flex;
+					align-items: center;
+					gap: 20px;
+					margin-top: 20px;
+					font-size: 16px;
+				}
+
+				.cart-body {
+					display: flex;
+					gap: 20px;
+					flex-wrap: wrap;
+				}
+
+				.cart__change-payment {
+					font-size: 12px;
+					margin-bottom: 10px;
+					color: #ff002c;
+					display: flex;
+					justify-content: right;
+				}
+
+				.cart__change-payment__action {
+					text-decoration: underline;
+					cursor: pointer !important;
+				}
+
+				.payments-change__label-status {
+					font-size: 12px;
+					font-weight: 300;
+					margin-left: 5px;
+					border-radius: 5px;
+					background-color: #ff002c;
+					color: #fff;
+					padding: 2px 5px;
+				}
+
 				.checkout-summary {
 					padding: 20px;
 					max-width: 100dvw;
@@ -157,18 +398,34 @@ const CartSummary = () => {
 
 				.cart-items {
 					margin-bottom: 20px;
+					flex: 1;
+					width: 100%;
 				}
 
 				.cart-item {
 					display: flex;
-					gap: 10px;
+					gap: 20px;
 					margin-bottom: 15px;
-					border-bottom: 1px solid #f0f0f0;
-					padding-bottom: 10px;
+					border: 1px solid #f0f0f0;
+					padding: 20px;
+					border-radius: 5px;
+					width: 100%;
+					justify-content: space-between;
+					align-items: center;
 				}
 
-				.item-image img {
-					border-radius: 4px;
+				.item-image {
+					min-width: 50px;
+					min-height: 50px;
+					object-fit: cover;
+					position: relative;
+					max-width: 100px;
+					max-height: 100px;
+					flex: 1;
+				}
+
+				.item-details {
+					flex: 3;
 				}
 
 				.item-details h3 {
@@ -181,22 +438,35 @@ const CartSummary = () => {
 					font-size: 14px;
 					color: #666;
 				}
-
 				.summary-details {
-					margin-top: 20px;
-					border-top: 1px solid #f0f0f0;
-					padding-top: 10px;
+					flex: 0.3;
+					width: 100%;
+				}
+
+				.summary-details__content {
+					border: 1px solid #f0f0f0;
+					padding: 20px;
+					border-radius: 5px;
 				}
 
 				.summary-row {
 					display: flex;
 					justify-content: space-between;
+					align-items: baseline;
 					margin-bottom: 10px;
+					gap: 5px;
 				}
 
 				.summary-row.total {
+					border-top: 1px solid #f0f0f0;
 					font-weight: bold;
-					font-size: 18px;
+					font-size: 16px;
+				}
+
+				.summary-row.iva {
+					font-size: 12px;
+					font-weight: 300;
+					line-height: 22px;
 				}
 
 				.checkout-actions {
@@ -220,6 +490,7 @@ const CartSummary = () => {
 					font-size: 16px;
 					cursor: pointer;
 					text-align: center;
+					width: 100%;
 				}
 
 				.button__go-to-home {

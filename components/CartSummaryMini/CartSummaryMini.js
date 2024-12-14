@@ -99,9 +99,9 @@ const CartSummaryMini = () => {
 						</span>
 					</div>
 					<div className='cart-header'>
-						<span className='cart__counter-label'>
+						<span className='cart__counter-label text--off'>
 							Tienes {cart.reduce((total, item) => total + item.quantity, 0)}{' '}
-							artículos en tu carrito
+							artículo(s) en tu carrito:
 						</span>
 						<button onClick={clearCart} className='clear-cart-button'>
 							Borrar todos
