@@ -622,7 +622,7 @@ const HeaderBar: React.FC = () => {
 				@media only screen and (max-width: 62em) {
 					.header-bar {
 						top: 0;
-						width: 100%;
+						width: 100dvw;
 					}
 
 					.header-bar__section-icon span {
