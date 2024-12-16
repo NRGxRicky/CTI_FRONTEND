@@ -182,19 +182,6 @@ const CartSummary = () => {
 								artículo(s) en tu carrito:
 							</span>
 						</div>
-						<div className='cart__change-payment'>
-							<span
-								className='cart__change-payment__action'
-								onClick={() => {
-									dispatch(showPaymentsChange());
-								}}
-							>
-								Cambiar modo de carrito:
-							</span>
-							<span className='payments-change__label-status'>
-								{cartMsi ? 'MSI/Pagos' : 'Contado'}
-							</span>
-						</div>
 					</div>
 
 					<div className='cart-body'>
@@ -329,6 +316,19 @@ const CartSummary = () => {
 
 						<div className='summary-details'>
 							<div className='summary-details__content'>
+								<div className='cart__change-payment'>
+									<span
+										className='cart__change-payment__action'
+										onClick={() => {
+											dispatch(showPaymentsChange());
+										}}
+									>
+										Cambiar modo de carrito:
+									</span>
+									<span className='payments__label-status'>
+										{cartMsi ? 'MSI/Pagos' : 'Contado'}
+									</span>
+								</div>
 								<div className='summary-details__title'>
 									<span>Resumen del Carrito</span>
 								</div>
@@ -337,11 +337,11 @@ const CartSummary = () => {
 										{cart.reduce((total, item) => total + item.quantity, 0)}{' '}
 										Producto(s):
 									</span>
-									<span>${CurrencyFormat(subtotal, 2, '.', ',')}</span>
+									<span>$ {CurrencyFormat(subtotal, 2, '.', ',')}</span>
 								</div>
 								<div className='summary-row'>
 									<span>Envío:</span>
-									<span>${CurrencyFormat(shipping, 2, '.', ',')}</span>
+									<span>$ {CurrencyFormat(shipping, 2, '.', ',')}</span>
 								</div>
 								<div className='summary-row total'>
 									<div className='summary-row__total'>
@@ -350,8 +350,97 @@ const CartSummary = () => {
 											(Incluye IVA)
 										</span>
 									</div>
-									<span>${CurrencyFormat(total, 2, '.', ',')}</span>
+									<span>$ {CurrencyFormat(total, 2, '.', ',')}</span>
 								</div>
+
+								{/* Comienza Payments */}
+								{cartMsi ? (
+									<div className='payments'>
+										<div className='payments__option__header'>
+											<span>Pagar a MSI/Pagos con:</span>
+										</div>
+										<div className='payments__option__body'>
+											<div className='payments__option__item'>
+												<div className='payments__option__item__image'>
+													<Image
+														src='/images/logo-mercado-pago.png'
+														fill
+														style={{ objectFit: 'contain', padding: 5 }}
+														alt='Mercado Pago'
+														draggable='false'
+														sizes='auto'
+													/>
+												</div>
+												<div className='payments__option__item__label'>
+													<span>
+														Hasta 3 MSI con tarjetas participantes Mercado Pago
+														o hasta 12 pagos con Mercado Crédito.
+													</span>
+												</div>
+											</div>
+											<div className='payments__option__item'>
+												<div className='payments__option__item__image'>
+													<Image
+														src='/images/Logotipo_Kueski_pay.png'
+														fill
+														style={{ objectFit: 'contain', padding: 5 }}
+														alt='Kueski Pay'
+														draggable='false'
+														sizes='auto'
+													/>
+												</div>
+												<div className='payments__option__item__label'>
+													<span>
+														Paga en hasta 12 quincenas con Kueski Pay, sin
+														comisiones ocultas.
+													</span>
+												</div>
+											</div>
+											<div className='payments__option__item'>
+												<div className='payments__option__item__image'>
+													<Image
+														src='/images/logo-aplazo.png'
+														fill
+														style={{ objectFit: 'contain', padding: 5 }}
+														alt='Aplazo'
+														draggable='false'
+														sizes='auto'
+													/>
+												</div>
+												<div className='payments__option__item__label'>
+													<span>
+														Divide tus pagos en quincenas con Aplazo, sin letras
+														pequeñas.
+													</span>
+												</div>
+											</div>
+										</div>
+									</div>
+								) : (
+									<div className='payments'>
+										<div className='payments__option__header'>
+											<span>Pagar en una sola exhibición con:</span>
+										</div>
+										<div className='payments__option__body'>
+											<div className='payments__option__item'>
+												<div className='payments__option__item__image'>
+													<Image
+														src='/images/paypal-logo-footer.png'
+														fill
+														style={{ objectFit: 'contain', padding: 5 }}
+														alt='Paypal'
+														draggable='false'
+														sizes='auto'
+													/>
+												</div>
+												<div className='payments__option__item__label'>
+													<span>Disfruta de un pago único con PayPal.</span>
+												</div>
+											</div>
+										</div>
+									</div>
+									)}
+									
 								<button className='proceed-checkout'>Proceder al Pago</button>
 							</div>
 						</div>
@@ -379,6 +468,45 @@ const CartSummary = () => {
 			)}
 
 			<style jsx>{`
+				.payments__option__header {
+					font-weight: 600;
+					font-size: 16px;
+				}
+
+				.payments__option__item {
+					display: flex;
+					align-items: center;
+					gap: 10px;
+					margin-top: 10px;
+					background-color: #fff;
+					border-radius: 5px;
+					padding: 5px;
+					box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+				}
+
+				.payments__option__item__image {
+					position: relative;
+					max-width: 200px;
+					max-height: 200px;
+					min-height: 50px;
+					min-width: 50px;
+					border: 1px solid #eaeaea;
+					border-radius: 5px;
+					background-color: #fff;
+				}
+
+				.payments {
+					display: flex;
+					flex-direction: column;
+
+					border: 1px solid #f0f0f0;
+					border-radius: 5px;
+					padding: 15px;
+					margin-bottom: 15px;
+					background-color: #f0f0f0;
+					font-size: 12px;
+				}
+
 				.cart__loading {
 					position: fixed;
 					background: #0f0f0f;
@@ -508,7 +636,7 @@ const CartSummary = () => {
 					cursor: pointer !important;
 				}
 
-				.payments-change__label-status {
+				.payments__label-status {
 					font-size: 12px;
 					font-weight: 300;
 					margin-left: 5px;
@@ -663,6 +791,10 @@ const CartSummary = () => {
 
 				.proceed-checkout:hover {
 					background: #e00028;
+				}
+
+				.cart__counter-label {
+					line-height: 3;
 				}
 
 				@media only screen and (max-width: 62em) {
