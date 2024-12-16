@@ -498,11 +498,10 @@ const CartSummary = () => {
 				.payments {
 					display: flex;
 					flex-direction: column;
-
 					border: 1px solid #f0f0f0;
 					border-radius: 5px;
 					padding: 15px;
-					margin-bottom: 15px;
+					margin-bottom: 20px;
 					background-color: #f0f0f0;
 					font-size: 12px;
 				}
