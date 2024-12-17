@@ -6,6 +6,7 @@ import EyeClose from '../../components/Icons/EyeClose';
 import EyeOpen from '../../components/Icons/EyeOpen';
 import CheckCircleGreen from '../../components/Icons/CheckCircleGreen';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 const Register = () => {
 	const [formData, setFormData] = useState({
@@ -24,6 +25,8 @@ const Register = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [success, setSuccess] = useState(false);
+	const router = useRouter();
+	const { redirect } = router.query;
 
 	useEffect(() => {
 		const evaluatePasswordStrength = (password) => {
@@ -127,8 +130,11 @@ const Register = () => {
 	}
 
 	if (isAuthenticated) {
-		Router.push('/');
-		return null;
+		if (redirect) {
+			router.push(redirect); // Redirige a la ruta original
+		} else {
+			router.push('/'); // Ruta predeterminada si no hay "redirect"
+		}
 	}
 
 	return (
@@ -286,7 +292,12 @@ const Register = () => {
 					</form>
 					<div className='register-menu__footer'>
 						<span>¿Ya tienes una cuenta? </span>
-						<Link href='/login' legacyBehavior>
+						<Link
+							href={`/login?redirect=${encodeURIComponent(
+								redirect
+							)}`}
+							legacyBehavior
+						>
 							<a className='login-link'>Inicia Sesión</a>
 						</Link>
 					</div>

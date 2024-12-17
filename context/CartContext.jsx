@@ -17,7 +17,7 @@ export const CartProvider = ({ children }) => {
 	const [shipping, setShipping] = useState(129);
 	const [total, setTotal] = useState(0);
 	const router = useRouter();
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 
 	// Funcion revision carrito local con backend
 	const localcheckBackend = async (cartLocal = cart) => {

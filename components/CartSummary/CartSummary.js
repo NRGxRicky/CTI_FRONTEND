@@ -189,23 +189,25 @@ const CartSummary = () => {
 									<div className='item-image'>
 										<Link href={`/${item.product.slug}`} legacyBehavior>
 											<a>
-												<Image
-													src={
-														item.product.imagen1s
-															? item.product.imagen1xs.includes(
-																	'https://api.pccdnapi.com'
-															  )
-																? item.product.imagen1xs
-																: `https://api.pccdnapi.com${item.product.imagen1xs}`
-															: '/images/not-available.png'
-													}
-													alt={Capitalize(item.product.titulo)}
-													fill
-													style={{ objectFit: 'contain' }}
-													draggable='false'
-													sizes='auto'
-													priority={true}
-												/>
+												<div className='item-image__img'>
+													<Image
+														src={
+															item.product.imagen1s
+																? item.product.imagen1xs.includes(
+																		'https://api.pccdnapi.com'
+																  )
+																	? item.product.imagen1xs
+																	: `https://api.pccdnapi.com${item.product.imagen1xs}`
+																: '/images/not-available.png'
+														}
+														alt={Capitalize(item.product.titulo)}
+														fill
+														style={{ objectFit: 'contain' }}
+														draggable='false'
+														sizes='auto'
+														priority={true}
+													/>
+												</div>
 											</a>
 										</Link>
 									</div>
@@ -311,7 +313,7 @@ const CartSummary = () => {
 								</div>
 							))}
 						</div>
-						<SummaryDetails />
+						<SummaryDetails urlAction={'/carrito/envio'} />
 					</div>
 
 					{/*div className='checkout-actions'>
@@ -336,7 +338,6 @@ const CartSummary = () => {
 			)}
 
 			<style jsx>{`
-
 				.cart__loading {
 					position: fixed;
 					background: #0f0f0f;
@@ -372,13 +373,6 @@ const CartSummary = () => {
 					justify-content: space-between;
 				}
 
-				.summary-row__total {
-					display: flex;
-					gap: 10px;
-					margin-top: 10px;
-				}
-
-		
 				.item-delete {
 					font-size: 12px;
 					color: #ff002c;
@@ -448,16 +442,6 @@ const CartSummary = () => {
 					flex-wrap: wrap;
 				}
 
-				.payments__label-status {
-					font-size: 12px;
-					font-weight: 300;
-					margin-left: 5px;
-					border-radius: 5px;
-					background-color: #ff002c;
-					color: #fff;
-					padding: 2px 5px;
-				}
-
 				.checkout-summary {
 					padding: 20px;
 					max-width: 100dvw;
@@ -504,7 +488,7 @@ const CartSummary = () => {
 					margin-bottom: 0;
 				}
 
-				.item-image {
+				.item-image__img {
 					min-width: 50px;
 					min-height: 50px;
 					object-fit: cover;
@@ -526,26 +510,6 @@ const CartSummary = () => {
 					margin: 5px 0;
 					font-size: 14px;
 					color: #666;
-				}
-
-				.summary-row {
-					display: flex;
-					justify-content: space-between;
-					align-items: baseline;
-					margin-bottom: 10px;
-					gap: 5px;
-				}
-
-				.summary-row.total {
-					border-top: 1px solid #f0f0f0;
-					font-weight: bold;
-					font-size: 16px;
-				}
-
-				.summary-row.iva {
-					font-size: 12px;
-					font-weight: 300;
-					line-height: 22px;
 				}
 
 				.checkout-actions {
@@ -591,13 +555,11 @@ const CartSummary = () => {
 					background: #444;
 				}
 
-
 				.cart__counter-label {
 					line-height: 3;
 				}
 
 				@media only screen and (max-width: 62em) {
-
 					.item-price {
 						flex: 50%;
 					}

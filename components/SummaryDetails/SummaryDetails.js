@@ -5,8 +5,9 @@ import { useAppDispatch } from '../../lib/hooks';
 import { useAuth } from '../../hooks/auth';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import useCart from '../../hooks/useCart';
+import Link from 'next/link';
 
-const SummaryDetails = () => {
+const SummaryDetails = ({ urlAction }) => {
 	const { cart, subtotal, shipping, total } = useCart();
 	const dispatch = useAppDispatch();
 	const { cartMsi } = useAuth();
@@ -136,11 +137,50 @@ const SummaryDetails = () => {
 						</div>
 					</div>
 				)}
-
-				<button className='proceed-checkout'>Continuar</button>
+				<Link href={`${urlAction}`} legacyBehavior>
+					<a>
+						<button className='proceed-checkout'>Continuar</button>
+					</a>
+				</Link>
 			</div>
 			<style jsx>
 				{`
+					.payments__label-status {
+						font-size: 12px;
+						font-weight: 300;
+						margin-left: 5px;
+						border-radius: 5px;
+						background-color: #ff002c;
+						color: #fff;
+						padding: 2px 5px;
+					}
+
+					.summary-row__total {
+						display: flex;
+						gap: 10px;
+						margin-top: 10px;
+					}
+
+					.summary-row {
+						display: flex;
+						justify-content: space-between;
+						align-items: baseline;
+						margin-bottom: 10px;
+						gap: 5px;
+					}
+
+					.summary-row.total {
+						border-top: 1px solid #f0f0f0;
+						font-weight: bold;
+						font-size: 16px;
+					}
+
+					.summary-row.iva {
+						font-size: 12px;
+						font-weight: 300;
+						line-height: 22px;
+					}
+
 					.cart__change-payment {
 						font-size: 12px;
 						margin-bottom: 10px;
@@ -153,7 +193,7 @@ const SummaryDetails = () => {
 						text-decoration: underline;
 						cursor: pointer !important;
 					}
-          
+
 					.summary-details {
 						flex: 0.4;
 						width: 100%;

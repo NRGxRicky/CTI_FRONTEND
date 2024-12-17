@@ -5,6 +5,7 @@ import EyeClose from '../../components/Icons/EyeClose';
 import EyeOpen from '../../components/Icons/EyeOpen';
 import Link from 'next/link';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 const Login = () => {
 	const { login, isAuthenticated } = useAuth();
@@ -13,6 +14,8 @@ const Login = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [error, setError] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const router = useRouter();
+	const { redirect } = router.query;
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -34,8 +37,11 @@ const Login = () => {
 	};
 
 	if (isAuthenticated) {
-		Router.push('/');
-		return null;
+		if (redirect) {
+			router.push(redirect); // Redirige a la ruta original
+		} else {
+			router.push('/'); // Ruta predeterminada si no hay "redirect"
+		}
 	}
 
 	return (
@@ -92,7 +98,7 @@ const Login = () => {
 					</button>
 				</form>
 				<Link href={`/login/forgot-password/`} legacyBehavior>
-					<a onClick={() => dispacth(hideAll())}>
+					<a>
 						<div className='login-menu__forgot-password'>
 							¿Has olvidado tu contraseña?
 						</div>
@@ -104,7 +110,7 @@ const Login = () => {
 							¿No tienes una cuenta?
 						</div>
 						<div className='login-menu__register__action-register'>
-							<Link href={'/registration'} legacyBehavior>
+							<Link href={`/registration?redirect=${encodeURIComponent(redirect)}`} legacyBehavior>
 								<a>Registrate</a>
 							</Link>
 						</div>
