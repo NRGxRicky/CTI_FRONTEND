@@ -430,7 +430,7 @@ const CartSummary = () => {
 				}
 
 				.checkout-summary {
-					padding: 20px;
+					padding: 0 20px;
 					max-width: 100dvw;
 					margin: auto;
 				}

@@ -154,7 +154,7 @@ const CartShippingMethod = () => {
 					display: flex;
 					gap: 20px;
 					flex-wrap: wrap;
-					padding: 20px;
+					padding: 0 20px;
 					justify-content: space-evenly;
 				}
 
