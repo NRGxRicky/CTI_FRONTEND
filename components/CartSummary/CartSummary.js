@@ -4,7 +4,6 @@ import Link from 'next/link';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import useCart from '../../hooks/useCart';
 import Capitalize from '../../hooks/CapitalizeTitle';
-import StatusBarCart from '../StatusBarCart/StatusBarCart';
 import TruncateMarkup from 'react-truncate-markup';
 import { useAuth } from '../../hooks/auth';
 import { Preloader, TailSpin } from 'react-preloader-icon';
@@ -14,9 +13,6 @@ import SummaryDetails from '../SummaryDetails/SummaryDetails';
 const CartSummary = () => {
 	const {
 		cart,
-		subtotal,
-		shipping,
-		total,
 		localcheckBackend,
 		removeFromCart,
 		addToCart,
@@ -164,15 +160,6 @@ const CartSummary = () => {
 				</div>
 			) : (
 				<>
-					<StatusBarCart
-						steps={[
-							{ key: 'cart', label: 'Carrito', link: '/carrito' },
-							{ key: 'shipping', label: 'Envío' },
-							{ key: 'payment', label: 'Pago' },
-							{ key: 'confirm', label: 'Confirmación' },
-						]}
-						activeStep='cart'
-					/>
 					<div className='cart-header'>
 						<div>
 							<span className='cart__counter-label text--off'>

@@ -60,18 +60,17 @@ const FreeShipping = ({
 						display: flex;
 						flex-direction: row;
 						align-content: center;
+						gap: 10px;
 					}
 
 					.icon__free-shiping__image {
 						height: auto;
 						width: 14px;
-						margin-right: 5px;
 					}
 
 					.icon__free-shiping__image--card {
 						height: auto;
 						width: 20px;
-						margin-right: 20px;
 					}
 
 					.icon__free_shipping__image__container {
