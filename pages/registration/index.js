@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/auth';
-import Router from 'next/router';
 import Link from 'next/link';
 import EyeClose from '../../components/Icons/EyeClose';
 import EyeOpen from '../../components/Icons/EyeOpen';
@@ -114,7 +113,11 @@ const Register = () => {
 		try {
 			const resp = await login(formData.email, formData.password);
 			if (resp.status === 200) {
-				Router.push('/');
+					if (redirect) {
+						router.push(redirect); // Redirige a la ruta original
+					} else {
+						router.push('/'); // Ruta predeterminada si no hay "redirect"
+					}
 			} else {
 				setError(true);
 			}
@@ -293,9 +296,11 @@ const Register = () => {
 					<div className='register-menu__footer'>
 						<span>¿Ya tienes una cuenta? </span>
 						<Link
-							href={`/login?redirect=${encodeURIComponent(
+							href={
 								redirect
-							)}`}
+									? `/login?redirect=${encodeURIComponent(redirect)}`
+									: `/login`
+							}
 							legacyBehavior
 						>
 							<a className='login-link'>Inicia Sesión</a>

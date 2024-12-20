@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/auth';
-import Router from 'next/router';
 import EyeClose from '../../components/Icons/EyeClose';
 import EyeOpen from '../../components/Icons/EyeOpen';
 import Link from 'next/link';
@@ -25,7 +24,11 @@ const Login = () => {
 		try {
 			const resp = await login(username, password);
 			if (resp.status === 200) {
-				Router.push('/');
+				if (redirect) {
+					router.push(redirect); // Redirige a la ruta original
+				} else {
+					router.push('/'); // Ruta predeterminada si no hay "redirect"
+				}
 			} else {
 				setError(true);
 			}
@@ -110,7 +113,14 @@ const Login = () => {
 							¿No tienes una cuenta?
 						</div>
 						<div className='login-menu__register__action-register'>
-							<Link href={`/registration?redirect=${encodeURIComponent(redirect)}`} legacyBehavior>
+							<Link
+								href={
+									redirect
+										? `/registration?redirect=${encodeURIComponent(redirect)}`
+										: `/registration`
+								}
+								legacyBehavior
+							>
 								<a>Registrate</a>
 							</Link>
 						</div>
