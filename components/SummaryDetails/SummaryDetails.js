@@ -150,7 +150,7 @@ const SummaryDetails = ({ urlAction }) => {
 						font-weight: 300;
 						margin-left: 5px;
 						border-radius: 5px;
-						background-color: #ff002c;
+						background-color: var(--primary-color);
 						color: #fff;
 						padding: 2px 5px;
 					}
@@ -184,7 +184,7 @@ const SummaryDetails = ({ urlAction }) => {
 					.cart__change-payment {
 						font-size: 12px;
 						margin-bottom: 10px;
-						color: #ff002c;
+						color: var(--primary-color);
 						display: flex;
 						justify-content: right;
 					}
@@ -251,7 +251,7 @@ const SummaryDetails = ({ urlAction }) => {
 
 					.proceed-checkout {
 						flex: 1;
-						background: #ff002c;
+						background: var(--primary-color);
 						color: #fff;
 						border: none;
 						border-radius: 4px;

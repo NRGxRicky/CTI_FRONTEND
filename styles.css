@@ -77,7 +77,7 @@ a {
 }
 
 a:hover {
-	color: #ff002c;
+	color: var(--primary-color);
 }
 
 .text--off {
@@ -85,18 +85,18 @@ a:hover {
 }
 
 .text--light {
-	color: #ff002c;
+	color: var(--primary-color);
 }
 
 .text--green {
 	color: #00b517;
 }
 .text--red {
-	color: #ff002c;
+	color: var(--primary-color);
 }
 
 .card:hover .card__title {
-	color: #ff002c;
+	color: var(--primary-color);
 	cursor: pointer;
 }
 
@@ -1043,7 +1043,7 @@ a:hover {
 
 .close:active,
 #close:active {
-	color: #ff002c;
+	color: var(--primary-color);
 }
 
 .close:before,
@@ -1089,8 +1089,7 @@ input[type='search']::-webkit-search-results-decoration {
 }
 
 button {
-    font-family: proxima-nova, sans-serif;
-
+	font-family: proxima-nova, sans-serif;
 }
 
 .button__nav,
@@ -1225,7 +1224,7 @@ button {
 }
 
 .on-sale {
-	background-color: #ff002c;
+	background-color: var(--primary-color);
 	border-radius: 5px;
 	color: #ffffff;
 	padding: 2px 5px;
@@ -1265,13 +1264,13 @@ button {
 	align-items: center;
 	padding: 16px;
 	background-color: #f8d7da;
-	border: 1px solid #ff002c;
+	border: 1px solid var(--primary-color);
 	border-radius: 8px;
-	color: #ff002c;
+	color: var(--primary-color);
 	font-size: 14px;
 }
 
 .footer-paragraph {
-  margin-bottom: 15px;
-  line-height: 30px;
+	margin-bottom: 15px;
+	line-height: 30px;
 }

@@ -130,7 +130,7 @@ const Login = () => {
 				.login-menu__register__action-register {
 					text-align: center;
 					font-weight: 600;
-					color: #ff002c;
+					color: var(--primary-color);
 				}
 
 				.login-menu__title,
@@ -145,7 +145,7 @@ const Login = () => {
 				}
 
 				.login-menu__forgot-password {
-					color: #ff002c;
+					color: var(--primary-color);
 					text-align: center;
 					line-height: 4;
 				}
@@ -197,7 +197,7 @@ const Login = () => {
 
 				.form-group input:focus {
 					outline: none;
-					border-color: #ff002c;
+					border-color: var(--primary-color);
 				}
 
 				.password-input-container {
@@ -212,18 +212,18 @@ const Login = () => {
 					background: none;
 					border: none;
 					cursor: pointer;
-					color: #ff002c;
+					color: var(--primary-color);
 				}
 
 				.error-message {
-					color: #ff002c;
+					color: var(--primary-color);
 					margin: 10px 0;
 				}
 
 				.login-button {
 					width: 100%;
 					padding: 12px;
-					background: #ff002c;
+					background: var(--primary-color);
 					color: white;
 					border: none;
 					border-radius: 6px;

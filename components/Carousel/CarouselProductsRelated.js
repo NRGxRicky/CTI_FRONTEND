@@ -282,7 +282,6 @@ const CarouselProductsRelated = ({
 						width: auto;
 						align-items: center;
 						display: flex;
-
 					}
 
 					.product__price__label {
@@ -377,7 +376,7 @@ const CarouselProductsRelated = ({
 
 					.carousel__button--color-ligth {
 						background: #ffffff;
-						fill: #ff002c;
+						fill: var(--primary-color);
 					}
 
 					.carousel__button--color-ligth:hover,

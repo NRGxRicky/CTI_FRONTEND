@@ -1,14 +1,12 @@
 import React from 'react';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 class MyDocument extends Document {
-
 	render() {
-		
 		return (
 			<Html>
 				<Head>
 					<link
-						href='/ico/favicon.ico'
+						href={process.env.NEXT_PUBLIC_FAVICON_URL}
 						rel='shortcut icon'
 						type='image/x-icon'
 					/>
@@ -34,7 +32,11 @@ class MyDocument extends Document {
 						crossOrigin=''
 					/>
 				</Head>
-				<body>
+				<body
+					style={{
+						'--primary-color': process.env.NEXT_PUBLIC_PRIMARY_COLOR,
+					}}
+				>
 					<Main />
 					<NextScript />
 				</body>

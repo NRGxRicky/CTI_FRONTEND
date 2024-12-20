@@ -75,7 +75,9 @@ const HeaderBarLocalStock = () => {
 				<span className='header_bar__local_button'>
 					<span>
 						<ToggleButton
-							tcontent={locationStockOnly && '( Mostrando solo inventario local )'}
+							tcontent={
+								locationStockOnly && '( Mostrando solo inventario local )'
+							}
 							style={'checkbox green'}
 							tchecked={locationStockOnly}
 							tonChange={handleToggleLocationStockOnly}
@@ -104,12 +106,12 @@ const HeaderBarLocalStock = () => {
 						font-size: 12px;
 						top: 3px;
 						color: #ffffff;
-            transition: 0.5s background-color ease-in-out;
+						transition: 0.5s background-color ease-in-out;
 					}
 
 					.header_bar__local_stock--active {
 						font-weight: 600;
-						background-color: #ff002c;
+						background-color: var(--primary-color);
 					}
 				`}</style>
 			</div>

@@ -100,7 +100,7 @@ const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 						text-align: center;
 						font-size: 16px;
 						cursor: pointer;
-						background-color: #ff002c;
+						background-color: var(--primary-color);
 						color: #ffffff;
 						font-weight: 600;
 						border-radius: 5px;

@@ -1,23 +1,30 @@
 import React from 'react';
 import Footer from '../components/Footer/Footer';
 import Head from 'next/head';
+import { useEnv } from '../context/EnvContext';
+
 const CodigoDeEtica = () => {
+		const {
+			storeName,
+			metaDescription,
+			titlePostDescription,
+			contactEmail,
+			phone,
+			legalName,
+			pageUrl,
+		} = useEnv();
 	return (
 		<div>
 			<Head>
 				<title>
-					Código de Ética PCSTORE.MX | PCStore.mx: Tu tienda en Tecnología,
-					Cómputo, Accesorios
+					{`Código de Ética | ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<div className='container'>
 				<div className='policy__container'>
 					<div className='policy__title'>
-						<h1>Código de Ética PCSTORE.MX</h1>
+						<h1>Código de Ética {storeName.toUpperCase()}</h1>
 					</div>
 					<div className='policy__body'>
 						<div className='policy__content'>
@@ -43,12 +50,12 @@ const CodigoDeEtica = () => {
 							<p>&nbsp;</p>
 							<p>
 								Este Código de Ética en materia de Comercio Electrónico
-								establece los valores y principios que PCSTORE.MX, representada
-								legalmente por PCSTORE ONLINE SAS DE CV, deberá observar en las
-								actividades relacionadas con el comercio electrónico realizadas
-								en sus plataformas{' '}
-								<a href='https://pcstore.mx' target='_new'>
-									https://pcstore.mx
+								establece los valores y principios que {storeName.toUpperCase()}
+								, representada legalmente por {legalName}, deberá observar en
+								las actividades relacionadas con el comercio electrónico
+								realizadas en sus plataformas{' '}
+								<a href={pageUrl} target='_new'>
+									{pageUrl}
 								</a>
 								, a fin de respetar y promover los derechos del consumidor,
 								fomentar una cultura de consumo responsable, la promoción de los
@@ -70,12 +77,12 @@ const CodigoDeEtica = () => {
 							<p>&nbsp;</p>
 							<p>
 								El Código de Ética en materia de Comercio Electrónico es de
-								adopción voluntaria y aplicable a PCSTORE.MX, representada
-								legalmente por PCSTORE ONLINE SAS DE CV, en las transacciones,
+								adopción voluntaria y aplicable a {storeName.toUpperCase()},
+								representada legalmente por {legalName}, en las transacciones,
 								efectuadas a través del uso de medios electrónicos digitales en
-								el territorio nacional. PCSTORE.MX, representada legalmente por
-								PCSTORE ONLINE SAS DE CV, se compromete a respetar que en todas
-								sus actividades de comercio electrónico se cumplan los
+								el territorio nacional. {storeName.toUpperCase()}, representada
+								legalmente por {legalName}, se compromete a respetar que en
+								todas sus actividades de comercio electrónico se cumplan los
 								principios establecidos en el presente Código. El presente
 								Código de Ética en materia de Comercio Electrónico no será
 								aplicable a las incidencias o fallas técnicas derivadas que se
@@ -141,14 +148,14 @@ const CodigoDeEtica = () => {
 								menores de dieciocho años de edad;
 							</p>
 							<p>
-								Proveedor: PCSTORE.MX en este Código referido como PCSTORE.MX;
-								Publicidad: Cualquier forma de comunicación comercial realizada
-								por un proveedor, que comprende todo proceso de creación,
-								planificación, ejecución y difusión o transmisión de mensajes
-								publicitarios con el fin de promover la venta o consumo de
-								bienes, productos o servicios;
+								Proveedor: {storeName.toUpperCase()} en este Código referido
+								como {storeName.toUpperCase()}; Publicidad: Cualquier forma de
+								comunicación comercial realizada por un proveedor, que comprende
+								todo proceso de creación, planificación, ejecución y difusión o
+								transmisión de mensajes publicitarios con el fin de promover la
+								venta o consumo de bienes, productos o servicios;
 							</p>
-							<p>Plataforma de comercio electrónico: https://pcstore.mx</p>
+							<p>Plataforma de comercio electrónico: {contactEmail}</p>
 							<p>
 								Tienda virtual: Es un espacio dentro de un sitio web, en el que
 								se ofrecen artículos a la venta.
@@ -176,12 +183,12 @@ const CodigoDeEtica = () => {
 								<br />
 							</p>
 							<p>
-								PCSTORE.MX actúa de conformidad con lo aplicable y establecido
-								en la Constitución Política de los Estados Unidos Mexicanos y
-								los tratados internacionales de derechos humanos de los que
-								México sea parte, así como con la Ley Federal de Protección al
-								Consumidor, además de guiarse por la Norma Mexicana de Comercio
-								Electrónico (NMX-COE-001-SCFI-2018).
+								{storeName.toUpperCase()} actúa de conformidad con lo aplicable
+								y establecido en la Constitución Política de los Estados Unidos
+								Mexicanos y los tratados internacionales de derechos humanos de
+								los que México sea parte, así como con la Ley Federal de
+								Protección al Consumidor, además de guiarse por la Norma
+								Mexicana de Comercio Electrónico (NMX-COE-001-SCFI-2018).
 							</p>
 							<p>
 								<br />
@@ -209,11 +216,11 @@ const CodigoDeEtica = () => {
 								<br />
 							</p>
 							<p>
-								PCSTORE.MX tendrá la disposición de colaborar cuando los
-								consumidores se vean afectados. Serán responsables por los
-								servicios que ofrezcan, con el alcance especificado en sus
-								términos y condiciones, los cuales deben ser claros, precisos y
-								fácilmente accesibles.
+								{storeName.toUpperCase()} tendrá la disposición de colaborar
+								cuando los consumidores se vean afectados. Serán responsables
+								por los servicios que ofrezcan, con el alcance especificado en
+								sus términos y condiciones, los cuales deben ser claros,
+								precisos y fácilmente accesibles.
 							</p>
 							<p>
 								<br />
@@ -229,8 +236,9 @@ const CodigoDeEtica = () => {
 								<br />
 							</p>
 							<p>
-								PCSTORE.MX en sus plataformas de comercio electrónico pone a
-								disposición de los consumidores al menos lo siguiente:
+								{storeName.toUpperCase()} en sus plataformas de comercio
+								electrónico pone a disposición de los consumidores al menos lo
+								siguiente:
 							</p>
 							<p>
 								<br />
@@ -312,8 +320,8 @@ const CodigoDeEtica = () => {
 							</p>
 							<p>
 								Los términos y condiciones estarán en idioma español y dentro de
-								nuestras páginas https://pcstore.mx en un lugar visible y de
-								fácil acceso para el Consumidor.
+								nuestras páginas {pageUrl} en un lugar visible y de fácil acceso
+								para el Consumidor.
 							</p>
 							<p>
 								<br />
@@ -321,8 +329,7 @@ const CodigoDeEtica = () => {
 							</p>
 							<p>
 								Los términos y condiciones serán aplicables en todas las compras
-								y servicios que se contraten en el portal electrónico
-								https://pcstore.mx
+								y servicios que se contraten en el portal electrónico {pageUrl}.
 							</p>
 							<p>
 								<br />
@@ -345,8 +352,8 @@ const CodigoDeEtica = () => {
 								reconocidos en la Ley, además de los que se le otorguen en esos
 								términos y condiciones. Todos los derechos, deberes, beneficios
 								y garantías contenidos en Ley Federal de Protección al
-								Consumidor deben ser reconocidos y aplicados estrictamente por
-								PCSTORE.MX
+								Consumidor deben ser reconocidos y aplicados estrictamente por{' '}
+								{storeName.toUpperCase()}
 							</p>
 							<p>
 								<br />
@@ -382,10 +389,10 @@ const CodigoDeEtica = () => {
 								<br />
 							</p>
 							<p>
-								PCSTORE.MX proporcionará al consumidor la información adecuada y
-								clara sobre los diferentes bienes, productos o servicios,
-								pudiendo utilizar imágenes, audio y video, o cualquier otra
-								herramienta que considere apropiada.
+								{storeName.toUpperCase()} proporcionará al consumidor la
+								información adecuada y clara sobre los diferentes bienes,
+								productos o servicios, pudiendo utilizar imágenes, audio y
+								video, o cualquier otra herramienta que considere apropiada.
 							</p>
 							<p>
 								<br />
@@ -408,8 +415,8 @@ const CodigoDeEtica = () => {
 								<br />
 							</p>
 							<p>
-								La publicidad digital que maneja PCSTORE.MX es veraz,
-								comprobable, clara y exenta de textos, diálogos, sonidos,
+								La publicidad digital que maneja {storeName.toUpperCase()} es
+								veraz, comprobable, clara y exenta de textos, diálogos, sonidos,
 								imágenes, marcas, denominaciones de origen y otras descripciones
 								que induzcan o puedan inducir a error o confusión por engañosas
 								o abusivas. Asimismo, se apega a la normatividad aplicable y, de
@@ -430,7 +437,7 @@ const CodigoDeEtica = () => {
 							</p>
 							<p>
 								La publicidad que se desarrolle como estrategia de comercio
-								electrónico de PCSTORE.MX deberán:
+								electrónico de {storeName.toUpperCase()} deberán:
 							</p>
 							<p>
 								<br />
@@ -466,34 +473,35 @@ const CodigoDeEtica = () => {
 								<br />
 							</p>
 							<p>
-								PCSTORE.MX se apegan a lo establecido en el Artículo 16
-								Constitucional, el cual reconoce el derecho que toda persona
-								tiene a la protección de sus datos personales, el acceso,
-								rectificación y cancelación de los mismos, así como a manifestar
-								su oposición en los términos que fije la normatividad aplicable.
-								En este sentido, PCSTORE.MX cuentan con un Aviso de privacidad,
-								como mecanismo accesible, seguro, fácil de entender, con un
-								lenguaje sencillo y claro que permita al Consumidor acceder a
-								toda la información inherente al tratamiento y protección que se
-								dará a sus datos personales.
+								{storeName.toUpperCase()} se apegan a lo establecido en el
+								Artículo 16 Constitucional, el cual reconoce el derecho que toda
+								persona tiene a la protección de sus datos personales, el
+								acceso, rectificación y cancelación de los mismos, así como a
+								manifestar su oposición en los términos que fije la normatividad
+								aplicable. En este sentido, {storeName.toUpperCase()} cuentan
+								con un Aviso de privacidad, como mecanismo accesible, seguro,
+								fácil de entender, con un lenguaje sencillo y claro que permita
+								al Consumidor acceder a toda la información inherente al
+								tratamiento y protección que se dará a sus datos personales.
 							</p>
 							<p>
 								<br />
 								<br />
 							</p>
 							<p>
-								PCSTORE.MX incluyen en su plataforma, y en todo el proceso de
-								compra, leyendas de advertencia para que las niñas, niños y
-								adolescentes se abstengan de facilitar sus datos personales, sin
-								la autorización de sus padres o tutores, para que la compra se
-								realice directamente por estos últimos.
+								{storeName.toUpperCase()} incluyen en su plataforma, y en todo
+								el proceso de compra, leyendas de advertencia para que las
+								niñas, niños y adolescentes se abstengan de facilitar sus datos
+								personales, sin la autorización de sus padres o tutores, para
+								que la compra se realice directamente por estos últimos.
 							</p>
 							<p>
 								<br />
 								<br />
 							</p>
 							<p>
-								Asimismo, PCSTORE.MX están obligados a verificar lo siguiente:
+								Asimismo, {storeName.toUpperCase()} están obligados a verificar
+								lo siguiente:
 							</p>
 							<p>
 								<br />
@@ -542,13 +550,13 @@ const CodigoDeEtica = () => {
 								<br />
 							</p>
 							<p>
-								PCSTORE.MX adquiere un compromiso con el respeto y protección de
-								los derechos de personas adultas mayores, niñas, niños y
-								adolescentes, personas con discapacidad e indígenas, así como
-								otras personas sujetas a discriminación, solucionando de manera
-								ágil sus conflictos o dudas y cuidando que la publicidad que se
-								dirija a ellos o la a que pudieran tener acceso fomente el
-								respeto a la dignidad, equidad, seguridad e inclusión.
+								{storeName.toUpperCase()} adquiere un compromiso con el respeto
+								y protección de los derechos de personas adultas mayores, niñas,
+								niños y adolescentes, personas con discapacidad e indígenas, así
+								como otras personas sujetas a discriminación, solucionando de
+								manera ágil sus conflictos o dudas y cuidando que la publicidad
+								que se dirija a ellos o la a que pudieran tener acceso fomente
+								el respeto a la dignidad, equidad, seguridad e inclusión.
 							</p>
 							<p>
 								<br />
@@ -574,10 +582,10 @@ const CodigoDeEtica = () => {
 								<br />
 							</p>
 							<p>
-								PCSTORE.MX cuenta con mecanismos propios para solucionar los
-								conflictos con los consumidores cuando exista algún
-								incumplimiento a las obligaciones que se establecen en la Ley
-								Federal de Protección al Consumidor, en la Norma Mexicana de
+								{storeName.toUpperCase()} cuenta con mecanismos propios para
+								solucionar los conflictos con los consumidores cuando exista
+								algún incumplimiento a las obligaciones que se establecen en la
+								Ley Federal de Protección al Consumidor, en la Norma Mexicana de
 								Comercio Electrónico (NMX-COE-001-SCFI-2018) en este Código.
 							</p>
 							<p>
@@ -604,14 +612,15 @@ const CodigoDeEtica = () => {
 								<br />
 							</p>
 							<p>
-								PCSTORE.MX procurarán solventar las disputas con los
-								consumidores a través de medios alternativos de solución de
+								{storeName.toUpperCase()} procurarán solventar las disputas con
+								los consumidores a través de medios alternativos de solución de
 								conflictos. La mediación, conciliación y arbitraje serán
 								primordiales para llegar a acuerdos rápidos, mecanismo que se
 								encuentra descrito en el punto 7. Normatividad y políticas
 								aplicables en caso de controversia del Contrato Adhesión
-								PCSTORE.MX Tienda en Línea o mediante los procedimientos
-								establecidos por la Procuraduría Federal del Consumidor.
+								{storeName.toUpperCase()} Tienda en Línea o mediante los
+								procedimientos establecidos por la Procuraduría Federal del
+								Consumidor.
 							</p>
 							<p>
 								<br />
@@ -628,9 +637,9 @@ const CodigoDeEtica = () => {
 								<br />
 							</p>
 							<p>
-								PCSTORE.MX cumplirá con lo estipulado en la Ley Federal de
-								Protección al Consumidor y actuarán diligentemente en los
-								procedimientos conciliatorios para llegar a acuerdos con el
+								{storeName.toUpperCase()} cumplirá con lo estipulado en la Ley
+								Federal de Protección al Consumidor y actuarán diligentemente en
+								los procedimientos conciliatorios para llegar a acuerdos con el
 								propósito de beneficiar a los consumidores.
 							</p>
 							<p>
@@ -645,10 +654,10 @@ const CodigoDeEtica = () => {
 								<br />
 							</p>
 							<p>
-								PCSTORE.MX cuenta con mecanismos propios para vigilar el
-								cumplimiento de este código de ética, así como procedimientos de
-								seguimiento ante su incumplimiento a través de los siguientes
-								medios:
+								{storeName.toUpperCase()} cuenta con mecanismos propios para
+								vigilar el cumplimiento de este código de ética, así como
+								procedimientos de seguimiento ante su incumplimiento a través de
+								los siguientes medios:
 							</p>
 							<p>
 								<br />
@@ -660,9 +669,9 @@ const CodigoDeEtica = () => {
 								contacto:
 							</p>
 							<p>
-								Email: contacto@pcstore.mx
+								Email: {contactEmail}
 								<br />
-								Teléfono: <span>22 28 29 83 51</span>.
+								Teléfono: <span>{phone}</span>.
 							</p>
 							<p>
 								<br />
@@ -674,11 +683,11 @@ const CodigoDeEtica = () => {
 							<br />
 							<br />
 							<p>
-								PCSTORE.MX manifiesta su adhesión al presente Código por lo que
-								se comprometen a respetarlo y cumplirlo en materia de comercio
-								electrónico, publicidad, protección de datos y derechos humanos.
-								De no cumplir con este Código, se solicitará la cancelación a su
-								adhesión.
+								{storeName.toUpperCase()} manifiesta su adhesión al presente
+								Código por lo que se comprometen a respetarlo y cumplirlo en
+								materia de comercio electrónico, publicidad, protección de datos
+								y derechos humanos. De no cumplir con este Código, se solicitará
+								la cancelación a su adhesión.
 							</p>
 							<p>
 								<br />

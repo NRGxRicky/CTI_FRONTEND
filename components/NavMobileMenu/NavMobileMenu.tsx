@@ -30,7 +30,7 @@ const NavMobileMenu = () => {
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
 	);
-	const { contactEmail, instagramUrl, facebookUrl, tiktokUrl } = useEnv();
+	const { contactEmail, instagramUrl, facebookUrl, tiktokUrl, phone } = useEnv();
 
 	const fetchData = async () => {
 		try {
@@ -154,7 +154,7 @@ const NavMobileMenu = () => {
 										></path>
 									</g>
 								</svg>
-								<span>Llámanos 22 28 29 83 51</span>
+								<span>Llámanos {phone}</span>
 							</div>
 						</li>
 						<li className='mobile-menu__nav-item'>

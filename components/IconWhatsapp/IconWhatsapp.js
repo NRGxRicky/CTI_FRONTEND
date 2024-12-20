@@ -1,6 +1,9 @@
 import React from 'react';
+import { useEnv } from '../../context/EnvContext';
 
 const IconWhatsapp = () => {
+	const { phone } = useEnv();
+
 	return (
 		<div>
 			<div
@@ -13,7 +16,7 @@ const IconWhatsapp = () => {
 				}}
 			>
 				<a
-					href='https://wa.me/+5212228298351'
+					href={`https://wa.me/+521${phone.replace(/\s+/g, '')}`}
 					target='_blank'
 					rel='noopener noreferrer'
 				>

@@ -65,9 +65,7 @@ const index = () => {
 	return (
 		<div className='profile container'>
 			<Head>
-				<title>
-					{`Seguridad | ${storeName}: ${titlePostDescription}`}
-				</title>
+				<title>{`Seguridad | ${storeName}: ${titlePostDescription}`}</title>
 				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<UserNavLeft />
@@ -211,7 +209,7 @@ const index = () => {
 
 				.profile__mobile__actions {
 					text-align: right;
-					color: #ff002c;
+					color: var(--primary-color);
 					padding: 20px;
 				}
 
@@ -231,7 +229,7 @@ const index = () => {
 				}
 				.profile__update__successful__message button {
 					padding: 10px;
-					background-color: #ff002c;
+					background-color: var(--primary-color);
 					color: #ffffff;
 					border: 0;
 					opacity: 1 !important;
@@ -277,7 +275,7 @@ const index = () => {
 				}
 
 				.profile__section__footer__actions__save {
-					background-color: #ff002c;
+					background-color: var(--primary-color);
 					border: 0;
 					color: #ffffff;
 				}
@@ -306,7 +304,7 @@ const index = () => {
 				.profile__edit {
 					flex-basis: 100px;
 					text-align: right;
-					color: #ff002c;
+					color: var(--primary-color);
 					cursor: pointer;
 				}
 
@@ -358,7 +356,7 @@ const index = () => {
 
 				.profile__section__body input:focus,
 				.profile__section__body input:hover {
-					border-bottom: 2px solid #ff002c;
+					border-bottom: 2px solid var(--primary-color);
 					color: #000000;
 				}
 

@@ -274,7 +274,7 @@ const CartSummaryMini = () => {
 						font-weight: 300;
 						margin-left: 5px;
 						border-radius: 5px;
-						background-color: #ff002c;
+						background-color:var(--primary-color);
 						color: #fff;
 						padding: 2px 5px;
 					}
@@ -287,7 +287,7 @@ const CartSummaryMini = () => {
 				.cart__change-payment {
 					font-size: 12px;
 					margin-bottom: 10px;
-					color: #ff002c
+					color:var(--primary-color)
 				}
 
 
@@ -325,7 +325,7 @@ const CartSummaryMini = () => {
 					font-size: 20px;
 					cursor: pointer;
 					background-color: rgba(255, 255, 255, 0.8);
-					color: #ff002c;
+					color:var(--primary-color);
 					z-index: 2;
 					padding: 5px 0;
 				}
@@ -386,7 +386,7 @@ const CartSummaryMini = () => {
 				.clear-cart-button {
 					background: none;
 					border: none;
-					color: #ff002c;
+					color:var(--primary-color);
 					font-weight: bold;
 					cursor: pointer;
 				}
@@ -456,7 +456,7 @@ const CartSummaryMini = () => {
         .close {
           	height: 12px;
 						width: 12px;
-            color: #ff002c;
+            color:var(--primary-color);
             display: block !important;
         }
 
@@ -485,7 +485,7 @@ const CartSummaryMini = () => {
 				.quote-button,
 				.view-cart-button {
 					flex: 1;
-					background: #ff002c;
+					background:var(--primary-color);
 					color: #fff;
 					border: none;
 					border-radius: 5px;

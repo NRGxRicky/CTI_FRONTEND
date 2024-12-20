@@ -115,11 +115,11 @@ const Register = () => {
 		try {
 			const resp = await login(formData.email, formData.password);
 			if (resp.status === 200) {
-					if (redirect) {
-						router.push(redirect); // Redirige a la ruta original
-					} else {
-						router.push('/'); // Ruta predeterminada si no hay "redirect"
-					}
+				if (redirect) {
+					router.push(redirect); // Redirige a la ruta original
+				} else {
+					router.push('/'); // Ruta predeterminada si no hay "redirect"
+				}
 			} else {
 				setError(true);
 			}
@@ -145,9 +145,7 @@ const Register = () => {
 	return (
 		<div className='container'>
 			<Head>
-				<title>
-					{`Crear Cuenta | ${storeName}: ${titlePostDescription}`}
-				</title>
+				<title>{`Crear Cuenta | ${storeName}: ${titlePostDescription}`}</title>
 				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			{success ? (
@@ -317,7 +315,7 @@ const Register = () => {
 				}
 
 				.error-message {
-					color: #ff002c;
+					color: var(--primary-color);
 					margin: 10px 0;
 					line-height: 2;
 				}
@@ -376,7 +374,7 @@ const Register = () => {
 				.form-group input[type='text']:focus,
 				.form-group input[type='email']:focus,
 				.form-group input[type='password']:focus {
-					border-color: #ff002c;
+					border-color: var(--primary-color);
 				}
 
 				.password-input-container input {
@@ -394,7 +392,7 @@ const Register = () => {
 				}
 
 				.password-input-container input:focus {
-					border-color: #ff002c;
+					border-color: var(--primary-color);
 				}
 
 				.eye-icon {
@@ -404,7 +402,7 @@ const Register = () => {
 					background: none;
 					border: none;
 					cursor: pointer;
-					color: #ff002c;
+					color: var(--primary-color);
 				}
 
 				.password-strength {
@@ -441,8 +439,8 @@ const Register = () => {
 				}
 
 				.checkbox-group input[type='checkbox']:checked {
-					background-color: #ff002c;
-					border-color: #ff002c;
+					background-color: var(--primary-color);
+					border-color: var(--primary-color);
 				}
 
 				.checkbox-group input[type='checkbox']:checked::after {
@@ -462,7 +460,7 @@ const Register = () => {
 				}
 
 				.terms a {
-					color: #ff002c;
+					color: var(--primary-color);
 					text-decoration: none;
 					font-weight: bold;
 				}
@@ -474,7 +472,7 @@ const Register = () => {
 				.register-button {
 					width: 100%;
 					padding: 12px;
-					background: #ff002c;
+					background: var(--primary-color);
 					color: white;
 					border: none;
 					border-radius: 6px;
@@ -496,7 +494,7 @@ const Register = () => {
 				}
 
 				.login-link {
-					color: #ff002c;
+					color: var(--primary-color);
 					font-weight: 600;
 					text-decoration: none;
 				}

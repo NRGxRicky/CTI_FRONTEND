@@ -83,18 +83,18 @@ const BestCategories = ({ mobile = false }) => {
 
 	if (data.results.length === 0) {
 		return (
-		<div className='best-categories-carousel'>
-			<style jsx>
-				{`
-					.best-categories-carousel {
-						margin-top: 20px;
-						margin-bottom: 20px;
-						min-height: 110px;
-					}
-				`}
-			</style>
+			<div className='best-categories-carousel'>
+				<style jsx>
+					{`
+						.best-categories-carousel {
+							margin-top: 20px;
+							margin-bottom: 20px;
+							min-height: 110px;
+						}
+					`}
+				</style>
 			</div>
-		)
+		);
 	}
 
 	return (
@@ -244,7 +244,7 @@ const BestCategories = ({ mobile = false }) => {
 
 						.carousel__button--color-ligth {
 							background: #ffffff;
-							fill: #ff002c;
+							fill: var(--primary-color);
 						}
 
 						.carousel__button--color-ligth:hover,

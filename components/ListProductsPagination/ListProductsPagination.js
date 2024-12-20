@@ -147,8 +147,8 @@ const ListProductsPagination = ({ pages, pageActive, refreshPage }) => {
 
 					.pagination__current {
 						color: #ffffff;
-						background-color: #ff002c;
-						border-color: #ff002c;
+						background-color: var(--primary-color);
+						border-color: var(--primary-color);
 					}
 
 					.pagination__current a:hover {

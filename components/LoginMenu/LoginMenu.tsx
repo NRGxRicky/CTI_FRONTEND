@@ -14,11 +14,11 @@ import {
 import EyeClose from '../../components/Icons/EyeClose';
 import EyeOpen from '../../components/Icons/EyeOpen';
 
-
 const LoginMenu: React.FC = () => {
 	const [username, setUsername] = useState<string>('');
 	const [password, setPassword] = useState<string>('');
-	const { loading, isAuthenticated, login, logout, isVerified, nombres } = useAuth();
+	const { loading, isAuthenticated, login, logout, isVerified, nombres } =
+		useAuth();
 	const [error, setError] = useState<boolean>(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const dispacth = useAppDispatch();
@@ -134,7 +134,7 @@ const LoginMenu: React.FC = () => {
 											href={'/profile/verify-email/resend-email'}
 											legacyBehavior
 										>
-													<a onClick={() => dispacth(hideAll())}>
+											<a onClick={() => dispacth(hideAll())}>
 												<div className='alert'>
 													<svg
 														xmlns='http://www.w3.org/2000/svg'
@@ -195,7 +195,7 @@ const LoginMenu: React.FC = () => {
 						background: none;
 						border: none;
 						cursor: pointer;
-						color: #ff002c;
+						color: var(--primary-color);
 					}
 
 					.login-menu__body {
@@ -203,7 +203,7 @@ const LoginMenu: React.FC = () => {
 					}
 					.login-menu__error {
 						line-height: 3;
-						color: #ff002c;
+						color: var(--primary-color);
 						margin-top: 10px;
 					}
 
@@ -227,7 +227,7 @@ const LoginMenu: React.FC = () => {
 					}
 
 					.login-menu__forgot-password {
-						color: #ff002c;
+						color: var(--primary-color);
 						text-align: center;
 						line-height: 2;
 					}
@@ -242,7 +242,7 @@ const LoginMenu: React.FC = () => {
 						max-width: 85rem;
 						position: relative;
 						width: 100%;
-						background-color: #ff002c;
+						background-color: var(--primary-color);
 					}
 
 					.login-menu__body__item {
@@ -251,7 +251,7 @@ const LoginMenu: React.FC = () => {
 
 					.login-menu__body__item__button input {
 						width: 100%;
-						background-color: #ff002c;
+						background-color: var(--primary-color);
 						border: 0;
 						height: 40px;
 						border-radius: 5px;
@@ -275,7 +275,7 @@ const LoginMenu: React.FC = () => {
 
 					.login-menu__body__item input:focus,
 					.login-menu__body__item input:hover {
-						border: 1px solid #ff002c;
+						border: 1px solid var(--primary-color);
 					}
 
 					.login-menu__body__item label {
@@ -286,7 +286,7 @@ const LoginMenu: React.FC = () => {
 					.login-menu__register__action-register {
 						text-align: center;
 						font-weight: 600;
-						color: #ff002c;
+						color: var(--primary-color);
 					}
 
 					.login-menu__footer {

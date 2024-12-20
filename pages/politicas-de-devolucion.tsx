@@ -1,19 +1,23 @@
 import React from 'react';
 import Footer from '../components/Footer/Footer';
 import Head from 'next/head';
+import { useEnv } from '../context/EnvContext';
 
 const PoliticasDeDevolucion = () => {
+	const {
+		storeName,
+		metaDescription,
+		titlePostDescription,
+		contactEmail,
+	} = useEnv();
+
 	return (
 		<div>
 			<Head>
 				<title>
-					Política de Devolución | PCStore.mx: Tu tienda en Tecnología,
-					Cómputo, Accesorios
+					{`Política de Devolución| ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<div className='container'>
 				<div className='policy__container'>
@@ -94,7 +98,7 @@ const PoliticasDeDevolucion = () => {
 								procesamiento antes de poder ver reflejado un reembolso.
 								<br />
 								Si ya hizo todo lo anterior y aún no recibió su reembolso, puede
-								contactarnos escribiendo a contacto@pcstore.mx.
+								contactarnos escribiendo a {contactEmail}.
 								<br />
 								Artículos en oferta (si corresponde)
 								<br />
@@ -107,7 +111,7 @@ const PoliticasDeDevolucion = () => {
 								<br />
 								Solo reemplazamos los artículos si están defectuosos o
 								dañados.&nbsp; Si necesita cambiarlo por el mismo artículo,
-								envíenos un correo electrónico a contacto@pcstore.mx.
+								envíenos un correo electrónico a {contactEmail}.
 								<br />
 								<br />
 								Regalos

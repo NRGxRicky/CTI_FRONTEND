@@ -10,7 +10,6 @@ import GoogleAnalytics from '../components/GoogleAnalytics/GoogleAnalytics';
 import NextTopLoader from 'nextjs-toploader';
 import { EnvProvider } from '../context/EnvContext';
 
-
 function MyApp({ Component, pageProps }) {
 	useEffect(() => {
 		window.history.scrollRestoration = 'manual';
@@ -26,7 +25,6 @@ function MyApp({ Component, pageProps }) {
 				behavior: 'instant',
 			});
 		}, 0);
-
 	}, [router]);
 
 	return (

@@ -12,7 +12,7 @@ const Footer: React.FC<FooterProps> = () => {
 	const [column3, setColumn3] = useState(false);
 	const [column4, setColumn4] = useState(false);
 
-	const { contactEmail, facebookUrl, storeName, instagramUrl, tiktokUrl, legalName } = useEnv();
+	const { contactEmail, facebookUrl, storeName, instagramUrl, tiktokUrl, legalName, phone } = useEnv();
 
 	const showCurrentColumn = (integerColumn: number): void => {
 		const columnStates = [column1, column2, column3, column4];
@@ -82,17 +82,17 @@ const Footer: React.FC<FooterProps> = () => {
 							style={{ maxHeight: column2 ? '500px' : '0px' }}
 						>
 							<div className='footer__column__element'>
-								<b>Telefono:</b> 22 28 29 83 51
+								<b>Telefono:</b> {phone}
 							</div>
 							<div className='footer__column__element'>
 								<b>WhatsApp:</b>
 								<a
-									href='https://wa.me/+5212228298351'
+									href={`https://wa.me/+521${phone.replace(/\s+/g, '')}`}
 									target='_blank'
 									rel='noopener noreferrer'
 								>
 									{' '}
-									22 28 29 83 51
+									{phone}
 								</a>
 							</div>
 							<div className='footer__column__element'>
@@ -273,8 +273,7 @@ const Footer: React.FC<FooterProps> = () => {
 					</div>
 				</div>
 				<aside className='footer__aside'>
-					© 2025 {storeName} - {legalName} - Hecho en Puebla, Puebla
-					con ❤️
+					© 2025 {storeName} - {legalName} - Hecho en Puebla, Puebla con ❤️
 				</aside>
 			</div>
 			<style jsx>

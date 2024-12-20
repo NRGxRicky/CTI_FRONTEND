@@ -275,7 +275,7 @@ const InstantSearch = ({ queryInInput }) => {
 							cursor: pointer;
 							text-align: center;
 							line-height: 30px;
-							color: #ff002c;
+							color: var(--primary-color);
 							font-weight: 600;
 							padding: 10px;
 						}

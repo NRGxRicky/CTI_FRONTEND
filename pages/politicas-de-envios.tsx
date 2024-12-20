@@ -1,19 +1,23 @@
 import React from 'react';
 import Footer from '../components/Footer/Footer';
 import Head from 'next/head';
+import { useEnv } from '../context/EnvContext';
 
 const PoliticasDeEnvios = () => {
+	const {
+		storeName,
+		metaDescription,
+		titlePostDescription,
+		contactEmail,
+		phone,
+	} = useEnv();
 	return (
 		<div>
 			<Head>
 				<title>
-					Políticas de Envíos | PCStore.mx: Tu tienda en Tecnología, Cómputo,
-					Accesorios
+					{`Políticas de Envíos | ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<div className='container'>
 				<div className='policy__container'>
@@ -23,7 +27,7 @@ const PoliticasDeEnvios = () => {
 					<div className='policy__body'>
 						<div className='policy__content'>
 							<p>
-								En pcstore.mx, estamos comprometidos a brindarte un servicio de
+								En {storeName}, estamos comprometidos a brindarte un servicio de
 								envío confiable y eficiente. A continuación, se detallan
 								nuestras políticas generales de envío para garantizar una
 								experiencia de compra satisfactoria:
@@ -136,9 +140,9 @@ const PoliticasDeEnvios = () => {
 									Correo electrónico:{' '}
 									<a
 										data-sanitized-target='_new'
-										href='mailto:contacto@pcstore.mx'
+										href={`mailto:${contactEmail}`}
 									>
-										contacto@pcstore.mx
+										{contactEmail}
 									</a>
 								</li>
 								<li>
@@ -148,12 +152,12 @@ const PoliticasDeEnvios = () => {
 										data-encoded-tag-value=''
 										data-encoded-attr-charset='dXRmLTg='
 									></a>
-									<span>22 28 29 83 51</span>
+									<span>{phone}</span>
 								</li>
 							</ul>
 							<br />
 							<p>
-								En pcstore.mx, trabajamos constantemente para garantizar que su
+								En {storeName}, trabajamos constantemente para garantizar que su
 								experiencia de compra y envío sea segura y satisfactoria.
 								Agradecemos su confianza en nosotros como su proveedor de
 								productos y servicios tecnológicos.

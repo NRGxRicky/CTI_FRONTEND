@@ -112,10 +112,10 @@ const ToggleButon = ({
 						border-radius: 50%;
 					}
 					.checkbox:checked + .slider {
-						background-color: #ff002c;
+						background-color: var(--primary-color);
 					}
 					.checkbox:focus + .slider {
-						box-shadow: 0 0 1px #ff002c;
+						box-shadow: 0 0 1pxvar (--primary-color);
 					}
 					.checkbox:checked + .slider:before {
 						-webkit-transform: translateX(8px);

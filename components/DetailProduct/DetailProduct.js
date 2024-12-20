@@ -496,7 +496,7 @@ const DetailProduct = ({
 					}
 
 					.payment-enable {
-						border-color: #ff002c !important;
+						border-color: var(--primary-color) !important;
 						background-color: #ffe7eb;
 					}
 
@@ -610,7 +610,7 @@ const DetailProduct = ({
 					.product__resume__stock__action {
 						width: 90px;
 						display: flex;
-						border: 1px solid #ff002c;
+						border: 1px solid var(--primary-color);
 						border-radius: 5px;
 						background-color: #ffffff;
 					}
@@ -626,7 +626,7 @@ const DetailProduct = ({
 
 					.product_resume__stock__action__quantity:hover,
 					.product_resume__stock__action__quantity:active {
-						color: #ff002c;
+						color: var(--primary-color);
 						cursor: pointer;
 					}
 					.product__resume__stock {

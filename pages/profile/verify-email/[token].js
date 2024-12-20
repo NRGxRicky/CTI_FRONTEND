@@ -25,7 +25,7 @@ const VerifyEmail = () => {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 				}
-      );
+			);
 
 			if (response.ok) {
 				setStatus('success');
@@ -40,9 +40,7 @@ const VerifyEmail = () => {
 	if (status === 'loading') {
 		return (
 			<div className='container'>
-				<div className='verify-card'>
-
-				</div>
+				<div className='verify-card'></div>
 			</div>
 		);
 	}
@@ -116,7 +114,7 @@ const VerifyEmail = () => {
 				.error-label {
 					text-align: center;
 					line-height: 4;
-					color: #ff002c;
+					color: var(--primary-color);
 				}
 
 				.verify-button {
@@ -124,7 +122,7 @@ const VerifyEmail = () => {
 					width: 100%;
 					padding: 12px;
 					margin-top: 20px;
-					background: #ff002c;
+					background: var(--primary-color);
 					color: white;
 					border: none;
 					border-radius: 6px;

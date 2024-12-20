@@ -16,7 +16,7 @@ const index = () => {
 	const { loading, isAuthenticated, login, logout } = useAuth();
 	const { storeName, metaDescription, titlePostDescription } = useEnv();
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
-	
+
 	const HandleSubmit = async (e) => {
 		e.preventDefault();
 		setLoadingData(true);
@@ -172,8 +172,8 @@ const index = () => {
 					.login__back:hover label,
 					.login__back:hover .login__back__icon {
 						cursor: pointer;
-						fill: #ff002c;
-						color: #ff002c;
+						fill: var(--primary-color);
+						color: var(--primary-color);
 					}
 
 					.card__form {
@@ -209,7 +209,7 @@ const index = () => {
 						margin-top: 20px;
 						width: 100%;
 						padding: 15px;
-						background-color: #ff002c;
+						background-color: var(--primary-color);
 						border-radius: 5px;
 						border: 0;
 						color: #ffffff;

@@ -11,13 +11,8 @@ import useDebounce from '../../hooks/useDebounce';
 import SummaryDetails from '../SummaryDetails/SummaryDetails';
 
 const CartSummary = () => {
-	const {
-		cart,
-		localcheckBackend,
-		removeFromCart,
-		addToCart,
-		loading,
-	} = useCart();
+	const { cart, localcheckBackend, removeFromCart, addToCart, loading } =
+		useCart();
 
 	const [isLoading, setIsLoading] = useState(false);
 	const { cartMsi, isAuthenticated } = useAuth();
@@ -362,7 +357,7 @@ const CartSummary = () => {
 
 				.item-delete {
 					font-size: 12px;
-					color: #ff002c;
+					color: var(--primary-color);
 					font-weight: 300;
 					cursor: pointer;
 				}
@@ -394,7 +389,7 @@ const CartSummary = () => {
 				.product__resume__stock__action {
 					width: 90px;
 					display: flex;
-					border: 1px solid #ff002c;
+					border: 1px solid var(--primary-color);
 					border-radius: 5px;
 					background-color: #ffffff;
 					justify-content: space-between;
@@ -411,7 +406,7 @@ const CartSummary = () => {
 
 				.product_resume__stock__action__quantity:hover,
 				.product_resume__stock__action__quantity:active {
-					color: #ff002c;
+					color: var(--primary-color);
 					cursor: pointer;
 				}
 				.product__resume__stock {
@@ -512,7 +507,7 @@ const CartSummary = () => {
 				.clear-cart,
 				.proceed-checkout {
 					flex: 1;
-					background: #ff002c;
+					background: var(--primary-color);
 					color: #fff;
 					border: none;
 					border-radius: 4px;
@@ -524,7 +519,7 @@ const CartSummary = () => {
 				}
 
 				.button__go-to-home {
-					background: #ff002c;
+					background: var(--primary-color);
 					color: #fff;
 					border: none;
 					border-radius: 4px;

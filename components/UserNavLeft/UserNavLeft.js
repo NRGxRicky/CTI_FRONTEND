@@ -84,8 +84,8 @@ const UserNavLeft = () => {
 							margin-left: 20px;
 						}
 						.active {
-							border-bottom: 2px solid #ff002c;
-							color: #ff002c;
+							border-bottom: 2px solid var(--primary-color);
+							color: var(--primary-color);
 							cursor: default;
 						}
 					}

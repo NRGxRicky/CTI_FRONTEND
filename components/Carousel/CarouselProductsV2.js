@@ -363,7 +363,7 @@ const CarouselProductsV2 = ({
 
 						.v2__carousel__button--color-ligth {
 							background: #ffffff;
-							fill: #ff002c;
+							fill: var(--primary-color);
 						}
 
 						.v2__carousel__button--color-ligth:hover,

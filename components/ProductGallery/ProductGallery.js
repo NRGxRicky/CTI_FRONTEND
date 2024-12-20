@@ -369,7 +369,7 @@ const ProductGallery = ({
 									},
 
 									enlargedImageContainerStyle: {
-										border: '1px solid #ff002c',
+										border: '1px solid var(--primary-color)',
 										top:
 											imgCurrentRef?.current?.offsetWidth +
 												imgCurrentRef?.current?.offsetWidth / 2 >=
@@ -463,7 +463,7 @@ const ProductGallery = ({
 					}
 
 					.product__gallery__item__active {
-						border: 2px solid #ff002c;
+						border: 2px solid var(--primary-color);
 					}
 
 					.product__gallery__item__image {

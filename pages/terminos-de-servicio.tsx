@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { useEnv } from '../context/EnvContext';
 
 const TerminosDeServicio = () => {
-	const { storeName, metaDescription, titlePostDescription, legalName } = useEnv();
+	const { storeName, metaDescription, titlePostDescription, legalName, contactEmail, rfc, phone } = useEnv();
 	return (
 		<div>
 			<Head>
@@ -29,11 +29,12 @@ const TerminosDeServicio = () => {
 								<br />
 								{legalName} gestiona este sitio web. En todo el sitio, los
 								términos "nosotros", "nos" y "nuestro" se refieren en lo
-								sucesivo a PCSTORE.MX. PCSTORE.MX ofrece esta página web,
-								incluida toda la información, las herramientas y los servicios
-								que se ponen en este sitio a disposición suya, el usuario,
-								siempre y cuando acepte la totalidad de los términos,
-								condiciones, políticas y avisos contemplados aquí.
+								sucesivo a {storeName.toUpperCase()}. {storeName.toUpperCase()}{' '}
+								ofrece esta página web, incluida toda la información, las
+								herramientas y los servicios que se ponen en este sitio a
+								disposición suya, el usuario, siempre y cuando acepte la
+								totalidad de los términos, condiciones, políticas y avisos
+								contemplados aquí.
 								<br />
 								<br />
 								Al visitar nuestro sitio y/o comprarnos algo, usted interactúa
@@ -69,11 +70,6 @@ const TerminosDeServicio = () => {
 								cambios. Su uso de la página web o el acceso a ella de forma
 								continuada después de la publicación de cualquier cambio
 								constituye la aceptación de dichos cambios.
-								<br />
-								<br />
-								Nuestra tienda está alojada en Shopify Inc. Nos proporcionan la
-								plataforma de comercio electrónico en línea que nos permite
-								venderle nuestros productos y servicios.
 								<br />
 								<br />
 								**SECCIÓN 1: TÉRMINOS DE LA TIENDA ONLINE**
@@ -424,45 +420,45 @@ const TerminosDeServicio = () => {
 								durabilidad, título y no infracción.
 								<br />
 								<br />
-								En ningún caso, PCSTORE.MX, nuestros directores, funcionarios,
-								empleados, afiliados, agentes, contratistas, internos,
-								proveedores, prestadores de servicios o licenciantes serán
-								responsables de cualquier lesión, pérdida, reclamo o cualquier
-								daño directo, indirecto, incidental, punitivo, especial o
-								consecuente de ningún tipo, incluyendo, sin limitación, pérdida
-								de beneficios, pérdida de ingresos, pérdida de ahorros, pérdida
-								de datos, costos de reemplazo o cualquier daño similar, ya sea
-								basado en contrato, agravio (incluyendo negligencia),
-								responsabilidad estricta o de otro tipo, como resultado de su
-								uso de cualquiera de los servicios o productos adquiridos
-								mediante el servicio, o por cualquier otra reclamación
-								relacionada de alguna manera con su uso del servicio o cualquier
-								producto, incluyendo, pero sin limitarse a, cualquier error u
-								omisión en cualquier contenido o cualquier pérdida o daño de
-								cualquier tipo incurridos como resultado del uso del servicio o
-								cualquier contenido (o producto) publicado, transmitido o puesto
-								a disposición de cualquier otra manera a través del servicio,
-								incluso si se le advierte de su posibilidad. Debido a que
-								algunos estados o jurisdicciones no permiten la exclusión o la
-								limitación de responsabilidad por daños consecuenciales o
-								incidentales, en tales estados o jurisdicciones, nuestra
-								responsabilidad se limitará en la medida máxima permitida por la
-								ley.
+								En ningún caso, {storeName.toUpperCase()}, nuestros directores,
+								funcionarios, empleados, afiliados, agentes, contratistas,
+								internos, proveedores, prestadores de servicios o licenciantes
+								serán responsables de cualquier lesión, pérdida, reclamo o
+								cualquier daño directo, indirecto, incidental, punitivo,
+								especial o consecuente de ningún tipo, incluyendo, sin
+								limitación, pérdida de beneficios, pérdida de ingresos, pérdida
+								de ahorros, pérdida de datos, costos de reemplazo o cualquier
+								daño similar, ya sea basado en contrato, agravio (incluyendo
+								negligencia), responsabilidad estricta o de otro tipo, como
+								resultado de su uso de cualquiera de los servicios o productos
+								adquiridos mediante el servicio, o por cualquier otra
+								reclamación relacionada de alguna manera con su uso del servicio
+								o cualquier producto, incluyendo, pero sin limitarse a,
+								cualquier error u omisión en cualquier contenido o cualquier
+								pérdida o daño de cualquier tipo incurridos como resultado del
+								uso del servicio o cualquier contenido (o producto) publicado,
+								transmitido o puesto a disposición de cualquier otra manera a
+								través del servicio, incluso si se le advierte de su
+								posibilidad. Debido a que algunos estados o jurisdicciones no
+								permiten la exclusión o la limitación de responsabilidad por
+								daños consecuenciales o incidentales, en tales estados o
+								jurisdicciones, nuestra responsabilidad se limitará en la medida
+								máxima permitida por la ley.
 								<br />
 								<br />
 								**SECCIÓN 14: INDEMNIZACIÓN**
 								<br />
 								<br />
 								Usted acepta indemnizar, defender y mantener indemne a
-								PCSTORE.MX y a nuestras matrices, subsidiarias, afiliados,
-								socios, funcionarios, directores, agentes, contratistas,
-								licenciantes, prestadores de servicios, subcontratistas,
-								proveedores, internos y empleados, de cualquier reclamación o
-								demanda, incluyendo honorarios razonables de abogados,
-								realizados por cualquier tercero debido a su incumplimiento de
-								los Términos del servicio o de los documentos que incorporan
-								como referencia, o debido a su violación de cualquier ley o de
-								los derechos de un tercero.
+								{' '}{storeName.toUpperCase()} y a nuestras matrices, subsidiarias,
+								afiliados, socios, funcionarios, directores, agentes,
+								contratistas, licenciantes, prestadores de servicios,
+								subcontratistas, proveedores, internos y empleados, de cualquier
+								reclamación o demanda, incluyendo honorarios razonables de
+								abogados, realizados por cualquier tercero debido a su
+								incumplimiento de los Términos del servicio o de los documentos
+								que incorporan como referencia, o debido a su violación de
+								cualquier ley o de los derechos de un tercero.
 								<br />
 								<br />
 								**SECCIÓN 15: DIVISIBILIDAD**
@@ -526,8 +522,7 @@ const TerminosDeServicio = () => {
 								<br />
 								Estos Términos del servicio y cualquier acuerdo aparte mediante
 								el cual le brindemos servicios se regirán e interpretarán de
-								acuerdo con las leyes aplicables en el Estado de [Estado], EE.
-								UU.
+								acuerdo con las leyes aplicables en la república Mexicana.
 								<br />
 								<br />
 								**SECCIÓN 19: CAMBIOS EN LOS TÉRMINOS DEL SERVICIO**
@@ -551,8 +546,7 @@ const TerminosDeServicio = () => {
 								<br />
 								<br />
 								Las preguntas sobre los Términos del servicio deben enviarse a
-								nosotros en la dirección de correo electrónico
-								contacto@pcstore.mx.
+								nosotros en la dirección de correo electrónico{' '}{contactEmail}.
 								<br />
 							</p>
 							<p>
@@ -560,16 +554,16 @@ const TerminosDeServicio = () => {
 								**Información de Contacto**
 								<br />
 								<br />
-								Responsable Legal: PCSTORE ONLINE SAS DE CV
+								Responsable Legal: {legalName}
 								<br />
 								<a
 									data-encoded-tag-name='meta'
 									data-encoded-tag-value=''
 									data-encoded-attr-charset='dXRmLTg='
 								></a>
-								Nombre Comercial: PCSTORE.MX
+								Nombre Comercial: {storeName.toUpperCase()}
 								<br />
-								Correo Electrónico: contacto@pcstore.mx
+								Correo Electrónico: {contactEmail}
 								<br />
 								Número de Teléfono:{' '}
 								<a
@@ -577,9 +571,9 @@ const TerminosDeServicio = () => {
 									data-encoded-tag-value=''
 									data-encoded-attr-charset='dXRmLTg='
 								></a>
-								<span>22 28 29 83 51</span>
+								<span>{phone}</span>
 								<br />
-								Número de Identificación Fiscal (RFC):&nbsp;PON240523JD2
+								Número de Identificación Fiscal (RFC):&nbsp;{rfc}
 							</p>
 							<p>
 								<br />

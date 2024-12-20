@@ -366,7 +366,7 @@ const Token = ({ tokenRecovery }) => {
 					}
 
 					.error-message {
-						color: #ff002c;
+						color: var(--primary-color);
 						margin-top: 10px;
 						margin-bottom: 10px;
 					}
@@ -390,7 +390,7 @@ const Token = ({ tokenRecovery }) => {
 
 					.forgot-password__form input:focus {
 						outline: none;
-						border-color: #ff002c;
+						border-color: var(--primary-color);
 					}
 
 					.password-input-container {
@@ -406,7 +406,7 @@ const Token = ({ tokenRecovery }) => {
 						border: none;
 						cursor: pointer;
 						margin-top: 5px;
-						color: #ff002c;
+						color: var(--primary-color);
 					}
 
 					.password-strength {
@@ -443,7 +443,7 @@ const Token = ({ tokenRecovery }) => {
 					.back-home-button {
 						width: 100%;
 						padding: 12px;
-						background-color: #ff002c;
+						background-color: var(--primary-color);
 						color: white;
 						border: none;
 						border-radius: 6px;
@@ -458,7 +458,7 @@ const Token = ({ tokenRecovery }) => {
 					.button-submit {
 						width: 100%;
 						padding: 12px;
-						background-color: #ff002c;
+						background-color: var(--primary-color);
 						color: #ffffff;
 						border: none;
 						border-radius: 6px;
@@ -481,7 +481,7 @@ const Token = ({ tokenRecovery }) => {
 					}
 
 					.password-length.error {
-						color: #ff002c;
+						color: var(--primary-color);
 					}
 				`}
 			</style>

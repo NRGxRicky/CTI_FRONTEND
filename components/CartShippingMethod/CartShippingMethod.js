@@ -145,9 +145,9 @@ const CartShippingMethod = () => {
 				}
 
 				.cart-shipping-method__item.active {
-					border: 1px solid #ff002c !important;
-					color: #ff002c;
-					fill: #ff002c;
+					border: 1px solid var(--primary-color) !important;
+					color: var(--primary-color);
+					fill: var(--primary-color);
 				}
 
 				.cart-shipping-method {

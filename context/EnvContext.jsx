@@ -16,6 +16,9 @@ export function EnvProvider({ children }) {
 		metaDescription: process.env.NEXT_PUBLIC_META_DESCRIPTION,
 		pageUrl: process.env.NEXT_PUBLIC_PAGE_URL,
 		titlePostDescription: process.env.NEXT_PUBLIC_TITLE_POST_DESCRIPTION,
+		rfc: process.env.NEXT_PUBLIC_RFC,
+		phone: process.env.NEXT_PUBLIC_PHONE,
+		logoUrl: process.env.NEXT_PUBLIC_LOGO_URL,
 	};
 
 	return (

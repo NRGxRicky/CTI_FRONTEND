@@ -10,7 +10,7 @@ const ResendVerificationEmail = () => {
 		isAuthenticated,
 		isVerified,
 		username,
-		accessToken
+		accessToken,
 	} = useAuth();
 	const [status, setStatus] = useState(null); // 'success', 'error', or null
 	const [loading, setLoading] = useState(false);
@@ -30,7 +30,6 @@ const ResendVerificationEmail = () => {
 						'Content-Type': 'application/json',
 						Authorization: `Bearer ${accessToken}`,
 					},
-			
 				}
 			);
 
@@ -53,17 +52,14 @@ const ResendVerificationEmail = () => {
 	if (!authLoading && isVerified) {
 		Router.push('/');
 	}
-	
+
 	return (
 		<div className='container'>
 			<Head>
 				<title>
 					{`Reenviar correo de verificación | ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`${metaDescription}`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<div className='resend-card'>
 				<h2>Reenviar correo de verificación</h2>
@@ -153,13 +149,13 @@ const ResendVerificationEmail = () => {
 				}
 
 				.form-group input:focus {
-					border-color: #ff002c;
+					border-color: var(--primary-color);
 				}
 
 				.resend-button {
 					width: 100%;
 					padding: 12px;
-					background: #ff002c;
+					background: var(--primary-color);
 					color: white;
 					border: none;
 					border-radius: 6px;
@@ -186,7 +182,7 @@ const ResendVerificationEmail = () => {
 				}
 
 				.error-message {
-					color: #ff002c;
+					color: var(--primary-color);
 					margin-bottom: 10px;
 				}
 			`}</style>

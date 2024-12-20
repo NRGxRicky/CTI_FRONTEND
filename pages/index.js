@@ -18,9 +18,7 @@ const Home = () => {
 	return (
 		<div>
 			<Head>
-				<title>
-					{`${storeName}: ${titlePostDescription}`}
-				</title>
+				<title>{`${storeName}: ${titlePostDescription}`}</title>
 				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<Standard />
@@ -90,7 +88,7 @@ const Home = () => {
 			<style jsx>
 				{`
 					.section-gamer .section-products__title {
-						background-color: #ff002c;
+						background-color: var(--primary-color);
 						color: #fff;
 						border-bottom-left-radius: 0;
 						border-bottom-right-radius: 0;
@@ -113,7 +111,7 @@ const Home = () => {
 					}
 
 					.section__offers {
-						color: #ff002c;
+						color: var(--primary-color);
 						border-radius: 5px;
 						line-height: 1.5;
 						display: flex;

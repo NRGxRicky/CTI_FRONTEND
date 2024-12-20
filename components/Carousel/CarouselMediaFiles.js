@@ -246,7 +246,7 @@ const CarouselMediaFiles = ({
 
 				.mediafiles__carousel__button--color-ligth {
 					background: #ffffff;
-					fill: #ff002c;
+					fill: var(--primary-color);
 				}
 
 				.mediafiles__carousel__button--color-ligth:hover,

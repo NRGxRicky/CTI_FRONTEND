@@ -259,7 +259,7 @@ const ProductGalleryZoom = ({
 					}
 
 					.product__gallery_zoom__carousel__button--color-ligth {
-						fill: #ff002c;
+						fill:var(--primary-color);
 					}
 
 					.product__gallery_zoom__carousel__container {
@@ -351,7 +351,7 @@ const ProductGalleryZoom = ({
 					}
 
 					.active {
-						border: 2px solid #ff002c;
+						border: 2px solid var(--primary-color);
 					}
 
 					.product__gallery_zoom__thumbnails__item__image {

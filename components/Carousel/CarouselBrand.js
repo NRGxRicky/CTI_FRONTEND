@@ -270,7 +270,7 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 
 					.carousel__button--color-ligth {
 						background: #ffffff;
-						fill: #ff002c;
+						fill:var(--primary-color);
 					}
 
 					.carousel__button--color-ligth:hover,

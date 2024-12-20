@@ -47,7 +47,7 @@ const FiltersOptios = ({
 
 	const handdleAppendFilter = useCallback(
 		({ target: { name, checked } }) => {
-			copyState[name] = checked 
+			copyState[name] = checked;
 		},
 		[filtersActive]
 	);
@@ -65,7 +65,6 @@ const FiltersOptios = ({
 					copyState['brands'] = copyState['brands'].filter((e) => e !== name);
 				}
 			}
-		
 		},
 		[filtersActive]
 	);
@@ -84,7 +83,6 @@ const FiltersOptios = ({
 					);
 				}
 			}
-		
 		},
 		[filtersActive]
 	);
@@ -103,7 +101,6 @@ const FiltersOptios = ({
 					);
 				}
 			}
-		
 		},
 		[filtersActive]
 	);
@@ -552,7 +549,7 @@ const FiltersOptios = ({
 					}
 
 					.nav__filters__footer__apply {
-						background-color: #ff002c;
+						background-color: var(--primary-color);
 						color: #ffffff;
 					}
 

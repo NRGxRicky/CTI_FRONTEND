@@ -1,19 +1,25 @@
 import React from 'react';
 import Footer from '../components/Footer/Footer';
 import Head from 'next/head';
+import { useEnv } from '../context/EnvContext';
 
 const PoliticaDePrivacidad = () => {
+	const {
+		storeName,
+		metaDescription,
+		titlePostDescription,
+		contactEmail,
+		phone,
+		legalName,
+		pageUrl
+	} = useEnv();
 	return (
 		<div>
 			<Head>
 				<title>
-					Aviso de Privacidad | PCStore.mx: Tu tienda en Tecnología, Cómputo,
-					Accesorios
+					{`Aviso de Privacidad | ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<div className='container'>
 				<div className='policy__container'>
@@ -24,7 +30,7 @@ const PoliticaDePrivacidad = () => {
 						<div className='policy__content'>
 							A V I S O D E P R I V A C I D A D<br />
 							<br />
-							PCSTORE ONLINE SAS DE CV, titular de PCSTORE.MX (en lo sucesivo,
+							{legalName}, titular de {storeName.toUpperCase()} (en lo sucesivo,
 							el “Responsable”), en cumplimiento con la Ley Federal de
 							Protección de Datos Personales en Posesión de Particulares y su
 							Reglamento (en lo sucesivo de manera conjunta, la “Ley”), pone a
@@ -79,14 +85,12 @@ const PoliticaDePrivacidad = () => {
 							contacto:
 							<br />
 							<br />
-							-Por vía telefónica en el teléfono al <span>
-								22 28 29 83 51
-							</span>{' '}
-							de lunes a viernes con horario 9:00 am a 6:00 pm.
+							-Por vía telefónica en el teléfono al <span>{phone}</span> de
+							lunes a viernes con horario 9:00 am a 6:00 pm.
 							<br />
 							<br />
-							-A través del correo electrónico contacto@pcstore.mx de lunes a
-							viernes con horario 9:00 am a 6:00 pm.
+							-A través del correo electrónico {contactEmail} de lunes a viernes
+							con horario 9:00 am a 6:00 pm.
 							<br />
 							<br />
 							La solicitud que presente para el ejercicio de los Derechos ARCO
@@ -181,7 +185,7 @@ const PoliticaDePrivacidad = () => {
 							privacidad del Responsable o de sus necesidades derivadas de los
 							productos o servicios que ofrece, o por cualquier otra causa. El
 							Responsable hará de su conocimiento cualquier cambio o
-							actualización al presente aviso a través de https://pcstore.mx.
+							actualización al presente aviso a través de {pageUrl}.
 							<br />
 						</div>
 					</div>

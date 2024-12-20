@@ -97,8 +97,8 @@ const PaymentsChange = () => {
 								</div>
 								<div className='payments-change__option__item__label'>
 									<span>
-										Hasta 3 MSI con tarjetas participantes Mercado Pago o
-										hasta 12 pagos con Mercado Crédito.
+										Hasta 3 MSI con tarjetas participantes Mercado Pago o hasta
+										12 pagos con Mercado Crédito.
 									</span>
 								</div>
 							</div>
@@ -240,15 +240,15 @@ const PaymentsChange = () => {
 					}
 
 					.payment-enable {
-						border-color: #ff002c !important;
+						border-color:var(--primary-color) !important;
 					}
 
           .payments-change__option:hover {
-            border-color: #ff002c !important;
+            border-color:var(--primary-color) !important;
           }
 
 					.payment-enable .payments-change__option__header {
-						background-color: #ff002c;
+						background-color:var(--primary-color);
 						color: #fff;
 					}
 
@@ -261,7 +261,7 @@ const PaymentsChange = () => {
 						font-weight: 300;
 						margin-left: 10px;
 						border-radius: 5px;
-						background-color: #ff002c;
+						background-color:var(--primary-color);
 						color: #fff;
 						padding: 5px 10px;
 					}

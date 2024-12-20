@@ -50,7 +50,7 @@ const StatusBarCart = ({ steps = [], activeStep = 'cart' }) => {
 				}
 
 				.status-step.actived {
-					color: #ff002c;
+					color: var(--primary-color);
 				}
 
 				.status-step .line {
@@ -63,7 +63,7 @@ const StatusBarCart = ({ steps = [], activeStep = 'cart' }) => {
 				}
 
 				.status-step.active .line {
-					background: #ff002c;
+					background: var(--primary-color);
 				}
 
 				.step-link {

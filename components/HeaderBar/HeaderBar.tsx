@@ -46,7 +46,7 @@ const HeaderBar: React.FC = () => {
 	const { cart, total, localcheckBackend } = useCart();
 
 	const dispatch = useAppDispatch();
-	 const { storeName } = useEnv();
+	const { storeName, logoUrl } = useEnv();
 
 	useEffect(() => {
 		dispatch(setMobileView(detectIsMobile));
@@ -69,8 +69,8 @@ const HeaderBar: React.FC = () => {
 
 	const handleShowSummaryCartmini = () => {
 		localcheckBackend();
-		dispatch(showCart())
-	}
+		dispatch(showCart());
+	};
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -113,7 +113,7 @@ const HeaderBar: React.FC = () => {
 						<div className='header-bar__section col-xs-2 col-sm-5 col-md-2 col-lg-2'>
 							<a className='header-bar__logo' href='/'>
 								<Image
-									src='/images/logo.png'
+									src={logoUrl}
 									width='98'
 									height='42'
 									sizes='auto'
@@ -393,7 +393,7 @@ const HeaderBar: React.FC = () => {
 				.header-bar__cart-counter {
 					left: 10px;
 					top: -10px;
-					background-color: #ff002c;
+					background-color: var(--primary-color);
 					border-radius: 15px;
 					border: 2px solid #fff;
 					color: #ffffff !important;
@@ -519,8 +519,8 @@ const HeaderBar: React.FC = () => {
 				}
 
 				.header-bar__button-search {
-					border: 1px solid #ff002c;
-					background-color: #ff002c;
+					border: 1px solid var(--primary-color);
+					background-color: var(--primary-color);
 					height: 40px;
 					width: 50px;
 					color: #ffffff;
@@ -553,9 +553,9 @@ const HeaderBar: React.FC = () => {
 
 				.header-bar__section-icon:hover .header-bar__icon,
 				.header-bar__section-icon:hover span {
-					fill: #ff002c;
-					stroke: #ff002c;
-					color: #ff002c;
+					fill: var(--primary-color);
+					stroke: var(--primary-color);
+					color: var(--primary-color);
 					cursor: pointer;
 				}
 

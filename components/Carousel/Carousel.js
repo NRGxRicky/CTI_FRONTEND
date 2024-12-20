@@ -143,7 +143,7 @@ export const CarouselContainer = ({
 
 					.carousel__button--color-ligth {
 						background: #ffffff;
-						fill: #ff002c;
+						fill: var(--primary-color);
 					}
 
 					.carousel__button--color-ligth:hover,
