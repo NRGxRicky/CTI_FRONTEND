@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useAppSelector } from '../../lib/hooks';
 import Head from 'next/head';
 import UserNavLeft from '../../components/UserNavLeft/UserNavLeft';
+import { useEnv } from '../../context/EnvContext';
 
 const index = () => {
 	const { isAuthenticated, loading, accessToken, isVerified } = useAuth();
@@ -21,7 +22,8 @@ const index = () => {
 	const [changeDomicilios, setChangeDomicilios] = useState(false);
 	const [error, setError] = useState(false);
 	const [update, setUpdate] = useState(false);
-		const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
+	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
+	const { storeName, metaDescription, titlePostDescription } = useEnv();
 
 	const HandleSubmit = async (e) => {
 		e.preventDefault();
@@ -74,13 +76,9 @@ const index = () => {
 		<div>
 			<Head>
 				<title>
-					Mi Perfil | PCStore.mx: Tu tienda en Tecnología, Cómputo,
-					Accesorios
+					{`Mi Perfil | ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<div className='profile container'>
 				<UserNavLeft />

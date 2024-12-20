@@ -5,6 +5,7 @@ import EyeClose from '../../../components/Icons/EyeClose';
 import EyeOpen from '../../../components/Icons/EyeOpen';
 import CheckCircleGreen from '../../../components/Icons/CheckCircleGreen';
 import Head from 'next/head';
+import { useEnv } from '../../../context/EnvContext';
 
 export const getServerSideProps = async (context) => {
 	return {
@@ -28,6 +29,7 @@ const Token = ({ tokenRecovery }) => {
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [isTokenExpired, setIsTokenExpired] = useState(false); // Nuevo estado para controlar si el token está expirado
 	const [checkToken, setCheckToken] = useState(false);
+	const { storeName, metaDescription, titlePostDescription } = useEnv();
 
 	useEffect(() => {
 		const evaluatePasswordStrength = (password) => {
@@ -141,13 +143,9 @@ const Token = ({ tokenRecovery }) => {
 			<div className='container'>
 				<Head>
 					<title>
-						El enlace de restablecimiento ha expirado | PCStore.mx: Tu tienda en
-						Tecnología, Cómputo, Accesorios
+						{`El enlace de restablecimiento ha expirado | ${storeName}: ${titlePostDescription}`}
 					</title>
-					<meta
-						name='description'
-						content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-					/>
+					<meta name='description' content={`${metaDescription}`} />
 				</Head>
 				<div className='forgot-password'>
 					<div className='forgot-password__container'>
@@ -207,13 +205,9 @@ const Token = ({ tokenRecovery }) => {
 		<div className='container'>
 			<Head>
 				<title>
-					Nueva Contraseña | PCStore.mx: Tu tienda en Tecnología, Cómputo,
-					Accesorios
+					{`Nueva Contraseña | ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<div className='forgot-password'>
 				<div className='forgot-password__container'>

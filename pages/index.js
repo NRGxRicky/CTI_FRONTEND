@@ -9,18 +9,19 @@ import { useAppSelector } from '../lib/hooks';
 import BestCategories from '../components/BestCategories/BestCategories';
 import CarouselProductsV4 from '../components/Carousel/CarouselProductsv4';
 import BenefitCarousel from '../components/BenefitCarousel/BenefitCarousel';
+import { useEnv } from '../context/EnvContext';
 
 const Home = () => {
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
+	const { storeName, titlePostDescription, metaDescription } = useEnv();
 
 	return (
 		<div>
 			<Head>
-				<title>PCStore.mx: Tu tienda en Tecnología, Cómputo, Accesorios</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<title>
+					{`${storeName}: ${titlePostDescription}`}
+				</title>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<Standard />
 			<div className='container'>
@@ -79,7 +80,7 @@ const Home = () => {
 						/>
 					</div>
 				</div>
-				
+
 				<BenefitCarousel />
 
 				<InfoPageFooter />

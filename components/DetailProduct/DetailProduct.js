@@ -18,6 +18,7 @@ const DetailProduct = ({
 	height,
 	tempMobile = false,
 	filter_available_store,
+	sellerDefaultName,
 }) => {
 	const lastday = function (y, m) {
 		return new Date(y, m + 1, 0).getDate();
@@ -32,12 +33,12 @@ const DetailProduct = ({
 		addDays(today, 5)
 	);
 	const [cartQuantity, setCartQuantity] = useState(1);
-	const [internalCartMsi, setInternalCartMsi] = useState(false)
+	const [internalCartMsi, setInternalCartMsi] = useState(false);
 	const { cartMsi } = useAuth();
 
 	useEffect(() => {
 		setInternalCartMsi(cartMsi);
-	},[cartMsi])
+	}, [cartMsi]);
 
 	const dispatch = useAppDispatch();
 
@@ -101,9 +102,8 @@ const DetailProduct = ({
 		setCartQuantity((prev) => {
 			const newQuantity = prev + 1;
 			if (newQuantity > item.stock_total) {
-				return item.stock_total
-			}
-				else {
+				return item.stock_total;
+			} else {
 				return newQuantity;
 			}
 		});
@@ -121,8 +121,7 @@ const DetailProduct = ({
 		if (!isNaN(value) && value > 0) {
 			if (value > item.stock_total) {
 				setCartQuantity(item.stock_total);
-			}
-			else {
+			} else {
 				setCartQuantity(value);
 			}
 		} else {
@@ -142,9 +141,8 @@ const DetailProduct = ({
 	}
 
 	useEffect(() => {
-		setCartQuantity(1)
-
-	}, [item])
+		setCartQuantity(1);
+	}, [item]);
 	return (
 		<div className='product'>
 			<div className='product__gallery'>
@@ -453,7 +451,7 @@ const DetailProduct = ({
 								/>
 
 								<div className='product__seller_current'>
-									Vendido y enviado por <b>PCSTORE</b>
+									Vendido y enviado por <b>{sellerDefaultName}</b>
 								</div>
 
 								<InfoMini />

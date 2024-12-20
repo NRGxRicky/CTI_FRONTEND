@@ -7,10 +7,12 @@ import Router from 'next/router';
 import useCart from '../../../hooks/useCart';
 import CartShippingMethod from '../../../components/CartShippingMethod/CartShippingMethod';
 import StatusBarCart from '../../../components/StatusBarCart/StatusBarCart';
+import { useEnv } from '../../../context/EnvContext';
 
 const index = () => {
 	const { isAuthenticated, loading, accessToken } = useAuth();
 	const { cart, loading: loadingCart } = useCart();
+	const { storeName, metaDescription, titlePostDescription } = useEnv();
 
 	if (!loading && !isAuthenticated) {
 		Router.push(`/login?redirect=${encodeURIComponent(Router.asPath)}`);
@@ -26,13 +28,9 @@ const index = () => {
 		<div className='container'>
 			<Head>
 				<title>
-					Método de envió | PCStore.mx: Tu tienda en Tecnología, Cómputo,
-					Accesorios
+					{`Método de envió | ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<StatusBarCart
 				steps={[

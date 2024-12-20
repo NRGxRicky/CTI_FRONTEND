@@ -1,19 +1,17 @@
 import React from 'react';
 import Footer from '../components/Footer/Footer';
 import Head from 'next/head';
+import { useEnv } from '../context/EnvContext';
 
 const TerminosDeServicio = () => {
+	const { storeName, metaDescription, titlePostDescription, legalName } = useEnv();
 	return (
 		<div>
 			<Head>
 				<title>
-					Términos del Servicio | PCStore.mx: Tu tienda en Tecnología, Cómputo,
-					Accesorios
+					{`Términos del Servicio | ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<div className='container'>
 				<div className='policy__container'>
@@ -29,9 +27,9 @@ const TerminosDeServicio = () => {
 								**GENERALIDADES**
 								<br />
 								<br />
-								PCSTORE ONLINE SAS DE CV gestiona este sitio web. En todo el
-								sitio, los términos "nosotros", "nos" y "nuestro" se refieren en
-								lo sucesivo a PCSTORE.MX. PCSTORE.MX ofrece esta página web,
+								{legalName} gestiona este sitio web. En todo el sitio, los
+								términos "nosotros", "nos" y "nuestro" se refieren en lo
+								sucesivo a PCSTORE.MX. PCSTORE.MX ofrece esta página web,
 								incluida toda la información, las herramientas y los servicios
 								que se ponen en este sitio a disposición suya, el usuario,
 								siempre y cuando acepte la totalidad de los términos,

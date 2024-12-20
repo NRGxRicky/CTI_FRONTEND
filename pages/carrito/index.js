@@ -4,18 +4,18 @@ import BenefitCarousel from '../../components/BenefitCarousel/BenefitCarousel';
 import Head from 'next/head';
 import FooterMini from '../../components/FooterMini/FooterMini';
 import StatusBarCart from '../../components/StatusBarCart/StatusBarCart';
+import { useEnv } from '../../context/EnvContext';
 
 const index = () => {
+	const { storeName, metaDescription, titlePostDescription } = useEnv();
+
   return (
 		<div className='container'>
 			<Head>
 				<title>
-					Carrito | PCStore.mx: Tu tienda en Tecnología, Cómputo, Accesorios
+					{`Carrito | ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<StatusBarCart
 				steps={[

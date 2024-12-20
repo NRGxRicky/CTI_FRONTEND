@@ -6,6 +6,7 @@ import EyeOpen from '../../components/Icons/EyeOpen';
 import CheckCircleGreen from '../../components/Icons/CheckCircleGreen';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { useEnv } from '../../context/EnvContext';
 
 const Register = () => {
 	const [formData, setFormData] = useState({
@@ -26,6 +27,7 @@ const Register = () => {
 	const [success, setSuccess] = useState(false);
 	const router = useRouter();
 	const { redirect } = router.query;
+	const { storeName, metaDescription, titlePostDescription } = useEnv();
 
 	useEffect(() => {
 		const evaluatePasswordStrength = (password) => {
@@ -144,13 +146,9 @@ const Register = () => {
 		<div className='container'>
 			<Head>
 				<title>
-					Crear Cuenta | PCStore.mx: Tu tienda en Tecnología, Cómputo,
-					Accesorios
+					{`Crear Cuenta | ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			{success ? (
 				<div className='register-card'>

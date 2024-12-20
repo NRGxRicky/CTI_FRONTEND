@@ -17,7 +17,7 @@ import Footer from '../../components/Footer/Footer';
 import ListProductsMobile from '../../components/LisProductsMobile/ListProductsMobile';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { setLocationStockOnly } from '../../lib/features/locationSlide';
-
+import { useEnv } from '../../context/EnvContext';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 
 import Capitalize from '../../hooks/CapitalizeTitle';
@@ -187,6 +187,7 @@ const Listado = ({
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
 	);
+	const { storeName, metaDescription, titlePostDescription } = useEnv();
 
 	useEffect(() => {
 		itemsPerPage === 0 && setItemsPerPage(maxPageResults);
@@ -589,10 +590,10 @@ const Listado = ({
 			{results.length > 0 ? (
 				<div>
 					<Head>
-						<title>{`${convertTitle} | PCStore.mx`}</title>
+						<title>{`${convertTitle} | ${storeName}`}</title>
 						<meta
 							name='description'
-							content={`${convertTitle} en PCStore.mx - Compra protegida, envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
+							content={`${convertTitle} en ${storeName} - ${titlePostDescription}`}
 						/>
 					</Head>
 					{!mobileView ? (

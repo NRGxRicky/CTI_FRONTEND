@@ -6,6 +6,7 @@ import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useAuth } from '../../../hooks/auth';
 import Router from 'next/router';
 import { useAppSelector } from '../../../lib/hooks';
+import { useEnv } from '../../context/EnvContext';
 
 const index = () => {
 	const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ const index = () => {
 	const [loadingData, setLoadingData] = useState(false);
 	const [error, setError] = useState(false);
 	const { loading, isAuthenticated, login, logout } = useAuth();
-
+	const { storeName, metaDescription, titlePostDescription } = useEnv();
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 	
 	const HandleSubmit = async (e) => {
@@ -53,13 +54,9 @@ const index = () => {
 		>
 			<Head>
 				<title>
-					¿Olvidaste tu contraseña? | PCStore.mx: Tu tienda en Tecnología,
-					Cómputo, Accesorios
+					{`¿Olvidaste tu contraseña? | ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<Link href={`/login`} legacyBehavior>
 				<a>

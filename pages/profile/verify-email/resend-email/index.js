@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../../../hooks/auth';
 import Router from 'next/router';
 import Head from 'next/head';
+import { useEnv } from '../../../../context/EnvContext';
 
 const ResendVerificationEmail = () => {
 	const {
@@ -13,6 +14,7 @@ const ResendVerificationEmail = () => {
 	} = useAuth();
 	const [status, setStatus] = useState(null); // 'success', 'error', or null
 	const [loading, setLoading] = useState(false);
+	const { storeName, metaDescription, titlePostDescription } = useEnv();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -56,12 +58,11 @@ const ResendVerificationEmail = () => {
 		<div className='container'>
 			<Head>
 				<title>
-					Reenviar correo de verificación | PCStore.mx: Tu tienda en Tecnología,
-					Cómputo, Accesorios
+					{`Reenviar correo de verificación | ${storeName}: ${titlePostDescription}`}
 				</title>
 				<meta
 					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
+					content={`${metaDescription}`}
 				/>
 			</Head>
 			<div className='resend-card'>

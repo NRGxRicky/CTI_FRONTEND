@@ -30,6 +30,7 @@ import { setMobileView } from '../../lib/features/mobileSlide';
 import CartSummaryMini from '../CartSummaryMini/CartSummaryMini';
 import useCart from '../../hooks/useCart';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
+import { useEnv } from '../../context/EnvContext';
 
 const HeaderBar: React.FC = () => {
 	const textInput = useRef<HTMLInputElement | null>(null);
@@ -45,6 +46,7 @@ const HeaderBar: React.FC = () => {
 	const { cart, total, localcheckBackend } = useCart();
 
 	const dispatch = useAppDispatch();
+	 const { storeName } = useEnv();
 
 	useEffect(() => {
 		dispatch(setMobileView(detectIsMobile));
@@ -119,7 +121,7 @@ const HeaderBar: React.FC = () => {
 										width: '98',
 										height: 'auto',
 									}}
-									alt='PcStore.mx'
+									alt={storeName}
 									priority={true}
 									draggable='false'
 								/>
@@ -263,9 +265,7 @@ const HeaderBar: React.FC = () => {
 										<span>
 											${' '}
 											{cart.length > 0
-												? CurrencyFormat(
-														(total).toString()
-												  )
+												? CurrencyFormat(total.toString())
 												: CurrencyFormat('0')}
 										</span>
 									</div>

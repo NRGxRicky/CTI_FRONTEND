@@ -17,6 +17,7 @@ import BrandSimilarMini from '../components/BrandSimilarMini/BrandSimilarMini';
 import CarouselProductsRelated from '../components/Carousel/CarouselProductsRelated';
 import Footer from '../components/Footer/Footer';
 import { useAppDispatch, useAppSelector } from '../lib/hooks';
+import { useEnv } from '../context/EnvContext';
 
 export const getServerSideProps = async (context) => {
 	const { productId } = context.query;
@@ -31,7 +32,11 @@ const ProductItem = ({ item }) => {
 
 	const { height, width } = WindowDimensions();
 	const router = useRouter();
-	const urlCurrent = `https://pcstore.mx${router.asPath}`;
+
+	const { sellerDefaultName, pageUrl, storeName, titlePostDescription } =
+		useEnv();
+	
+	const urlCurrent = `${pageUrl}${router.asPath}`;
 	const headerLocationStock = useAppSelector(
 		(state) => state.locationSlide.headerLocationStock
 	);
@@ -41,18 +46,19 @@ const ProductItem = ({ item }) => {
 
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 
+
 	return (
 		<div>
 			<Head>
-				<title>{`${convertTitle} | PCStore.mx`}</title>
+				<title>{`${convertTitle} | ${storeName}`}</title>
 				<meta
 					name='description'
-					content={`Compra tu ${convertTitle} en PCStore.mx - Tu tienda de confianza para comprar productos de cómputo y tecnología. Compra protegida con envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
+					content={`Compra tu ${convertTitle} en ${storeName} - ${titlePostDescription}`}
 				/>
-				<meta property='og:title' content={`${convertTitle} en PCStore.mx`} />
+				<meta property='og:title' content={`${convertTitle} en ${storeName}`} />
 				<meta
 					property='og:description'
-					content={`Compra tu ${convertTitle} en PCStore.mx - Tu tienda de confianza para comprar productos de cómputo y tecnología. Compra protegida con envíos asegurados y pagos seguros con el mejor servicio, calidad y precio.`}
+					content={`Compra tu ${convertTitle} en ${storeName} - ${titlePostDescription}`}
 				/>
 				<meta
 					property='og:image'
@@ -68,7 +74,7 @@ const ProductItem = ({ item }) => {
 				<meta name='twitter:card' content='summary' />
 				<meta
 					property='twitter:title'
-					content={`${convertTitle} en PCStore.mx`}
+					content={`${convertTitle} en  ${storeName}`}
 				/>
 				<meta
 					name='twitter:image'
@@ -76,10 +82,10 @@ const ProductItem = ({ item }) => {
 				/>
 				<meta
 					property='twitter:description'
-					content={`Compra tu ${convertTitle} en PCStore.mx - Tu tienda de confianza para comprar productos de cómputo y tecnología. Compra protegida con envíos asegurados y pagos seguroscon el mejor servicio, calidad y precio.`}
+					content={`Compra tu ${convertTitle} en ${storeName} - ${titlePostDescription}`}
 				/>
 				<meta property='og:type' content='product' />
-				<meta property='og:site_name' content='PCStore.mx' />
+				<meta property='og:site_name' content={storeName} />
 			</Head>
 			<div className='container'>
 				{!mobileView && (
@@ -97,6 +103,7 @@ const ProductItem = ({ item }) => {
 					height={height}
 					tempMobile={mobileView}
 					filter_available_store={headerLocationStock}
+					sellerDefaultName={sellerDefaultName}
 				/>
 				{item.compatibleProductos.filter((p) => p.stock_total > 1).length >
 					0 && (

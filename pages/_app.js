@@ -1,5 +1,5 @@
 // import App from 'next/app'
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../components/Layout/Layout';
 import '../styles.css';
@@ -8,6 +8,8 @@ import { AuthProvider } from '../hooks/auth';
 import { CartProvider } from '../context/CartContext';
 import GoogleAnalytics from '../components/GoogleAnalytics/GoogleAnalytics';
 import NextTopLoader from 'nextjs-toploader';
+import { EnvProvider } from '../context/EnvContext';
+
 
 function MyApp({ Component, pageProps }) {
 	useEffect(() => {
@@ -29,21 +31,23 @@ function MyApp({ Component, pageProps }) {
 
 	return (
 		<>
-			<NextTopLoader color='#ff002c' />
-			<GoogleAnalytics />
-			<Head>
-				<meta
-					name='viewport'
-					content='width=device-width, initial-scale=1, maximum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover'
-				/>
-			</Head>
-			<AuthProvider>
-				<CartProvider>
-					<Layout>
-						<Component {...pageProps} />
-					</Layout>
-				</CartProvider>
-			</AuthProvider>
+			<EnvProvider>
+				<NextTopLoader color='#ff002c' />
+				<GoogleAnalytics />
+				<Head>
+					<meta
+						name='viewport'
+						content='width=device-width, initial-scale=1, maximum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover'
+					/>
+				</Head>
+				<AuthProvider>
+					<CartProvider>
+						<Layout>
+							<Component {...pageProps} />
+						</Layout>
+					</CartProvider>
+				</AuthProvider>
+			</EnvProvider>
 		</>
 	);
 }

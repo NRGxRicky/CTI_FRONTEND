@@ -20,6 +20,7 @@ import {
 	isMobile,
 } from 'react-device-detect';
 import Capitalize from '../../hooks/CapitalizeTitle';
+import { useEnv } from '../../context/EnvContext';
 
 const NavMobileMenu = () => {
 	const [data, setData] = useState({ results: [] });
@@ -29,6 +30,7 @@ const NavMobileMenu = () => {
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
 	);
+	const { contactEmail, instagramUrl, facebookUrl, tiktokUrl } = useEnv();
 
 	const fetchData = async () => {
 		try {
@@ -94,7 +96,12 @@ const NavMobileMenu = () => {
 								href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
 								legacyBehavior
 							>
-								<a className='mobile-menu__nav-link' style={{ color: '#ff002c', fontWeight: '600' }}>🔥 OFERTAS</a>
+								<a
+									className='mobile-menu__nav-link'
+									style={{ color: '#ff002c', fontWeight: '600' }}
+								>
+									🔥 OFERTAS
+								</a>
 							</Link>
 						</li>
 						{data.results
@@ -182,12 +189,12 @@ const NavMobileMenu = () => {
 									</g>
 								</svg>
 								<a
-									href='mailto:contacto@pcstore.mx'
+									href={contactEmail}
 									target='_blank'
 									rel='noopener'
 									aria-describedby='a11y-new-window-message'
 								>
-									contacto@pcstore.mx
+									{contactEmail}
 								</a>
 							</div>
 						</li>
@@ -210,7 +217,7 @@ const NavMobileMenu = () => {
 									></path>
 								</svg>
 								<a
-									href='https://www.facebook.com/pcstoremxoficial'
+									href={facebookUrl}
 									target='_blank'
 									rel='noopener'
 								>
@@ -233,7 +240,7 @@ const NavMobileMenu = () => {
 									></path>
 								</svg>
 								<a
-									href='https://www.instagram.com/pcstore.mx/'
+									href={instagramUrl}
 									target='_blank'
 									rel='noopener'
 								>
@@ -256,7 +263,7 @@ const NavMobileMenu = () => {
 									></path>
 								</svg>
 								<a
-									href='https://www.tiktok.com/@pcstore.mx'
+									href={tiktokUrl}
 									target='_blank'
 									rel='noopener'
 								>

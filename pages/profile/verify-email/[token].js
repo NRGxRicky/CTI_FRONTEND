@@ -3,10 +3,13 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import CheckCircleGreen from '../../../components/Icons/CheckCircleGreen';
 import Head from 'next/head';
+import { useEnv } from '../../../context/EnvContext';
+
 const VerifyEmail = () => {
 	const [status, setStatus] = useState('loading'); // 'loading', 'success', 'error'
 	const router = useRouter();
 	const { token } = router.query;
+	const { storeName, metaDescription, titlePostDescription } = useEnv();
 
 	useEffect(() => {
 		if (token) {
@@ -48,13 +51,9 @@ const VerifyEmail = () => {
 		<div className='container'>
 			<Head>
 				<title>
-					¡Cuenta Verificada! | PCStore.mx: Tu tienda en Tecnología, Cómputo,
-					Accesorios
+					{`¡Cuenta Verificada! | ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			{status === 'success' ? (
 				<div className='verify-card'>

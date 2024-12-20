@@ -5,6 +5,7 @@ import EyeOpen from '../../components/Icons/EyeOpen';
 import Link from 'next/link';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { useEnv } from '../../context/EnvContext';
 
 const Login = () => {
 	const { login, isAuthenticated } = useAuth();
@@ -15,6 +16,7 @@ const Login = () => {
 	const [loading, setLoading] = useState(false);
 	const router = useRouter();
 	const { redirect } = router.query;
+	const { storeName, metaDescription, titlePostDescription } = useEnv();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -51,13 +53,9 @@ const Login = () => {
 		<div className='container'>
 			<Head>
 				<title>
-					Iniciar Sesión | PCStore.mx: Tu tienda en Tecnología, Cómputo,
-					Accesorios
+					{`Iniciar Sesión | ${storeName}: ${titlePostDescription}`}
 				</title>
-				<meta
-					name='description'
-					content={`PCStore.mx Tienda líder en cómputo, accesorios, hardware, tecnología y más. Compra protegida, envíos asegurados y pagos seguros con los mejores precios, productos y marcas.`}
-				/>
+				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<div className='login-card'>
 				<h2>Iniciar Sesión</h2>

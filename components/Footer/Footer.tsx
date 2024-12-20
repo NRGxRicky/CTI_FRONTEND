@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import GoogleRatings from '../GoogleRatings/GoogleRatings';
+import { useEnv } from '../../context/EnvContext';
 
 interface FooterProps {}
 
@@ -10,6 +11,8 @@ const Footer: React.FC<FooterProps> = () => {
 	const [column2, setColumn2] = useState(false);
 	const [column3, setColumn3] = useState(false);
 	const [column4, setColumn4] = useState(false);
+
+	const { contactEmail, facebookUrl, storeName, instagramUrl, tiktokUrl, legalName } = useEnv();
 
 	const showCurrentColumn = (integerColumn: number): void => {
 		const columnStates = [column1, column2, column3, column4];
@@ -93,7 +96,7 @@ const Footer: React.FC<FooterProps> = () => {
 								</a>
 							</div>
 							<div className='footer__column__element'>
-								<b>Email:</b> contacto@pcstore.mx
+								<b>Email:</b> {contactEmail}
 							</div>
 							<div className='footer__column__element'>
 								<b>Horario:</b> Lunes a Viernes 9:00 am a 6:00 pm
@@ -133,7 +136,7 @@ const Footer: React.FC<FooterProps> = () => {
 						>
 							<div className='footer__column__element facebook'>
 								<a
-									href='https://facebook.com/pcstoremxoficial'
+									href={facebookUrl}
 									target='_blank'
 									rel='noopener'
 									aria-label='Síguenos en Facebook'
@@ -157,7 +160,7 @@ const Footer: React.FC<FooterProps> = () => {
 
 							<div className='footer__column__element instagram'>
 								<a
-									href='https://www.instagram.com/pcstore.mx/'
+									href={instagramUrl}
 									target='_blank'
 									rel='noopener'
 									aria-label='Síguenos en Instagram'
@@ -181,7 +184,7 @@ const Footer: React.FC<FooterProps> = () => {
 							</div>
 							<div className='footer__column__element tiktok'>
 								<a
-									href='https://www.tiktok.com/@pcstore.mx'
+									href={tiktokUrl}
 									target='_blank'
 									rel='noopener'
 									aria-label='Síguenos en TikTok'
@@ -270,7 +273,7 @@ const Footer: React.FC<FooterProps> = () => {
 					</div>
 				</div>
 				<aside className='footer__aside'>
-					© 2024 PCStore.mx - PCSTORE ONLINE SAS DE CV - Hecho en Puebla, Puebla
+					© 2025 {storeName} - {legalName} - Hecho en Puebla, Puebla
 					con ❤️
 				</aside>
 			</div>
