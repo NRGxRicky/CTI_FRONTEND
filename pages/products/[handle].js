@@ -6,7 +6,10 @@ const ProductRedirect = () => {
 	const { handle } = router.query;
 
 	useEffect(() => {
-		if (handle) {
+    if (handle) {
+      
+      const cleanHandle = handle.split('?')[0];
+      
 			const fetchProductSlug = async () => {
 				try {
 					const response = await fetch(
@@ -16,7 +19,7 @@ const ProductRedirect = () => {
 							headers: {
 								'Content-Type': 'application/json',
 							},
-							body: JSON.stringify({ handle }),
+							body: JSON.stringify({ cleanHandle }),
 						}
 					);
 
