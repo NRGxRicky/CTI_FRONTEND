@@ -35,6 +35,8 @@ class MyDocument extends Document {
 				<body
 					style={{
 						'--primary-color': process.env.NEXT_PUBLIC_PRIMARY_COLOR,
+						'--background-price-color':
+							process.env.NEXT_PUBLIC_BACKGROUND_PRICE,
 					}}
 				>
 					<Main />

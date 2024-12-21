@@ -65,7 +65,7 @@ const InstantSearch = ({ queryInInput }) => {
 						use={TailSpin}
 						size={30}
 						strokeWidth={8}
-						strokeColor='#FF002C'
+						strokeColor='var(--primary-color)'
 						duration={900}
 					/>
 				</div>
@@ -216,7 +216,7 @@ const InstantSearch = ({ queryInInput }) => {
 						}
 
 						.search-box__item__box:hover {
-							background-color: #fff8f4;
+							background-color: var(--background-price-color);
 							border-radius: 0.37em;
 						}
 

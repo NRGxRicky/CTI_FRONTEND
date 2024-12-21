@@ -497,7 +497,7 @@ const DetailProduct = ({
 
 					.payment-enable {
 						border-color: var(--primary-color) !important;
-						background-color: #ffe7eb;
+						background-color: var(--background-price-color);
 					}
 
 					.product__seller_current {

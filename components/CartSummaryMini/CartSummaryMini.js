@@ -257,7 +257,7 @@ const CartSummaryMini = () => {
 							use={TailSpin}
 							size={30}
 							strokeWidth={8}
-							strokeColor='#FF002C'
+							strokeColor='var(--primary-color)'
 							duration={900}
 						/>
 					</div>

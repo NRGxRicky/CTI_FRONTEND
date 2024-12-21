@@ -52,7 +52,7 @@ const LoginMenu: React.FC = () => {
 								use={TailSpin}
 								size={30}
 								strokeWidth={8}
-								strokeColor='#FF002C'
+								strokeColor='var(--primary-color)'
 								duration={900}
 							/>
 						</div>
@@ -138,7 +138,7 @@ const LoginMenu: React.FC = () => {
 												<div className='alert'>
 													<svg
 														xmlns='http://www.w3.org/2000/svg'
-														fill='#ff002c'
+														fill='var(--primary-color)'
 														viewBox='0 0 24 24'
 														width='50'
 														height='50'

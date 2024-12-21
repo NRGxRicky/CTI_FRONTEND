@@ -12,7 +12,16 @@ const Footer: React.FC<FooterProps> = () => {
 	const [column3, setColumn3] = useState(false);
 	const [column4, setColumn4] = useState(false);
 
-	const { contactEmail, facebookUrl, storeName, instagramUrl, tiktokUrl, legalName, phone } = useEnv();
+	const {
+		contactEmail,
+		facebookUrl,
+		storeName,
+		instagramUrl,
+		tiktokUrl,
+		legalName,
+		phone,
+		emojiFooter,
+	} = useEnv();
 
 	const showCurrentColumn = (integerColumn: number): void => {
 		const columnStates = [column1, column2, column3, column4];
@@ -273,7 +282,8 @@ const Footer: React.FC<FooterProps> = () => {
 					</div>
 				</div>
 				<aside className='footer__aside'>
-					© 2025 {storeName} - {legalName} - Hecho en Puebla, Puebla con ❤️
+					© 2025 {storeName} - {legalName} - Hecho en Puebla, Puebla con{' '}
+					{emojiFooter}
 				</aside>
 			</div>
 			<style jsx>

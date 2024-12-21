@@ -57,7 +57,7 @@ const HeaderMenu = () => {
 						href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
 						legacyBehavior
 					>
-						<a style={{ color: '#ff002c', fontWeight: '600' }}>🔥 OFERTAS</a>
+						<a style={{ color: 'var(--primary-color)', fontWeight: '600' }}>🔥 OFERTAS</a>
 					</Link>
 				</li>
 			</ul>

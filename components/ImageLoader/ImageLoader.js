@@ -13,7 +13,7 @@ const ImageLoader = ({ current, setShowZoomGaller, item }) => {
 				use={TailSpin}
 				size={30}
 				strokeWidth={8}
-				strokeColor='#FF002C'
+				strokeColor='var(--primary-color)'
 				duration={900}
 				style={{ display: isImageLoaded ? 'none' : undefined }}
 			/>
@@ -29,7 +29,6 @@ const ImageLoader = ({ current, setShowZoomGaller, item }) => {
 					src={current.url.m ? current.url.m : '/images/not-available.png'}
 					fill
 					style={{ objectFit: 'contain' }}
-
 					draggable='false'
 					sizes='auto'
 					onLoad={() => setImageLoaded(true)}

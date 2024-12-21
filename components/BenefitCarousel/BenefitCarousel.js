@@ -6,14 +6,15 @@ const BenefitCarousel = () => {
 	const [viewportWidth, setViewportWidth] = useState(0);
 
 	// Configurar Embla con el plugin Autoplay
-	const [emblaRef, emblaApi] = useEmblaCarousel({
-		loop: false,
-		slidesToScroll: 1,
-		draggable: true,
-		speed: 10,
-		
-  }, [Autoplay({ playOnInit: true, delay: 6000 })]
-  );
+	const [emblaRef, emblaApi] = useEmblaCarousel(
+		{
+			loop: false,
+			slidesToScroll: 1,
+			draggable: true,
+			speed: 10,
+		},
+		[Autoplay({ playOnInit: true, delay: 6000 })]
+	);
 
 	// Actualizar el tamaño de la ventana
 	useEffect(() => {
@@ -57,7 +58,7 @@ const BenefitCarousel = () => {
 								>
 									<path
 										d='M5 10H2M5 15H4'
-										stroke='#ff002c'
+										stroke='var(--primary-color)'
 										strokeLinecap='square'
 									></path>
 									<path
@@ -66,7 +67,7 @@ const BenefitCarousel = () => {
 									></path>
 									<path
 										d='M0 5h5'
-										stroke='#ff002c'
+										stroke='var(--primary-color)'
 										strokeLinecap='square'
 									></path>
 									<path
@@ -113,9 +114,9 @@ const BenefitCarousel = () => {
 									fill='none'
 									fillRule='evenodd'
 								>
-									<path stroke='#ff002c' d='M8 4h8v7'></path>
+									<path stroke='var(--primary-color)' d='M8 4h8v7'></path>
 									<path
-										stroke='#ff002c'
+										stroke='var(--primary-color)'
 										strokeLinecap='square'
 										d='M11 7L8 4l3-3'
 									></path>
@@ -171,7 +172,10 @@ const BenefitCarousel = () => {
 										d='M1 5h22M1 9h22M21 19H3c-1.105 0-2-.895-2-2V3c0-1.105.895-2 2-2h18c1.105 0 2 .895 2 2v14c0 1.105-.895 2-2 2z'
 										stroke='#474747'
 									></path>
-									<path d='M5 14h5M18 14h1' stroke='#ff002c'></path>
+									<path
+										d='M5 14h5M18 14h1'
+										stroke='var(--primary-color)'
+									></path>
 								</g>
 							</svg>
 							<div className='card-content'>
@@ -204,7 +208,7 @@ const BenefitCarousel = () => {
 										stroke='#474747'
 									></path>
 									<path
-										stroke='#ff002c'
+										stroke='var(--primary-color)'
 										d='M13 16h8v7h-8zM15 16v-2c0-1.1.9-2 2-2s2 .9 2 2v2M17 19v1'
 									></path>
 								</g>

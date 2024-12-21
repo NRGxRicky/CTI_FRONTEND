@@ -30,7 +30,8 @@ const NavMobileMenu = () => {
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
 	);
-	const { contactEmail, instagramUrl, facebookUrl, tiktokUrl, phone } = useEnv();
+	const { contactEmail, instagramUrl, facebookUrl, tiktokUrl, phone } =
+		useEnv();
 
 	const fetchData = async () => {
 		try {
@@ -98,7 +99,7 @@ const NavMobileMenu = () => {
 							>
 								<a
 									className='mobile-menu__nav-link'
-									style={{ color: '#ff002c', fontWeight: '600' }}
+									style={{ color: 'var(--primary-color)', fontWeight: '600' }}
 								>
 									🔥 OFERTAS
 								</a>
@@ -150,7 +151,7 @@ const NavMobileMenu = () => {
 										></path>
 										<path
 											d='M14 1c4.971 0 9 4.029 9 9m-9-5c2.761 0 5 2.239 5 5'
-											stroke='#ff002c'
+											stroke='var(--primary-color)'
 										></path>
 									</g>
 								</svg>
@@ -167,7 +168,7 @@ const NavMobileMenu = () => {
 								>
 									<g fill='none' fillRule='evenodd'>
 										<path
-											stroke='#ff002c'
+											stroke='var(--primary-color)'
 											d='M.916667 10.08333367l3.66666667-2.65833334v4.65849997zm20.1666667 0L17.416667 7.42500033v4.65849997z'
 										></path>
 										<path
@@ -182,7 +183,7 @@ const NavMobileMenu = () => {
 										></path>
 										<path
 											d='M8.25000033 5.50000033h5.49999997M8.25000033 9.166667h5.49999997'
-											stroke='#ff002c'
+											stroke='var(--primary-color)'
 											strokeWidth='2'
 											strokeLinecap='square'
 										></path>
@@ -216,11 +217,7 @@ const NavMobileMenu = () => {
 										fillRule='evenodd'
 									></path>
 								</svg>
-								<a
-									href={facebookUrl}
-									target='_blank'
-									rel='noopener'
-								>
+								<a href={facebookUrl} target='_blank' rel='noopener'>
 									Facebook
 								</a>
 							</div>
@@ -239,11 +236,7 @@ const NavMobileMenu = () => {
 										fillRule='evenodd'
 									></path>
 								</svg>
-								<a
-									href={instagramUrl}
-									target='_blank'
-									rel='noopener'
-								>
+								<a href={instagramUrl} target='_blank' rel='noopener'>
 									Instagram
 								</a>
 							</div>
@@ -262,11 +255,7 @@ const NavMobileMenu = () => {
 										fill='currentColor'
 									></path>
 								</svg>
-								<a
-									href={tiktokUrl}
-									target='_blank'
-									rel='noopener'
-								>
+								<a href={tiktokUrl} target='_blank' rel='noopener'>
 									TikTok
 								</a>
 							</div>

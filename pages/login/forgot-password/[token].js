@@ -288,7 +288,7 @@ const Token = ({ tokenRecovery }) => {
 													? '#00b300'
 													: strengthLevel >= 60
 													? '#ff9900'
-													: '#ff002c',
+													: 'var(--primary-color)',
 										}}
 									></div>
 								</div>

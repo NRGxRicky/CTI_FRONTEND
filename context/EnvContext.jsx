@@ -19,6 +19,8 @@ export function EnvProvider({ children }) {
 		rfc: process.env.NEXT_PUBLIC_RFC,
 		phone: process.env.NEXT_PUBLIC_PHONE,
 		logoUrl: process.env.NEXT_PUBLIC_LOGO_URL,
+		emojiFooter: process.env.NEXT_PUBLIC_FOOTER_EMOJI,
+		storeId: process.env.NEXT_PUBLIC_STORE_ID,
 	};
 
 	return (

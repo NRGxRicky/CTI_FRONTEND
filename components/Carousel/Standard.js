@@ -3,18 +3,20 @@ import { CarouselContainer, CarouselChild } from './Carousel';
 import { useEffect, useState } from 'react';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import Link from 'next/link';
+import { useEnv } from '../../context/EnvContext';
 
 const Standard = () => {
 	const [windowsSize, setWindowsSize] = useState(0);
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
+	const { storeId } = useEnv();
 
 	const fetchData = async () => {
 		try {
 			setLoading(true);
 			const data = await fetch(
-				'https://api.pccdnapi.com/banners/index/standard'
+				`https://api.pccdnapi.com/banners/index/standard?store_id=${storeId}`
 			);
 			setData(await data.json());
 		} catch (error) {
@@ -49,7 +51,7 @@ const Standard = () => {
 						use={TailSpin}
 						size={30}
 						strokeWidth={8}
-						strokeColor='#ff002c'
+						strokeColor='var(--primary-color)'
 						duration={900}
 					/>
 				</div>

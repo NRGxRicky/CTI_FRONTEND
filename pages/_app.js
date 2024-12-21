@@ -30,7 +30,7 @@ function MyApp({ Component, pageProps }) {
 	return (
 		<>
 			<EnvProvider>
-				<NextTopLoader color='#ff002c' />
+				<NextTopLoader color={process.env.NEXT_PUBLIC_PRIMARY_COLOR}  />
 				<GoogleAnalytics />
 				<Head>
 					<meta

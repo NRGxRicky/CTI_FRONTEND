@@ -3,11 +3,11 @@ import { useEnv } from '../../context/EnvContext';
 
 const FooterMini = () => {
 
-	const { storeName, legalName } = useEnv();
+	const { storeName, legalName, emojiFooter } = useEnv();
 	return (
 		<aside className='footer__aside'>
-			© 2024 {storeName} - {legalName} - Hecho en Puebla, Puebla con
-			❤️
+			© 2024 {storeName} - {legalName} - Hecho en Puebla, Puebla con{' '}
+			{emojiFooter}
 			<style jsx>
 				{`
 					.footer__aside {
