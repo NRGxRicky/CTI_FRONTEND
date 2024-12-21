@@ -8,7 +8,7 @@ const ProductRedirect = () => {
 	useEffect(() => {
     if (handle) {
       
-      const cleanHandle = handle.split('?')[0];
+			const cleanHandle = handle.split('?')[0];
       
 			const fetchProductSlug = async () => {
 				try {
@@ -19,7 +19,7 @@ const ProductRedirect = () => {
 							headers: {
 								'Content-Type': 'application/json',
 							},
-							body: JSON.stringify({ cleanHandle }),
+							body: JSON.stringify({ handle: cleanHandle }),
 						}
 					);
 
