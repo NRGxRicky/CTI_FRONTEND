@@ -6,7 +6,7 @@ import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useAuth } from '../../../hooks/auth';
 import Router from 'next/router';
 import { useAppSelector } from '../../../lib/hooks';
-import { useEnv } from '../../context/EnvContext';
+import { useEnv } from '../../../context/EnvContext';
 
 const index = () => {
 	const [email, setEmail] = useState('');
