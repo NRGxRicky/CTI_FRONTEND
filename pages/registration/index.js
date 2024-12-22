@@ -27,7 +27,7 @@ const Register = () => {
 	const [success, setSuccess] = useState(false);
 	const router = useRouter();
 	const { redirect } = router.query;
-	const { storeName, metaDescription, titlePostDescription } = useEnv();
+	const { storeName, metaDescription, titlePostDescription, storeId } = useEnv();
 
 	useEffect(() => {
 		const evaluatePasswordStrength = (password) => {
@@ -94,6 +94,7 @@ const Register = () => {
 						password: formData.password,
 						confirm_password: formData.confirmPassword,
 						offers: formData.offers,
+						store: storeId,
 					}),
 				}
 			);
