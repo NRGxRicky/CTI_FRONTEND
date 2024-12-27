@@ -295,7 +295,7 @@ const CartSummary = () => {
 								</div>
 							))}
 						</div>
-						<SummaryDetails urlAction={'/carrito/envio'} />
+						<SummaryDetails urlAction={'/carrito/envio'} step={'cart'} />
 					</div>
 
 					{/*div className='checkout-actions'>
@@ -457,7 +457,7 @@ const CartSummary = () => {
 					display: flex;
 					gap: 20px;
 					margin-bottom: 15px;
-					border: 1px solid #f0f0f0;
+					border: 1px solid #eaeaea;
 					padding: 20px;
 					border-radius: 5px;
 					width: 100%;

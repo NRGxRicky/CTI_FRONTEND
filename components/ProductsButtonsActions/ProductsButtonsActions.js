@@ -87,7 +87,7 @@ const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 					}
 
 					.product__actions__add-to-cart.disabled {
-						background-color: #ccc;
+						background-color: #eaeaea;
 						cursor: not-allowed;
 					}
 

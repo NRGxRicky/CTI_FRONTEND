@@ -142,7 +142,7 @@ const ResendVerificationEmail = () => {
 				.form-group input {
 					width: 100%;
 					padding: 12px;
-					border: 1px solid #ccc;
+					border: 1px solid #eaeaea;
 					border-radius: 6px;
 					font-size: 14px;
 					color: #333;

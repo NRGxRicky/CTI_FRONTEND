@@ -27,7 +27,8 @@ const Register = () => {
 	const [success, setSuccess] = useState(false);
 	const router = useRouter();
 	const { redirect } = router.query;
-	const { storeName, metaDescription, titlePostDescription, storeId } = useEnv();
+	const { storeName, metaDescription, titlePostDescription, storeId } =
+		useEnv();
 
 	useEffect(() => {
 		const evaluatePasswordStrength = (password) => {
@@ -362,7 +363,7 @@ const Register = () => {
 					display: block;
 					width: 100%;
 					padding: 12px;
-					border: 1px solid #ccc;
+					border: 1px solid #eaeaea;
 					border-radius: 6px;
 					font-size: 14px;
 					color: #333;
@@ -382,7 +383,7 @@ const Register = () => {
 					display: block;
 					width: 100%;
 					padding: 12px;
-					border: 1px solid #ccc;
+					border: 1px solid #eaeaea;
 					border-radius: 6px;
 					font-size: 14px;
 					color: #333;
@@ -432,7 +433,7 @@ const Register = () => {
 					width: 20px;
 					height: 20px;
 					margin-right: 10px;
-					border: 2px solid #ccc;
+					border: 2px solid #eaeaea;
 					border-radius: 4px;
 					background-color: #fff;
 					position: relative;

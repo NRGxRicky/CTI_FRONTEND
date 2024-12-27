@@ -12,6 +12,7 @@ export const showOpacityContainerSlide = createSlice({
 		bodyScroll: false,
 		cart: false,
 		PaymentsChange: false,
+		ProfileAddAddress: false,
 	},
 	reducers: {
 		showOpacity: (state) => {
@@ -30,6 +31,18 @@ export const showOpacityContainerSlide = createSlice({
 			state.bodyScroll = false;
 			state.cart = false;
 			state.PaymentsChange = false;
+			state.ProfileAddAddress = false;
+		},
+		showProfileAddAddress: (state) => {
+			state.searchBar = false;
+			state.opacityConatiner = true;
+			state.loginMenu = false;
+			state.navMobileMenu = false;
+			state.navMobileSort = false;
+			state.navMobileFilters = false;
+			state.cart = false;
+			state.PaymentsChange = false;
+			state.ProfileAddAddress = true;
 		},
 		showSearchBar: (state) => {
 			state.searchBar = true;
@@ -40,6 +53,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileFilters = false;
 			state.cart = false;
 			state.PaymentsChange = false;
+			state.ProfileAddAddress = false;
 		},
 		showLoginMenuState: (state) => {
 			state.searchBar = false;
@@ -50,6 +64,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileFilters = false;
 			state.cart = false;
 			state.PaymentsChange = false;
+			state.ProfileAddAddress = false;
 		},
 		showCart: (state) => {
 			state.searchBar = false;
@@ -60,16 +75,18 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileFilters = false;
 			state.cart = true;
 			state.PaymentsChange = false;
+			state.ProfileAddAddress = false;
 		},
 		showPaymentsChange: (state) => {
-		state.searchBar = false;
-		state.opacityConatiner = true;
-		state.loginMenu = false;
-		state.navMobileMenu = false;
-		state.navMobileSort = false;
-		state.navMobileFilters = false;
-		state.cart = false;
-		state.PaymentsChange = true;
+			state.searchBar = false;
+			state.opacityConatiner = true;
+			state.loginMenu = false;
+			state.navMobileMenu = false;
+			state.navMobileSort = false;
+			state.navMobileFilters = false;
+			state.cart = false;
+			state.PaymentsChange = true;
+			state.ProfileAddAddress = false;
 		},
 
 		showNavMobileMenu: (state) => {
@@ -82,6 +99,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.bodyScroll = true;
 			state.cart = false;
 			state.PaymentsChange = false;
+			state.ProfileAddAddress = false;
 		},
 		showNavMobileSort: (state) => {
 			state.searchBar = false;
@@ -92,6 +110,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileFilters = false;
 			state.cart = false;
 			state.PaymentsChange = false;
+			state.ProfileAddAddress = false;
 		},
 		showNavMobileFilters: (state) => {
 			state.searchBar = false;
@@ -102,6 +121,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.navMobileFilters = true;
 			state.cart = false;
 			state.PaymentsChange = false;
+			state.ProfileAddAddress = false;
 		},
 		blockBodyScroll: (state) => {
 			state.bodyScroll = true;
@@ -125,6 +145,7 @@ export const {
 	unlockBodyScroll,
 	showCart,
 	showPaymentsChange,
+	showProfileAddAddress,
 } = showOpacityContainerSlide.actions;
 
 export default showOpacityContainerSlide.reducer;

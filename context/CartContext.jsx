@@ -18,6 +18,8 @@ export const CartProvider = ({ children }) => {
 	const [total, setTotal] = useState(0);
 	const router = useRouter();
 	const [loading, setLoading] = useState(true);
+	const [addressId, setAddressId] = useState(null);
+	
 
 	// Funcion revision carrito local con backend
 	const localcheckBackend = async (cartLocal = cart) => {
@@ -357,6 +359,7 @@ export const CartProvider = ({ children }) => {
 				total,
 				loading,
 				localcheckBackend,
+				addressId,
 			}}
 		>
 			{children}

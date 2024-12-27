@@ -401,7 +401,7 @@ const CartSummaryMini = () => {
 					display: flex;
 					justify-content: space-between;
 					margin-bottom: 10px;
-					border-bottom: 1px solid #f0f0f0;
+					border-bottom: 1px solid #eaeaea;
 					padding-bottom: 10px;
 				}
 				.item-details {
@@ -461,7 +461,7 @@ const CartSummaryMini = () => {
         }
 
 				.cart-summary-details {
-					border-top: 1px solid #f0f0f0;
+					border-top: 1px solid #eaeaea;
 					padding-top: 10px;
 					margin-bottom: 15px;
           line-height: 1.5;
@@ -472,7 +472,7 @@ const CartSummaryMini = () => {
 					margin-bottom: 5px;
 				}
 				.summary-row.total {
-          border-top: 1px solid #f0f0f0;
+          border-top: 1px solid #eaeaea;
 					font-weight: bold;
 					font-size: 16px;
           line-height: 2;

@@ -5,6 +5,8 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
 import fetchData from '../../hooks/GetDataAuth';
 import { useAuth } from '../../hooks/auth';
+import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+import { showProfileAddAddress } from '../../lib/features/showOpacityContainerSlide';
 
 const CartShippingMethod = () => {
 	const { shipping } = useCart();
@@ -14,14 +16,16 @@ const CartShippingMethod = () => {
 		PccomputoUsuarioDatosFacturacion: [],
 	});
 	const { isAuthenticated, loading, accessToken, isVerified } = useAuth();
+	const dispatch = useAppDispatch();
 
 	const getDataProfile = async () => {
 		setLoadingData(true);
 
 		const resData = await fetchData('/profile/resume/', accessToken);
-
-		const dataJson = await resData.json();
-		setProfile(dataJson);
+		if (resData.ok) {
+			const dataJson = await resData.json();
+			setProfile(dataJson);
+		}
 	};
 
 	useEffect(() => {
@@ -37,6 +41,14 @@ const CartShippingMethod = () => {
 					</div>
 					<div className='cart-shipping-method__body'>
 						<div className='cart-shipping-method__item active'>
+							<div className='radio-wrapper'>
+								<input
+									id='shipping-estandar'
+									type='radio'
+									name='shipping-estandar'
+									defaultChecked
+								></input>
+							</div>
 							<div className='cart-shipping-method__item__logo'>
 								<FreeShipping color={false} modeCard={true} label='' />
 							</div>
@@ -61,37 +73,52 @@ const CartShippingMethod = () => {
 						</div>
 					</div>
 					<div className='cart-shipping-method__body'>
-						{profile.domicilios.map((item) => (
-							<div className='cart-shipping-method__item' key={item.id}>
-								<div className='cart-shipping-method__item__description'>
-									<div className='cart-shipping-method__item__title'>
-										<span>
-											{item.nombres} {item.apellidos}
-										</span>
-									</div>
-									<div className='cart-shipping-method__item__detail'>
-										<p>
-											{item.calle} {item.numero} {item.numero_interior},{' '}
-											{item.colonia}
-										</p>
-										<p>
-											{item.ciudad}, {item.estado}, {item.codigo_postal}
-										</p>
-										<p>{item.telefono}</p>
-									</div>
-								</div>
-								<div className='cart-shipping-method__action'>Editar</div>
+						{profile.domicilios.length < 1 ? (
+							<div className='cart-shipping-method__actions'>
+								<button
+									className='cart-shipping-method__actions__change-addres__button'
+									onClick={() => {
+										dispatch(showProfileAddAddress());
+									}}
+								>
+									+ Agregar Domicilio
+								</button>
 							</div>
-						))}
+						) : (
+							profile.domicilios.map((item) => (
+								<div className='cart-shipping-method__item' key={item.id}>
+									<div className='cart-shipping-method__item__description'>
+										<div className='cart-shipping-method__item__title'>
+											<span>
+												{item.nombres} {item.apellidos}
+											</span>
+										</div>
+										<div className='cart-shipping-method__item__detail'>
+											<p>
+												{item.calle} {item.numero} {item.numero_interior},{' '}
+												{item.colonia}
+											</p>
+											<p>
+												{item.ciudad}, {item.estado}, {item.codigo_postal}
+											</p>
+											<p>{item.telefono}</p>
+										</div>
+									</div>
+									<div className='cart-shipping-method__action'>Editar</div>
+								</div>
+							))
+						)}
 					</div>
-					<div className='cart-shipping-method__actions'>
-						<button className='cart-shipping-method__actions__change-addres__button'>
-							Elegir otro domicilio
-						</button>
-					</div>
+					{profile.domicilios.length > 1 && (
+						<div className='cart-shipping-method__actions'>
+							<button className='cart-shipping-method__actions__change-addres__button'>
+								Elegir otro domicilio
+							</button>
+						</div>
+					)}
 				</div>
 			</div>
-			<SummaryDetails urlAction={'/carrito/pago'} />
+			<SummaryDetails urlAction={'/carrito/pago'} step={'shipping'} />
 			<style jsx>{`
 				.cart-shipping-method__body {
 					margin-bottom: 15px;
@@ -133,7 +160,7 @@ const CartShippingMethod = () => {
 				}
 
 				.cart-shipping-method__item {
-					border: 1px solid #f0f0f0;
+					border: 1px solid #eaeaea;
 					padding: 20px;
 					border-radius: 5px;
 					display: flex;

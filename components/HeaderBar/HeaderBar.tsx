@@ -435,7 +435,7 @@ const HeaderBar: React.FC = () => {
 				input {
 					background-color: #fff;
 					background-clip: padding-box;
-					border: 1px solid #ced4da;
+					border: 1px solid #eaeaea;
 					border-radius: 5px;
 				}
 

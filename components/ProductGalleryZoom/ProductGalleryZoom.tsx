@@ -310,13 +310,13 @@ const ProductGalleryZoom = ({
 						height: 50px;
 						width: 50px;
 						align-self: flex-end;
-						border: 1px solid #ced4da;
+						border: 1px solid #eaeaea;
 						border-radius: 5px;
 						cursor: pointer;
 					}
 
 					.close_zoom:hover {
-						background-color: #ced4da;
+						background-color: #eaeaea;
 					}
 
 					.product__gallery_zoom__carousel__item {
@@ -344,7 +344,7 @@ const ProductGalleryZoom = ({
 						width: 10vh;
 						height: 10vh;
 						position: relative;
-						border: 1px solid #ced4da;
+						border: 1px solid #eaeaea;
 						border-radius: 5px;
 						cursor: pointer;
 						padding: 5px;

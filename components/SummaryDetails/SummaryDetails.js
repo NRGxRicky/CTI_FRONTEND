@@ -7,8 +7,8 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import useCart from '../../hooks/useCart';
 import Link from 'next/link';
 
-const SummaryDetails = ({ urlAction }) => {
-	const { cart, subtotal, shipping, total } = useCart();
+const SummaryDetails = ({ urlAction, step }) => {
+	const { cart, subtotal, shipping, total, addressId } = useCart();
 	const dispatch = useAppDispatch();
 	const { cartMsi } = useAuth();
 
@@ -137,14 +137,29 @@ const SummaryDetails = ({ urlAction }) => {
 						</div>
 					</div>
 				)}
+				{!addressId && step == 'shipping' && (
+					<div className='checkout__error'>
+						<span>Tienes que agregar un domicilio para continuar.</span>
+					</div>
+				)}
 				<Link href={`${urlAction}`} legacyBehavior>
 					<a>
-						<button className='proceed-checkout'>Continuar</button>
+						<button
+							className='proceed-checkout'
+							disabled={!addressId && step == 'shipping'}
+						>
+							Continuar
+						</button>
 					</a>
 				</Link>
 			</div>
 			<style jsx>
 				{`
+					.checkout__error {
+						color: var(--primary-color);
+						line-height: 3;
+					}
+
 					.payments__label-status {
 						font-size: 12px;
 						font-weight: 300;
@@ -170,7 +185,7 @@ const SummaryDetails = ({ urlAction }) => {
 					}
 
 					.summary-row.total {
-						border-top: 1px solid #f0f0f0;
+						border-top: 1px solid #eaeaea;
 						font-weight: bold;
 						font-size: 16px;
 					}
@@ -200,7 +215,7 @@ const SummaryDetails = ({ urlAction }) => {
 					}
 
 					.summary-details__content {
-						border: 1px solid #f0f0f0;
+						border: 1px solid #eaeaea;
 						padding: 20px;
 						border-radius: 5px;
 					}
@@ -241,11 +256,11 @@ const SummaryDetails = ({ urlAction }) => {
 					.payments {
 						display: flex;
 						flex-direction: column;
-						border: 1px solid #f0f0f0;
+						border: 1px solid #eaeaea;
 						border-radius: 5px;
 						padding: 15px;
 						margin-bottom: 20px;
-						background-color: #f0f0f0;
+						background-color: #eaeaea;
 						font-size: 12px;
 					}
 
@@ -264,6 +279,9 @@ const SummaryDetails = ({ urlAction }) => {
 
 					.proceed-checkout:hover {
 						background: #e00028;
+					}
+					.proceed-checkout:disabled {
+						background: #eaeaea;
 					}
 
 					@media only screen and (max-width: 62em) {

@@ -35,7 +35,7 @@ const ProductItem = ({ item }) => {
 
 	const { sellerDefaultName, pageUrl, storeName, titlePostDescription } =
 		useEnv();
-	
+
 	const urlCurrent = `${pageUrl}${router.asPath}`;
 	const headerLocationStock = useAppSelector(
 		(state) => state.locationSlide.headerLocationStock
@@ -45,7 +45,6 @@ const ProductItem = ({ item }) => {
 	);
 
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
-
 
 	return (
 		<div>

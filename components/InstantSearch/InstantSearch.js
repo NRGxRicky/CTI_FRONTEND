@@ -208,7 +208,7 @@ const InstantSearch = ({ queryInInput }) => {
 
 						.search-box__item {
 							padding: 10px;
-							border-bottom: 1px solid #ced4da;
+							border-bottom: 1px solid #eaeaea;
 						}
 
 						.search-box__item:last-child {

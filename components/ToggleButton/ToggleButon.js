@@ -93,7 +93,7 @@ const ToggleButon = ({
 						width: 100%;
 						border: 0;
 						position: absolute;
-						background-color: #ccc;
+						background-color: #eaeaea;
 						-webkit-transition: 0.4s;
 						transition: 0.4s;
 						border-radius: 34px;
@@ -123,7 +123,7 @@ const ToggleButon = ({
 						transform: translateX(8px);
 					}
 					.checkbox:disabled + .slider {
-						background-color: #ccc;
+						background-color: #eaeaea;
 					}
 
 					.green:checked + .slider,

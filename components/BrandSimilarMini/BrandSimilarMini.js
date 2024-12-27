@@ -31,7 +31,7 @@ const BrandSimilarMini = ({
 			setLoading(false);
 		}
 	};
-	
+
 	useEffect(() => {
 		fetchData();
 	}, []);

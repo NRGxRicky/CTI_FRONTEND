@@ -66,7 +66,7 @@ const ProductSpecs = ({ item = { specs: [] } }) => {
 					}
 
 					.specs tr {
-						background-color: #f2f2f2;
+						background-color: #eaeaea;
 					}
 
 					.specs tr:nth-child(even) {
@@ -79,7 +79,7 @@ const ProductSpecs = ({ item = { specs: [] } }) => {
 						border-spacing: 0;
 						width: 100%;
 						margin-bottom: 20px;
-						border: 1px solid #f2f2f2;
+						border: 1px solid #eaeaea;
 						border-radius: 5px;
 					}
 

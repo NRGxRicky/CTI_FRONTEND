@@ -29,7 +29,7 @@ const StatusBarCart = ({ steps = [], activeStep = 'cart' }) => {
 					display: flex;
 					justify-content: space-between;
 					margin-bottom: 20px;
-					background: #f0f0f0;
+					background: #eaeaea;
 					border-radius: 2px;
 					padding: 10px 5px;
 					font-size: 12px;

@@ -248,7 +248,7 @@ const BenefitCarousel = () => {
 				}
 
 				.card {
-					background-color: #f2f2f2;
+					background-color: #eaeaea;
 					border-radius: 8px;
 
 					text-align: center;

@@ -382,7 +382,7 @@ const Token = ({ tokenRecovery }) => {
 						width: 100%;
 						padding: 12px;
 						border-radius: 6px;
-						border: 1px solid #ccc;
+						border: 1px solid #eaeaea;
 						box-sizing: border-box;
 						font-size: 14px;
 						color: #333;

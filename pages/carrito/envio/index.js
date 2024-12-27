@@ -8,12 +8,17 @@ import useCart from '../../../hooks/useCart';
 import CartShippingMethod from '../../../components/CartShippingMethod/CartShippingMethod';
 import StatusBarCart from '../../../components/StatusBarCart/StatusBarCart';
 import { useEnv } from '../../../context/EnvContext';
+import ProfileAddAddress from '../../../components/ProfileAddAddress/ProfileAddAddress'
+import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
 
 const index = () => {
 	const { isAuthenticated, loading, accessToken } = useAuth();
 	const { cart, loading: loadingCart } = useCart();
 	const { storeName, metaDescription, titlePostDescription } = useEnv();
-
+	const stateProfileAddAddress = useAppSelector(
+		(state) => state.showOpacityContainerReducer.ProfileAddAddress
+	);
+	
 	if (!loading && !isAuthenticated) {
 		Router.push(`/login?redirect=${encodeURIComponent(Router.asPath)}`);
 	}
@@ -41,6 +46,7 @@ const index = () => {
 				]}
 				activeStep='shipping'
 			/>
+			{stateProfileAddAddress && <ProfileAddAddress />}
 			<CartShippingMethod />
 			<BenefitCarousel />
 			<FooterMini />
