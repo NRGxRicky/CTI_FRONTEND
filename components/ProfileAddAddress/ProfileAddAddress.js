@@ -332,7 +332,7 @@ const ProfileAddAddress = () => {
 
 				@media (max-width: 600px) {
 					.profile-add-address__container {
-						padding: 15px;
+						padding: 20px 15px;
 						height: 90%;
 					}
 
