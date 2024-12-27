@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 
 const ProfileAddAddress = () => {
+	const dispatch = useAppDispatch();
+	const containerRef = useRef(null);
 	const [formData, setFormData] = useState({
 		nombre: '',
 		apellidos: '',
@@ -12,7 +16,6 @@ const ProfileAddAddress = () => {
 		codigoPostal: '',
 		ciudad: '',
 		estado: '',
-		pais: 'México',
 		referencias: '',
 	});
 
@@ -61,9 +64,27 @@ const ProfileAddAddress = () => {
 		console.log(formData);
 	};
 
+	// Manejar clics fuera del contenedor
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (
+				containerRef.current &&
+				!containerRef.current.contains(event.target)
+			) {
+				dispatch(hideAll());
+			}
+		};
+
+		document.addEventListener('mousedown', handleClickOutside);
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [dispatch]);
+
 	return (
 		<div className='profile-add-address'>
-			<div className='profile-add-address__container'>
+			<div className='profile-add-address__container' ref={containerRef}>
 				<h2>Agregar Domicilio</h2>
 				<form onSubmit={handleSubmit} className='profile-add-address__form'>
 					<div className='profile-add-address__form-row'>
@@ -207,23 +228,14 @@ const ProfileAddAddress = () => {
 							</select>
 						</div>
 					</div>
-					<div className='profile-add-address__form-group'>
-						<label htmlFor='pais'>
-							País:<span>*</span>
-						</label>
-						<input
-							type='text'
-							id='pais'
-							name='pais'
-							value={formData.pais}
-							onChange={handleChange}
-							required
-							readOnly
-						/>
-					</div>
-
 					<div className='profile-add-address__buttons'>
-						<button type='button' className='cancel-button'>
+						<button
+							type='button'
+							className='cancel-button'
+							onClick={() => {
+								dispatch(hideAll());
+							}}
+						>
 							Cancelar
 						</button>
 						<button type='submit' className='accept-button'>
@@ -239,7 +251,7 @@ const ProfileAddAddress = () => {
 					justify-content: center;
 					width: 100dvw;
 					height: calc(100dvh - 61px);
-					z-index: 2000;
+					z-index: 1000;
 					position: fixed;
 					top: 0;
 					left: 0;
@@ -254,6 +266,7 @@ const ProfileAddAddress = () => {
 					max-width: 600px;
 					overflow: auto;
 					position: relative;
+					z-index: 2000;
 				}
 
 				h2 {
