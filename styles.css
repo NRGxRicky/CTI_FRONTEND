@@ -1372,3 +1372,12 @@ button {
 		--s: 0.5;
 	}
 }
+
+select {
+    color: var(--primary-color);
+}
+
+select:invalid {
+    color: var(--primary-color);
+
+}
