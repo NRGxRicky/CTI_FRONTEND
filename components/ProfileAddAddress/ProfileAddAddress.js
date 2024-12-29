@@ -1,17 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+import { useAppDispatch } from '../../lib/hooks';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 import { useAuth } from '../../hooks/auth';
 import useCart from '../../hooks/useCart';
 
-const ProfileAddAddress = ({ domicilio = null }) => {
-	const { isAuthenticated, loading, accessToken, isVerified } = useAuth();
-	const { error, setError } = useState(null);
+const ProfileAddAddress = ({
+	domicilio = null,
+	onCloseModal,
+	onSubmit,
+	setLoadingData,
+}) => {
+	const { accessToken } = useAuth();
 	const { setAddress } = useCart();
 	const dispatch = useAppDispatch();
 	const containerRef = useRef(null);
 	const [formData, setFormData] = useState({
-		id: domicilio?.id || '', // Para actualizar un domicilio existente
+		id: domicilio?.id || '',
 		nombres: domicilio?.nombres || '',
 		apellidos: domicilio?.apellidos || '',
 		telefono: domicilio?.telefono || '',
@@ -24,6 +28,7 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 		estado: domicilio?.estado || '',
 		referencias: domicilio?.referencias || '',
 	});
+	const [errors, setErrors] = useState({});
 
 	const estadosMexico = [
 		'Aguascalientes',
@@ -60,54 +65,80 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 		'Zacatecas',
 	];
 
+	const validateFields = () => {
+		const newErrors = {};
+
+		// Validaciones
+		if (!formData.nombres.trim())
+			newErrors.nombres = 'El nombre es obligatorio.';
+		if (!formData.apellidos.trim())
+			newErrors.apellidos = 'Los apellidos son obligatorios.';
+		if (!/^\d{10}$/.test(formData.telefono))
+			newErrors.telefono = 'El teléfono debe tener 10 dígitos.';
+		if (!formData.calle.trim()) newErrors.calle = 'La calle es obligatoria.';
+		if (!formData.numero.trim()) newErrors.numero = 'El número es obligatorio.';
+		if (!formData.colonia.trim())
+			newErrors.colonia = 'La colonia es obligatoria.';
+		if (!/^\d{5}$/.test(formData.codigo_postal))
+			newErrors.codigo_postal = 'El código postal debe tener 5 dígitos.';
+		if (!formData.ciudad.trim()) newErrors.ciudad = 'La ciudad es obligatoria.';
+		if (!formData.estado) newErrors.estado = 'El estado es obligatorio.';
+
+		setErrors(newErrors);
+
+		return Object.keys(newErrors).length === 0;
+	};
+
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setFormData({ ...formData, [name]: value });
+		setErrors((prev) => ({ ...prev, [name]: '' })); // Limpia errores al escribir
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
+		if (!validateFields()) return;
+
 		const dataToSend = { ...formData };
-		if (!dataToSend.id) {
-			delete dataToSend.id; // Elimina el campo id si está vacío
-		}
+		if (!dataToSend.id) delete dataToSend.id;
 
 		try {
+			setLoadingData(true);
 			const response = await fetch(
 				'https://api.pccdnapi.com/profile/domicilio/add-or-update/',
 				{
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						Authorization: `Bearer ${accessToken}`, // Asegúrate de usar el token correcto
+						Authorization: `Bearer ${accessToken}`,
 					},
 					body: JSON.stringify(dataToSend),
 				}
 			);
 
 			if (response.ok) {
-				const newDomicilio = await response.json();
-				// Aquí podrías realizar alguna acción, como cerrar el modal o actualizar la lista de domicilios
-				console.log(newDomicilio);
-				setAddress(newDomicilio);
+				onSubmit();
 				dispatch(hideAll());
+				if (onCloseModal) onCloseModal();
 			} else {
 				const errorData = await response.json();
-				setError(errorData);
+				alert(errorData.message || 'Error al guardar el domicilio.');
 			}
-		} catch (error) {
-			setError(error);
+		} catch (err) {
+			alert('Error de conexión, intenta nuevamente.');
+		} finally {
+			setLoadingData(false);
 		}
 	};
 
-	// Manejar clics fuera del contenedor
 	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (
 				containerRef.current &&
 				!containerRef.current.contains(event.target)
 			) {
+				if (onCloseModal) onCloseModal();
 				dispatch(hideAll());
 			}
 		};
@@ -117,7 +148,7 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
-	}, [dispatch]);
+	}, [dispatch, onCloseModal]);
 
 	return (
 		<div className='profile-add-address'>
@@ -126,7 +157,7 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 				<form onSubmit={handleSubmit} className='profile-add-address__form'>
 					<div className='profile-add-address__form-row'>
 						<div className='profile-add-address__form-group'>
-							<label htmlFor='nombre'>
+							<label htmlFor='nombres'>
 								Nombre:<span>*</span>
 							</label>
 							<input
@@ -137,6 +168,7 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 								onChange={handleChange}
 								required
 							/>
+							{errors.nombres && <p className='error'>{errors.nombres}</p>}
 						</div>
 						<div className='profile-add-address__form-group'>
 							<label htmlFor='apellidos'>
@@ -150,12 +182,13 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 								onChange={handleChange}
 								required
 							/>
+							{errors.apellidos && <p className='error'>{errors.apellidos}</p>}
 						</div>
 					</div>
 					<div className='profile-add-address__form-row'>
 						<div className='profile-add-address__form-group'>
 							<label htmlFor='telefono'>
-								Teléfono 10 dígitos:<span>*</span>
+								Teléfono:<span>*</span>
 							</label>
 							<input
 								type='tel'
@@ -165,6 +198,7 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 								onChange={handleChange}
 								required
 							/>
+							{errors.telefono && <p className='error'>{errors.telefono}</p>}
 						</div>
 						<div className='profile-add-address__form-group'>
 							<label htmlFor='calle'>
@@ -178,6 +212,7 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 								onChange={handleChange}
 								required
 							/>
+							{errors.calle && <p className='error'>{errors.calle}</p>}
 						</div>
 					</div>
 					<div className='profile-add-address__form-row'>
@@ -193,6 +228,7 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 								onChange={handleChange}
 								required
 							/>
+							{errors.numero && <p className='error'>{errors.numero}</p>}
 						</div>
 						<div className='profile-add-address__form-group'>
 							<label htmlFor='numeroInterior'>Número Interior:</label>
@@ -205,7 +241,6 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 								placeholder='Opcional'
 							/>
 						</div>
-
 						<div className='profile-add-address__form-group'>
 							<label htmlFor='colonia'>
 								Colonia:<span>*</span>
@@ -218,11 +253,12 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 								onChange={handleChange}
 								required
 							/>
+							{errors.colonia && <p className='error'>{errors.colonia}</p>}
 						</div>
 					</div>
 					<div className='profile-add-address__form-row'>
 						<div className='profile-add-address__form-group'>
-							<label htmlFor='codigoPostal'>
+							<label htmlFor='codigo_postal'>
 								Código Postal:<span>*</span>
 							</label>
 							<input
@@ -233,9 +269,12 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 								onChange={handleChange}
 								required
 							/>
+							{errors.codigo_postal && (
+								<p className='error'>{errors.codigo_postal}</p>
+							)}
 						</div>
 						<div className='profile-add-address__form-group'>
-							<label htmlFor='indicaciones'>Referencias:</label>
+							<label htmlFor='referencias'>Referencias:</label>
 							<input
 								type='text'
 								id='referencias'
@@ -248,7 +287,7 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 					</div>
 					<div className='profile-add-address__form-row'>
 						<div className='profile-add-address__form-group'>
-							<label htmlFor='colonia'>
+							<label htmlFor='ciudad'>
 								Ciudad:<span>*</span>
 							</label>
 							<input
@@ -259,8 +298,8 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 								onChange={handleChange}
 								required
 							/>
+							{errors.ciudad && <p className='error'>{errors.ciudad}</p>}
 						</div>
-
 						<div className='profile-add-address__form-group'>
 							<label htmlFor='estado'>
 								Estado:<span>*</span>
@@ -279,15 +318,14 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 									</option>
 								))}
 							</select>
+							{errors.estado && <p className='error'>{errors.estado}</p>}
 						</div>
 					</div>
 					<div className='profile-add-address__buttons'>
 						<button
 							type='button'
 							className='cancel-button'
-							onClick={() => {
-								dispatch(hideAll());
-							}}
+							onClick={onCloseModal}
 						>
 							Cancelar
 						</button>
@@ -298,16 +336,23 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 				</form>
 			</div>
 			<style jsx>{`
+				.error {
+					color: red;
+					font-size: 12px;
+					margin-top: 5px;
+				}
+				
 				.profile-add-address {
 					display: flex;
 					align-items: center;
 					justify-content: center;
 					width: 100dvw;
-					height: calc(100dvh - 61px);
 					z-index: 1000;
 					position: fixed;
-					top: 0;
+					top: 61px !important;
 					left: 0;
+					height: calc(100dvh - 61px);
+					background: rgba(0, 0, 0, 0.5);
 				}
 
 				.profile-add-address__container {
@@ -391,10 +436,6 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 
 					.profile-add-address__form-row {
 						flex-direction: column;
-					}
-
-					.profile-add-address {
-						top: 61px !important;
 					}
 				}
 			`}</style>

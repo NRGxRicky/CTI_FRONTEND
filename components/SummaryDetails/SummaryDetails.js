@@ -8,7 +8,7 @@ import useCart from '../../hooks/useCart';
 import Link from 'next/link';
 
 const SummaryDetails = ({ urlAction, step }) => {
-	const { cart, subtotal, shipping, total, addressId } = useCart();
+	const { cart, subtotal, shipping, total, address } = useCart();
 	const dispatch = useAppDispatch();
 	const { cartMsi } = useAuth();
 
@@ -137,7 +137,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 						</div>
 					</div>
 				)}
-				{!addressId && step == 'shipping' && (
+				{!address && step == 'shipping' && (
 					<div className='checkout__error'>
 						<span>Tienes que agregar un domicilio para continuar.</span>
 					</div>
@@ -146,7 +146,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 					<a>
 						<button
 							className='proceed-checkout'
-							disabled={!addressId && step == 'shipping'}
+							disabled={!address && step == 'shipping'}
 						>
 							Continuar
 						</button>

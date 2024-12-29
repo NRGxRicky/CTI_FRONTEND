@@ -5,15 +5,20 @@ const ProfileAllAddress = ({
 	onSelectAddress,
 	onEditAddress,
 	onAddNewAddress,
-	activeAddressId, // ID del domicilio activo
-	onCloseModal, // Función para cerrar el modal
+	onDeleteAddress, // Nueva función para eliminar
+	activeAddressId,
+	onCloseModal,
+	isProfileAddAddressVisible,
 }) => {
 	const modalRef = useRef(null);
 
-	// Maneja clics fuera del modal
 	useEffect(() => {
 		const handleClickOutside = (event) => {
-			if (modalRef.current && !modalRef.current.contains(event.target)) {
+			if (
+				modalRef.current &&
+				!modalRef.current.contains(event.target) &&
+				!isProfileAddAddressVisible // Solo cierra si `ProfileAddAddress` no está visible
+			) {
 				onCloseModal();
 			}
 		};
@@ -21,9 +26,8 @@ const ProfileAllAddress = ({
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
-	}, [onCloseModal]);
+	}, [onCloseModal, isProfileAddAddressVisible]);
 
-	// Foco automático en el modal al montarse
 	useEffect(() => {
 		if (modalRef.current) {
 			modalRef.current.focus();
@@ -32,11 +36,10 @@ const ProfileAllAddress = ({
 
 	return (
 		<div className='modal-overlay'>
-			<div
-				className='modal-container'
-				ref={modalRef}
-				tabIndex='-1' // Permite que el modal reciba foco
-			>
+      <div className='modal-close' onClick={() => { onCloseModal() }}>
+				<span className='close'></span>
+			</div>
+			<div className='modal-container' ref={modalRef} tabIndex='-1'>
 				<h2>Elige una dirección</h2>
 				<div className='address-list'>
 					{domicilios.map((domicilio) => (
@@ -65,16 +68,23 @@ const ProfileAllAddress = ({
 							</div>
 							<div className='address-actions'>
 								<button
+									className='select-button'
+									onClick={() => onSelectAddress(domicilio)}
+								>
+									Seleccionar
+								</button>
+
+								<button
 									className='edit-button'
 									onClick={() => onEditAddress(domicilio)}
 								>
 									Editar
 								</button>
 								<button
-									className='select-button'
-									onClick={() => onSelectAddress(domicilio)}
+									className='delete-button'
+									onClick={() => onDeleteAddress(domicilio.id)}
 								>
-									Seleccionar
+									Eliminar
 								</button>
 							</div>
 						</div>
@@ -84,15 +94,35 @@ const ProfileAllAddress = ({
 					+ Nueva Dirección
 				</button>
 			</div>
+
 			<style jsx>{`
+        
+        .modal-close {
+          position: absolute;
+          display: flex;
+
+          top: 30px;
+          right: 30px;
+          flex-direction: row-reverse;
+          height: 40px;
+          align-items: center;
+        }
+        
+        .close {
+          height: 24px;
+					width: 24px;
+          color: #ffffff;
+          display: block !important;
+        }
 				.modal-overlay {
 					position: fixed;
-					top: 0;
+					top: 61px;
 					left: 0;
 					width: 100dvw;
-					height: 100dvh;
+					height: calc(100dvh - 61px);
 					background: rgba(0, 0, 0, 0.5);
 					display: flex;
+          flex-direction: column;
 					justify-content: center;
 					align-items: center;
 					z-index: 500;
@@ -101,8 +131,7 @@ const ProfileAllAddress = ({
 					background: white;
 					padding: 20px;
 					border-radius: 5px;
-					width: 400px;
-					max-width: 90%;
+					max-width: 90dvw;
 					box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 				}
 				h2 {
@@ -112,10 +141,11 @@ const ProfileAllAddress = ({
 				}
 				.address-list {
 					display: flex;
-					flex-direction: column;
 					gap: 15px;
-					max-height: 300px;
+					max-height: calc(50dvh - 61px);
 					overflow-y: auto;
+					flex-wrap: wrap;
+          min-width: 50dvw;
 				}
 				.address-item {
 					border: 1px solid #ddd;
@@ -125,10 +155,12 @@ const ProfileAllAddress = ({
 					justify-content: space-between;
 					align-items: flex-start;
 					transition: border-color 0.3s;
+					flex: 40%;
+					max-width: 50%;
+          gap: 15px;
 				}
 				.address-item.active {
 					border-color: var(--primary-color);
-					background-color: #eaeaea;
 				}
 				.address-details p {
 					margin: 5px 0;
@@ -171,6 +203,42 @@ const ProfileAllAddress = ({
 				.add-new-address:hover {
 					background: #f9f9f9;
 				}
+
+				.address-actions {
+					display: flex;
+					flex-direction: column;
+					gap: 10px;
+				}
+				.delete-button {
+					background: #ffb116;
+					border: none;
+					color: white;
+					padding: 8px 12px;
+					border-radius: 5px;
+					cursor: pointer;
+					font-size: 14px;
+				}
+				.delete-button:hover {
+					background: #ffa01b;
+				}
+
+				@media only screen and (max-width: 62em) {
+					.address-item {
+            flex: 100%;
+            min-width: 100%;
+          
+				}
+
+        .address-details p{
+          font-size: 12px;
+        }
+
+        .address-list {
+          flex-direction: column;
+          flex-wrap: nowrap;
+        }
+
+        
 			`}</style>
 		</div>
 	);

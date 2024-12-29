@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { showProfileAddAddress } from '../../lib/features/showOpacityContainerSlide';
 import ProfileAddAddress from '../ProfileAddAddress/ProfileAddAddress';
 import ProfileAllAddress from '../ProfileAllAddress/ProfileAllAddress';
+import { Preloader, TailSpin } from 'react-preloader-icon';
 
 const CartShippingMethod = () => {
 	const { shipping, address, setAddress } = useCart();
@@ -17,14 +18,39 @@ const CartShippingMethod = () => {
 		domicilios: [],
 		PccomputoUsuarioDatosFacturacion: [],
 	});
-	const { isAuthenticated, loading, accessToken, isVerified } = useAuth();
-	const [showAllAddresses, setShowAllAddresses] = useState(false);
-	const [activeAddressId, setActiveAddressId] = useState(address?.id || null);
-
+	const [activeModal, setActiveModal] = useState(null); // 'add', 'all' o null
 	const [editingAddress, setEditingAddress] = useState(null);
+	const { isAuthenticated, loading, accessToken, isVerified } = useAuth();
+	const [activeAddressId, setActiveAddressId] = useState(address?.id || 0);
+	const [isProfileAddAddressVisible, setProfileAddAddressVisible] =
+		useState(false);
+	const dispatch = useAppDispatch();
+
+	const getDataProfile = async () => {
+		setLoadingData(true);
+		const resData = await fetchData('/profile/resume/', accessToken);
+		if (resData.ok) {
+			const dataJson = await resData.json();
+			setProfile(dataJson);
+			const activeAddress = dataJson.domicilios.find((d) => d.active);
+			if (activeAddress) {
+				setAddress(activeAddress);
+				setActiveAddressId(activeAddress.id);
+			} else {
+				setAddress(null);
+				setActiveAddressId(0);
+			}
+		}
+		setLoadingData(false);
+	};
+
+	useEffect(() => {
+		if (accessToken) getDataProfile();
+	}, []);
 
 	const handleSelectAddress = async (domicilio) => {
 		try {
+			setLoadingData(true);
 			const response = await fetch(
 				'https://api.pccdnapi.com/profile/domicilio/set-active/',
 				{
@@ -38,52 +64,68 @@ const CartShippingMethod = () => {
 			);
 
 			if (response.ok) {
-				setAddress(domicilio);
-				setActiveAddressId(domicilio.id);
-				setShowAllAddresses(false);
+				getDataProfile();
+				setActiveModal(null);
 			} else {
 				console.error('No se pudo actualizar el domicilio activo.');
 			}
 		} catch (error) {
 			console.error('Error al actualizar el domicilio activo:', error);
+		} finally {
+			setLoadingData(false);
 		}
-	};
-
-	const handleCloseModal = () => setShowAllAddresses(false);
-
-	const handleEditAddress = (domicilio) => {
-		setEditingAddress(domicilio); // Establece el domicilio que estás editando
-		dispatch(showProfileAddAddress());
 	};
 
 	const handleAddNewAddress = () => {
-		setEditingAddress(null); // Asegúrate de que esté vacío para un nuevo domicilio
-		dispatch(showProfileAddAddress());
+		setEditingAddress(null);
+		setActiveModal('add');
+		setProfileAddAddressVisible(true);
 	};
 
-	const dispatch = useAppDispatch();
-	const stateProfileAddAddress = useAppSelector(
-		(state) => state.showOpacityContainerReducer.ProfileAddAddress
-	);
-
-	const getDataProfile = async () => {
-		setLoadingData(true);
-
-		const resData = await fetchData('/profile/resume/', accessToken);
-		if (resData.ok) {
-			const dataJson = await resData.json();
-			setProfile(dataJson);
-			const activeAddress = dataJson.domicilios.filter((d) => d.active)[0];
-			setAddress(activeAddress);
+	const handleEditAddress = (domicilio) => {
+		setEditingAddress(domicilio);
+		if (activeModal == 'all') {
+			setActiveModal('all-add');
+		} else {
+			setActiveModal('add');
 		}
+
+		setProfileAddAddressVisible(true);
 	};
 
-	useEffect(() => {
-		if (accessToken) {
-			getDataProfile();
+	const closeProfileAddAddress = () => {
+		if (activeModal == 'all-add') {
+			setActiveModal('all');
+		} else {
+			setActiveModal(null);
 		}
-		address && setActiveAddressId(address.id)
-	}, [address]);
+		setProfileAddAddressVisible(false);
+	};
+
+	const handleDeleteAddress = async (domicilioId) => {
+		try {
+			setLoadingData(true);
+			const response = await fetch(
+				`https://api.pccdnapi.com/profile/domicilio/delete/${domicilioId}/`,
+				{
+					method: 'DELETE',
+					headers: { Authorization: `Bearer ${accessToken}` },
+				}
+			);
+
+			if (response.ok) {
+				getDataProfile(); // Actualiza la lista después de eliminar
+				alert('Domicilio eliminado correctamente.');
+			} else {
+				alert('Error al eliminar el domicilio.');
+			}
+		} catch (error) {
+			console.error('Error al eliminar el domicilio:', error);
+			alert('Error al eliminar el domicilio.');
+		} finally {
+			setLoadingData(false);
+		}
+	};
 
 	return (
 		<div className='cart-shipping-method'>
@@ -130,13 +172,10 @@ const CartShippingMethod = () => {
 							<div className='cart-shipping-method__actions'>
 								<button
 									className='cart-shipping-method__actions__change-addres__button'
-									onClick={() => {
-										dispatch(showProfileAddAddress());
-									}}
+									onClick={() => handleAddNewAddress()}
 								>
 									+ Agregar Domicilio
 								</button>
-								{stateProfileAddAddress && <ProfileAddAddress />}
 							</div>
 						) : (
 							<div className='cart-shipping-method__item' key={address.id}>
@@ -160,18 +199,10 @@ const CartShippingMethod = () => {
 								</div>
 								<div
 									className='cart-shipping-method__action'
-									onClick={() => {
-										dispatch(
-											showProfileAddAddress(),
-											setEditingAddress(address)
-										);
-									}}
+									onClick={() => handleEditAddress(address)}
 								>
 									Editar
 								</div>
-								{stateProfileAddAddress && (
-									<ProfileAddAddress domicilio={editingAddress} />
-								)}
 							</div>
 						)}
 					</div>
@@ -179,26 +210,77 @@ const CartShippingMethod = () => {
 						<div className='cart-shipping-method__actions'>
 							<button
 								className='cart-shipping-method__actions__change-addres__button'
-								onClick={() => setShowAllAddresses(true)}
+								onClick={() => setActiveModal('all')}
 							>
 								Elegir otro domicilio
 							</button>
 						</div>
 					)}
-					{showAllAddresses && (
-						<ProfileAllAddress
-							domicilios={profile.domicilios}
-							activeAddressId={activeAddressId}
-							onSelectAddress={handleSelectAddress}
-							onEditAddress={handleEditAddress}
-							onAddNewAddress={handleAddNewAddress}
-							onCloseModal={handleCloseModal}
-						/>
-					)}
 				</div>
 			</div>
+
+			{(activeModal === 'add' || activeModal === 'all-add') && (
+				<ProfileAddAddress
+					domicilio={editingAddress}
+					onCloseModal={closeProfileAddAddress}
+					onSubmit={getDataProfile}
+					setLoadingData={setLoadingData}
+				/>
+			)}
+			{activeModal === 'all' && (
+				<ProfileAllAddress
+					domicilios={profile.domicilios}
+					activeAddressId={activeAddressId}
+					onSelectAddress={handleSelectAddress}
+					onEditAddress={handleEditAddress}
+					onAddNewAddress={handleAddNewAddress}
+					onCloseModal={() => setActiveModal(null)}
+					onDeleteAddress={handleDeleteAddress}
+					isProfileAddAddressVisible={isProfileAddAddressVisible}
+				/>
+			)}
+
 			<SummaryDetails urlAction={'/carrito/pago'} step={'shipping'} />
+			{loadingData && (
+				<div className='cart__loading'>
+					<div className='cart__loading__container'>
+						<Preloader
+							use={TailSpin}
+							size={30}
+							strokeWidth={8}
+							strokeColor='var(--primary-color)'
+							duration={900}
+						/>
+					</div>
+				</div>
+			)}
 			<style jsx>{`
+				.cart__loading {
+					position: fixed;
+					background: #0f0f0f;
+					width: 100%;
+					height: calc(100% - 61px);
+					top: 61px;
+					left: 0px;
+					opacity: 0.8;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					z-index: 1000;
+				}
+
+				.cart__loading__container {
+					position: relative;
+					height: 25%;
+					width: 25%;
+					background-color: #fff;
+					opacity: 1;
+					border-radius: 2px;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+
 				.cart-shipping-method__body {
 					margin-bottom: 15px;
 				}
