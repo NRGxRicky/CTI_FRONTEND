@@ -67,7 +67,11 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		console.log(formData);
+
+		const dataToSend = { ...formData };
+		if (!dataToSend.id) {
+			delete dataToSend.id; // Elimina el campo id si está vacío
+		}
 
 		try {
 			const response = await fetch(
@@ -78,13 +82,14 @@ const ProfileAddAddress = ({ domicilio = null }) => {
 						'Content-Type': 'application/json',
 						Authorization: `Bearer ${accessToken}`, // Asegúrate de usar el token correcto
 					},
-					body: JSON.stringify(formData),
+					body: JSON.stringify(dataToSend),
 				}
 			);
 
 			if (response.ok) {
 				const newDomicilio = await response.json();
 				// Aquí podrías realizar alguna acción, como cerrar el modal o actualizar la lista de domicilios
+				console.log(newDomicilio);
 				setAddress(newDomicilio);
 				dispatch(hideAll());
 			} else {

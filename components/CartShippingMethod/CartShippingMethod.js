@@ -8,6 +8,7 @@ import { useAuth } from '../../hooks/auth';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { showProfileAddAddress } from '../../lib/features/showOpacityContainerSlide';
 import ProfileAddAddress from '../ProfileAddAddress/ProfileAddAddress';
+import ProfileAllAddress from '../ProfileAllAddress/ProfileAllAddress';
 
 const CartShippingMethod = () => {
 	const { shipping, address, setAddress } = useCart();
@@ -17,6 +18,49 @@ const CartShippingMethod = () => {
 		PccomputoUsuarioDatosFacturacion: [],
 	});
 	const { isAuthenticated, loading, accessToken, isVerified } = useAuth();
+	const [showAllAddresses, setShowAllAddresses] = useState(false);
+	const [activeAddressId, setActiveAddressId] = useState(address?.id || null);
+
+	const [editingAddress, setEditingAddress] = useState(null);
+
+	const handleSelectAddress = async (domicilio) => {
+		try {
+			const response = await fetch(
+				'https://api.pccdnapi.com/profile/domicilio/set-active/',
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${accessToken}`,
+					},
+					body: JSON.stringify({ id: domicilio.id }),
+				}
+			);
+
+			if (response.ok) {
+				setAddress(domicilio);
+				setActiveAddressId(domicilio.id);
+				setShowAllAddresses(false);
+			} else {
+				console.error('No se pudo actualizar el domicilio activo.');
+			}
+		} catch (error) {
+			console.error('Error al actualizar el domicilio activo:', error);
+		}
+	};
+
+	const handleCloseModal = () => setShowAllAddresses(false);
+
+	const handleEditAddress = (domicilio) => {
+		setEditingAddress(domicilio); // Establece el domicilio que estás editando
+		dispatch(showProfileAddAddress());
+	};
+
+	const handleAddNewAddress = () => {
+		setEditingAddress(null); // Asegúrate de que esté vacío para un nuevo domicilio
+		dispatch(showProfileAddAddress());
+	};
+
 	const dispatch = useAppDispatch();
 	const stateProfileAddAddress = useAppSelector(
 		(state) => state.showOpacityContainerReducer.ProfileAddAddress
@@ -29,7 +73,7 @@ const CartShippingMethod = () => {
 		if (resData.ok) {
 			const dataJson = await resData.json();
 			setProfile(dataJson);
-			const activeAddress = dataJson.domicilios.filter(d => d.active)[0]
+			const activeAddress = dataJson.domicilios.filter((d) => d.active)[0];
 			setAddress(activeAddress);
 		}
 	};
@@ -38,7 +82,8 @@ const CartShippingMethod = () => {
 		if (accessToken) {
 			getDataProfile();
 		}
-	}, []);
+		address && setActiveAddressId(address.id)
+	}, [address]);
 
 	return (
 		<div className='cart-shipping-method'>
@@ -91,9 +136,7 @@ const CartShippingMethod = () => {
 								>
 									+ Agregar Domicilio
 								</button>
-								{stateProfileAddAddress && (
-									<ProfileAddAddress/>
-								)}
+								{stateProfileAddAddress && <ProfileAddAddress />}
 							</div>
 						) : (
 							<div className='cart-shipping-method__item' key={address.id}>
@@ -118,23 +161,39 @@ const CartShippingMethod = () => {
 								<div
 									className='cart-shipping-method__action'
 									onClick={() => {
-										dispatch(showProfileAddAddress());
+										dispatch(
+											showProfileAddAddress(),
+											setEditingAddress(address)
+										);
 									}}
 								>
 									Editar
 								</div>
 								{stateProfileAddAddress && (
-									<ProfileAddAddress domicilio={address} />
+									<ProfileAddAddress domicilio={editingAddress} />
 								)}
 							</div>
 						)}
 					</div>
-					{profile.domicilios.length > 1 && (
+					{profile.domicilios.length > 0 && (
 						<div className='cart-shipping-method__actions'>
-							<button className='cart-shipping-method__actions__change-addres__button'>
+							<button
+								className='cart-shipping-method__actions__change-addres__button'
+								onClick={() => setShowAllAddresses(true)}
+							>
 								Elegir otro domicilio
 							</button>
 						</div>
+					)}
+					{showAllAddresses && (
+						<ProfileAllAddress
+							domicilios={profile.domicilios}
+							activeAddressId={activeAddressId}
+							onSelectAddress={handleSelectAddress}
+							onEditAddress={handleEditAddress}
+							onAddNewAddress={handleAddNewAddress}
+							onCloseModal={handleCloseModal}
+						/>
 					)}
 				</div>
 			</div>
