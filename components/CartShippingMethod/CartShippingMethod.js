@@ -7,9 +7,10 @@ import fetchData from '../../hooks/GetDataAuth';
 import { useAuth } from '../../hooks/auth';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { showProfileAddAddress } from '../../lib/features/showOpacityContainerSlide';
+import ProfileAddAddress from '../ProfileAddAddress/ProfileAddAddress';
 
 const CartShippingMethod = () => {
-	const { shipping } = useCart();
+	const { shipping, address, setAddress } = useCart();
 	const [loadingData, setLoadingData] = useState(false);
 	const [profile, setProfile] = useState({
 		domicilios: [],
@@ -17,6 +18,9 @@ const CartShippingMethod = () => {
 	});
 	const { isAuthenticated, loading, accessToken, isVerified } = useAuth();
 	const dispatch = useAppDispatch();
+	const stateProfileAddAddress = useAppSelector(
+		(state) => state.showOpacityContainerReducer.ProfileAddAddress
+	);
 
 	const getDataProfile = async () => {
 		setLoadingData(true);
@@ -25,11 +29,15 @@ const CartShippingMethod = () => {
 		if (resData.ok) {
 			const dataJson = await resData.json();
 			setProfile(dataJson);
+			const activeAddress = dataJson.domicilios.filter(d => d.active)[0]
+			setAddress(activeAddress);
 		}
 	};
 
 	useEffect(() => {
-		getDataProfile();
+		if (accessToken) {
+			getDataProfile();
+		}
 	}, []);
 
 	return (
@@ -73,7 +81,7 @@ const CartShippingMethod = () => {
 						</div>
 					</div>
 					<div className='cart-shipping-method__body'>
-						{profile.domicilios.length < 1 ? (
+						{!address ? (
 							<div className='cart-shipping-method__actions'>
 								<button
 									className='cart-shipping-method__actions__change-addres__button'
@@ -83,30 +91,42 @@ const CartShippingMethod = () => {
 								>
 									+ Agregar Domicilio
 								</button>
+								{stateProfileAddAddress && (
+									<ProfileAddAddress/>
+								)}
 							</div>
 						) : (
-							profile.domicilios.map((item) => (
-								<div className='cart-shipping-method__item' key={item.id}>
-									<div className='cart-shipping-method__item__description'>
-										<div className='cart-shipping-method__item__title'>
-											<span>
-												{item.nombres} {item.apellidos}
-											</span>
-										</div>
-										<div className='cart-shipping-method__item__detail'>
-											<p>
-												{item.calle} {item.numero} {item.numero_interior},{' '}
-												{item.colonia}
-											</p>
-											<p>
-												{item.ciudad}, {item.estado}, {item.codigo_postal}
-											</p>
-											<p>{item.telefono}</p>
-										</div>
+							<div className='cart-shipping-method__item' key={address.id}>
+								<div className='cart-shipping-method__item__description'>
+									<div className='cart-shipping-method__item__title'>
+										<span>
+											{address.nombres} {address.apellidos}
+										</span>
 									</div>
-									<div className='cart-shipping-method__action'>Editar</div>
+									<div className='cart-shipping-method__item__detail'>
+										<p>
+											{address.calle} {address.numero} {address.numero_interior}
+											, {address.colonia}
+										</p>
+										<p>
+											{address.ciudad}, {address.estado},{' '}
+											{address.codigo_postal}
+										</p>
+										<p>{address.telefono}</p>
+									</div>
 								</div>
-							))
+								<div
+									className='cart-shipping-method__action'
+									onClick={() => {
+										dispatch(showProfileAddAddress());
+									}}
+								>
+									Editar
+								</div>
+								{stateProfileAddAddress && (
+									<ProfileAddAddress domicilio={address} />
+								)}
+							</div>
 						)}
 					</div>
 					{profile.domicilios.length > 1 && (

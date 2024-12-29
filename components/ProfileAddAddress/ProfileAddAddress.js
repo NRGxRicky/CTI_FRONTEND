@@ -1,22 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
+import { useAuth } from '../../hooks/auth';
+import useCart from '../../hooks/useCart';
 
-const ProfileAddAddress = () => {
+const ProfileAddAddress = ({ domicilio = null }) => {
+	const { isAuthenticated, loading, accessToken, isVerified } = useAuth();
+	const { error, setError } = useState(null);
+	const { setAddress } = useCart();
 	const dispatch = useAppDispatch();
 	const containerRef = useRef(null);
 	const [formData, setFormData] = useState({
-		nombre: '',
-		apellidos: '',
-		telefono: '',
-		calle: '',
-		numero: '',
-		numeroInterior: '',
-		colonia: '',
-		codigoPostal: '',
-		ciudad: '',
-		estado: '',
-		referencias: '',
+		id: domicilio?.id || '', // Para actualizar un domicilio existente
+		nombres: domicilio?.nombres || '',
+		apellidos: domicilio?.apellidos || '',
+		telefono: domicilio?.telefono || '',
+		calle: domicilio?.calle || '',
+		numero: domicilio?.numero || '',
+		numero_interior: domicilio?.numero_interior || '',
+		colonia: domicilio?.colonia || '',
+		codigo_postal: domicilio?.codigo_postal || '',
+		ciudad: domicilio?.ciudad || '',
+		estado: domicilio?.estado || '',
+		referencias: domicilio?.referencias || '',
 	});
 
 	const estadosMexico = [
@@ -59,9 +65,35 @@ const ProfileAddAddress = () => {
 		setFormData({ ...formData, [name]: value });
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		console.log(formData);
+
+		try {
+			const response = await fetch(
+				'https://api.pccdnapi.com/profile/domicilio/add-or-update/',
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${accessToken}`, // Asegúrate de usar el token correcto
+					},
+					body: JSON.stringify(formData),
+				}
+			);
+
+			if (response.ok) {
+				const newDomicilio = await response.json();
+				// Aquí podrías realizar alguna acción, como cerrar el modal o actualizar la lista de domicilios
+				setAddress(newDomicilio);
+				dispatch(hideAll());
+			} else {
+				const errorData = await response.json();
+				setError(errorData);
+			}
+		} catch (error) {
+			setError(error);
+		}
 	};
 
 	// Manejar clics fuera del contenedor
@@ -85,7 +117,7 @@ const ProfileAddAddress = () => {
 	return (
 		<div className='profile-add-address'>
 			<div className='profile-add-address__container' ref={containerRef}>
-				<h2>Agregar Domicilio</h2>
+				<h2>{formData.id ? 'Editar Domicilio' : 'Agregar Domicilio'}</h2>
 				<form onSubmit={handleSubmit} className='profile-add-address__form'>
 					<div className='profile-add-address__form-row'>
 						<div className='profile-add-address__form-group'>
@@ -94,9 +126,9 @@ const ProfileAddAddress = () => {
 							</label>
 							<input
 								type='text'
-								id='nombre'
-								name='nombre'
-								value={formData.nombre}
+								id='nombres'
+								name='nombres'
+								value={formData.nombres}
 								onChange={handleChange}
 								required
 							/>
@@ -161,9 +193,9 @@ const ProfileAddAddress = () => {
 							<label htmlFor='numeroInterior'>Número Interior:</label>
 							<input
 								type='text'
-								id='numeroInterior'
-								name='numeroInterior'
-								value={formData.numeroInterior}
+								id='numero_interior'
+								name='numero_interior'
+								value={formData.numero_interior}
 								onChange={handleChange}
 								placeholder='Opcional'
 							/>
@@ -190,9 +222,9 @@ const ProfileAddAddress = () => {
 							</label>
 							<input
 								type='text'
-								id='codigoPostal'
-								name='codigoPostal'
-								value={formData.codigoPostal}
+								id='codigo_postal'
+								name='codigo_postal'
+								value={formData.codigo_postal}
 								onChange={handleChange}
 								required
 							/>
@@ -208,6 +240,22 @@ const ProfileAddAddress = () => {
 								placeholder='Entre calles, fachada, etc'
 							/>
 						</div>
+					</div>
+					<div className='profile-add-address__form-row'>
+						<div className='profile-add-address__form-group'>
+							<label htmlFor='colonia'>
+								Ciudad:<span>*</span>
+							</label>
+							<input
+								type='text'
+								id='ciudad'
+								name='ciudad'
+								value={formData.ciudad}
+								onChange={handleChange}
+								required
+							/>
+						</div>
+
 						<div className='profile-add-address__form-group'>
 							<label htmlFor='estado'>
 								Estado:<span>*</span>
@@ -239,7 +287,7 @@ const ProfileAddAddress = () => {
 							Cancelar
 						</button>
 						<button type='submit' className='accept-button'>
-							Aceptar
+							{formData.id ? 'Actualizar' : 'Agregar'}
 						</button>
 					</div>
 				</form>
