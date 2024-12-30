@@ -40,8 +40,6 @@ const CartSummaryMini = () => {
 			setShowScrollDown(scrollTop + clientHeight < scrollHeight);
 		}
 	};
-	
-	console.log(shipping)
 
 	useLayoutEffect(() => {
 		checkScroll();

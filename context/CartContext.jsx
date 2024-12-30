@@ -35,7 +35,6 @@ export const CartProvider = ({ children }) => {
 			});
 			if (response.ok) {
 				const backendCart = await response.json();
-				console.log(backendCart);
 				setCart(backendCart.cart_items);
 				setShipping(backendCart.shipping_cost);
 			}
