@@ -1,0 +1,26 @@
+const formasDePago = [
+	{ c_FormaPago: '01', Descripción: 'Efectivo' },
+	{ c_FormaPago: '02', Descripción: 'Cheque nominativo' },
+	{ c_FormaPago: '03', Descripción: 'Transferencia electrónica de fondos' },
+	{ c_FormaPago: '04', Descripción: 'Tarjeta de crédito' },
+	{ c_FormaPago: '05', Descripción: 'Monedero electrónico' },
+	{ c_FormaPago: '06', Descripción: 'Dinero electrónico' },
+	{ c_FormaPago: '08', Descripción: 'Vales de despensa' },
+	{ c_FormaPago: '12', Descripción: 'Dación en pago' },
+	{ c_FormaPago: '13', Descripción: 'Pago por subrogación' },
+	{ c_FormaPago: '14', Descripción: 'Pago por consignación' },
+	{ c_FormaPago: '15', Descripción: 'Condonación' },
+	{ c_FormaPago: '17', Descripción: 'Compensación' },
+	{ c_FormaPago: '23', Descripción: 'Novación' },
+	{ c_FormaPago: '24', Descripción: 'Confusión' },
+	{ c_FormaPago: '25', Descripción: 'Remisión de deuda' },
+	{ c_FormaPago: '26', Descripción: 'Prescripción o caducidad' },
+	{ c_FormaPago: '27', Descripción: 'A satisfacción del acreedor' },
+	{ c_FormaPago: '28', Descripción: 'Tarjeta de débito' },
+	{ c_FormaPago: '29', Descripción: 'Tarjeta de servicios' },
+	{ c_FormaPago: '30', Descripción: 'Aplicación de anticipos' },
+	{ c_FormaPago: '31', Descripción: 'Intermediario pagos' },
+	{ c_FormaPago: '99', Descripción: 'Por definir' },
+];
+
+export default formasDePago;

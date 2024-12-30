@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAppDispatch } from '../../lib/hooks';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 import { useAuth } from '../../hooks/auth';
-import useCart from '../../hooks/useCart';
 
 const ProfileAddAddress = ({
 	domicilio = null,
@@ -11,7 +10,6 @@ const ProfileAddAddress = ({
 	setLoadingData,
 }) => {
 	const { accessToken } = useAuth();
-	const { setAddress } = useCart();
 	const dispatch = useAppDispatch();
 	const containerRef = useRef(null);
 	const [formData, setFormData] = useState({

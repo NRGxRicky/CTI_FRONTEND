@@ -1,23 +1,24 @@
 import React, { useRef, useEffect } from 'react';
 
-const ProfileAllAddress = ({
-	domicilios,
-	onSelectAddress,
-	onEditAddress,
-	onAddNewAddress,
-	onDeleteAddress, // Nueva función para eliminar
-	activeAddressId,
+const ProfileAllInvoice = ({
+	rfcs, // Antes era "domicilios"
+	onSelectinvoice, // Antes: onSelectAddress
+	onEditinvoice, // Antes: onEditAddress
+	onAddNewinvoice, // Antes: onAddNewAddress
+	onDeleteinvoice, // Antes: onDeleteAddress
+	activeinvoiceId, // Antes: activeAddressId
 	onCloseModal,
-	isProfileAddAddressVisible,
+	isProfileAddinvoiceVisible, // Antes: isProfileAddAddressVisible
 }) => {
 	const modalRef = useRef(null);
 
+	// Cerrar modal al hacer click fuera, siempre y cuando el formulario "ProfileAddInvoice" no esté visible
 	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (
 				modalRef.current &&
 				!modalRef.current.contains(event.target) &&
-				!isProfileAddAddressVisible // Solo cierra si `ProfileAddAddress` no está visible
+				!isProfileAddinvoiceVisible
 			) {
 				onCloseModal();
 			}
@@ -26,8 +27,9 @@ const ProfileAllAddress = ({
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
-	}, [onCloseModal, isProfileAddAddressVisible]);
+	}, [onCloseModal, isProfileAddinvoiceVisible]);
 
+	// Enfocar modal
 	useEffect(() => {
 		if (modalRef.current) {
 			modalRef.current.focus();
@@ -36,58 +38,51 @@ const ProfileAllAddress = ({
 
 	return (
 		<div className='modal-overlay'>
-			<div
-				className='modal-close'
-				onClick={() => {
-					onCloseModal();
-				}}
-			>
+			{/* Botón para cerrar el modal */}
+			<div className='modal-close' onClick={() => onCloseModal()}>
 				<span className='close'></span>
 			</div>
+
 			<div className='modal-container' ref={modalRef} tabIndex='-1'>
-				<h2>Elige una dirección</h2>
-				<div className='address-list'>
-					{domicilios.map((domicilio) => (
+				<h2>Elige un RFC</h2>
+				<div className='invoice-list'>
+					{rfcs.map((invoice) => (
 						<div
-							key={domicilio.id}
-							className={`address-item ${
-								domicilio.id === activeAddressId ? 'active' : ''
+							key={invoice.id}
+							className={`invoice-item ${
+								invoice.id === activeinvoiceId ? 'active' : ''
 							}`}
 						>
-							<div className='address-details'>
+							<div className='invoice-details'>
+								{/* Muestra los datos que tengas en tu objeto de facturación */}
 								<p>
-									<strong>
-										{domicilio.nombres} {domicilio.apellidos}
-									</strong>
+									<strong>{invoice.razon_social}</strong>
 								</p>
-								<p>{domicilio.telefono}</p>
-								<p>
-									{domicilio.calle} {domicilio.numero}{' '}
-									{domicilio.numero_interior &&
-										`Int. ${domicilio.numero_interior}`}
-								</p>
-								<p>
-									{domicilio.colonia}, {domicilio.ciudad}, {domicilio.estado}
-								</p>
-								<p>{domicilio.codigo_postal}</p>
+								<p>RFC: {invoice.rfc}</p>
+								<p>Código Postal: {invoice.codigo_postal}</p>
+								<p>Régimen: {invoice.regimen}</p>
+								<p>Uso CFDI: {invoice.uso_de_cfdi}</p>
+								<p>Forma de Pago: {invoice.forma_de_pago}</p>
 							</div>
-							<div className='address-actions'>
+
+							<div className='invoice-actions'>
 								<button
 									className='select-button'
-									onClick={() => onSelectAddress(domicilio)}
+									onClick={() => onSelectinvoice(invoice)}
 								>
 									Seleccionar
 								</button>
 
 								<button
 									className='edit-button'
-									onClick={() => onEditAddress(domicilio)}
+									onClick={() => onEditinvoice(invoice)}
 								>
 									Editar
 								</button>
+
 								<button
 									className='delete-button'
-									onClick={() => onDeleteAddress(domicilio.id)}
+									onClick={() => onDeleteinvoice(invoice.id)}
 								>
 									Eliminar
 								</button>
@@ -95,30 +90,31 @@ const ProfileAllAddress = ({
 						</div>
 					))}
 				</div>
-				<button className='add-new-address' onClick={onAddNewAddress}>
-					+ Nueva Dirección
+
+				<button className='add-new-invoice' onClick={onAddNewinvoice}>
+					+ Nuevo RFC
 				</button>
 			</div>
 
+			{/* Estilos del componente */}
 			<style jsx>{`
-        
-        .modal-close {
-          position: absolute;
-          display: flex;
+				.modal-close {
+					position: absolute;
+					display: flex;
+					top: 30px;
+					right: 30px;
+					flex-direction: row-reverse;
+					height: 40px;
+					align-items: center;
+				}
 
-          top: 30px;
-          right: 30px;
-          flex-direction: row-reverse;
-          height: 40px;
-          align-items: center;
-        }
-        
-        .close {
-          height: 24px;
+				.close {
+					height: 24px;
 					width: 24px;
-          color: #ffffff;
-          display: block !important;
-        }
+					color: #ffffff;
+					display: block !important;
+				}
+
 				.modal-overlay {
 					position: fixed;
 					top: 61px;
@@ -127,24 +123,28 @@ const ProfileAllAddress = ({
 					height: calc(100dvh - 61px);
 					background: rgba(0, 0, 0, 0.5);
 					display: flex;
-          flex-direction: column;
+					flex-direction: column;
 					justify-content: center;
 					align-items: center;
 					z-index: 500;
 				}
+
 				.modal-container {
 					background: white;
 					padding: 20px;
 					border-radius: 5px;
 					max-width: 90dvw;
 					box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+					outline: none;
 				}
+
 				h2 {
 					text-align: center;
 					margin-bottom: 20px;
 					font-size: 18px;
 				}
-				.address-list {
+
+				.invoice-list {
 					display: flex;
 					gap: 15px;
 					max-height: calc(50dvh - 61px);
@@ -152,7 +152,7 @@ const ProfileAllAddress = ({
 					flex-wrap: wrap;
 				}
 
-				.address-item {
+				.invoice-item {
 					border: 1px solid #ddd;
 					padding: 15px;
 					border-radius: 5px;
@@ -162,32 +162,27 @@ const ProfileAllAddress = ({
 					transition: border-color 0.3s;
 					flex: 40%;
 					max-width: 50%;
-          gap: 15px;
-          min-width: 35dvw;
+					gap: 15px;
+					min-width: 35dvw;
 				}
-				.address-item.active {
+
+				.invoice-item.active {
 					border-color: var(--primary-color);
 					background-color: var(--background-price-color);
 					box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 				}
-				.address-details p {
+
+				.invoice-details p {
 					margin: 5px 0;
 					font-size: 14px;
 				}
-				.address-actions {
+
+				.invoice-actions {
 					display: flex;
 					flex-direction: column;
 					gap: 10px;
 				}
-				.edit-button {
-					background: #e0e0e0;
-					border: none;
-					color: #333;
-					padding: 8px 12px;
-					border-radius: 5px;
-					cursor: pointer;
-					font-size: 14px;
-				}
+
 				.select-button {
 					background: var(--primary-color);
 					border: none;
@@ -197,7 +192,32 @@ const ProfileAllAddress = ({
 					cursor: pointer;
 					font-size: 14px;
 				}
-				.add-new-address {
+
+				.edit-button {
+					background: #e0e0e0;
+					border: none;
+					color: #333;
+					padding: 8px 12px;
+					border-radius: 5px;
+					cursor: pointer;
+					font-size: 14px;
+				}
+
+				.delete-button {
+					background: #ffb116;
+					border: none;
+					color: white;
+					padding: 8px 12px;
+					border-radius: 5px;
+					cursor: pointer;
+					font-size: 14px;
+				}
+
+				.delete-button:hover {
+					background: #ffa01b;
+				}
+
+				.add-new-invoice {
 					margin-top: 20px;
 					width: 100%;
 					background: none;
@@ -208,48 +228,29 @@ const ProfileAllAddress = ({
 					font-size: 14px;
 					color: var(--primary-color);
 				}
-				.add-new-address:hover {
+
+				.add-new-invoice:hover {
 					background: #f9f9f9;
 				}
 
-				.address-actions {
-					display: flex;
-					flex-direction: column;
-					gap: 10px;
-				}
-				.delete-button {
-					background: #ffb116;
-					border: none;
-					color: white;
-					padding: 8px 12px;
-					border-radius: 5px;
-					cursor: pointer;
-					font-size: 14px;
-				}
-				.delete-button:hover {
-					background: #ffa01b;
-				}
-
 				@media only screen and (max-width: 62em) {
-					.address-item {
-            flex: 100%;
-            min-width: 100%;
-          
+					.invoice-item {
+						flex: 100%;
+						min-width: 100%;
+					}
+
+					.invoice-details p {
+						font-size: 12px;
+					}
+
+					.invoice-list {
+						flex-direction: column;
+						flex-wrap: nowrap;
+					}
 				}
-
-        .address-details p{
-          font-size: 12px;
-        }
-
-        .address-list {
-          flex-direction: column;
-          flex-wrap: nowrap;
-        }
-
-        
 			`}</style>
 		</div>
 	);
 };
 
-export default ProfileAllAddress;
+export default ProfileAllInvoice;

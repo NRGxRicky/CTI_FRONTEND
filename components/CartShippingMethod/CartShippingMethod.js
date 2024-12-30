@@ -201,7 +201,7 @@ const CartShippingMethod = () => {
 									className='cart-shipping-method__action'
 									onClick={() => handleEditAddress(address)}
 								>
-									Editar
+									Editar Dirección
 								</div>
 							</div>
 						)}
@@ -334,8 +334,8 @@ const CartShippingMethod = () => {
 
 				.cart-shipping-method__item.active {
 					border: 1px solid var(--primary-color) !important;
-					color: var(--primary-color);
 					fill: var(--primary-color);
+					background-color: var(--background-price-color);
 				}
 
 				.cart-shipping-method {

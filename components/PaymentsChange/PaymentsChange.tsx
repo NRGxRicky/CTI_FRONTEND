@@ -192,6 +192,7 @@ const PaymentsChange = () => {
 						border: 1px solid #eaeaea;
 						border-radius: 5px;
             width: 100%;
+			box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 					}
 
 					.payments-change__option__header {
@@ -218,6 +219,7 @@ const PaymentsChange = () => {
 						align-items: center;
 						gap: 10px;
 						margin-top: 10px;
+						
 					}
 
 					.payments-change__option__item__image {
@@ -228,6 +230,7 @@ const PaymentsChange = () => {
 						min-width: 50px;
 						border: 1px solid #eaeaea;
 						border-radius: 5px;
+						box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 					}
 
 					.payments-change__option__item__label {
@@ -241,6 +244,7 @@ const PaymentsChange = () => {
 
 					.payment-enable {
 						border-color:var(--primary-color) !important;
+						background-color: var(--background-price-color);
 					}
 
           .payments-change__option:hover {

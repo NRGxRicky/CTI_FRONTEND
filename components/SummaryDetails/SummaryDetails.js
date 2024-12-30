@@ -8,7 +8,7 @@ import useCart from '../../hooks/useCart';
 import Link from 'next/link';
 
 const SummaryDetails = ({ urlAction, step }) => {
-	const { cart, subtotal, shipping, total, address } = useCart();
+	const { cart, subtotal, shipping, total, address, taxInvoice } = useCart();
 	const dispatch = useAppDispatch();
 	const { cartMsi } = useAuth();
 
