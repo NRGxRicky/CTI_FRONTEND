@@ -199,7 +199,7 @@ const ProfileAddInvoice = ({
 							value={formData.razon_social}
 							onChange={handleChange}
 							ref={inputRefs.razon_social}
-							placeholder='Ej. Mi Empresa S.A. de C.V.'
+							placeholder='Ej. Mi Empresa'
 						/>
 						{errors.razon_social && (
 							<p className='error'>{errors.razon_social}</p>

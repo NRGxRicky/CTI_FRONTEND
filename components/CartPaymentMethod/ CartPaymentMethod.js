@@ -8,6 +8,7 @@ import { useAuth } from '../../hooks/auth';
 import ProfileAddInvoice from '../ProfileAddInvoice/ProfileAddInvoice';
 import ProfileAllInvoice from '../ProfileAllInvoice/ProfileAllInvoice';
 import { Preloader, TailSpin } from 'react-preloader-icon';
+
 import formasDePago from '../../hooks/formasDePago';
 import regimenesFiscales from '../../hooks/regimenesFiscales';
 import usosCFDI from '../../hooks/usosCFDI';
@@ -19,21 +20,22 @@ const CartPaymentMethod = () => {
 		domicilios: [],
 		PccomputoUsuarioDatosFacturacion: [],
 	});
+
 	const [activeModal, setActiveModal] = useState(null); // 'add', 'all' o null
 	const [editingInvoice, setEditingInvoice] = useState(null);
 	const { accessToken } = useAuth();
 	const [activeInvoiceId, setActiveInvoiceId] = useState(taxInvoice?.id || 0);
 	const [isProfileAddInvoiceVisible, setProfileAddInvoiceVisible] =
 		useState(false);
+	const [billingActivated, setBillingActivated] = useState(false);
 
+	/* === Helpers para mostrar las descripciones (usos, regímenes, formas de pago) === */
 	const getUsoCFDIDescription = (usoKey) => {
-		// Buscamos el objeto cuyo c_UsoCFDI == usoKey
 		const found = usosCFDI.find((uso) => uso.c_UsoCFDI === usoKey);
 		return found ? `${found.c_UsoCFDI} - ${found.Descripción}` : usoKey;
 	};
 
 	const getRegimenDescription = (regimenKey) => {
-		// Buscamos el objeto cuyo Clave == regimenKey
 		const found = regimenesFiscales.find((r) => r.Clave === regimenKey);
 		return found ? `${found.Clave} - ${found.Descripción}` : regimenKey;
 	};
@@ -43,13 +45,44 @@ const CartPaymentMethod = () => {
 		return found ? `${found.c_FormaPago} - ${found.Descripción}` : formaKey;
 	};
 
+	/* === Cargar el perfil (incluyendo las facturaciones disponibles) === */
 	const getDataProfile = async () => {
 		setLoadingData(true);
 		const resData = await fetchData('/profile/resume/', accessToken);
 		if (resData.ok) {
 			const dataJson = await resData.json();
 			setProfile(dataJson);
+
 			const activeInvoice = dataJson.PccomputoUsuarioDatosFacturacion.find(
+				(d) => d.active
+			);
+
+			if (activeInvoice) {
+				setTaxInvoice(activeInvoice);
+        setActiveInvoiceId(activeInvoice.id);
+        setBillingActivated(true)
+			} else {
+				// Si no hay invoice activo, dejamos taxInvoice en null
+				setTaxInvoice(null);
+        setActiveInvoiceId(0);
+        setBillingActivated(false);
+			}
+		}
+		setLoadingData(false);
+	};
+
+	useEffect(() => {
+		if (accessToken) {
+			getDataProfile();
+		}
+	}, [accessToken]);
+
+	/* === Manejo de Checkbox (Toggle de facturación) === */
+	const handleToggleFactura = (e) => {
+		const isChecked = e.target.checked;
+		if (isChecked) {
+			// Activar facturación: si existe un invoice activo, lo usamos; si no, el usuario agregará uno
+			const activeInvoice = profile.PccomputoUsuarioDatosFacturacion.find(
 				(d) => d.active
 			);
 			if (activeInvoice) {
@@ -59,14 +92,16 @@ const CartPaymentMethod = () => {
 				setTaxInvoice(null);
 				setActiveInvoiceId(0);
 			}
+		} else {
+			// Desactivar facturación: usar RFC genérico
+			setTaxInvoice(null);
+			setActiveInvoiceId(0);
 		}
-		setLoadingData(false);
+
+		setBillingActivated(isChecked);
 	};
 
-	useEffect(() => {
-		if (accessToken) getDataProfile();
-	}, []);
-
+	/* === Seleccionar un RFC como activo === */
 	const handleSelectInvoice = async (rfc) => {
 		try {
 			setLoadingData(true);
@@ -95,25 +130,27 @@ const CartPaymentMethod = () => {
 		}
 	};
 
+	/* === Agregar nuevo RFC === */
 	const handleAddNewInvoice = () => {
 		setEditingInvoice(null);
 		setActiveModal('add');
 		setProfileAddInvoiceVisible(true);
 	};
 
+	/* === Editar RFC existente === */
 	const handleEditInvoice = (rfc) => {
 		setEditingInvoice(rfc);
-		if (activeModal == 'all') {
+		if (activeModal === 'all') {
 			setActiveModal('all-add');
 		} else {
 			setActiveModal('add');
 		}
-
 		setProfileAddInvoiceVisible(true);
 	};
 
+	/* === Cerrar el modal de edición/creación de RFC === */
 	const closeProfileAddInvoice = () => {
-		if (activeModal == 'all-add') {
+		if (activeModal === 'all-add') {
 			setActiveModal('all');
 		} else {
 			setActiveModal(null);
@@ -121,6 +158,7 @@ const CartPaymentMethod = () => {
 		setProfileAddInvoiceVisible(false);
 	};
 
+	/* === Eliminar RFC === */
 	const handleDeleteInvoice = async (rfcId) => {
 		try {
 			setLoadingData(true);
@@ -134,13 +172,13 @@ const CartPaymentMethod = () => {
 
 			if (response.ok) {
 				getDataProfile(); // Actualiza la lista después de eliminar
-				alert('RFC eliminado correctamente.');
+				alert('Facturación eliminada correctamente.');
 			} else {
-				alert('Error al eliminar el RFC.');
+				alert('Error al eliminar la Facturación.');
 			}
 		} catch (error) {
-			console.error('Error al eliminar el RFC:', error);
-			alert('Error al eliminar el RFC.');
+			console.error('Error al eliminar la Facturación:', error);
+			alert('Error al eliminar la Facturación.');
 		} finally {
 			setLoadingData(false);
 		}
@@ -149,6 +187,7 @@ const CartPaymentMethod = () => {
 	return (
 		<div className='cart-payment-method'>
 			<div className='cart-payment-method__body'>
+				{/* EJEMPLO DE FORMA DE ENVÍO */}
 				<div className='cart-payment-options'>
 					<div className='cart-payment-method__header'>
 						<div className='cart-payment-method__title'>Forma de envío</div>
@@ -161,7 +200,7 @@ const CartPaymentMethod = () => {
 									type='radio'
 									name='shipping-estandar'
 									defaultChecked
-								></input>
+								/>
 							</div>
 							<div className='cart-payment-method__item__logo'>
 								<FreeShipping color={false} modeCard={true} label='' />
@@ -180,71 +219,106 @@ const CartPaymentMethod = () => {
 						</div>
 					</div>
 				</div>
+
+				{/* DATOS DE FACTURACIÓN */}
 				<div className='cart-payment-invoice'>
 					<div className='cart-payment-method__header'>
 						<div className='cart-payment-method__title'>
 							Datos de Facturación
 						</div>
 					</div>
-					<div className='cart-payment-method__body'>
-						{!taxInvoice ? (
-							<div className='cart-payment-method__no-invoice'>
-								<div className='info-box'>
-									<span className='info-icon'>!</span>
-									<div className='info-content'>
+
+					{/* TOGGLE Facturación */}
+					<div className='factura-toggle'>
+						<label className='switch'>
+							<input
+								type='checkbox'
+								checked={billingActivated} // Activo si hay un invoice seleccionado
+								onChange={handleToggleFactura}
+							/>
+							<span className='slider' />
+						</label>
+						<span className='toggle-label'>
+							Proporcionar datos de facturación *
+						</span>
+					</div>
+
+					{/* Condición: Si no hay taxInvoice, mostramos el recuadro de advertencia y el botón */}
+					{!taxInvoice ? (
+						billingActivated ? (
+							<div className='warning-box'>
+								<div className='warning-content'>
+									<span className='warning-icon'>!</span>
+									<div className='warning-texts'>
 										<strong>
 											Aún no has seleccionado ningún RFC para facturar.
 										</strong>
-										<br />
-										Si deseas emitir comprobante fiscal, registra uno nuevo.
+										<p>
+											Si deseas emitir comprobante fiscal, registra uno nuevo.
+										</p>
 									</div>
 								</div>
 
-								<div className='cart-payment-method__actions'>
-									<button
-										className='cart-payment-method__actions__change-addres__button'
-										onClick={() => handleAddNewInvoice()}
-									>
-										+ Agregar Nuevo RFC
-									</button>
-								</div>
+								<button
+									className='new-rfc-button'
+									onClick={handleAddNewInvoice}
+								>
+									+ Agregar Nuevo RFC
+								</button>
 							</div>
 						) : (
-							<div className='cart-payment-method__item' key={taxInvoice.id}>
-								<div className='cart-payment-method__item__description'>
-									<div className='cart-payment-method__item__title'>
-										<p>{taxInvoice.razon_social}</p>
-										<p>{taxInvoice.rfc}</p>
+							<div className='warning-box'>
+								<div className='warning-content'>
+									<span className='warning-icon'>!</span>
+									<div className='warning-texts'>
+										<strong>La factura será generada con RFC genérico.</strong>
+										<p>
+											Si deseas emitir comprobante fiscal, registra uno nuevo*.
+										</p>
 									</div>
-									<div className='cart-payment-method__item__detail'>
-										<p>{taxInvoice.codigo_postal}</p>
-										<p>{getRegimenDescription(taxInvoice.regimen)}</p>
-										<p>{getUsoCFDIDescription(taxInvoice.uso_de_cfdi)}</p>
-										<p>{getFormaDePagoDescription(taxInvoice.forma_de_pago)}</p>
-									</div>
-								</div>
-								<div
-									className='cart-payment-method__action'
-									onClick={() => handleEditInvoice(taxInvoice)}
-								>
-									Editar RFC
 								</div>
 							</div>
-						)}
-					</div>
-					{profile.PccomputoUsuarioDatosFacturacion.length > 0 && (
-						<div className='cart-payment-method__actions'>
-							<button
-								className='cart-payment-method__actions__change-addres__button'
-								onClick={() => setActiveModal('all')}
+						)
+					) : (
+						/* Si SÍ hay un RFC seleccionado, mostramos sus datos */
+						<div className='cart-payment-method__item' key={taxInvoice.id}>
+							<div className='cart-payment-method__item__description'>
+								<div className='cart-payment-method__item__title'>
+									<p>{taxInvoice.razon_social}</p>
+									<p>{taxInvoice.rfc}</p>
+								</div>
+								<div className='cart-payment-method__item__detail'>
+									<p>{taxInvoice.codigo_postal}</p>
+									<p>{getRegimenDescription(taxInvoice.regimen)}</p>
+									<p>{getUsoCFDIDescription(taxInvoice.uso_de_cfdi)}</p>
+									<p>{getFormaDePagoDescription(taxInvoice.forma_de_pago)}</p>
+								</div>
+							</div>
+							<div
+								className='cart-payment-method__action'
+								onClick={() => handleEditInvoice(taxInvoice)}
 							>
-								Elegir otro RFC
-							</button>
+								Editar RFC
+							</div>
 						</div>
 					)}
+
+					{/* Si hay RFC y hay más en la lista, ofrecemos la opción de cambiar */}
+					{profile.PccomputoUsuarioDatosFacturacion.length > 0 &&
+						taxInvoice && (
+							<div className='cart-payment-method__actions'>
+								<button
+									className='cart-payment-method__actions__change-addres__button'
+									onClick={() => setActiveModal('all')}
+								>
+									Elegir otro RFC
+								</button>
+							</div>
+						)}
 				</div>
 			</div>
 
+			{/* Modal Add/Edit Invoice */}
 			{(activeModal === 'add' || activeModal === 'all-add') && (
 				<ProfileAddInvoice
 					rfcData={editingInvoice}
@@ -253,6 +327,8 @@ const CartPaymentMethod = () => {
 					setLoadingData={setLoadingData}
 				/>
 			)}
+
+			{/* Modal: Lista de todos los RFC disponibles */}
 			{activeModal === 'all' && (
 				<ProfileAllInvoice
 					rfcs={profile.PccomputoUsuarioDatosFacturacion}
@@ -266,7 +342,9 @@ const CartPaymentMethod = () => {
 				/>
 			)}
 
+			{/* Resumen / Confirmación */}
 			<SummaryDetails urlAction={'/carrito/confirmar'} step={'payment'} />
+
 			{loadingData && (
 				<div className='cart__loading'>
 					<div className='cart__loading__container'>
@@ -280,42 +358,9 @@ const CartPaymentMethod = () => {
 					</div>
 				</div>
 			)}
+
+			{/* ESTILOS */}
 			<style jsx>{`
-				.cart-payment-method__no-invoice {
-					margin: 10px 0;
-          width: 100%;
-				}
-
-				.info-box {
-					border: 1px solid #ff9900;
-					background-color: #fff5e5;
-					color: #333;
-					padding: 15px;
-					display: flex;
-					align-items: flex-start;
-					gap: 10px;
-					border-radius: 4px;
-					margin-bottom: 15px;
-					line-height: 1.5;
-				}
-
-				.info-icon {
-					background-color: #ff9900;
-					color: #fff;
-					display: inline-block;
-					min-width: 24px;
-					height: 24px;
-					border-radius: 50%;
-					font-weight: bold;
-					text-align: center;
-					line-height: 24px;
-				}
-
-				.info-content {
-					flex: 1;
-					font-size: 14px;
-				}
-
 				.cart__loading {
 					position: fixed;
 					background: #0f0f0f;
@@ -344,11 +389,10 @@ const CartPaymentMethod = () => {
 
 				.cart-payment-method__body {
 					margin-bottom: 15px;
-					flex: 100%;
-					width: 100%;
 				}
-					.cart-payment-method__actions__change-addres__button {
-					flex: 100%;
+
+				.cart-payment-method__actions__change-addres__button {
+					flex: 1;
 					background: #ffb116;
 					color: #fff;
 					border-radius: 4px;
@@ -356,12 +400,8 @@ const CartPaymentMethod = () => {
 					font-size: 16px;
 					cursor: pointer;
 					text-align: center;
-					min-width: 100%;
-					border: none;
-				}
-
-				.cart-payment-method__actions {
 					width: 100%;
+					border: none;
 				}
 
 				.cart-payment-method__action {
@@ -396,6 +436,7 @@ const CartPaymentMethod = () => {
 					justify-content: space-evenly;
 					flex-wrap: wrap;
 					cursor: pointer;
+          margin-bottom: 15px;
 				}
 
 				.cart-payment-method__item.active {
@@ -426,6 +467,100 @@ const CartPaymentMethod = () => {
 
 				.cart-payment-invoice {
 					flex: 2;
+				}
+
+				/* ==== TOGGLE SWITCH ==== */
+				.factura-toggle {
+					display: flex;
+					align-items: center;
+					gap: 10px;
+					margin-bottom: 10px;
+				}
+				.switch {
+					position: relative;
+					display: inline-block;
+					width: 46px;
+					height: 24px;
+				}
+				.switch input {
+					opacity: 0;
+					width: 0;
+					height: 0;
+				}
+				.slider {
+					position: absolute;
+					cursor: pointer;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					background-color: #ccc;
+					transition: 0.4s;
+					border-radius: 24px;
+				}
+				.slider:before {
+					position: absolute;
+					content: '';
+					height: 16px;
+					width: 16px;
+					left: 4px;
+					bottom: 4px;
+					background-color: white;
+					transition: 0.4s;
+					border-radius: 50%;
+				}
+				input:checked + .slider {
+					background-color: var(--primary-color);
+				}
+				input:checked + .slider:before {
+					transform: translateX(22px);
+				}
+
+				.toggle-label {
+					font-size: 14px;
+				}
+
+				/* ==== WARNING BOX ==== */
+				.warning-box {
+					border: 1px solid #ffb84d; /* Borde naranja claro */
+					background-color: #fff8ee; /* Fondo crema/naranja muy claro */
+					padding: 15px;
+					border-radius: 6px;
+					margin-bottom: 15px;
+				}
+				.warning-content {
+					display: flex;
+					align-items: center;
+					gap: 10px;
+					color: #333;
+					margin-bottom: 10px;
+				}
+				.warning-icon {
+					background-color: #ffa01b;
+					color: #fff;
+					padding: 4px 8px;
+					border-radius: 50%;
+					font-weight: bold;
+					min-width: 24px;
+					text-align: center;
+					line-height: 24px;
+				}
+				.warning-texts strong {
+					display: block;
+					margin-bottom: 4px;
+				}
+
+				.new-rfc-button {
+					background-color: #ffb116;
+					color: #fff;
+					border: none;
+					border-radius: 5px;
+					padding: 12px 20px;
+					cursor: pointer;
+					font-size: 14px;
+				}
+				.new-rfc-button:hover {
+					background-color: #ffa01b;
 				}
 
 				@media only screen and (max-width: 62em) {

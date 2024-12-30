@@ -212,7 +212,7 @@ const CartShippingMethod = () => {
 								className='cart-shipping-method__actions__change-addres__button'
 								onClick={() => setActiveModal('all')}
 							>
-								Elegir otro domicilio
+								Elegir otro Domicilio
 							</button>
 						</div>
 					)}
