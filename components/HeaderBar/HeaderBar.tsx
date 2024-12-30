@@ -43,7 +43,7 @@ const HeaderBar: React.FC = () => {
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
 	);
-	const { cart, total, localcheckBackend } = useCart();
+	const { cart, total } = useCart();
 
 	const dispatch = useAppDispatch();
 	const { storeName, logoUrl } = useEnv();
@@ -68,7 +68,6 @@ const HeaderBar: React.FC = () => {
 	);
 
 	const handleShowSummaryCartmini = () => {
-		localcheckBackend();
 		dispatch(showCart());
 	};
 

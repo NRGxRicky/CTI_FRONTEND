@@ -145,8 +145,8 @@ const ProfileAllAddress = ({
 					max-height: calc(50dvh - 61px);
 					overflow-y: auto;
 					flex-wrap: wrap;
-          min-width: 50dvw;
 				}
+
 				.address-item {
 					border: 1px solid #ddd;
 					padding: 15px;
@@ -158,6 +158,7 @@ const ProfileAllAddress = ({
 					flex: 40%;
 					max-width: 50%;
           gap: 15px;
+          min-width: 25dvw;
 				}
 				.address-item.active {
 					border-color: var(--primary-color);

@@ -30,6 +30,18 @@ const ProfileAddAddress = ({
 	});
 	const [errors, setErrors] = useState({});
 
+	const inputRefs = {
+		nombres: useRef(null),
+		apellidos: useRef(null),
+		telefono: useRef(null),
+		calle: useRef(null),
+		numero: useRef(null),
+		colonia: useRef(null),
+		codigo_postal: useRef(null),
+		ciudad: useRef(null),
+		estado: useRef(null),
+	};
+
 	const estadosMexico = [
 		'Aguascalientes',
 		'Baja California',
@@ -83,6 +95,14 @@ const ProfileAddAddress = ({
 			newErrors.codigo_postal = 'El código postal debe tener 5 dígitos.';
 		if (!formData.ciudad.trim()) newErrors.ciudad = 'La ciudad es obligatoria.';
 		if (!formData.estado) newErrors.estado = 'El estado es obligatorio.';
+
+		// Enfocar el primer campo con error
+		if (Object.keys(newErrors).length > 0) {
+			const firstErrorField = Object.keys(newErrors)[0];
+			if (inputRefs[firstErrorField]?.current) {
+				inputRefs[firstErrorField].current.focus();
+			}
+		}
 
 		setErrors(newErrors);
 
@@ -166,6 +186,7 @@ const ProfileAddAddress = ({
 								name='nombres'
 								value={formData.nombres}
 								onChange={handleChange}
+								ref={inputRefs.nombres}
 								required
 							/>
 							{errors.nombres && <p className='error'>{errors.nombres}</p>}
@@ -180,6 +201,7 @@ const ProfileAddAddress = ({
 								name='apellidos'
 								value={formData.apellidos}
 								onChange={handleChange}
+								ref={inputRefs.apellidos}
 								required
 							/>
 							{errors.apellidos && <p className='error'>{errors.apellidos}</p>}
@@ -196,6 +218,7 @@ const ProfileAddAddress = ({
 								name='telefono'
 								value={formData.telefono}
 								onChange={handleChange}
+								ref={inputRefs.telefono}
 								required
 							/>
 							{errors.telefono && <p className='error'>{errors.telefono}</p>}
@@ -210,6 +233,7 @@ const ProfileAddAddress = ({
 								name='calle'
 								value={formData.calle}
 								onChange={handleChange}
+								ref={inputRefs.calle}
 								required
 							/>
 							{errors.calle && <p className='error'>{errors.calle}</p>}
@@ -226,6 +250,7 @@ const ProfileAddAddress = ({
 								name='numero'
 								value={formData.numero}
 								onChange={handleChange}
+								ref={inputRefs.numero}
 								required
 							/>
 							{errors.numero && <p className='error'>{errors.numero}</p>}
@@ -239,6 +264,7 @@ const ProfileAddAddress = ({
 								value={formData.numero_interior}
 								onChange={handleChange}
 								placeholder='Opcional'
+								ref={inputRefs.numero_interior}
 							/>
 						</div>
 						<div className='profile-add-address__form-group'>
@@ -251,6 +277,7 @@ const ProfileAddAddress = ({
 								name='colonia'
 								value={formData.colonia}
 								onChange={handleChange}
+								ref={inputRefs.colonia}
 								required
 							/>
 							{errors.colonia && <p className='error'>{errors.colonia}</p>}
@@ -267,6 +294,7 @@ const ProfileAddAddress = ({
 								name='codigo_postal'
 								value={formData.codigo_postal}
 								onChange={handleChange}
+								ref={inputRefs.codigo_postal}
 								required
 							/>
 							{errors.codigo_postal && (
@@ -282,6 +310,7 @@ const ProfileAddAddress = ({
 								value={formData.referencias}
 								onChange={handleChange}
 								placeholder='Entre calles, fachada, etc'
+								ref={inputRefs.referencias}
 							/>
 						</div>
 					</div>
@@ -296,6 +325,7 @@ const ProfileAddAddress = ({
 								name='ciudad'
 								value={formData.ciudad}
 								onChange={handleChange}
+								ref={inputRefs.ciudad}
 								required
 							/>
 							{errors.ciudad && <p className='error'>{errors.ciudad}</p>}
@@ -309,6 +339,7 @@ const ProfileAddAddress = ({
 								name='estado'
 								value={formData.estado}
 								onChange={handleChange}
+								ref={inputRefs.estado}
 								required
 							>
 								<option value=''>Seleccionar</option>
@@ -341,7 +372,7 @@ const ProfileAddAddress = ({
 					font-size: 12px;
 					margin-top: 5px;
 				}
-				
+
 				.profile-add-address {
 					display: flex;
 					align-items: center;

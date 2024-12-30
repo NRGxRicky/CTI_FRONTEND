@@ -19,7 +19,6 @@ export const CartProvider = ({ children }) => {
 	const router = useRouter();
 	const [loading, setLoading] = useState(true);
 	const [address, setAddress] = useState(null);
-	
 
 	// Funcion revision carrito local con backend
 	const localcheckBackend = async (cartLocal = cart) => {
@@ -36,6 +35,7 @@ export const CartProvider = ({ children }) => {
 			});
 			if (response.ok) {
 				const backendCart = await response.json();
+				console.log(backendCart);
 				setCart(backendCart.cart_items);
 				setShipping(backendCart.shipping_cost);
 			}
@@ -201,17 +201,16 @@ export const CartProvider = ({ children }) => {
 
 	// Calcular subtotal, envío y total
 	useEffect(() => {
-		const preSubtotal = cart.reduce(
-			(acc, item) =>
-				acc +
-				item.quantity *
-					(!cartMsi
-						? item.product.precio_contado
-						: item.product.precio_final_descuento > 0
-						? item.product.precio_final_descuento
-						: item.product.precio_final),
-			0
-		);
+		const preSubtotal = cart.reduce((acc, item) => {
+			const price = !cartMsi
+				? parseFloat(item.product.precio_contado)
+				: parseFloat(item.product.precio_final_descuento) > 0
+				? parseFloat(item.product.precio_final_descuento)
+					: parseFloat(item.product.precio_final);
+			const priceTotal = parseInt(item.quantity) * price;
+			return acc + priceTotal;
+		}, 0);
+
 		setSubtotal(preSubtotal);
 		setTotal(preSubtotal + shipping);
 	}, [cart, shipping, cartMsi]);

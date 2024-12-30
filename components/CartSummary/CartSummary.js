@@ -11,17 +11,13 @@ import useDebounce from '../../hooks/useDebounce';
 import SummaryDetails from '../SummaryDetails/SummaryDetails';
 
 const CartSummary = () => {
-	const { cart, localcheckBackend, removeFromCart, addToCart, loading } =
+	const { cart, removeFromCart, addToCart, loading } =
 		useCart();
 
 	const [isLoading, setIsLoading] = useState(false);
 	const { cartMsi, isAuthenticated } = useAuth();
 	const [inputValues, setInputValues] = useState({});
 	const debouncedInputValues = useDebounce(inputValues, 1200);
-
-	useEffect(() => {
-		localcheckBackend();
-	}, []);
 
 	const handleIncrement = async (item) => {
 		setIsLoading(true);
