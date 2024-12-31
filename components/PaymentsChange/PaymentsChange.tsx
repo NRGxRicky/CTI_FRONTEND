@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 import { useAuth } from '../../hooks/auth';
 import Image from 'next/image';
+import useCart from '../../hooks/useCart';
 
 const PaymentsChange = () => {
 	const statePaymentsChange = useAppSelector(
@@ -11,9 +12,11 @@ const PaymentsChange = () => {
 	const dispatch = useAppDispatch();
 	const { cartMsi, updateDataUser } = useAuth();
 	const [payment, setPayment] = useState(false);
+	const { setPaymentMethod } = useCart();
 
 	const handleChangePayment = (paymentStatus: boolean) => {
 		updateDataUser(paymentStatus);
+		setPaymentMethod(null)
 	};
 
 	useEffect(() => {

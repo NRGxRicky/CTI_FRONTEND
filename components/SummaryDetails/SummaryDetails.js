@@ -1,14 +1,22 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { showPaymentsChange } from '../../lib/features/showOpacityContainerSlide';
 import { useAppDispatch } from '../../lib/hooks';
 import { useAuth } from '../../hooks/auth';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import useCart from '../../hooks/useCart';
-import Link from 'next/link';
 
 const SummaryDetails = ({ urlAction, step }) => {
-	const { cart, subtotal, shipping, total, address, paymentMethod } = useCart();
+	const {
+		cart,
+		subtotal,
+		shipping,
+		total,
+		address,
+		paymentMethod,
+		setPaymentMethod,
+	} = useCart();
 	const dispatch = useAppDispatch();
 	const { cartMsi } = useAuth();
 
@@ -28,9 +36,12 @@ const SummaryDetails = ({ urlAction, step }) => {
 						{cartMsi ? 'MSI/Pagos' : 'Contado'}
 					</span>
 				</div>
+
 				<div className='summary-details__title'>
 					<span>Resumen del Carrito</span>
 				</div>
+
+				{/* Productos, envío y total */}
 				<div className='summary-row'>
 					<span>
 						{cart.reduce((total, item) => total + item.quantity, 0)}{' '}
@@ -50,15 +61,13 @@ const SummaryDetails = ({ urlAction, step }) => {
 					<span>$ {CurrencyFormat(total, 2, '.', ',')}</span>
 				</div>
 
-				{/* Comienza Payments */}
+				{/* Sección de pagos */}
 				{cartMsi ? (
 					<div className='payments'>
 						<div className='payments__option__header'>
 							<span>Pagar a MSI/Pagos con:</span>
 						</div>
-
 						<div className='payments__option__body'>
-							{/* 1) Arreglo de opciones MSI */}
 							{[
 								{
 									id: 'mercadopago',
@@ -79,13 +88,19 @@ const SummaryDetails = ({ urlAction, step }) => {
 										'Divide tus pagos en quincenas con Aplazo, sin letras pequeñas.',
 								},
 							]
-								// 2) Filtrar: si paymentMethod es nulo, mostrar todo;
-								//    de lo contrario, solo el que coincide con paymentMethod
+								// Muestra todo si paymentMethod es null,
+								// o solo la opción seleccionada si hay un paymentMethod
 								.filter(
 									(option) => !paymentMethod || paymentMethod === option.id
 								)
 								.map((option) => (
-									<div key={option.id} className='payments__option__item'>
+									<div
+										key={option.id}
+										className={`payments__option__item ${
+											paymentMethod === option.id ? 'active' : ''
+										}`}
+										onClick={() => setPaymentMethod(option.id)} // <-- Actualizamos al hacer click
+									>
 										<div className='payments__option__item__image'>
 											<Image
 												src={option.img}
@@ -115,13 +130,19 @@ const SummaryDetails = ({ urlAction, step }) => {
 									img: '/images/paypal-logo-footer.png',
 									label: 'Disfruta de un pago único con PayPal.',
 								},
-								// Si tuvieras más opciones de contado, añádelas aquí
+								// Aquí podrías añadir más opciones de contado
 							]
 								.filter(
 									(option) => !paymentMethod || paymentMethod === option.id
 								)
 								.map((option) => (
-									<div key={option.id} className='payments__option__item'>
+									<div
+										key={option.id}
+										className={`payments__option__item ${
+											paymentMethod === option.id ? 'active' : ''
+										}`}
+										onClick={() => setPaymentMethod(option.id)}
+									>
 										<div className='payments__option__item__image'>
 											<Image
 												src={option.img}
@@ -140,23 +161,29 @@ const SummaryDetails = ({ urlAction, step }) => {
 						</div>
 					</div>
 				)}
-				{!address && step == 'shipping' && (
+
+				{/* Si no hay address y estamos en paso "shipping", muestra error */}
+				{!address && step === 'shipping' && (
 					<div className='checkout__error'>
 						<span>Tienes que agregar un Domicilio para continuar.</span>
 					</div>
 				)}
-				{!paymentMethod && step == 'payment' && (
+				{/* Si no hay paymentMethod y estamos en paso "payment", muestra error */}
+				{!paymentMethod && step === 'payment' && (
 					<div className='checkout__error'>
-						<span>Tienes que seleccionar una Forma de Pago para continuar.</span>
+						<span>
+							Tienes que seleccionar una Forma de Pago para continuar.
+						</span>
 					</div>
 				)}
+
 				<Link href={`${urlAction}`} legacyBehavior>
 					<a>
 						<button
 							className='proceed-checkout'
 							disabled={
-								(!address && step == 'shipping') ||
-								(!paymentMethod && step == 'payment')
+								(!address && step === 'shipping') ||
+								(!paymentMethod && step === 'payment')
 							}
 						>
 							Continuar
@@ -164,6 +191,8 @@ const SummaryDetails = ({ urlAction, step }) => {
 					</a>
 				</Link>
 			</div>
+
+			{/* ESTILOS */}
 			<style jsx>
 				{`
 					.checkout__error {
@@ -244,6 +273,10 @@ const SummaryDetails = ({ urlAction, step }) => {
 						font-size: 16px;
 					}
 
+					.payments__option__body {
+						margin-top: 10px;
+					}
+
 					.payments__option__item {
 						display: flex;
 						align-items: center;
@@ -253,6 +286,13 @@ const SummaryDetails = ({ urlAction, step }) => {
 						border-radius: 5px;
 						padding: 5px;
 						box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+						cursor: pointer; /* para que el user sepa que puede clickeable */
+					}
+
+					/* Estilo para opción activa */
+					.payments__option__item.active {
+						border: 1px solid var(--primary-color);
+						background-color: var(--background-price-color);
 					}
 
 					.payments__option__item__image {
