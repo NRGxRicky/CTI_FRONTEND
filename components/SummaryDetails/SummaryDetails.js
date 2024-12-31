@@ -8,7 +8,7 @@ import useCart from '../../hooks/useCart';
 import Link from 'next/link';
 
 const SummaryDetails = ({ urlAction, step }) => {
-	const { cart, subtotal, shipping, total, address, taxInvoice } = useCart();
+	const { cart, subtotal, shipping, total, address, paymentMethod } = useCart();
 	const dispatch = useAppDispatch();
 	const { cartMsi } = useAuth();
 
@@ -56,61 +56,51 @@ const SummaryDetails = ({ urlAction, step }) => {
 						<div className='payments__option__header'>
 							<span>Pagar a MSI/Pagos con:</span>
 						</div>
+
 						<div className='payments__option__body'>
-							<div className='payments__option__item'>
-								<div className='payments__option__item__image'>
-									<Image
-										src='/images/logo-mercado-pago.png'
-										fill
-										style={{ objectFit: 'contain', padding: 5 }}
-										alt='Mercado Pago'
-										draggable='false'
-										sizes='auto'
-									/>
-								</div>
-								<div className='payments__option__item__label'>
-									<span>
-										Hasta 3 MSI con tarjetas participantes Mercado Pago o hasta
-										12 pagos con Mercado Crédito.
-									</span>
-								</div>
-							</div>
-							<div className='payments__option__item'>
-								<div className='payments__option__item__image'>
-									<Image
-										src='/images/Logotipo_Kueski_pay.png'
-										fill
-										style={{ objectFit: 'contain', padding: 5 }}
-										alt='Kueski Pay'
-										draggable='false'
-										sizes='auto'
-									/>
-								</div>
-								<div className='payments__option__item__label'>
-									<span>
-										Paga en hasta 12 quincenas con Kueski Pay, sin comisiones
-										ocultas.
-									</span>
-								</div>
-							</div>
-							<div className='payments__option__item'>
-								<div className='payments__option__item__image'>
-									<Image
-										src='/images/logo-aplazo.png'
-										fill
-										style={{ objectFit: 'contain', padding: 5 }}
-										alt='Aplazo'
-										draggable='false'
-										sizes='auto'
-									/>
-								</div>
-								<div className='payments__option__item__label'>
-									<span>
-										Divide tus pagos en quincenas con Aplazo, sin letras
-										pequeñas.
-									</span>
-								</div>
-							</div>
+							{/* 1) Arreglo de opciones MSI */}
+							{[
+								{
+									id: 'mercadopago',
+									img: '/images/logo-mercado-pago.png',
+									label:
+										'Hasta 3 MSI con tarjetas participantes Mercado Pago o hasta 12 pagos con Mercado Crédito.',
+								},
+								{
+									id: 'kueskipay',
+									img: '/images/Logotipo_Kueski_pay.png',
+									label:
+										'Paga en hasta 12 quincenas con Kueski Pay, sin comisiones ocultas.',
+								},
+								{
+									id: 'aplazo',
+									img: '/images/logo-aplazo.png',
+									label:
+										'Divide tus pagos en quincenas con Aplazo, sin letras pequeñas.',
+								},
+							]
+								// 2) Filtrar: si paymentMethod es nulo, mostrar todo;
+								//    de lo contrario, solo el que coincide con paymentMethod
+								.filter(
+									(option) => !paymentMethod || paymentMethod === option.id
+								)
+								.map((option) => (
+									<div key={option.id} className='payments__option__item'>
+										<div className='payments__option__item__image'>
+											<Image
+												src={option.img}
+												fill
+												style={{ objectFit: 'contain', padding: 5 }}
+												alt={option.id}
+												draggable='false'
+												sizes='auto'
+											/>
+										</div>
+										<div className='payments__option__item__label'>
+											<span>{option.label}</span>
+										</div>
+									</div>
+								))}
 						</div>
 					</div>
 				) : (
@@ -119,34 +109,55 @@ const SummaryDetails = ({ urlAction, step }) => {
 							<span>Pagar en una sola exhibición con:</span>
 						</div>
 						<div className='payments__option__body'>
-							<div className='payments__option__item'>
-								<div className='payments__option__item__image'>
-									<Image
-										src='/images/paypal-logo-footer.png'
-										fill
-										style={{ objectFit: 'contain', padding: 5 }}
-										alt='Paypal'
-										draggable='false'
-										sizes='auto'
-									/>
-								</div>
-								<div className='payments__option__item__label'>
-									<span>Disfruta de un pago único con PayPal.</span>
-								</div>
-							</div>
+							{[
+								{
+									id: 'paypal',
+									img: '/images/paypal-logo-footer.png',
+									label: 'Disfruta de un pago único con PayPal.',
+								},
+								// Si tuvieras más opciones de contado, añádelas aquí
+							]
+								.filter(
+									(option) => !paymentMethod || paymentMethod === option.id
+								)
+								.map((option) => (
+									<div key={option.id} className='payments__option__item'>
+										<div className='payments__option__item__image'>
+											<Image
+												src={option.img}
+												fill
+												style={{ objectFit: 'contain', padding: 5 }}
+												alt={option.id}
+												draggable='false'
+												sizes='auto'
+											/>
+										</div>
+										<div className='payments__option__item__label'>
+											<span>{option.label}</span>
+										</div>
+									</div>
+								))}
 						</div>
 					</div>
 				)}
 				{!address && step == 'shipping' && (
 					<div className='checkout__error'>
-						<span>Tienes que agregar un domicilio para continuar.</span>
+						<span>Tienes que agregar un Domicilio para continuar.</span>
+					</div>
+				)}
+				{!paymentMethod && step == 'payment' && (
+					<div className='checkout__error'>
+						<span>Tienes que seleccionar una Forma de Pago para continuar.</span>
 					</div>
 				)}
 				<Link href={`${urlAction}`} legacyBehavior>
 					<a>
 						<button
 							className='proceed-checkout'
-							disabled={!address && step == 'shipping'}
+							disabled={
+								(!address && step == 'shipping') ||
+								(!paymentMethod && step == 'payment')
+							}
 						>
 							Continuar
 						</button>
@@ -157,7 +168,9 @@ const SummaryDetails = ({ urlAction, step }) => {
 				{`
 					.checkout__error {
 						color: var(--primary-color);
-						line-height: 3;
+						line-height: 1.5;
+						margin-bottom: 15px;
+						text-align: center;
 					}
 
 					.payments__label-status {

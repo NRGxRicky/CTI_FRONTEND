@@ -20,6 +20,7 @@ export const CartProvider = ({ children }) => {
 	const [loading, setLoading] = useState(true);
 	const [address, setAddress] = useState(null);
 	const [taxInvoice, setTaxInvoice] = useState(null);
+	const [paymentMethod, setPaymentMethod] = useState(null);
 
 	// Funcion revision carrito local con backend
 	const localcheckBackend = async (cartLocal = cart) => {
@@ -109,8 +110,6 @@ export const CartProvider = ({ children }) => {
 						backendCart = await backendCartResponse.json();
 					}
 				}
-
-				updateDataUser(cartMsi);
 
 				setCart(backendCart.cart_items);
 				setShipping(backendCart.shipping_cost);
@@ -360,7 +359,9 @@ export const CartProvider = ({ children }) => {
 				address,
 				setAddress,
 				taxInvoice,
-				setTaxInvoice
+				setTaxInvoice,
+				paymentMethod,
+				setPaymentMethod
 			}}
 		>
 			{children}

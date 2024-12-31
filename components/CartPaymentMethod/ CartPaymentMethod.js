@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import SummaryDetails from '../SummaryDetails/SummaryDetails';
 import useCart from '../../hooks/useCart';
-import CurrencyFormat from '../../hooks/CurrencyFormat';
-import FreeShipping from '../Icons/FreeShipping';
 import fetchData from '../../hooks/GetDataAuth';
 import { useAuth } from '../../hooks/auth';
 import ProfileAddInvoice from '../ProfileAddInvoice/ProfileAddInvoice';
 import ProfileAllInvoice from '../ProfileAllInvoice/ProfileAllInvoice';
 import { Preloader, TailSpin } from 'react-preloader-icon';
-
+import Image from 'next/image';
 import formasDePago from '../../hooks/formasDePago';
 import regimenesFiscales from '../../hooks/regimenesFiscales';
 import usosCFDI from '../../hooks/usosCFDI';
 
 const CartPaymentMethod = () => {
-	const { shipping, taxInvoice, setTaxInvoice } = useCart();
+	const { taxInvoice, setTaxInvoice, paymentMethod, setPaymentMethod, } =
+		useCart();
 	const [loadingData, setLoadingData] = useState(false);
 	const [profile, setProfile] = useState({
 		domicilios: [],
@@ -23,11 +22,49 @@ const CartPaymentMethod = () => {
 
 	const [activeModal, setActiveModal] = useState(null); // 'add', 'all' o null
 	const [editingInvoice, setEditingInvoice] = useState(null);
-	const { accessToken } = useAuth();
+	const { accessToken, cartMsi } = useAuth();
 	const [activeInvoiceId, setActiveInvoiceId] = useState(taxInvoice?.id || 0);
 	const [isProfileAddInvoiceVisible, setProfileAddInvoiceVisible] =
 		useState(false);
 	const [billingActivated, setBillingActivated] = useState(false);
+
+	const paymentOptions = [
+		{
+			id: 'paypal',
+			title: 'PayPal',
+			subtitle: 'Disfruta de un pago único con PayPal.',
+			imgSrc: '/images/paypal-logo-footer.png',
+			msi: false,
+			contado: true,
+		},
+		{
+			id: 'mercadopago',
+			title: 'Mercado Pago',
+			subtitle:
+				'Hasta 3 MSI con tarjetas participantes Mercado Pago o hasta 12 pagos con Mercado Crédito.',
+			imgSrc: '/images/logo-mercado-pago.png',
+			msi: true,
+			contado: false,
+		},
+		{
+			id: 'kueskipay',
+			title: 'Kueski Pay',
+			subtitle:
+				'Paga en hasta 12 quincenas con Kueski Pay, sin comisiones ocultas.',
+			imgSrc: '/images/Logotipo_Kueski_pay.png',
+			msi: true,
+			contado: false,
+		},
+		{
+			id: 'aplazo',
+			title: 'Aplazo',
+			subtitle:
+				'Divide tus pagos en quincenas con Aplazo, sin letras pequeñas.',
+			imgSrc: '/images/logo-aplazo.png',
+			msi: true,
+			contado: false,
+		},
+	];
 
 	/* === Helpers para mostrar las descripciones (usos, regímenes, formas de pago) === */
 	const getUsoCFDIDescription = (usoKey) => {
@@ -59,13 +96,13 @@ const CartPaymentMethod = () => {
 
 			if (activeInvoice) {
 				setTaxInvoice(activeInvoice);
-        setActiveInvoiceId(activeInvoice.id);
-        setBillingActivated(true)
+				setActiveInvoiceId(activeInvoice.id);
+				setBillingActivated(true);
 			} else {
 				// Si no hay invoice activo, dejamos taxInvoice en null
 				setTaxInvoice(null);
-        setActiveInvoiceId(0);
-        setBillingActivated(false);
+				setActiveInvoiceId(0);
+				setBillingActivated(false);
 			}
 		}
 		setLoadingData(false);
@@ -187,36 +224,59 @@ const CartPaymentMethod = () => {
 	return (
 		<div className='cart-payment-method'>
 			<div className='cart-payment-method__body'>
-				{/* EJEMPLO DE FORMA DE ENVÍO */}
+				{/* FORMA DE PAGO */}
 				<div className='cart-payment-options'>
 					<div className='cart-payment-method__header'>
-						<div className='cart-payment-method__title'>Forma de envío</div>
+						<div className='cart-payment-method__title'>Forma de Pago</div>
 					</div>
-					<div className='cart-payment-method__body'>
-						<div className='cart-payment-method__item active'>
-							<div className='radio-wrapper'>
-								<input
-									id='shipping-estandar'
-									type='radio'
-									name='shipping-estandar'
-									defaultChecked
-								/>
-							</div>
-							<div className='cart-payment-method__item__logo'>
-								<FreeShipping color={false} modeCard={true} label='' />
-							</div>
-							<div className='cart-payment-method__item__description'>
-								<div className='cart-payment-method__item__title'>
-									<span>Envío Estándar Terrestre</span>
+
+					<div className='cart-payment-method__payments-options'>
+						{/** 1) Filtrar según cartMsi */}
+						{paymentOptions
+							.filter((opt) => (cartMsi ? opt.msi : opt.contado)) // Si cartMsi es true, muestra solo los que tengan msi:true; de lo contrario, muestra los de contado:true
+							.map((option) => (
+								<div
+									key={option.id}
+									className={
+										/** 2) Clase 'active' cuando paymentMethod coincida con la opción */
+										`cart-payment-method__item ${
+											paymentMethod === option.id ? 'active' : ''
+										}`
+									}
+									onClick={() => setPaymentMethod(option.id)}
+									/** 3) Al hacer click en la tarjeta, guardamos la forma de pago */
+								>
+									<div className='radio-wrapper'>
+										<input
+											id={`payment-${option.id}`}
+											type='radio'
+											name='paymentMethod'
+											checked={paymentMethod === option.id}
+											onChange={() => setPaymentMethod(option.id)}
+										/>
+									</div>
+
+									<div className='cart-payment-method__item__logo'>
+										{/* 4) Mostrar la imagen con Next.js o <img> */}
+										<Image
+											src={option.imgSrc}
+											alt={option.title}
+											width={80}
+											height={40}
+											style={{ objectFit: 'contain' }}
+										/>
+									</div>
+
+									<div className='cart-payment-method__item__description'>
+										<div className='cart-payment-method__item__title'>
+											<span>{option.title}</span>
+										</div>
+										<div className='cart-payment-method__item__detail'>
+											<span>{option.subtitle}</span>
+										</div>
+									</div>
 								</div>
-								<div className='cart-payment-method__item__detail'>
-									<span>Terrestre 3 a 5 Días Hábiles</span>
-								</div>
-							</div>
-							<div className='cart-payment-method__item__price'>
-								<span>$ {CurrencyFormat(shipping, 2, '.', ',')}</span>
-							</div>
-						</div>
+							))}
 					</div>
 				</div>
 
@@ -436,13 +496,12 @@ const CartPaymentMethod = () => {
 					justify-content: space-evenly;
 					flex-wrap: wrap;
 					cursor: pointer;
-          margin-bottom: 15px;
+					margin-bottom: 15px;
 				}
 
 				.cart-payment-method__item.active {
 					border: 1px solid var(--primary-color) !important;
-					color: var(--primary-color);
-					fill: var(--primary-color);
+					background-color: var(--background-price-color);
 				}
 
 				.cart-payment-method {
@@ -466,7 +525,7 @@ const CartPaymentMethod = () => {
 				}
 
 				.cart-payment-invoice {
-					flex: 2;
+					flex: 75%;
 				}
 
 				/* ==== TOGGLE SWITCH ==== */
@@ -538,7 +597,6 @@ const CartPaymentMethod = () => {
 				.warning-icon {
 					background-color: #ffa01b;
 					color: #fff;
-					padding: 4px 8px;
 					border-radius: 50%;
 					font-weight: bold;
 					min-width: 24px;

@@ -132,7 +132,7 @@ const CartShippingMethod = () => {
 			<div className='car-shipping-method__body'>
 				<div className='cart-shipping-options'>
 					<div className='cart-shipping-method__header'>
-						<div className='cart-shipping-method__title'>Forma de envío</div>
+						<div className='cart-shipping-method__title'>Forma de Envío</div>
 					</div>
 					<div className='cart-shipping-method__body'>
 						<div className='cart-shipping-method__item active'>
