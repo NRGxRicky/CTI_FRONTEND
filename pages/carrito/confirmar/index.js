@@ -5,22 +5,20 @@ import FooterMini from '../../../components/FooterMini/FooterMini';
 import { useAuth } from '../../../hooks/auth';
 import Router from 'next/router';
 import useCart from '../../../hooks/useCart';
-import CartShippingMethod from '../../../components/CartShippingMethod/CartShippingMethod';
+import CartConfirmMethod from '../../../components/CartConfirmMethod/CartConfirmMethod';
 import StatusBarCart from '../../../components/StatusBarCart/StatusBarCart';
 import { useEnv } from '../../../context/EnvContext';
-
 
 const index = () => {
 	const { isAuthenticated, loading, accessToken } = useAuth();
 	const { cart, loading: loadingCart } = useCart();
 	const { storeName, metaDescription, titlePostDescription } = useEnv();
 
-	
 	if (!loading && !isAuthenticated) {
 		Router.push(`/login?redirect=${encodeURIComponent(Router.asPath)}`);
 	}
 
-  useEffect(() => {
+	useEffect(() => {
 		if (!loadingCart && cart && cart.length < 1) {
 			Router.push('/carrito');
 		}
@@ -30,21 +28,21 @@ const index = () => {
 		<div className='container'>
 			<Head>
 				<title>
-					{`Método de Envió | ${storeName}: ${titlePostDescription}`}
+					{`Confirmar Pedido | ${storeName}: ${titlePostDescription}`}
 				</title>
 				<meta name='description' content={`${metaDescription}`} />
 			</Head>
 			<StatusBarCart
 				steps={[
 					{ key: 'cart', label: 'Carrito', link: '/carrito' },
-					{ key: 'shipping', label: 'Envío' },
-					{ key: 'payment', label: 'Pago' },
+					{ key: 'shipping', label: 'Envío', link: '/carrito/envio' },
+					{ key: 'payment', label: 'Pago', link: '/carrito/pago'},
 					{ key: 'confirm', label: 'Confirmación' },
 				]}
-				activeStep='shipping'
+				activeStep='confirm'
 			/>
-		
-			<CartShippingMethod />
+
+			<CartConfirmMethod />
 			<BenefitCarousel />
 			<FooterMini />
 		</div>

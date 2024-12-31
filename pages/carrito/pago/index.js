@@ -28,7 +28,7 @@ const index = () => {
 		<div className='container'>
 			<Head>
 				<title>
-					{`Método de envió | ${storeName}: ${titlePostDescription}`}
+					{`Forma de Pago | ${storeName}: ${titlePostDescription}`}
 				</title>
 				<meta name='description' content={`${metaDescription}`} />
 			</Head>

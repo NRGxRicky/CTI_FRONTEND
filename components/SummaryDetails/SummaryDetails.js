@@ -169,7 +169,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 					</div>
 				)}
 				{/* Si no hay paymentMethod y estamos en paso "payment", muestra error */}
-				{!paymentMethod && step === 'payment' && (
+				{!paymentMethod && (step === 'payment' || step === 'confirm') && (
 					<div className='checkout__error'>
 						<span>
 							Tienes que seleccionar una Forma de Pago para continuar.
@@ -183,10 +183,11 @@ const SummaryDetails = ({ urlAction, step }) => {
 							className='proceed-checkout'
 							disabled={
 								(!address && step === 'shipping') ||
-								(!paymentMethod && step === 'payment')
+								(!paymentMethod && step === 'payment') ||
+								(!paymentMethod && step === 'confirm')
 							}
 						>
-							Continuar
+							{ step === 'confirm' ? 'Comprar' : 'Continuar'}
 						</button>
 					</a>
 				</Link>
