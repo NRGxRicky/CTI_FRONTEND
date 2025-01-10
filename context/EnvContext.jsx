@@ -21,6 +21,7 @@ export function EnvProvider({ children }) {
 		logoUrl: process.env.NEXT_PUBLIC_LOGO_URL,
 		emojiFooter: process.env.NEXT_PUBLIC_FOOTER_EMOJI,
 		storeId: process.env.NEXT_PUBLIC_STORE_ID,
+		paypalClientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
 	};
 
 	return (

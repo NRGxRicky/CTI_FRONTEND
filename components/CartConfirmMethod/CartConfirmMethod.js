@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { useAuth } from '../../hooks/auth';
+
 import useCart from '../../hooks/useCart';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import TruncateMarkup from 'react-truncate-markup';
@@ -21,8 +21,6 @@ const CartConfirmMethod = () => {
 		cartMsi,
 		// subtotal, shipping, total... (si los necesitas directamente aquí)
 	} = useCart();
-
-	const { isAuthenticated } = useAuth();
 
 	/* === Helpers para mostrar las descripciones (usos, regímenes, formas de pago) === */
 	const getUsoCFDIDescription = (usoKey) => {
@@ -84,6 +82,7 @@ const CartConfirmMethod = () => {
 
 	return (
 		<div className='cart-confirm-method'>
+			
 			{/* Columna Izquierda: Entrega, Pago y Facturación separados */}
 			<div className='column-left'>
 				{/* Sección Entrega */}
@@ -213,8 +212,8 @@ const CartConfirmMethod = () => {
 										src={
 											item.product.imagen1xs
 												? item.product.imagen1xs.includes(
-														'https://api.pccdnapi.com'
-												  )
+													'https://api.pccdnapi.com'
+												)
 													? item.product.imagen1xs
 													: `https://api.pccdnapi.com${item.product.imagen1xs}`
 												: '/images/not-available.png'
@@ -271,7 +270,7 @@ const CartConfirmMethod = () => {
 
 			{/* Columna 3: Resumen del Carrito */}
 			<div className='column-right'>
-				<SummaryDetails urlAction={'/carrito/comprar'} step={'confirm'} />
+				<SummaryDetails step={'confirm'} />
 			</div>
 
 			{/* ESTILOS */}
