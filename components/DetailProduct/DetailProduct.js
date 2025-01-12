@@ -153,7 +153,7 @@ const DetailProduct = ({
 						<div className='product__info__header__sub product__info__header__sub--mobile'>
 							<span className='text--off'>Nuevo</span>
 							<span className='text--off'>|</span>
-							<span className='text--off'>Vendidos {item.ventas}</span>
+								<span className='text--off'>{item.ventas} vendidos</span>
 						</div>
 
 						<ProductGalleryMobile producto={item} height={height} />
@@ -167,7 +167,7 @@ const DetailProduct = ({
 						<div className='product__info__header__sub'>
 							<span className='text--off'>Nuevo</span>
 							<span className='text--off'>|</span>
-							<span className='text--off'>Vendidos {item.ventas}</span>
+							<span className='text--off'>{item.ventas} vendidos</span>
 						</div>
 					)}
 				</div>

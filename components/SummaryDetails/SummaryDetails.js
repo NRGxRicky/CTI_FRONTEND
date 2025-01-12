@@ -16,9 +16,11 @@ const SummaryDetails = ({ urlAction, step }) => {
 		address,
 		paymentMethod,
 		setPaymentMethod,
+		taxInvoice,
+		clearCart
 	} = useCart();
 	const dispatch = useAppDispatch();
-	const { cartMsi } = useAuth();
+	const { cartMsi, accessToken } = useAuth();
 
 	// Referencia donde se montará el botón de PayPal
 	const paypalRef = useRef(null);
@@ -31,7 +33,6 @@ const SummaryDetails = ({ urlAction, step }) => {
 			paymentMethod === 'paypal' &&
 			step === 'confirm'
 		) {
-
 			// Evita re-render si ya fue renderizado:
 			if (paypalRef.current.innerHTML.trim() !== '') {
 				// Ya hay botones renderizados. No hagas nada más.
@@ -52,9 +53,9 @@ const SummaryDetails = ({ urlAction, step }) => {
 						// 1) Generar array de ítems y convertir precios a número
 						const items = cart.map((item) => {
 							let unitPrice = cartMsi
-								? (item.product.precio_final_descuento > 0
+								? item.product.precio_final_descuento > 0
 									? item.product.precio_final_descuento
-									: item.product.precio_final)
+									: item.product.precio_final
 								: item.product.precio_contado;
 
 							// Convertir a número para usar toFixed():
@@ -78,16 +79,21 @@ const SummaryDetails = ({ urlAction, step }) => {
 								address.calle +
 								' ' +
 								address.numero +
-								(address.numero_interior ? ` Int. ${address.numero_interior}` : ''),
-							admin_area_2: address.ciudad,   // ciudad
-							admin_area_1: address.estado,   // estado
+								(address.numero_interior
+									? ` Int. ${address.numero_interior}`
+									: ''),
+							admin_area_2: address.ciudad, // ciudad
+							admin_area_1: address.estado, // estado
 							postal_code: address.codigo_postal,
 							country_code: 'MX',
 						};
 
 						// 3) Calcular totales
 						const itemTotal = items.reduce((acc, it) => {
-							return acc + parseFloat(it.unit_amount.value) * parseInt(it.quantity, 10);
+							return (
+								acc +
+								parseFloat(it.unit_amount.value) * parseInt(it.quantity, 10)
+							);
 						}, 0);
 
 						const shippingCost = shipping;
@@ -97,8 +103,8 @@ const SummaryDetails = ({ urlAction, step }) => {
 						let description;
 						if (cart.length === 1) {
 							// Usa el nombre del primer (y único) producto (o un fallback)
-							description = cart[0].product.titulo?.substring(0, 127)
-								|| 'Producto único';
+							description =
+								cart[0].product.titulo?.substring(0, 127) || 'Producto único';
 						} else {
 							// Tienes varios productos
 							description = `Compra de ${cart.length} artículos`;
@@ -108,7 +114,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 						return actions.order.create({
 							purchase_units: [
 								{
-									description,  // Aquí inyectas la descripción calculada
+									description, // Aquí inyectas la descripción calculada
 									amount: {
 										currency_code: 'MXN',
 										value: totalToPay,
@@ -138,8 +144,54 @@ const SummaryDetails = ({ urlAction, step }) => {
 					onApprove: async (data, actions) => {
 						const order = await actions.order.capture();
 						console.log('Orden de PayPal:', order);
-						// Aquí llamas a tu backend para guardar el pedido
-						// handleSaveOrder(order);
+
+						// Armar la data para tu backend:
+						const cartItems = cart.map((item) => ({
+							productId: item.product.id,
+							quantity: item.quantity,
+							nombre: item.product.titulo,
+							sku: item.product.sku,
+							precio: item.product.precio_contado, // o el que hayas usado
+						}));
+
+						const bodyToSend = {
+							paypalData: order,
+							cartItems,
+							addressId: address.id, // Si tienes un ID para tu PccomputoUsuarioDomicilio
+							facturaId: taxInvoice?.id, // ID de PccomputoUsuarioDatosFacturacion
+							total,
+							shippingCost: shipping,
+						};
+
+						try {
+							const response = await fetch(
+								'https://api.pccdnapi.com/orders/create/',
+								{
+									method: 'POST',
+									headers: {
+										'Content-Type': 'application/json',
+										Authorization: `Bearer ${accessToken}`,
+									},
+
+									body: JSON.stringify(bodyToSend),
+								}
+							);
+							if (response.ok) {
+								// const json = await response.json();
+								clearCart();
+								// Podrías redirigir a una página de confirmación
+							} else {
+								// Manejar error
+								const errData = await response.json();
+								alert(
+									'Error al crear la orden: ' +
+										(errData.detail || response.statusText)
+								);
+							}
+						} catch (err) {
+							console.error(err);
+							alert('Error de conexión al guardar la orden.');
+						}
 					},
 					onError: (err) => {
 						console.error('PayPal error:', err);
@@ -151,51 +203,51 @@ const SummaryDetails = ({ urlAction, step }) => {
 	}, [paymentMethod, step, cart, address, shipping, cartMsi]);
 
 	return (
-		<div className="summary-details">
-			<div className="summary-details__content">
+		<div className='summary-details'>
+			<div className='summary-details__content'>
 				{/* Toggle modo carrito */}
-				<div className="cart__change-payment">
+				<div className='cart__change-payment'>
 					<span
-						className="cart__change-payment__action"
+						className='cart__change-payment__action'
 						onClick={() => dispatch(showPaymentsChange())}
 					>
 						Cambiar modo de carrito:
 					</span>
-					<span className="payments__label-status">
+					<span className='payments__label-status'>
 						{cartMsi ? 'MSI/Pagos' : 'Contado'}
 					</span>
 				</div>
 
-				<div className="summary-details__title">
+				<div className='summary-details__title'>
 					<span>Resumen del Carrito</span>
 				</div>
 
 				{/* Productos, envío y total */}
-				<div className="summary-row">
+				<div className='summary-row'>
 					<span>
 						{cart.reduce((acc, item) => acc + item.quantity, 0)} Producto(s):
 					</span>
 					<span>$ {CurrencyFormat(subtotal, 2, '.', ',')}</span>
 				</div>
-				<div className="summary-row">
+				<div className='summary-row'>
 					<span>Envío:</span>
 					<span>$ {CurrencyFormat(shipping, 2, '.', ',')}</span>
 				</div>
-				<div className="summary-row total">
-					<div className="summary-row__total">
+				<div className='summary-row total'>
+					<div className='summary-row__total'>
 						<span>Total:</span>
-						<span className="summary-row iva text--off">(Incluye IVA)</span>
+						<span className='summary-row iva text--off'>(Incluye IVA)</span>
 					</div>
 					<span>$ {CurrencyFormat(total, 2, '.', ',')}</span>
 				</div>
 
 				{/* Sección de opciones de pago */}
 				{cartMsi ? (
-					<div className="payments">
-						<div className="payments__option__header">
+					<div className='payments'>
+						<div className='payments__option__header'>
 							<span>Pagar a MSI/Pagos con:</span>
 						</div>
-						<div className="payments__option__body">
+						<div className='payments__option__body'>
 							{[
 								{
 									id: 'mercadopago',
@@ -216,25 +268,28 @@ const SummaryDetails = ({ urlAction, step }) => {
 										'Divide tus pagos en quincenas con Aplazo, sin letras pequeñas.',
 								},
 							]
-								.filter(option => !paymentMethod || paymentMethod === option.id)
-								.map(option => (
+								.filter(
+									(option) => !paymentMethod || paymentMethod === option.id
+								)
+								.map((option) => (
 									<div
 										key={option.id}
-										className={`payments__option__item ${paymentMethod === option.id ? 'active' : ''
-											}`}
+										className={`payments__option__item ${
+											paymentMethod === option.id ? 'active' : ''
+										}`}
 										onClick={() => setPaymentMethod(option.id)}
 									>
-										<div className="payments__option__item__image">
+										<div className='payments__option__item__image'>
 											<Image
 												src={option.img}
 												fill
 												style={{ objectFit: 'contain', padding: 5 }}
 												alt={option.id}
-												draggable="false"
-												sizes="auto"
+												draggable='false'
+												sizes='auto'
 											/>
 										</div>
-										<div className="payments__option__item__label">
+										<div className='payments__option__item__label'>
 											<span>{option.label}</span>
 										</div>
 									</div>
@@ -242,11 +297,11 @@ const SummaryDetails = ({ urlAction, step }) => {
 						</div>
 					</div>
 				) : (
-					<div className="payments">
-						<div className="payments__option__header">
+					<div className='payments'>
+						<div className='payments__option__header'>
 							<span>Pagar en una sola exhibición con:</span>
 						</div>
-						<div className="payments__option__body">
+						<div className='payments__option__body'>
 							{[
 								{
 									id: 'paypal',
@@ -254,25 +309,28 @@ const SummaryDetails = ({ urlAction, step }) => {
 									label: 'Disfruta de un pago único con PayPal.',
 								},
 							]
-								.filter(option => !paymentMethod || paymentMethod === option.id)
-								.map(option => (
+								.filter(
+									(option) => !paymentMethod || paymentMethod === option.id
+								)
+								.map((option) => (
 									<div
 										key={option.id}
-										className={`payments__option__item ${paymentMethod === option.id ? 'active' : ''
-											}`}
+										className={`payments__option__item ${
+											paymentMethod === option.id ? 'active' : ''
+										}`}
 										onClick={() => setPaymentMethod(option.id)}
 									>
-										<div className="payments__option__item__image">
+										<div className='payments__option__item__image'>
 											<Image
 												src={option.img}
 												fill
 												style={{ objectFit: 'contain', padding: 5 }}
 												alt={option.id}
-												draggable="false"
-												sizes="auto"
+												draggable='false'
+												sizes='auto'
 											/>
 										</div>
-										<div className="payments__option__item__label">
+										<div className='payments__option__item__label'>
 											<span>{option.label}</span>
 										</div>
 									</div>
@@ -282,13 +340,13 @@ const SummaryDetails = ({ urlAction, step }) => {
 				)}
 
 				{/* Validaciones de address/paymentMethod */}
-				{!address && (step === 'shipping') && (
-					<div className="checkout__error">
+				{!address && step === 'shipping' && (
+					<div className='checkout__error'>
 						<span>Debes agregar un domicilio para continuar.</span>
 					</div>
 				)}
 				{!paymentMethod && (step === 'payment' || step === 'confirm') && (
-					<div className="checkout__error">
+					<div className='checkout__error'>
 						<span>Debes seleccionar un método de pago para continuar.</span>
 					</div>
 				)}
@@ -298,7 +356,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 					<Link href={`${urlAction}`} legacyBehavior>
 						<a>
 							<button
-								className="proceed-checkout"
+								className='proceed-checkout'
 								disabled={
 									(!address && step === 'shipping') ||
 									(!paymentMethod && (step === 'payment' || step === 'confirm'))
