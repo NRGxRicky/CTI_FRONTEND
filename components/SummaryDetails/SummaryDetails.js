@@ -6,6 +6,7 @@ import { useAppDispatch } from '../../lib/hooks';
 import { useAuth } from '../../hooks/auth';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import useCart from '../../hooks/useCart';
+import { useRouter } from 'next/router';
 
 const SummaryDetails = ({ urlAction, step }) => {
 	const {
@@ -21,6 +22,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 	} = useCart();
 	const dispatch = useAppDispatch();
 	const { cartMsi, accessToken } = useAuth();
+	const router = useRouter();
 
 	// Referencia donde se montará el botón de PayPal
 	const paypalRef = useRef(null);
@@ -145,22 +147,8 @@ const SummaryDetails = ({ urlAction, step }) => {
 						const order = await actions.order.capture();
 						console.log('Orden de PayPal:', order);
 
-						// Armar la data para tu backend:
-						const cartItems = cart.map((item) => ({
-							productId: item.product.id,
-							quantity: item.quantity,
-							nombre: item.product.titulo,
-							sku: item.product.sku,
-							precio: item.product.precio_contado, // o el que hayas usado
-						}));
-
 						const bodyToSend = {
 							paypalData: order,
-							cartItems,
-							addressId: address.id, // Si tienes un ID para tu PccomputoUsuarioDomicilio
-							facturaId: taxInvoice?.id, // ID de PccomputoUsuarioDatosFacturacion
-							total,
-							shippingCost: shipping,
 						};
 
 						try {
@@ -177,9 +165,12 @@ const SummaryDetails = ({ urlAction, step }) => {
 								}
 							);
 							if (response.ok) {
-								// const json = await response.json();
-								clearCart();
+								const json = await response.json();
 								// Podrías redirigir a una página de confirmación
+								router.push(`/compras/confirmacion/?orderId=${json.orderId}`);
+								setTimeout(() => {
+									clearCart();
+								}, 3000); // 3 segundo de retraso
 							} else {
 								// Manejar error
 								const errData = await response.json();
@@ -187,6 +178,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 									'Error al crear la orden: ' +
 										(errData.detail || response.statusText)
 								);
+								console.log(errData)
 							}
 						} catch (err) {
 							console.error(err);
