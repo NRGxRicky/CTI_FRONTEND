@@ -8,14 +8,15 @@ import BenefitCarousel from '../../../components/BenefitCarousel/BenefitCarousel
 import TruncateMarkup from 'react-truncate-markup';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import Capitalize from '../../../hooks/CapitalizeTitle';
+import Router from 'next/router';
 
 const Index = () => {
 	const router = useRouter();
 	const { orderId } = router.query;
-	const { accessToken, username } = useAuth();
+	const { accessToken, username, loading, isAuthenticated } = useAuth();
 
 	const [order, setOrder] = useState(null);
-	const [loading, setLoading] = useState(true);
+	const [loadingData, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
 	useEffect(() => {
@@ -65,9 +66,13 @@ const Index = () => {
 	// Ruta para ver pedido (ajusta a tu preferencia)
 	const handleViewOrder = () => {
 		router.push(`/mis-compras/${orderId}`);
-	};
+  };
+  
+  if (!loading && !isAuthenticated) {
+    Router.push(`/login?redirect=${encodeURIComponent(Router.asPath)}`);
+  }
 
-	if (loading) {
+  if (loadingData) {
 		return (
 			<div className='loading'>
 				<div className='loading__loader'>
