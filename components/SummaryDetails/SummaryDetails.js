@@ -145,7 +145,6 @@ const SummaryDetails = ({ urlAction, step }) => {
 					// Paso 2: onApprove => PayPal confirma pago
 					onApprove: async (data, actions) => {
 						const order = await actions.order.capture();
-						console.log('Orden de PayPal:', order);
 
 						const bodyToSend = {
 							paypalData: order,
@@ -178,7 +177,6 @@ const SummaryDetails = ({ urlAction, step }) => {
 									'Error al crear la orden: ' +
 										(errData.detail || response.statusText)
 								);
-								console.log(errData)
 							}
 						} catch (err) {
 							console.error(err);

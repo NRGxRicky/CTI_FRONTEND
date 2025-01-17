@@ -37,7 +37,6 @@ const Index = () => {
 
 				if (response.ok) {
 					const data = await response.json();
-					console.log(data);
 					setOrder(data);
 				} else {
 					const errData = await response.json();
