@@ -2,17 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import CurrencyFormat from '../../../hooks/CurrencyFormat';
 import Image from 'next/image';
-import useCart from '../../../hooks/useCart';
 import { useAuth } from '../../../hooks/auth';
 import FooterMini from '../../../components/FooterMini/FooterMini';
 import BenefitCarousel from '../../../components/BenefitCarousel/BenefitCarousel';
 import TruncateMarkup from 'react-truncate-markup';
-const index = () => {
+import { Preloader, TailSpin } from 'react-preloader-icon';
+import Capitalize from '../../../hooks/CapitalizeTitle';
+
+const Index = () => {
 	const router = useRouter();
 	const { orderId } = router.query;
-	const { accessToken } = useAuth();
-
-	const { clearCart } = useCart();
+	const { accessToken, username } = useAuth();
 
 	const [order, setOrder] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -54,8 +54,51 @@ const index = () => {
 		fetchOrder();
 	}, [orderId, accessToken]);
 
+	// === Nuevo handlePrintOrder con body.classList:
+	const handlePrintOrder = () => {
+		document.body.classList.add('print-mode');
+		window.print();
+		window.onafterprint = () => {
+			document.body.classList.remove('print-mode');
+		};
+	};
+
+	// Ruta para ver pedido (ajusta a tu preferencia)
+	const handleViewOrder = () => {
+		router.push(`/mis-compras/${orderId}`);
+	};
+
 	if (loading) {
-		return <div className='container'>Loading...</div>;
+		return (
+			<div className='loading'>
+				<div className='loading__loader'>
+					<Preloader
+						use={TailSpin}
+						size={30}
+						strokeWidth={8}
+						strokeColor='var(--primary-color)'
+						duration={900}
+					/>
+				</div>
+
+				<style jsx>
+					{`
+						.loading {
+							width: 100%;
+							height: 50dvh;
+						}
+
+						.loading__loader {
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							padding: 10px;
+							height: 100%;
+						}
+					`}
+				</style>
+			</div>
+		);
 	}
 
 	if (error) {
@@ -79,13 +122,37 @@ const index = () => {
 
 	return (
 		<div className='container'>
+			{/* Nuestra sección principal con la clase .confirmation-page */}
 			<div className='confirmation-page'>
 				<h1>¡Gracias por tu compra!</h1>
-				<p>Tu pedido ha sido confirmado exitosamente.</p>
-				<h2>Detalles de la Orden #{order.id}</h2>
+				<hr className='separator' />
 
+				<p>
+					Tu pedido ha sido confirmado exitosamente. Se ha enviado la
+					información del pedido al correo: <strong>{username}</strong>.
+				</p>
+				<br />
+				<p>
+					Tu pedido puede tomar hasta 48 horas hábiles para ser procesado. Una
+					vez que se haya enviado, recibirás un correo de confirmación con los
+					detalles del envío y el número de seguimiento de la paquetería.
+				</p>
+				<br />
+				<p>
+					Próximamente recibirás la factura con el monto total de tu pedido,
+					incluidos los gastos de envío. Esta se generará de manera automática.
+				</p>
+				<hr className='separator' />
+
+				<div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+					<a onClick={handlePrintOrder} className='print-button'>
+						Imprimir Pedido
+					</a>
+				</div>
+
+				<h2>Detalles de la Orden #{order.id}</h2>
 				<div className='order-details'>
-					<h3>Productos:</h3>
+					<h3 style={{ marginBottom: 10 }}>Productos:</h3>
 					<table className='order-table'>
 						<thead>
 							<tr>
@@ -100,23 +167,21 @@ const index = () => {
 							{order.items.map((item) => (
 								<tr key={item.id}>
 									<td>
-										{item.product_image ? (
+										<div className='product__image'>
 											<Image
-												src={item.product_image}
-												alt={`Imagen de ${item.nombre_producto}`}
-												width={60}
-												height={60}
-												objectFit='contain'
+												src={
+													item.product_image
+														? item.product_image
+														: '/images/not-available.png'
+												}
+												fill
+												style={{ objectFit: 'contain' }}
+												alt={Capitalize(item.nombre_producto)}
+												draggable='false'
+												sizes='auto'
+												loading='lazy'
 											/>
-										) : (
-											<Image
-												src='https://via.placeholder.com/60'
-												alt='Sin imagen'
-												width={60}
-												height={60}
-												objectFit='contain'
-											/>
-										)}
+										</div>
 									</td>
 									<td>
 										<TruncateMarkup lines={2}>
@@ -133,10 +198,12 @@ const index = () => {
 
 					<div className='totals-section'>
 						<p>
-							<strong>Envío:</strong> $ {CurrencyFormat(order.shipping_cost, 2, '.', ',')}
+							<strong>Envío:</strong> ${' '}
+							{CurrencyFormat(order.shipping_cost, 2, '.', ',')}
 						</p>
 						<p>
-							<strong>Total:</strong> $ {CurrencyFormat(order.total, 2, '.', ',')}
+							<strong>Total:</strong> ${' '}
+							{CurrencyFormat(order.total, 2, '.', ',')}
 						</p>
 					</div>
 
@@ -144,14 +211,20 @@ const index = () => {
 
 					<h3>Datos de Envío:</h3>
 					{order.domicilio ? (
-						<p>
-							Dirección: {order.domicilio.calle} {order.domicilio.numero}
-							{order.domicilio.numero_interior
-								? ` Int. ${order.domicilio.numero_interior}`
-								: ''}
-							,{order.domicilio.colonia}, {order.domicilio.ciudad},{' '}
-							{order.domicilio.estado}, C.P. {order.domicilio.codigo_postal}
-						</p>
+						<div>
+							<p>
+								{order.domicilio.nombres} {order.domicilio.apellidos}
+							</p>
+							<p>Teléfono: {order.domicilio.telefono}</p>
+							<p>
+								Dirección: {order.domicilio.calle} {order.domicilio.numero}
+								{order.domicilio.numero_interior
+									? ` Int. ${order.domicilio.numero_interior}`
+									: ''}
+								,{order.domicilio.colonia}, {order.domicilio.ciudad},{' '}
+								{order.domicilio.estado}, C.P. {order.domicilio.codigo_postal}
+							</p>
+						</div>
 					) : (
 						<p>No se registró dirección de envío.</p>
 					)}
@@ -163,9 +236,9 @@ const index = () => {
 						<div>
 							<p>Razón social: {order.facturacion.razon_social}</p>
 							<p>RFC: {order.facturacion.rfc}</p>
-							<p>Uso de CFDI: {order.uso_cfdi_full}</p>
-							<p>Régimen: {order.regimen_full}</p>
-							<p>Forma de Pago: {order.forma_pago_full}</p>
+							<p>Uso de CFDI: {order.facturacion.uso_cfdi_full}</p>
+							<p>Régimen: {order.facturacion.regimen_full}</p>
+							<p>Forma de Pago: {order.facturacion.forma_pago_full}</p>
 							<p>C.P.: {order.facturacion.codigo_postal}</p>
 						</div>
 					) : (
@@ -173,96 +246,188 @@ const index = () => {
 					)}
 				</div>
 
-				<button onClick={() => router.push('/')} className='continue-shopping'>
-					Continuar comprando
-				</button>
+				<div className='order__actions-buttons'>
+					<div>
+						<button
+							onClick={() => router.push('/')}
+							className='continue-shopping'
+						>
+							Continuar comprando
+						</button>
+					</div>
+					<div>
+						<button onClick={handleViewOrder} className='go-order-button'>
+							Ver Pedido
+						</button>
+					</div>
+				</div>
 			</div>
+
+			{/* Aún quieres BenefitCarousel y FooterMini visibles en la vista normal, 
+          pero posiblemente los ocultes en la impresión */}
 			<BenefitCarousel />
 			<FooterMini />
-			{/* ESTILOS */}
-			<style jsx>
-				{`
-					.confirmation-page {
-						max-width: 800px;
-						margin: 0 auto;
-						padding: 20px;
-						color: #333;
-						line-height: 1.5;
-					}
 
-					h1 {
-						text-align: center;
-						margin-bottom: 20px;
-					}
-
-					h2 {
-						margin-top: 30px;
-						margin-bottom: 10px;
-					}
-
-					.order-table {
-						width: 100%;
-						border-collapse: collapse;
-						margin-bottom: 20px;
-					}
-
+			{/* ESTILOS LOCALES */}
+			<style jsx>{`
+				.product__image {
+					position: relative;
+					width: 60px;
+					height: 60px;
+				}
+				.order__actions-buttons {
+					width: 100%;
+					display: flex;
+					flex-direction: row;
+					gap: 10px;
+					justify-content: center;
+					align-items: center;
+					margin-top: 20px;
+				}
+				.confirmation-page {
+					max-width: 800px;
+					margin: 0 auto;
+					padding: 20px;
+					color: #333;
+					line-height: 1.5;
+					border: 1px solid #eaeaea;
+					border-radius: 5px;
+				}
+				h1 {
+					text-align: center;
+					margin-bottom: 20px;
+				}
+				h2 {
+					margin-top: 30px;
+					margin-bottom: 10px;
+				}
+				.order-table {
+					width: 100%;
+					border-collapse: collapse;
+					margin-bottom: 20px;
+				}
+				.order-table th,
+				.order-table td {
+					border: 1px solid #eaeaea;
+					padding: 10px;
+					text-align: center;
+				}
+				.order-table th {
+					background-color: #f2f2f2;
+				}
+				.totals-section {
+					text-align: right;
+					margin-top: 10px;
+					font-size: 16px;
+				}
+				.separator {
+					border: none;
+					border-top: 1px solid #eaeaea;
+					margin: 20px 0;
+				}
+				.continue-shopping,
+				.go-order-button {
+					display: block;
+					padding: 10px 20px;
+					background-color: var(--primary-color);
+					color: #fff;
+					border: none;
+					border-radius: 5px;
+					cursor: pointer;
+					font-size: 16px;
+				}
+				.go-order-button {
+					background-color: #fff;
+					border: 1px solid var(--primary-color);
+					color: var(--primary-color);
+				}
+				.continue-shopping:hover {
+					background-color: #e00028;
+				}
+				.print-button {
+					color: var(--primary-color);
+					text-decoration: underline;
+					cursor: pointer;
+				}
+				@media only screen and (max-width: 600px) {
 					.order-table th,
 					.order-table td {
-						border: 1px solid #eaeaea;
+						padding: 5px;
+					}
+					.confirmation-page {
 						padding: 10px;
-						text-align: center;
 					}
-
-					.order-table th {
-						background-color: #f2f2f2;
+					.order-table {
+						font-size: 12px;
 					}
-
 					.totals-section {
-						text-align: right;
-						margin-top: 10px;
-						font-size: 16px;
+						font-size: 14px;
+					}
+				}
+			`}</style>
+
+			{/* ESTILOS GLOBALES PARA PRINT (Enfoque A) */}
+			<style jsx global>{`
+				@media print {
+					html,
+					body,
+					#__next {
+						height: auto !important;
+						overflow: visible !important;
 					}
 
-					.separator {
-						border: none;
-						border-top: 1px solid #eaeaea;
-						margin: 20px 0;
+					/* Si deseas ocultar BenefitCarousel y FooterMini, especifícalos: */
+					.benefit-carousel,
+					.footer-mini {
+						display: none !important;
 					}
 
-					.continue-shopping {
-						display: block;
-						margin: 30px auto 0 auto;
-						padding: 10px 20px;
-						background-color: var(--primary-color);
-						color: #fff;
-						border: none;
-						border-radius: 5px;
-						cursor: pointer;
-						font-size: 16px;
+					/* 
+            Solo mostrar .confirmation-page
+            => Si hay otros contenedores padres con overflow o position
+               que generan problemas, intenta poner display:block en 
+               .container, o ajusta tu layout.
+          */
+					body.print-mode .container > *:not(.confirmation-page) {
+						display: none !important;
 					}
 
-					.continue-shopping:hover {
-						background-color: #e00028;
+					body.print-mode .header-bar > *:not(.confirmation-page) {
+						display: none !important;
 					}
 
-					@media only screen and (max-width: 600px) {
-						.order-table th,
-						.order-table td {
-							padding: 5px;
-						}
-
-						.confirmation-page {
-							padding: 10px;
-						}
-
-						.continue-shopping {
-							width: 100%;
-						}
+					.carousel-container,
+					.whatsapp-icon {
+						display: none !important;
 					}
-				`}
-			</style>
+
+					/* 
+            Asegura que .confirmation-page se vea y ocupe varias páginas
+          */
+					body.print-mode .confirmation-page {
+						display: block !important;
+						position: static !important;
+						width: 100% !important;
+						margin: 0 !important;
+						padding: 0 !important;
+						overflow: visible !important;
+					}
+
+					/* Evita partir filas de la tabla */
+					body.print-mode .confirmation-page table,
+					body.print-mode .confirmation-page tr,
+					body.print-mode .confirmation-page td,
+					body.print-mode .confirmation-page th {
+						page-break-inside: avoid;
+					}
+
+					@page {
+						margin: 20mm; /* Ajusta si quieres más/menos margen */
+					}
+				}
+			`}</style>
 		</div>
 	);
 };
 
-export default index;
+export default Index;

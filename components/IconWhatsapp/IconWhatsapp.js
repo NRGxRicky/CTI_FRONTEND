@@ -5,7 +5,7 @@ const IconWhatsapp = () => {
 	const { phone } = useEnv();
 
 	return (
-		<div>
+		<div className='whatsapp-icon'>
 			<div
 				style={{
 					position: 'fixed',
