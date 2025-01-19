@@ -10,6 +10,10 @@ import { Preloader, TailSpin } from 'react-preloader-icon';
 import Capitalize from '../../../hooks/CapitalizeTitle';
 import Router from 'next/router';
 
+export const metadata = {
+	title: 'Resumen de la compra',
+}
+
 const Index = () => {
 	const router = useRouter();
 	const { orderId } = router.query;
@@ -225,7 +229,7 @@ const Index = () => {
 								{order.domicilio.numero_interior
 									? ` Int. ${order.domicilio.numero_interior}`
 									: ''}
-								,{order.domicilio.colonia}, {order.domicilio.ciudad},{' '}
+								, {order.domicilio.colonia}, {order.domicilio.ciudad},{' '}
 								{order.domicilio.estado}, C.P. {order.domicilio.codigo_postal}
 							</p>
 						</div>
