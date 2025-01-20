@@ -347,7 +347,7 @@ const CartSummary = () => {
 				}
 				.cart-header {
 					display: flex;
-					width: 100;
+					width: 100%;
 					justify-content: space-between;
 				}
 

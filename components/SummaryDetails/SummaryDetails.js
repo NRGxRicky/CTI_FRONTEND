@@ -133,6 +133,9 @@ const SummaryDetails = ({ urlAction, step }) => {
 									},
 									items,
 									shipping: {
+										name: {
+											full_name: address.nombres + ' ' + address.apellidos,
+										},
 										address: shippingAddress,
 									},
 								},
@@ -148,6 +151,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 
 						const bodyToSend = {
 							paypalData: order,
+							'requireInvoice': !!taxInvoice
 						};
 
 						try {

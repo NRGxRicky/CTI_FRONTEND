@@ -9,10 +9,10 @@ import TruncateMarkup from 'react-truncate-markup';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import Capitalize from '../../../hooks/CapitalizeTitle';
 import Router from 'next/router';
-
+import Head from 'next/head';
 export const metadata = {
 	title: 'Resumen de la compra',
-}
+};
 
 const Index = () => {
 	const router = useRouter();
@@ -70,13 +70,13 @@ const Index = () => {
 	// Ruta para ver pedido (ajusta a tu preferencia)
 	const handleViewOrder = () => {
 		router.push(`/mis-compras/${orderId}`);
-  };
-  
-  if (!loading && !isAuthenticated) {
-    Router.push(`/login?redirect=${encodeURIComponent(Router.asPath)}`);
-  }
+	};
 
-  if (loadingData) {
+	if (!loading && !isAuthenticated) {
+		Router.push(`/login?redirect=${encodeURIComponent(Router.asPath)}`);
+	}
+
+	if (loadingData) {
 		return (
 			<div className='loading'>
 				<div className='loading__loader'>
@@ -130,6 +130,15 @@ const Index = () => {
 
 	return (
 		<div className='container'>
+			<Head>
+				<title>
+					Gracias por tu compra, Resumen de tu compra #{orderId} | PCStore.mx
+				</title>
+				<meta
+					name='description'
+					content={`Gracias por tu compra, aquí puedes ver los detalles de la orden #${orderId}.`}
+				/>
+			</Head>
 			{/* Nuestra sección principal con la clase .confirmation-page */}
 			<div className='confirmation-page'>
 				<h1>¡Gracias por tu compra!</h1>
@@ -168,7 +177,7 @@ const Index = () => {
 								<th>Producto</th>
 								<th>Cantidad</th>
 								<th>Precio Unitario</th>
-								<th>Subtotal</th>
+								<th className='subtotal-column'>Subtotal</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -218,19 +227,17 @@ const Index = () => {
 					<hr className='separator' />
 
 					<h3>Datos de Envío:</h3>
-					{order.domicilio ? (
+					{order.shipping_address_line_1 ? (
 						<div>
+							<p>{order.shipping_full_name}</p>
+							<p>Teléfono: {order.shipping_phone}</p>
 							<p>
-								{order.domicilio.nombres} {order.domicilio.apellidos}
-							</p>
-							<p>Teléfono: {order.domicilio.telefono}</p>
-							<p>
-								Dirección: {order.domicilio.calle} {order.domicilio.numero}
-								{order.domicilio.numero_interior
-									? ` Int. ${order.domicilio.numero_interior}`
+								Dirección: {order.shipping_address_line_1}
+								{order.shipping_address_line_2
+									? ` Int. ${order.shipping_address_line_2}`
 									: ''}
-								, {order.domicilio.colonia}, {order.domicilio.ciudad},{' '}
-								{order.domicilio.estado}, C.P. {order.domicilio.codigo_postal}
+								, {order.shipping_colonia}, {order.shipping_city},{' '}
+								{order.shipping_state}, C.P. {order.shipping_zip_code}
 							</p>
 						</div>
 					) : (
@@ -240,14 +247,14 @@ const Index = () => {
 					<hr className='separator' />
 
 					<h3>Datos de Facturación:</h3>
-					{order.facturacion ? (
+					{order.billing_razon_social ? (
 						<div>
-							<p>Razón social: {order.facturacion.razon_social}</p>
-							<p>RFC: {order.facturacion.rfc}</p>
-							<p>Uso de CFDI: {order.facturacion.uso_cfdi_full}</p>
-							<p>Régimen: {order.facturacion.regimen_full}</p>
-							<p>Forma de Pago: {order.facturacion.forma_pago_full}</p>
-							<p>C.P.: {order.facturacion.codigo_postal}</p>
+							<p>Razón social: {order.billing_razon_sociall}</p>
+							<p>RFC: {order.billing_rfc}</p>
+							<p>Uso de CFDI: {order.billing_uso_cfdi_full}</p>
+							<p>Régimen: {order.billing_regimen_full}</p>
+							<p>Forma de Pago: {order.billing_forma_pago_full}</p>
+							<p>C.P.: {order.billing_codigo_postal}</p>
 						</div>
 					) : (
 						<p>No se ingresaron datos de facturación (RFC genérico).</p>
@@ -278,6 +285,9 @@ const Index = () => {
 
 			{/* ESTILOS LOCALES */}
 			<style jsx>{`
+				.order-table .subtotal-column {
+					width: 150px; 
+				}
 				.product__image {
 					position: relative;
 					width: 60px;
