@@ -154,9 +154,16 @@ const LoginMenu: React.FC = () => {
 										</Link>
 									)}
 									<div className='login-menu__body login-menu__body__logged-in'>
-										<div className='login-menu__body__item'>
-											<span>Mis compras</span>
-										</div>
+										<Link href={`/mis-compras/`} legacyBehavior>
+											<a>
+												<div
+													className='login-menu__body__item'
+													onClick={() => dispacth(hideAll())}
+												>
+													<span>Mis compras</span>
+												</div>
+											</a>
+										</Link>
 										<Link href={`/profile/`} legacyBehavior>
 											<a>
 												<div

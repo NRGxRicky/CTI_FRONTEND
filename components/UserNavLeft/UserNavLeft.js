@@ -10,15 +10,17 @@ const UserNavLeft = () => {
 	return (
 		<div className='nav-left' style={!mobileView ? { marginTop: ' 58px' } : {}}>
 			<div className='nav-left-container'>
-				<a
-					className={
-						router.pathname === '/profile/orders'
-							? 'text--off active'
-							: 'text--off'
-					}
-				>
-					<span>Mis compras</span>
-				</a>
+				<Link href={`/mis-compras/`} legacyBehavior>
+					<a
+						className={
+							router.pathname === '/mis-compras'
+								? 'text--off active'
+								: 'text--off'
+						}
+					>
+						<span>Mis compras</span>
+					</a>
+				</Link>
 				<Link href={`/profile/`} legacyBehavior>
 					<a
 						className={

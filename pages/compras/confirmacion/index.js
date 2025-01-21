@@ -286,7 +286,7 @@ const Index = () => {
 			{/* ESTILOS LOCALES */}
 			<style jsx>{`
 				.order-table .subtotal-column {
-					width: 150px; 
+					width: 100px; 
 				}
 				.product__image {
 					position: relative;
