@@ -1374,10 +1374,13 @@ button {
 }
 
 select {
-    color: var(--primary-color);
+	color: var(--primary-color);
 }
 
 select:invalid {
-    color: var(--primary-color);
+	color: var(--primary-color);
+}
 
+.icon__ligth {
+	fill: #474747;
 }
