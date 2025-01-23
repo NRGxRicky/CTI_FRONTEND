@@ -52,6 +52,9 @@ const UserNavLeft = () => {
 						display: flex;
 						flex-direction: column;
 						margin-left: 20px;
+						border: 1px solid #eaeaea;
+						border-radius: 5px;
+						padding: 20px;
 					}
 
 					.nav-left a {
@@ -73,6 +76,8 @@ const UserNavLeft = () => {
 							flex-direction: row;
 							line-height: 3;
 							text-align: center;
+							border: none;
+							padding: 0;
 						}
 
 						.nav-left a {

@@ -5,9 +5,10 @@ import { useRouter } from 'next/router';
 import { useAppSelector } from '../../lib/hooks';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Preloader, TailSpin } from 'react-preloader-icon';
-
+import Capitalize from '../../hooks/CapitalizeTitle';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import ListProductsPagination from '../ListProductsPagination/ListProductsPagination';
+import Link from 'next/link';
 
 function UserOrdersList() {
 	const { accessToken } = useAuth();
@@ -24,13 +25,61 @@ function UserOrdersList() {
 	const pageSize = 5;
 	const totalPages = Math.ceil(count / pageSize);
 
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 
 	const [searchTerm, setSearchTerm] = useState('');
 	const [dateRange, setDateRange] = useState('3');
 
 	// Para infinite scroll
 	const [hasMore, setHasMore] = useState(true);
+
+	const paymentOptions = [
+		{
+			id: 'paypal',
+			title: 'PayPal',
+			subtitle: 'Disfruta de un pago único con PayPal.',
+			imgSrc: '/images/paypal-logo-footer.png',
+		},
+		{
+			id: 'mercadopago',
+			title: 'Mercado Pago',
+			subtitle:
+				'Hasta 3 MSI con tarjetas participantes Mercado Pago o hasta 12 pagos con Mercado Crédito.',
+			imgSrc: '/images/logo-mercado-pago.png',
+		},
+		{
+			id: 'kueskipay',
+			title: 'Kueski Pay',
+			subtitle:
+				'Paga en hasta 12 quincenas con Kueski Pay, sin comisiones ocultas.',
+			imgSrc: '/images/Logotipo_Kueski_pay.png',
+		},
+		{
+			id: 'aplazo',
+			title: 'Aplazo',
+			subtitle:
+				'Divide tus pagos en quincenas con Aplazo, sin letras pequeñas.',
+			imgSrc: '/images/logo-aplazo.png',
+		},
+		{
+			id: 'deposit',
+			title: 'Depósito o transferencia Interbancaria',
+			subtitle: '',
+			imgSrc: '/images/logos/deposit-3banks.png',
+		},
+	];
+
+	const shipmentStatusMap = {
+		PREPARACION: 'En preparación',
+		ENVIADO: 'Enviado',
+		ENTREGADO: 'Entregado',
+		DEVUELTO: 'Devuelto',
+		PERDIDO: 'Perdido',
+	};
+
+	// Hallar el método de pago seleccionado
+	const selectedPayment = (paymentMethod) =>
+		paymentOptions.find((opt) => opt.id === paymentMethod);
 
 	// ------------------------------------------
 	// fetchOrders => recibe isConcat (opcional)
@@ -44,8 +93,8 @@ function UserOrdersList() {
 			const url = new URL('https://api.pccdnapi.com/orders/list/');
 			url.searchParams.append('page', page);
 			url.searchParams.append('search', search);
-      url.searchParams.append('date_range', range);
-      url.searchParams.append('page_size', pageSize);
+			url.searchParams.append('date_range', range);
+			url.searchParams.append('page_size', pageSize);
 
 			const resp = await fetch(url.toString(), {
 				headers: {
@@ -116,7 +165,6 @@ function UserOrdersList() {
 				);
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [accessToken, searchTerm, dateRange, pageActive, mobileView]);
 
 	// -----------------------------------------------------
@@ -168,9 +216,46 @@ function UserOrdersList() {
 	// -----------------------------------------------------
 	// Formateo de fecha (ejemplo)
 	// -----------------------------------------------------
-	const getDeliveryDateText = (order) => {
-		const deliveredDate = order.updated_at || order.created_at;
-		const dateObj = new Date(deliveredDate);
+	const getShipmentStatusDateText = (order, shipments) => {
+		// 1) Si no existe ningún shipment, devolvemos un fallback
+		if (!shipments || shipments.length === 0) {
+			return 'Tu compra está siendo preparada en el almacén.';
+		}
+
+		// 2) Tomamos el primer envío (o haz un loop si lo requieres)
+    const firstShipment = shipments[0];
+		const shipmentStatus = firstShipment.status;
+
+		// 3) Dependiendo del estado, decidimos la fecha y la leyenda
+		let dateToUse = null;
+		let label = '';
+
+		// Por ejemplo, si está "ENTREGADO", mostramos "Entregado el..."
+		if (shipmentStatus === 'ENTREGADO') {
+			dateToUse =
+				firstShipment.delivered_at || order.updated_at || order.created_at;
+			label = 'Entregado el';
+		}
+		// Si está "ENVIADO", mostramos "Enviado el..."
+		else if (shipmentStatus === 'ENVIADO') {
+			dateToUse =
+				firstShipment.shipped_at || order.updated_at || order.created_at;
+			label = 'Enviado el';
+		}
+		// Podrías manejar más casos: "DEVUELTO", "PERDIDO"...
+		else {
+			// Fallback para "PREPARACION" u otros
+			return 'Tu compra está siendo preparada en el almacén.';
+		}
+
+		// 4) Formateamos la fecha
+		if (!dateToUse) {
+			// Si no encontramos fecha de shipped_at / delivered_at / etc,
+			// usamos created_at u otro fallback.
+			dateToUse = order.created_at;
+		}
+
+		const dateObj = new Date(dateToUse);
 		const day = dateObj.getDate();
 		const months = [
 			'Enero',
@@ -187,8 +272,53 @@ function UserOrdersList() {
 			'Diciembre',
 		];
 		const monthName = months[dateObj.getMonth()] || '';
-		return `Entregado el ${day} de ${monthName}`;
+
+		return `${label} ${day} de ${monthName}`;
 	};
+
+	console.log(orders);
+
+	if (!mobileView && loading && orders.length == 0) {
+		return (
+			<div className='cart__loading'>
+				<div className='cart__loading__container'>
+					<Preloader
+						use={TailSpin}
+						size={30}
+						strokeWidth={8}
+						strokeColor='var(--primary-color)'
+						duration={900}
+					/>
+				</div>
+				<style jsx>
+					{`
+						.cart__loading {
+							position: relative;
+							width: 100%;
+							min-height: 50dvh;
+							opacity: 0.8;
+							display: flex;
+							justify-content: center;
+							align-items: center;
+							z-index: 1000;
+						}
+
+						.cart__loading__container {
+							position: relative;
+							height: 25%;
+							width: 25%;
+							background-color: #fff;
+							opacity: 1;
+							border-radius: 2px;
+							display: flex;
+							justify-content: center;
+							align-items: center;
+						}
+					`}
+				</style>
+			</div>
+		);
+	}
 
 	// -----------------------------------------------------
 	// Render
@@ -196,9 +326,9 @@ function UserOrdersList() {
 	return (
 		<div className='orders__wrapper'>
 			{/* Encabezado con búsqueda y rango */}
-			{!mobileView && (
+			{!mobileView && !loading && (
 				<div className='orders-header'>
-					<h1>Mis Compras</h1>
+					<h2>Mis Compras</h2>
 					<div className='orders-header__info'>
 						{!loading && orders.length > 0 && (
 							<span className='text--off'>
@@ -245,20 +375,6 @@ function UserOrdersList() {
 				</div>
 			</div>
 
-			{loading && !mobileView && (
-				<div className='cart__loading'>
-					<div className='cart__loading__container'>
-						<Preloader
-							use={TailSpin}
-							size={30}
-							strokeWidth={8}
-							strokeColor='var(--primary-color)'
-							duration={900}
-						/>
-					</div>
-				</div>
-			)}
-
 			{/* MOBILE => SCROLL INFINITO | DESKTOP => PAGINACION */}
 			{mobileView ? (
 				<div
@@ -275,99 +391,144 @@ function UserOrdersList() {
 						scrollableTarget='ordersScroll'
 						scrollThreshold={'10px'}
 						loader={
-							<div
-								style={{
-									textAlign: 'center',
-									padding: 20,
-									display: 'flex',
-									width: '100%',
-									position: 'relative',
-									justifyContent: 'center',
-								}}
-							>
-								<Preloader
-									use={TailSpin}
-									size={30}
-									strokeWidth={8}
-									strokeColor='var(--primary-color)'
-									duration={900}
-								/>
-							</div>
+							orders.length > 0 && (
+								<div
+									style={{
+										textAlign: 'center',
+										padding: 20,
+										display: 'flex',
+										width: '100%',
+										position: 'relative',
+										justifyContent: 'center',
+									}}
+								>
+									<Preloader
+										use={TailSpin}
+										size={30}
+										strokeWidth={8}
+										strokeColor='var(--primary-color)'
+										duration={900}
+									/>
+								</div>
+							)
 						}
 					>
 						{orders.map((order) => {
-							const orderNumber = `AB${order.id}`;
+							const orderNumber = `#${order.id}`;
+							const rawStatus = order.shipments?.[0]?.status || 'PREPARACION';
+
 							const orderDate = order.created_at
 								? new Date(order.created_at).toLocaleDateString('es-MX')
 								: '';
-							const paymentMethod =
-								order.billing_forma_pago_full || 'Pago referenciado';
-							const shippingProvider = 'Estafeta Express';
 							const shippingName = order.shipping_full_name || 'Sin nombre';
-							const statusText = order.status || 'Entregado';
-							const deliveredText = getDeliveryDateText(order);
+							const statusText =
+								shipmentStatusMap[rawStatus] || 'En preparación';
+							const deliveredText = order.shipments?.[0]
+								? getShipmentStatusDateText(order, order.shipments)
+								: 'Tu compra está siendo preparada en el almacén.';
 
 							return (
 								<div key={order.id} className='order-card'>
 									<div className='order-card__header'>
 										<div className='order-card__header-left'>
 											<span className='order-card__status'>
-												Estatus: <strong>{statusText}</strong>
+												Estado: <strong>{statusText}</strong>
 											</span>
 											<p className='order-card__delivery'>{deliveredText}</p>
 										</div>
-										<div className='order-card__header-right'>
-											<p>
-												<strong>Enviado por:</strong> {shippingProvider}
-											</p>
-											<button className='btn-track'>Rastrear pedido</button>
-										</div>
+										{order.shipments.map((shipment) => (
+											<div
+												className='order-card__header-right'
+												key={shipment.id}
+											>
+												<p>
+													<strong>Enviado por:</strong>{' '}
+													{Capitalize(shipment.carrier)}
+												</p>
+												{shipment.tracking_url && (
+													<Link href={shipment.tracking_url} legacyBehavior>
+														<a target='_blank'>
+															<button className='btn-track'>
+																Rastrear pedido
+															</button>
+														</a>
+													</Link>
+												)}
+											</div>
+										))}
 									</div>
 
 									<div className='order-card__content'>
 										<div className='order-card__content-left'>
 											<p>
-												<strong>Pedido y fecha:</strong> {orderNumber} &bull;{' '}
-												{orderDate}
+												<strong>Pedido:</strong> {orderNumber}
 											</p>
 											<p>
-												<strong>Método de pago:</strong> {paymentMethod}
+												<strong>Fecha:</strong> {orderDate}
+											</p>
+											<div className='order-card__payment-form'>
+												<div>
+													<strong>Método de pago:</strong>
+												</div>
+												<div className='order-card__payment-form__image'>
+													<Image
+														src={selectedPayment(order.payment_form).imgSrc}
+														alt={Capitalize(
+															selectedPayment(order.payment_form).title
+														)}
+														fill
+														style={{ objectFit: 'contain' }}
+														sizes='auto'
+													/>
+												</div>
+											</div>
+											<p>
+												<strong>Total:</strong> $ {CurrencyFormat(order.total)}
 											</p>
 											<p>
-												<strong>Total:</strong> ${order.total}
+												<strong>Enviado a:</strong> {shippingName.toUpperCase()}
 											</p>
-											<p>
-												<strong>Enviado a:</strong> {shippingName}
-											</p>
+											{/*
 											<div className='order-card__content-actions'>
 												<button className='btn-factura'>Facturación</button>
 											</div>
+                      */}
 										</div>
 
 										<div className='order-card__content-center'>
 											{order.items?.length > 0 ? (
 												order.items.map((item) => (
-													<div key={item.id} className='order-product'>
-														<div className='order-product__image'>
-															<Image
-																src={
-																	item.product_image ||
-																	'/images/not-available.png'
-																}
-																alt={item.nombre_producto}
-																fill
-																style={{ objectFit: 'contain' }}
-																sizes='auto'
-															/>
-														</div>
-														<div className='order-product__info'>
-															<p>
-																<strong>{item.cantidad}x</strong>{' '}
-																{item.nombre_producto}
-															</p>
-															<p className='sku'>{item.sku}</p>
-														</div>
-													</div>
+													<Link
+														href={`/${item.product_slug}`}
+														legacyBehavior
+														key={item.id}
+													>
+														<a>
+															<div className='order-product'>
+																<div className='order-product__image__container'>
+																	<div className='order-product__image'>
+																		<Image
+																			src={
+																				item.product_image ||
+																				'/images/not-available.png'
+																			}
+																			alt={Capitalize(item.nombre_producto)}
+																			fill
+																			style={{ objectFit: 'contain' }}
+																			sizes='auto'
+																		/>
+																	</div>
+																</div>
+																<div className='order-product__info'>
+																	<p>
+																		<strong>{item.cantidad} x</strong>{' '}
+																		{Capitalize(item.nombre_producto)}
+																	</p>
+																	<p className='sku'>{item.sku}</p>
+																</div>
+															</div>
+														</a>
+													</Link>
 												))
 											) : (
 												<p>No hay artículos en esta orden.</p>
@@ -376,18 +537,8 @@ function UserOrdersList() {
 
 										<div className='order-card__content-right'>
 											<h4>Acciones</h4>
-											<button className='btn-action btn-return'>
-												Solicitar devolución
-											</button>
-											<button className='btn-action btn-warranty'>
-												Solicitar garantía
-											</button>
-											<button className='btn-action btn-share'>
-												Compartir
-											</button>
-											<button className='btn-action btn-more'>
-												Ver más acciones
-											</button>
+											<button className='btn-action'>Facturación</button>
+											<button className='btn-action'>Ver detalles</button>
 										</div>
 									</div>
 								</div>
@@ -400,78 +551,123 @@ function UserOrdersList() {
 					{!loading && orders.length > 0 && (
 						<div className='orders-list'>
 							{orders.map((order) => {
-								const orderNumber = `AB${order.id}`;
+								const orderNumber = `#${order.id}`;
+								const rawStatus = order.shipments?.[0]?.status || 'PREPARACION';
+
 								const orderDate = order.created_at
 									? new Date(order.created_at).toLocaleDateString('es-MX')
 									: '';
-								const paymentMethod =
-									order.billing_forma_pago_full || 'Pago referenciado';
-								const shippingProvider = 'Estafeta Express';
 								const shippingName = order.shipping_full_name || 'Sin nombre';
-								const statusText = order.status || 'Entregado';
-								const deliveredText = getDeliveryDateText(order);
+								const statusText =
+									shipmentStatusMap[rawStatus] || 'En preparación';
+								const deliveredText = order.shipments?.[0]
+									? getShipmentStatusDateText(order, order.shipments)
+									: 'Tu compra está siendo preparada en el almacén.';
 
 								return (
 									<div key={order.id} className='order-card'>
 										<div className='order-card__header'>
 											<div className='order-card__header-left'>
 												<span className='order-card__status'>
-													Estatus: <strong>{statusText}</strong>
+													Estado: <strong>{statusText}</strong>
 												</span>
 												<p className='order-card__delivery'>{deliveredText}</p>
 											</div>
-											<div className='order-card__header-right'>
-												<p>
-													<strong>Enviado por:</strong> {shippingProvider}
-												</p>
-												<button className='btn-track'>Rastrear pedido</button>
-											</div>
+											{order.shipments.map((shipment) => (
+												<div
+													className='order-card__header-right'
+													key={shipment.id}
+												>
+													<p>
+														<strong>Enviado por:</strong>{' '}
+														{Capitalize(shipment.carrier)}
+													</p>
+													{shipment.tracking_url && (
+														<Link href={shipment.tracking_url} legacyBehavior>
+															<a target='_blank'>
+																<button className='btn-track'>
+																	Rastrear pedido
+																</button>
+															</a>
+														</Link>
+													)}
+												</div>
+											))}
 										</div>
 
 										<div className='order-card__content'>
 											<div className='order-card__content-left'>
 												<p>
-													<strong>Pedido y fecha:</strong> {orderNumber} &bull;{' '}
-													{orderDate}
+													<strong>Pedido:</strong> {orderNumber}
 												</p>
 												<p>
-													<strong>Método de pago:</strong> {paymentMethod}
+													<strong>Fecha:</strong> {orderDate}
+												</p>
+												<div className='order-card__payment-form'>
+													<div>
+														<strong>Método de pago:</strong>
+													</div>
+													<div className='order-card__payment-form__image'>
+														<Image
+															src={selectedPayment(order.payment_form).imgSrc}
+															alt={Capitalize(
+																selectedPayment(order.payment_form).title
+															)}
+															fill
+															style={{ objectFit: 'contain' }}
+															sizes='auto'
+														/>
+													</div>
+												</div>
+												<p>
+													<strong>Total:</strong> ${' '}
+													{CurrencyFormat(order.total)}
 												</p>
 												<p>
-													<strong>Total:</strong> ${order.total}
+													<strong>Enviado a:</strong>{' '}
+													{shippingName.toUpperCase()}
 												</p>
-												<p>
-													<strong>Enviado a:</strong> {shippingName}
-												</p>
+												{/* 
 												<div className='order-card__content-actions'>
 													<button className='btn-factura'>Facturación</button>
 												</div>
+                        */}
 											</div>
 
 											<div className='order-card__content-center'>
 												{order.items?.length > 0 ? (
 													order.items.map((item) => (
-														<div key={item.id} className='order-product'>
-															<div className='order-product__image'>
-																<Image
-																	src={
-																		item.product_image ||
-																		'/images/not-available.png'
-																	}
-																	alt={item.nombre_producto}
-																	fill
-																	style={{ objectFit: 'contain' }}
-																	sizes='auto'
-																/>
-															</div>
-															<div className='order-product__info'>
-																<p>
-																	<strong>{item.cantidad}x</strong>{' '}
-																	{item.nombre_producto}
-																</p>
-																<p className='sku'>{item.sku}</p>
-															</div>
-														</div>
+														<Link
+															href={`/${item.product_slug}`}
+															legacyBehavior
+															key={item.id}
+														>
+															<a>
+																<div className='order-product'>
+																	<div className='order-product__image__container'>
+																		<div className='order-product__image'>
+																			<Image
+																				src={
+																					item.product_image ||
+																					'/images/not-available.png'
+																				}
+																				alt={Capitalize(item.nombre_producto)}
+																				fill
+																				style={{ objectFit: 'contain' }}
+																				sizes='auto'
+																			/>
+																		</div>
+																	</div>
+																	<div className='order-product__info'>
+																		<p>
+																			<strong>{item.cantidad} x</strong>{' '}
+																			{Capitalize(item.nombre_producto)}
+																		</p>
+																		<p className='sku'>{item.sku}</p>
+																	</div>
+																</div>
+															</a>
+														</Link>
 													))
 												) : (
 													<p>No hay artículos en esta orden.</p>
@@ -480,18 +676,10 @@ function UserOrdersList() {
 
 											<div className='order-card__content-right'>
 												<h4>Acciones</h4>
-												<button className='btn-action btn-return'>
-													Solicitar devolución
-												</button>
-												<button className='btn-action btn-warranty'>
-													Solicitar garantía
-												</button>
-												<button className='btn-action btn-share'>
-													Compartir
-												</button>
-												<button className='btn-action btn-more'>
-													Ver más acciones
-												</button>
+												{order.shipments?.status && (
+													<button className='btn-action'>Facturación</button>
+												)}
+												<button className='btn-action'>Ver detalles</button>
 											</div>
 										</div>
 									</div>
@@ -505,38 +693,37 @@ function UserOrdersList() {
 					)}
 
 					{/* Paginación para Desktop */}
-					<ListProductsPagination
-						pages={totalPages}
-						pageActive={pageActive}
-						refreshPage={refreshPage}
-					/>
+					{!loading && (
+						<ListProductsPagination
+							pages={totalPages}
+							pageActive={pageActive}
+							refreshPage={refreshPage}
+						/>
+					)}
 				</>
 			)}
 
 			{/* ESTILOS */}
 			<style jsx>{`
-				.cart__loading {
-					position: absolute;
-					width: 100%;
-					top: 50dvh;
-					left: 0px;
-					opacity: 0.8;
+				.order-card__payment-form {
 					display: flex;
-					justify-content: center;
+					width: 100%;
 					align-items: center;
-					z-index: 1000;
+					gap: 10px;
 				}
 
-				.cart__loading__container {
+				.order-card__payment-form__image {
 					position: relative;
-					height: 25%;
-					width: 25%;
-					background-color: #fff;
-					opacity: 1;
-					border-radius: 2px;
+					width: 50px;
+					height: 25px;
+				}
+
+				.order-card__header-right {
+					line-height: 2;
 					display: flex;
-					justify-content: center;
-					align-items: center;
+					gap: 10px;
+					align-items: flex-end;
+					flex-direction: column;
 				}
 
 				.orders__wrapper {
@@ -548,7 +735,7 @@ function UserOrdersList() {
 					display: flex;
 					justify-content: space-between;
 					align-items: center;
-					margin-bottom: 10px;
+					margin-bottom: 20px;
 				}
 				.orders-header__info {
 					font-size: 14px;
@@ -568,13 +755,13 @@ function UserOrdersList() {
 					border: 1px solid #ccc;
 					border-radius: 5px;
 					overflow: hidden;
-          flex: 1;
-          justify-content: space-between;
+					flex: 1;
+					justify-content: space-between;
 				}
 				.search-bar input {
 					border: none;
 					padding: 8px;
-					width: 200px;
+					width: 100%;
 					outline: none;
 				}
 				.search-bar button {
@@ -610,7 +797,7 @@ function UserOrdersList() {
 				.order-card__header {
 					display: flex;
 					justify-content: space-between;
-					margin-bottom: 10px;
+					margin-bottom: 30px;
 				}
 				.order-card__status {
 					color: var(--primary-color, #e00028);
@@ -622,7 +809,7 @@ function UserOrdersList() {
 					margin: 5px 0 0 0;
 				}
 				.btn-track {
-					background-color: #007bff;
+					background-color: var(--primary-color);
 					color: #fff;
 					border: none;
 					padding: 8px 12px;
@@ -639,6 +826,7 @@ function UserOrdersList() {
 				/* Columna izquierda: info orden */
 				.order-card__content-left p {
 					margin: 5px 0;
+					line-height: 1.5;
 				}
 				.order-card__content-actions {
 					margin-top: 10px;
@@ -663,19 +851,30 @@ function UserOrdersList() {
 				}
 				.order-product__image {
 					position: relative;
+					width: 70px;
+					height: 70px;
+				}
+
+				.order-product__image__container {
 					width: 80px;
 					height: 80px;
 					border: 1px solid #ddd;
 					border-radius: 4px;
 					background-color: #fff;
 					flex-shrink: 0;
+					display: flex;
+					align-items: center;
+					justify-content: center;
 				}
+
 				.order-product__info {
 					flex: 1;
+					line-height: 1.5;
 				}
 				.order-product__info .sku {
 					font-size: 12px;
 					color: #666;
+					line-height: 2;
 				}
 
 				/* Columna derecha: acciones */
@@ -693,24 +892,13 @@ function UserOrdersList() {
 					padding: 8px 12px;
 					border: 1px solid #ccc;
 					background-color: #fff;
-					color: #333;
 					border-radius: 4px;
 					cursor: pointer;
-				}
-				.btn-action:hover {
-					background-color: #f5f5f5;
-				}
-				.btn-return {
 					border-color: #e00028;
 					color: #e00028;
 				}
-				.btn-warranty {
-					border-color: #007bff;
-					color: #007bff;
-				}
-				.btn-share {
-					border-color: #28a745;
-					color: #28a745;
+				.btn-action:hover {
+					background-color: #f5f5f5;
 				}
 
 				/* Responsivo */
@@ -735,6 +923,10 @@ function UserOrdersList() {
 						padding: 10px;
 						margin: 0;
 						border-bottom: 1px solid #eaeaea;
+					}
+
+					.order-card__header {
+						margin-bottom: 10px;
 					}
 				}
 			`}</style>

@@ -1,7 +1,7 @@
 import React from 'react';
 import UserOrdersList from '../../components/UserOrdersList/UserOrdersList';
 import UserNavLeft from '../../components/UserNavLeft/UserNavLeft';
-import FooterMini from '../../components/FooterMini/FooterMini';
+import Footer from '../../components/Footer/Footer';
 import Router from 'next/router';
 import { useAuth } from '../../hooks/auth';
 import { useAppSelector } from '../../lib/hooks';
@@ -24,7 +24,7 @@ const index = () => {
         </div>
       </div>
       {!mobileView &&
-        < FooterMini />
+        < Footer />
       }
       <style jsx>{`
 				.main-wrapper {
@@ -33,6 +33,7 @@ const index = () => {
 				.profile {
 					display: flex;
 					flex-wrap: nowrap;
+          min-height: 50dvh;
 				}
 
 				.container {
