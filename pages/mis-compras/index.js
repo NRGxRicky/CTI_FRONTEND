@@ -5,10 +5,18 @@ import Footer from '../../components/Footer/Footer';
 import Router from 'next/router';
 import { useAuth } from '../../hooks/auth';
 import { useAppSelector } from '../../lib/hooks';
+import { useEnv } from '../../context/EnvContext';
+import Head from 'next/head';
 
 const index = () => {
   const { isAuthenticated, loading } = useAuth();
   const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
+
+  const {
+    storeName,
+    metaDescription,
+    titlePostDescription,
+  } = useEnv();
 
   if (!loading && !isAuthenticated) {
     Router.push(`/login?redirect=${encodeURIComponent(Router.asPath)}`);
@@ -17,6 +25,12 @@ const index = () => {
 
   return (
     <div className='container'>
+      <Head>
+        <title>
+          {`Mis Compras | ${storeName}: ${titlePostDescription}`}
+        </title>
+        <meta name='description' content={`${metaDescription}`} />
+      </Head>
       <div className='profile '>
         <UserNavLeft />
         <div className='main-wrapper'>

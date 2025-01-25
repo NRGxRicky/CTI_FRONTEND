@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useAuth } from '../../../hooks/auth';
 import FooterMini from '../../../components/FooterMini/FooterMini';
 import BenefitCarousel from '../../../components/BenefitCarousel/BenefitCarousel';
+import { useEnv } from '../../../context/EnvContext';
 import TruncateMarkup from 'react-truncate-markup';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import Capitalize from '../../../hooks/CapitalizeTitle';
@@ -22,11 +23,16 @@ const Index = () => {
 	const [order, setOrder] = useState(null);
 	const [loadingData, setLoading] = useState(true);
 	const [error, setError] = useState(null);
+	const {
+		storeName
+	} = useEnv();
 
 	useEffect(() => {
 		if (!accessToken) return;
 		if (!orderId) return;
 
+
+		
 		const fetchOrder = async () => {
 			try {
 				const response = await fetch(
@@ -132,7 +138,7 @@ const Index = () => {
 		<div className='container'>
 			<Head>
 				<title>
-					Gracias por tu compra, Resumen de tu compra #{orderId} | PCStore.mx
+					Gracias por tu compra, Resumen de tu compra #{orderId} | {storeName}
 				</title>
 				<meta
 					name='description'
@@ -202,7 +208,7 @@ const Index = () => {
 									</td>
 									<td>
 										<TruncateMarkup lines={2}>
-											<span>{item.nombre_producto}</span>
+											<span>{Capitalize(item.nombre_producto)}</span>
 										</TruncateMarkup>
 									</td>
 									<td>{item.cantidad}</td>

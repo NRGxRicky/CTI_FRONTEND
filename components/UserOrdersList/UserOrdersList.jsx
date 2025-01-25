@@ -9,6 +9,7 @@ import Capitalize from '../../hooks/CapitalizeTitle';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import ListProductsPagination from '../ListProductsPagination/ListProductsPagination';
 import Link from 'next/link';
+import TruncateMarkup from 'react-truncate-markup';
 
 function UserOrdersList() {
 	const { accessToken } = useAuth();
@@ -27,12 +28,14 @@ function UserOrdersList() {
 
 	const [loading, setLoading] = useState(true);
 
+	// Filtros de búsqueda
 	const [searchTerm, setSearchTerm] = useState('');
 	const [dateRange, setDateRange] = useState('3');
 
 	// Para infinite scroll
 	const [hasMore, setHasMore] = useState(true);
 
+	// Opciones de pago
 	const paymentOptions = [
 		{
 			id: 'paypal',
@@ -44,40 +47,30 @@ function UserOrdersList() {
 			id: 'mercadopago',
 			title: 'Mercado Pago',
 			subtitle:
-				'Hasta 3 MSI con tarjetas participantes Mercado Pago o hasta 12 pagos con Mercado Crédito.',
+				'Hasta 3 MSI con tarjetas participantes o 12 con Mercado Crédito.',
 			imgSrc: '/images/logo-mercado-pago.png',
 		},
 		{
 			id: 'kueskipay',
 			title: 'Kueski Pay',
-			subtitle:
-				'Paga en hasta 12 quincenas con Kueski Pay, sin comisiones ocultas.',
+			subtitle: 'Paga en hasta 12 quincenas con Kueski Pay.',
 			imgSrc: '/images/Logotipo_Kueski_pay.png',
 		},
 		{
 			id: 'aplazo',
 			title: 'Aplazo',
-			subtitle:
-				'Divide tus pagos en quincenas con Aplazo, sin letras pequeñas.',
+			subtitle: 'Divide tus pagos en quincenas con Aplazo.',
 			imgSrc: '/images/logo-aplazo.png',
 		},
 		{
 			id: 'deposit',
-			title: 'Depósito o transferencia Interbancaria',
+			title: 'Depósito/Transferencia Interbancaria',
 			subtitle: '',
 			imgSrc: '/images/logos/deposit-3banks.png',
 		},
 	];
 
-	const shipmentStatusMap = {
-		PREPARACION: 'En preparación',
-		ENVIADO: 'Enviado',
-		ENTREGADO: 'Entregado',
-		DEVUELTO: 'Devuelto',
-		PERDIDO: 'Perdido',
-	};
-
-	// Hallar el método de pago seleccionado
+	// Mapear ID de método de pago a su info
 	const selectedPayment = (paymentMethod) =>
 		paymentOptions.find((opt) => opt.id === paymentMethod);
 
@@ -122,6 +115,8 @@ function UserOrdersList() {
 				}
 			} else {
 				console.error('Error al obtener las órdenes:', resp.statusText);
+				const data = await resp.json();
+				console.log(data);
 			}
 		} catch (err) {
 			console.error('Error de conexión:', err);
@@ -134,13 +129,10 @@ function UserOrdersList() {
 	// useEffect principal
 	// -----------------------------------------------------
 	useEffect(() => {
-		// 1) Si no hay accessToken, no hacemos nada
 		if (!accessToken) return;
 
-		// 2) Si estamos en modo ESCRITORIO,
-		//    cada vez que cambie pageActive, searchTerm o dateRange
-		//    recargamos con isConcat=false
 		if (!mobileView) {
+			// Desktop: recarga cada vez que cambie pageActive, searchTerm, dateRange
 			fetchOrders(
 				{
 					page: pageActive,
@@ -149,11 +141,8 @@ function UserOrdersList() {
 				},
 				false
 			);
-		}
-		// 3) Si estamos en modo MÓVIL,
-		//    solamente recargamos “normal” cuando pageActive===1
-		//    (p.ej. cuando el usuario cambió la búsqueda o reseteó)
-		else {
+		} else {
+			// Móvil: sólo recarga normal si pageActive == 1
 			if (pageActive === 1) {
 				fetchOrders(
 					{
@@ -171,8 +160,12 @@ function UserOrdersList() {
 	// Búsqueda => click “Buscar” o Enter
 	// -----------------------------------------------------
 	const handleSearch = () => {
-		// Reseteamos a página 1
 		setPageActive(1);
+  };
+  
+  const clearSearch = () => {
+		setSearchTerm('');
+		refreshPage(1);
 	};
 
 	// -----------------------------------------------------
@@ -187,6 +180,11 @@ function UserOrdersList() {
 	// Paginación normal => Desktop
 	// -----------------------------------------------------
 	const refreshPage = (page) => {
+		// Si NO es móvil, scrollea al top antes de cambiar la página
+		if (!mobileView) {
+			setOrders([]);
+			document.body.scrollTo({ top: 0 });
+		}
 		setPageActive(page);
 	};
 
@@ -202,7 +200,6 @@ function UserOrdersList() {
 		const nextPage = pageActive + 1;
 		setPageActive(nextPage);
 
-		// Llamada con isConcat
 		await fetchOrders(
 			{
 				page: nextPage,
@@ -214,48 +211,11 @@ function UserOrdersList() {
 	};
 
 	// -----------------------------------------------------
-	// Formateo de fecha (ejemplo)
+	// Helper para formatear la fecha
 	// -----------------------------------------------------
-	const getShipmentStatusDateText = (order, shipments) => {
-		// 1) Si no existe ningún shipment, devolvemos un fallback
-		if (!shipments || shipments.length === 0) {
-			return 'Tu compra está siendo preparada en el almacén.';
-		}
-
-		// 2) Tomamos el primer envío (o haz un loop si lo requieres)
-    const firstShipment = shipments[0];
-		const shipmentStatus = firstShipment.status;
-
-		// 3) Dependiendo del estado, decidimos la fecha y la leyenda
-		let dateToUse = null;
-		let label = '';
-
-		// Por ejemplo, si está "ENTREGADO", mostramos "Entregado el..."
-		if (shipmentStatus === 'ENTREGADO') {
-			dateToUse =
-				firstShipment.delivered_at || order.updated_at || order.created_at;
-			label = 'Entregado el';
-		}
-		// Si está "ENVIADO", mostramos "Enviado el..."
-		else if (shipmentStatus === 'ENVIADO') {
-			dateToUse =
-				firstShipment.shipped_at || order.updated_at || order.created_at;
-			label = 'Enviado el';
-		}
-		// Podrías manejar más casos: "DEVUELTO", "PERDIDO"...
-		else {
-			// Fallback para "PREPARACION" u otros
-			return 'Tu compra está siendo preparada en el almacén.';
-		}
-
-		// 4) Formateamos la fecha
-		if (!dateToUse) {
-			// Si no encontramos fecha de shipped_at / delivered_at / etc,
-			// usamos created_at u otro fallback.
-			dateToUse = order.created_at;
-		}
-
-		const dateObj = new Date(dateToUse);
+	const formatDate = (rawDate) => {
+		if (!rawDate) return '';
+		const dateObj = new Date(rawDate);
 		const day = dateObj.getDate();
 		const months = [
 			'Enero',
@@ -272,13 +232,13 @@ function UserOrdersList() {
 			'Diciembre',
 		];
 		const monthName = months[dateObj.getMonth()] || '';
-
-		return `${label} ${day} de ${monthName}`;
+		return `${day} de ${monthName}`;
 	};
 
-	console.log(orders);
-
-	if (!mobileView && loading && orders.length == 0) {
+	// -----------------------------------------------------
+	// Render “loading” si Desktop, no hay orders
+	// -----------------------------------------------------
+	if (!mobileView && loading && orders.length === 0) {
 		return (
 			<div className='cart__loading'>
 				<div className='cart__loading__container'>
@@ -302,7 +262,6 @@ function UserOrdersList() {
 							align-items: center;
 							z-index: 1000;
 						}
-
 						.cart__loading__container {
 							position: relative;
 							height: 25%;
@@ -321,16 +280,16 @@ function UserOrdersList() {
 	}
 
 	// -----------------------------------------------------
-	// Render
+	// Render principal
 	// -----------------------------------------------------
 	return (
 		<div className='orders__wrapper'>
-			{/* Encabezado con búsqueda y rango */}
+			{/* Header: búsqueda y rango (solo desktop si no está cargando) */}
 			{!mobileView && !loading && (
 				<div className='orders-header'>
 					<h2>Mis Compras</h2>
 					<div className='orders-header__info'>
-						{!loading && orders.length > 0 && (
+						{orders.length > 0 && (
 							<span className='text--off'>
 								Mostrando {(pageActive - 1) * pageSize + 1} -{' '}
 								{(pageActive - 1) * pageSize + orders.length} de {count} pedidos
@@ -339,6 +298,9 @@ function UserOrdersList() {
 					</div>
 				</div>
 			)}
+
+			{/* Barra de filtros */}
+			{/* Barra de filtros (Search y Rango) */}
 			<div className='orders-filters'>
 				<div className='search-bar'>
 					<input
@@ -348,7 +310,15 @@ function UserOrdersList() {
 						onChange={(e) => setSearchTerm(e.target.value)}
 						onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
 					/>
-					<button onClick={handleSearch}>
+
+					{/* BOTÓN X para limpiar, se muestra solo si searchTerm tiene algo */}
+					{searchTerm.length > 0 && (
+						<button className='search-bar__clear' onClick={clearSearch}>
+							✕
+						</button>
+					)}
+
+					<button onClick={handleSearch} className='search-bar__submit'>
 						<svg
 							className='search-bar__icon icon__ligth'
 							width='25'
@@ -357,10 +327,7 @@ function UserOrdersList() {
 							fill='none'
 							xmlns='http://www.w3.org/2000/svg'
 						>
-							<path
-								d='M18.319 14.4326C20.7628 11.2941 20.542 6.75347 17.6569 3.86829C14.5327 0.744098 9.46734 0.744098 6.34315 3.86829C3.21895 6.99249 3.21895 12.0578 6.34315 15.182C9.22833 18.0672 13.769 18.2879 16.9075 15.8442C16.921 15.8595 16.9351 15.8745 16.9497 15.8891L21.1924 20.1317C21.5829 20.5223 22.2161 20.5223 22.6066 20.1317C22.9971 19.7412 22.9971 19.1081 22.6066 18.7175L18.364 14.4749C18.3493 14.4603 18.3343 14.4462 18.319 14.4326ZM16.2426 5.28251C18.5858 7.62565 18.5858 11.4246 16.2426 13.7678C13.8995 16.1109 10.1005 16.1109 7.75736 13.7678C5.41421 11.4246 5.41421 7.62565 7.75736 5.28251C10.1005 2.93936 13.8995 2.93936 16.2426 5.28251Z'
-								fill='currentColor'
-							/>
+							<path d='M18.319 14.4326C20.7628 11.2941 20.542 6.75347 17.6569 3.86829C14.5327 0.744098 9.46734 0.744098 6.34315 3.86829C3.21895 6.99249 3.21895 12.0578 6.34315 15.182C9.22833 18.0672 13.769 18.2879 16.9075 15.8442C16.921 15.8595 16.9351 15.8745 16.9497 15.8891L21.1924 20.1317C21.5829 20.5223 22.2161 20.5223 22.6066 20.1317C22.9971 19.7412 22.9971 19.1081 22.6066 18.7175L18.364 14.4749C18.3493 14.4603 18.3343 14.4462 18.319 14.4326ZM16.2426 5.28251C18.5858 7.62565 18.5858 11.4246 16.2426 13.7678C13.8995 16.1109 10.1005 16.1109 7.75736 13.7678C5.41421 11.4246 5.41421 7.62565 7.75736 5.28251C10.1005 2.93936 13.8995 2.93936 16.2426 5.28251Z' />
 						</svg>
 					</button>
 				</div>
@@ -375,7 +342,7 @@ function UserOrdersList() {
 				</div>
 			</div>
 
-			{/* MOBILE => SCROLL INFINITO | DESKTOP => PAGINACION */}
+			{/* MOBILE => SCROLL INFINITO | DESKTOP => PAGINACIÓN */}
 			{mobileView ? (
 				<div
 					id='ordersScroll'
@@ -413,52 +380,35 @@ function UserOrdersList() {
 							)
 						}
 					>
+						{/* Mapeo de órdenes - Versión MÓVIL */}
 						{orders.map((order) => {
 							const orderNumber = `#${order.id}`;
-							const rawStatus = order.shipments?.[0]?.status || 'PREPARACION';
+							const overallStatus = order.overall_status || 'En preparación';
+							const dateLabel = formatDate(order.overall_date);
+							const deliveredText = dateLabel
+								? `${overallStatus} el ${dateLabel}`
+								: overallStatus;
 
 							const orderDate = order.created_at
 								? new Date(order.created_at).toLocaleDateString('es-MX')
 								: '';
-							const shippingName = order.shipping_full_name || 'Sin nombre';
-							const statusText =
-								shipmentStatusMap[rawStatus] || 'En preparación';
-							const deliveredText = order.shipments?.[0]
-								? getShipmentStatusDateText(order, order.shipments)
-								: 'Tu compra está siendo preparada en el almacén.';
+							const shippingName = order.shipping_full_name || 'SIN NOMBRE';
 
 							return (
 								<div key={order.id} className='order-card'>
+									{/* Encabezado principal de la orden */}
 									<div className='order-card__header'>
 										<div className='order-card__header-left'>
 											<span className='order-card__status'>
-												Estado: <strong>{statusText}</strong>
+												Estado: <strong>{overallStatus}</strong>
 											</span>
 											<p className='order-card__delivery'>{deliveredText}</p>
 										</div>
-										{order.shipments.map((shipment) => (
-											<div
-												className='order-card__header-right'
-												key={shipment.id}
-											>
-												<p>
-													<strong>Enviado por:</strong>{' '}
-													{Capitalize(shipment.carrier)}
-												</p>
-												{shipment.tracking_url && (
-													<Link href={shipment.tracking_url} legacyBehavior>
-														<a target='_blank'>
-															<button className='btn-track'>
-																Rastrear pedido
-															</button>
-														</a>
-													</Link>
-												)}
-											</div>
-										))}
 									</div>
 
+									{/* Contenido principal */}
 									<div className='order-card__content'>
+										{/* Col izq: datos globales de la orden */}
 										<div className='order-card__content-left'>
 											<p>
 												<strong>Pedido:</strong> {orderNumber}
@@ -488,53 +438,264 @@ function UserOrdersList() {
 											<p>
 												<strong>Enviado a:</strong> {shippingName.toUpperCase()}
 											</p>
-											{/*
-											<div className='order-card__content-actions'>
-												<button className='btn-factura'>Facturación</button>
-											</div>
-                      */}
 										</div>
 
+										{/* Col central: 1) shipments 2) devoluciones 3) items sin envío */}
 										<div className='order-card__content-center'>
-											{order.items?.length > 0 ? (
-												order.items.map((item) => (
-													<Link
-														href={`/${item.product_slug}`}
-														legacyBehavior
-														key={item.id}
-													>
-														<a>
-															<div className='order-product'>
-																<div className='order-product__image__container'>
-																	<div className='order-product__image'>
-																		<Image
-																			src={
-																				item.product_image ||
-																				'/images/not-available.png'
-																			}
-																			alt={Capitalize(item.nombre_producto)}
-																			fill
-																			style={{ objectFit: 'contain' }}
-																			sizes='auto'
-																		/>
+											{/* 1) SHIPMENTS */}
+											{order.shipments && order.shipments.length > 0 ? (
+												order.shipments.map((shipment) => {
+													// Construye map SKU => item para la imagen/slug
+													const itemMap = {};
+													order.items.forEach((i) => {
+														itemMap[i.sku] = i;
+													});
+
+													return (
+														<div key={shipment.id} className='shipment-block'>
+															<div className='shipment-block__header'>
+																<h4>
+																	<strong>
+																		Envío: {shipment.tracking_number}
+																	</strong>{' '}
+																	<span style={{ fontSize: '12px' }}>
+																		({Capitalize(shipment.carrier)}) - Estado:{' '}
+																		{shipment.status}
+																	</span>
+																</h4>
+															</div>
+															{shipment.tracking_url && (
+																<Link
+																	href={shipment.tracking_url}
+																	legacyBehavior
+																>
+																	<a target='_blank'>
+																		<button className='btn-track'>
+																			Rastrear pedido
+																		</button>
+																	</a>
+																</Link>
+															)}
+
+															<div className='shipment-items'>
+																{shipment.shipment_items?.length > 0 ? (
+																	shipment.shipment_items.map((sItem) => {
+																		const matched = itemMap[sItem.sku];
+																		const productImg =
+																			matched?.product_image ||
+																			'/images/not-available.png';
+																		const productSlug = matched?.product_slug;
+																		const productName =
+																			sItem.nombre_producto || 'Producto';
+																		const qty = sItem.cantidad_enviada;
+
+																		return (
+																			<div
+																				key={sItem.id}
+																				className='shipment-item-block'
+																			>
+																				<Link
+																					href={`/${productSlug || ''}`}
+																					legacyBehavior
+																				>
+																					<a>
+																						<div className='shipment-item__row'>
+																							<div className='order-product__image__container'>
+																								<div className='order-product__image'>
+																									<Image
+																										src={productImg}
+																										alt={Capitalize(
+																											productName
+																										)}
+																										fill
+																										style={{
+																											objectFit: 'contain',
+																										}}
+																										sizes='auto'
+																									/>
+																								</div>
+																							</div>
+																							<div className='shipment-item__info'>
+																								<p>
+																									<strong>{qty} x</strong>{' '}
+																									<TruncateMarkup lines={3}>
+																										<span>
+																											{Capitalize(productName)}
+																										</span>
+																									</TruncateMarkup>
+																								</p>
+																								<p className='sku'>
+																									{sItem.sku}
+																								</p>
+																							</div>
+																						</div>
+																					</a>
+																				</Link>
+																			</div>
+																		);
+																	})
+																) : (
+																	<p>No hay artículos en este envío.</p>
+																)}
+															</div>
+														</div>
+													);
+												})
+											) : (
+												// SI NO HAY SHIPMENTS => items en bloque
+												<>
+													{order.items?.length > 0 ? (
+														order.items.map((item) => (
+															<Link
+																href={`/${item.product_slug || ''}`}
+																legacyBehavior
+																key={item.id}
+															>
+																<a>
+																	<div className='order-product'>
+																		<div className='order-product__image__container'>
+																			<div className='order-product__image'>
+																				<Image
+																					src={
+																						item.product_image ||
+																						'/images/not-available.png'
+																					}
+																					alt={Capitalize(item.nombre_producto)}
+																					fill
+																					style={{ objectFit: 'contain' }}
+																					sizes='auto'
+																				/>
+																			</div>
+																		</div>
+																		<div className='order-product__info'>
+																			<p>
+																				<strong>{item.cantidad} x</strong>{' '}
+																				<TruncateMarkup lines={3}>
+																					<span>
+																						{Capitalize(item.nombre_producto)}
+																					</span>
+																				</TruncateMarkup>
+																			</p>
+																			<p className='sku'>{item.sku}</p>
+																		</div>
 																	</div>
-																</div>
-																<div className='order-product__info'>
+																</a>
+															</Link>
+														))
+													) : (
+														<p>No hay artículos en esta orden.</p>
+													)}
+												</>
+											)}
+
+											{/* 2) DEVOLUCIONES => Bloque separado */}
+											{order.returns && order.returns.length > 0 && (
+												<div className='returns-block'>
+													<h3>Devoluciones</h3>
+													{order.returns.map((ret) => {
+														// Mapeamos return_items
+														// y si hay return_tracking_url, mostramos "Rastrear devolución"
+														return (
+															<div key={ret.id} className='return-card'>
+																<div className='return-card__header'>
 																	<p>
-																		<strong>{item.cantidad} x</strong>{' '}
-																		{Capitalize(item.nombre_producto)}
+																		<strong>
+																			Estado de la devolución:{' '}
+																			<span style={{ fontSize: '12px' }}>
+																				{ret.status}
+																			</span>
+																		</strong>
 																	</p>
-																	<p className='sku'>{item.sku}</p>
+																	{/* Botón rastreo */}
+																	{ret.return_tracking_url && (
+																		<Link
+																			href={ret.return_tracking_url}
+																			legacyBehavior
+																		>
+																			<a target='_blank'>
+																				<button className='btn-track'>
+																					Rastrear devolución
+																				</button>
+																			</a>
+																		</Link>
+																	)}
+																</div>
+
+																{/* Items devueltos */}
+																<div className='return-items'>
+																	{ret.return_items?.length > 0 ? (
+																		ret.return_items.map((rItem) => {
+																			// Buscar imagen/slug en order.items
+																			const matched = order.items.find(
+																				(i) => i.sku === rItem.sku
+																			);
+																			const productImg =
+																				matched?.product_image ||
+																				'/images/not-available.png';
+																			const productSlug = matched?.product_slug;
+
+																			return (
+																				<div
+																					key={rItem.id}
+																					className='return-item-block'
+																				>
+																					<Link
+																						href={`/${productSlug || ''}`}
+																						legacyBehavior
+																					>
+																						<a>
+																							<div className='return-item__row'>
+																								<div className='order-product__image__container'>
+																									<div className='order-product__image'>
+																										<Image
+																											src={productImg}
+																											alt={Capitalize(
+																												rItem.nombre_producto
+																											)}
+																											fill
+																											style={{
+																												objectFit: 'contain',
+																											}}
+																											sizes='auto'
+																										/>
+																									</div>
+																								</div>
+																								<div className='return-item__info'>
+																									<p>
+																										<strong>
+																											{rItem.cantidad_devuelta}{' '}
+																											x
+																										</strong>{' '}
+																										<TruncateMarkup lines={3}>
+																											<span>
+																												{Capitalize(
+																													rItem.nombre_producto
+																												)}
+																											</span>
+																										</TruncateMarkup>
+																									</p>
+																									<p className='sku'>
+																										{rItem.sku}
+																									</p>
+																								</div>
+																							</div>
+																						</a>
+																					</Link>
+																				</div>
+																			);
+																		})
+																	) : (
+																		<p>No hay artículos en esta devolución.</p>
+																	)}
 																</div>
 															</div>
-														</a>
-													</Link>
-												))
-											) : (
-												<p>No hay artículos en esta orden.</p>
+														);
+													})}
+												</div>
 											)}
 										</div>
 
+										{/* Col der: Acciones */}
 										<div className='order-card__content-right'>
 											<h4>Acciones</h4>
 											<button className='btn-action'>Facturación</button>
@@ -548,51 +709,31 @@ function UserOrdersList() {
 				</div>
 			) : (
 				<>
+					{/* Versión Desktop */}
 					{!loading && orders.length > 0 && (
 						<div className='orders-list'>
 							{orders.map((order) => {
 								const orderNumber = `#${order.id}`;
-								const rawStatus = order.shipments?.[0]?.status || 'PREPARACION';
+								const overallStatus = order.overall_status || 'En preparación';
+								const dateLabel = formatDate(order.overall_date);
+								const deliveredText = dateLabel
+									? `${overallStatus} el ${dateLabel}`
+									: overallStatus;
 
 								const orderDate = order.created_at
 									? new Date(order.created_at).toLocaleDateString('es-MX')
 									: '';
-								const shippingName = order.shipping_full_name || 'Sin nombre';
-								const statusText =
-									shipmentStatusMap[rawStatus] || 'En preparación';
-								const deliveredText = order.shipments?.[0]
-									? getShipmentStatusDateText(order, order.shipments)
-									: 'Tu compra está siendo preparada en el almacén.';
+								const shippingName = order.shipping_full_name || 'SIN NOMBRE';
 
 								return (
 									<div key={order.id} className='order-card'>
 										<div className='order-card__header'>
 											<div className='order-card__header-left'>
 												<span className='order-card__status'>
-													Estado: <strong>{statusText}</strong>
+													Estado: <strong>{overallStatus}</strong>
 												</span>
 												<p className='order-card__delivery'>{deliveredText}</p>
 											</div>
-											{order.shipments.map((shipment) => (
-												<div
-													className='order-card__header-right'
-													key={shipment.id}
-												>
-													<p>
-														<strong>Enviado por:</strong>{' '}
-														{Capitalize(shipment.carrier)}
-													</p>
-													{shipment.tracking_url && (
-														<Link href={shipment.tracking_url} legacyBehavior>
-															<a target='_blank'>
-																<button className='btn-track'>
-																	Rastrear pedido
-																</button>
-															</a>
-														</Link>
-													)}
-												</div>
-											))}
 										</div>
 
 										<div className='order-card__content'>
@@ -627,58 +768,266 @@ function UserOrdersList() {
 													<strong>Enviado a:</strong>{' '}
 													{shippingName.toUpperCase()}
 												</p>
-												{/* 
-												<div className='order-card__content-actions'>
-													<button className='btn-factura'>Facturación</button>
-												</div>
-                        */}
 											</div>
 
 											<div className='order-card__content-center'>
-												{order.items?.length > 0 ? (
-													order.items.map((item) => (
-														<Link
-															href={`/${item.product_slug}`}
-															legacyBehavior
-															key={item.id}
-														>
-															<a>
-																<div className='order-product'>
-																	<div className='order-product__image__container'>
-																		<div className='order-product__image'>
-																			<Image
-																				src={
-																					item.product_image ||
-																					'/images/not-available.png'
-																				}
-																				alt={Capitalize(item.nombre_producto)}
-																				fill
-																				style={{ objectFit: 'contain' }}
-																				sizes='auto'
-																			/>
+												{/* Bloque shipments */}
+												{order.shipments?.length > 0 ? (
+													order.shipments.map((shipment) => {
+														// Para las imágenes
+														const itemMap = {};
+														order.items.forEach((i) => {
+															itemMap[i.sku] = i;
+														});
+
+														return (
+															<div key={shipment.id} className='shipment-block'>
+																<div className='shipment-block__header'>
+																	<h4>
+																		<strong>
+																			Envío: {shipment.tracking_number}
+																		</strong>{' '}
+																		<span style={{ fontSize: '12px' }}>
+																			({Capitalize(shipment.carrier)}) - Estado:{' '}
+																			{shipment.status}
+																		</span>
+																	</h4>
+																</div>
+																{shipment.tracking_url && (
+																	<Link
+																		href={shipment.tracking_url}
+																		legacyBehavior
+																	>
+																		<a target='_blank'>
+																			<button className='btn-track'>
+																				Rastrear pedido
+																			</button>
+																		</a>
+																	</Link>
+																)}
+																<div className='shipment-items'>
+																	{shipment.shipment_items?.length > 0 ? (
+																		shipment.shipment_items.map((sItem) => {
+																			const matched = itemMap[sItem.sku];
+																			const productImg =
+																				matched?.product_image ||
+																				'/images/not-available.png';
+																			const productSlug = matched?.product_slug;
+																			const productName =
+																				sItem.nombre_producto || 'Producto';
+																			const qty = sItem.cantidad_enviada;
+
+																			return (
+																				<div
+																					key={sItem.id}
+																					className='shipment-item-block'
+																				>
+																					<Link
+																						href={`/${productSlug || ''}`}
+																						legacyBehavior
+																					>
+																						<a>
+																							<div className='shipment-item__row'>
+																								<div className='order-product__image__container'>
+																									<div className='order-product__image'>
+																										<Image
+																											src={productImg}
+																											alt={Capitalize(
+																												productName
+																											)}
+																											fill
+																											style={{
+																												objectFit: 'contain',
+																											}}
+																											sizes='auto'
+																										/>
+																									</div>
+																								</div>
+																								<div className='shipment-item__info'>
+																									<p>
+																										<strong>{qty} x</strong>{' '}
+																										<TruncateMarkup lines={3}>
+																											<span>
+																												{Capitalize(
+																													productName
+																												)}
+																											</span>
+																										</TruncateMarkup>
+																									</p>
+																									<p className='sku'>
+																										{sItem.sku}
+																									</p>
+																								</div>
+																							</div>
+																						</a>
+																					</Link>
+																				</div>
+																			);
+																		})
+																	) : (
+																		<p>No hay artículos en este envío.</p>
+																	)}
+																</div>
+															</div>
+														);
+													})
+												) : (
+													<>
+														{order.items?.length > 0 ? (
+															order.items.map((item) => (
+																<Link
+																	href={`/${item.product_slug || ''}`}
+																	legacyBehavior
+																	key={item.id}
+																>
+																	<a>
+																		<div className='order-product'>
+																			<div className='order-product__image__container'>
+																				<div className='order-product__image'>
+																					<Image
+																						src={
+																							item.product_image ||
+																							'/images/not-available.png'
+																						}
+																						alt={Capitalize(
+																							item.nombre_producto
+																						)}
+																						fill
+																						style={{ objectFit: 'contain' }}
+																						sizes='auto'
+																					/>
+																				</div>
+																			</div>
+																			<div className='order-product__info'>
+																				<p>
+																					<strong>{item.cantidad} x</strong>{' '}
+																					<TruncateMarkup lines={3}>
+																						<span>
+																							{Capitalize(item.nombre_producto)}
+																						</span>
+																					</TruncateMarkup>
+																				</p>
+																				<p className='sku'>{item.sku}</p>
+																			</div>
 																		</div>
-																	</div>
-																	<div className='order-product__info'>
+																	</a>
+																</Link>
+															))
+														) : (
+															<p>No hay artículos en esta orden.</p>
+														)}
+													</>
+												)}
+
+												{/* Bloque devoluciones */}
+												{order.returns && order.returns.length > 0 && (
+													<div className='returns-block'>
+														<h3>Devoluciones</h3>
+														{order.returns.map((ret) => {
+															return (
+																<div key={ret.id} className='return-card'>
+																	<div className='return-card__header'>
 																		<p>
-																			<strong>{item.cantidad} x</strong>{' '}
-																			{Capitalize(item.nombre_producto)}
+																			<strong>
+																				Estado de la devolución:{' '}
+																				<span style={{ fontSize: '12px' }}>
+																					{ret.status}
+																				</span>
+																			</strong>
 																		</p>
-																		<p className='sku'>{item.sku}</p>
+																		{ret.return_tracking_url && (
+																			<Link
+																				href={ret.return_tracking_url}
+																				legacyBehavior
+																			>
+																				<a target='_blank'>
+																					<button className='btn-track'>
+																						Rastrear devolución
+																					</button>
+																				</a>
+																			</Link>
+																		)}
+																	</div>
+																	<div className='return-items'>
+																		{ret.return_items?.length > 0 ? (
+																			ret.return_items.map((rItem) => {
+																				const matched = order.items.find(
+																					(i) => i.sku === rItem.sku
+																				);
+																				const productImg =
+																					matched?.product_image ||
+																					'/images/not-available.png';
+																				const productSlug =
+																					matched?.product_slug;
+
+																				return (
+																					<div
+																						key={rItem.id}
+																						className='return-item-block'
+																					>
+																						<Link
+																							href={`/${productSlug || ''}`}
+																							legacyBehavior
+																						>
+																							<a>
+																								<div className='return-item__row'>
+																									<div className='order-product__image__container'>
+																										<div className='order-product__image'>
+																											<Image
+																												src={productImg}
+																												alt={Capitalize(
+																													rItem.nombre_producto
+																												)}
+																												fill
+																												style={{
+																													objectFit: 'contain',
+																												}}
+																												sizes='auto'
+																											/>
+																										</div>
+																									</div>
+																									<div className='return-item__info'>
+																										<p>
+																											<strong>
+																												{
+																													rItem.cantidad_devuelta
+																												}{' '}
+																												x
+																											</strong>{' '}
+																											<TruncateMarkup lines={3}>
+																												<span>
+																													{Capitalize(
+																														rItem.nombre_producto
+																													)}
+																												</span>
+																											</TruncateMarkup>
+																										</p>
+																										<p className='sku'>
+																											{rItem.sku}
+																										</p>
+																									</div>
+																								</div>
+																							</a>
+																						</Link>
+																					</div>
+																				);
+																			})
+																		) : (
+																			<p>
+																				No hay artículos en esta devolución.
+																			</p>
+																		)}
 																	</div>
 																</div>
-															</a>
-														</Link>
-													))
-												) : (
-													<p>No hay artículos en esta orden.</p>
+															);
+														})}
+													</div>
 												)}
 											</div>
 
 											<div className='order-card__content-right'>
 												<h4>Acciones</h4>
-												{order.shipments?.status && (
-													<button className='btn-action'>Facturación</button>
-												)}
+												<button className='btn-action'>Facturación</button>
 												<button className='btn-action'>Ver detalles</button>
 											</div>
 										</div>
@@ -705,6 +1054,33 @@ function UserOrdersList() {
 
 			{/* ESTILOS */}
 			<style jsx>{`
+				.shipment-block__header,
+				.return-card__header {
+					line-height: 2;
+				}
+
+				.cart__loading {
+					position: relative;
+					width: 100%;
+					min-height: 50dvh;
+					opacity: 0.8;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					z-index: 1000;
+				}
+				.cart__loading__container {
+					position: relative;
+					height: 25%;
+					width: 25%;
+					background-color: #fff;
+					opacity: 1;
+					border-radius: 2px;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+
 				.order-card__payment-form {
 					display: flex;
 					width: 100%;
@@ -716,14 +1092,6 @@ function UserOrdersList() {
 					position: relative;
 					width: 50px;
 					height: 25px;
-				}
-
-				.order-card__header-right {
-					line-height: 2;
-					display: flex;
-					gap: 10px;
-					align-items: flex-end;
-					flex-direction: column;
 				}
 
 				.orders__wrapper {
@@ -741,8 +1109,6 @@ function UserOrdersList() {
 					font-size: 14px;
 					color: #666;
 				}
-
-				/* Barra de búsqueda y selector de rango */
 				.orders-filters {
 					display: flex;
 					gap: 15px;
@@ -757,6 +1123,7 @@ function UserOrdersList() {
 					overflow: hidden;
 					flex: 1;
 					justify-content: space-between;
+					position: relative;
 				}
 				.search-bar input {
 					border: none;
@@ -764,7 +1131,7 @@ function UserOrdersList() {
 					width: 100%;
 					outline: none;
 				}
-				.search-bar button {
+				.search-bar__submit {
 					background: #fff;
 					border: none;
 					cursor: pointer;
@@ -773,10 +1140,31 @@ function UserOrdersList() {
 					align-items: center;
 					color: #666;
 				}
-				.search-bar button:hover,
+				.search-bar__submit:hover {
+					background: #f5f5f5;
+				}
+
+				/* Botón X para limpiar */
+				.search-bar__clear {
+					position: absolute;
+					right: 45px; /* ubícalo un poco antes del botón de submit */
+					top: 50%;
+					transform: translateY(-50%);
+					border: none;
+					background: transparent;
+					color: #999;
+					font-size: 16px;
+					cursor: pointer;
+					padding: 0 5px;
+				}
+				.search-bar__clear:hover {
+					color: #000;
+				}
+
 				.date-range select:hover {
 					background: #f5f5f5;
 				}
+
 				.date-range select {
 					padding: 10.5px 12px;
 					border: 1px solid #ccc;
@@ -785,8 +1173,6 @@ function UserOrdersList() {
 					background: #fff;
 					color: #333;
 				}
-
-				/* Tarjetas de las órdenes */
 				.order-card {
 					border: 1px solid #eaeaea;
 					border-radius: 5px;
@@ -822,62 +1208,10 @@ function UserOrdersList() {
 					gap: 20px;
 					margin-top: 10px;
 				}
-
-				/* Columna izquierda: info orden */
 				.order-card__content-left p {
 					margin: 5px 0;
 					line-height: 1.5;
 				}
-				.order-card__content-actions {
-					margin-top: 10px;
-				}
-				.btn-factura {
-					background-color: #ffffff;
-					color: var(--primary-color, #e00028);
-					border: 1px solid var(--primary-color, #e00028);
-					padding: 8px 12px;
-					border-radius: 4px;
-					cursor: pointer;
-				}
-				.btn-factura:hover {
-					background-color: #f9f9f9;
-				}
-
-				/* Columna central: lista de productos */
-				.order-product {
-					display: flex;
-					gap: 10px;
-					margin-bottom: 10px;
-				}
-				.order-product__image {
-					position: relative;
-					width: 70px;
-					height: 70px;
-				}
-
-				.order-product__image__container {
-					width: 80px;
-					height: 80px;
-					border: 1px solid #ddd;
-					border-radius: 4px;
-					background-color: #fff;
-					flex-shrink: 0;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-				}
-
-				.order-product__info {
-					flex: 1;
-					line-height: 1.5;
-				}
-				.order-product__info .sku {
-					font-size: 12px;
-					color: #666;
-					line-height: 2;
-				}
-
-				/* Columna derecha: acciones */
 				.order-card__content-right {
 					text-align: left;
 				}
@@ -900,8 +1234,82 @@ function UserOrdersList() {
 				.btn-action:hover {
 					background-color: #f5f5f5;
 				}
+				.shipment-block {
+					margin-bottom: 20px;
+					border-bottom: 1px dashed #eaeaea;
+					padding-bottom: 15px;
+					line-height: 1.5;
+				}
+				.shipment-block:last-child {
+					border-bottom: none;
+				}
+				.shipment-items {
+					margin-top: 10px;
+				}
+				.shipment-item__row {
+					display: flex;
+					gap: 10px;
+					margin-bottom: 10px;
+				}
+				.order-product__image__container {
+					width: 80px;
+					height: 80px;
+					border: 1px solid #ddd;
+					border-radius: 4px;
+					background-color: #fff;
+					flex-shrink: 0;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+				}
+				.order-product__image {
+					position: relative;
+					width: 70px;
+					height: 70px;
+				}
+				.shipment-item__info {
+					flex: 1;
+				}
+				.shipment-item-block {
+				}
+				.order-product {
+					display: flex;
+					gap: 10px;
+					margin-bottom: 10px;
+				}
+				.order-product__info {
+					flex: 1;
+					line-height: 1.5;
+				}
+				.order-product__info .sku,
+				.sku {
+					font-size: 12px;
+					color: #666;
+					line-height: 1.5;
+				}
+				.returns-block {
+					margin-top: 20px;
+					padding-top: 15px;
+					border-top: 1px dashed #eaeaea;
+				}
+				.return-card {
+					margin-bottom: 20px;
+					border-bottom: 1px dotted #eaeaea;
+					padding-bottom: 10px;
+					line-height: 1.5;
+				}
+				.return-items {
+					margin-top: 10px;
+				}
+				.return-item__row {
+					display: flex;
+					gap: 10px;
+					margin-bottom: 10px;
+				}
+				.return-item__info {
+					flex: 1;
+				}
 
-				/* Responsivo */
 				@media (max-width: 768px) {
 					.order-card__header {
 						flex-direction: column;
@@ -913,18 +1321,15 @@ function UserOrdersList() {
 					.order-card__content-right {
 						margin-top: 10px;
 					}
-
 					.orders__wrapper {
 						padding: 0px !important;
 					}
-
 					.orders-filters,
 					.orders-header {
 						padding: 10px;
 						margin: 0;
 						border-bottom: 1px solid #eaeaea;
 					}
-
 					.order-card__header {
 						margin-bottom: 10px;
 					}
