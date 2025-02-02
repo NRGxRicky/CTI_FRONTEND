@@ -309,7 +309,9 @@ function UserOrdersList() {
 	// Render principal
 	// -----------------------------------------------------
 	return (
-		<div className='orders__wrapper'>			{/* Modal para ver Factura */}
+		<div className='orders__wrapper'>
+			{' '}
+			{/* Modal para ver Factura */}
 			{showModal && modalOrder && (
 				<div className='modal-backdrop' onClick={handleBackdropClick}>
 					<div className='modal-content invoice-modal'>
@@ -317,76 +319,83 @@ function UserOrdersList() {
 						<button className='modal-close-button' onClick={closeModal}>
 							&times;
 						</button>
-
-						<h3>Facturación</h3>
-
-						<div className='invoice-details'>
-							<div className='invoice-table-wrapper'>
-								<table className='invoice-table'>
-									<thead>
-										<tr>
-											<th>Folio</th>
-											<th>Fecha de documento</th>
-											<th>Monto facturado</th>
-											<th>Estatus</th>
-											<th>Descarga</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td>
-												{modalOrder.factura_folio || `Factura ${modalOrder.id}`}
-											</td>
-											<td>
-												{modalOrder.facturacion_date
-													? new Date(
-															modalOrder.facturacion_date
-													  ).toLocaleString('es-MX')
-													: 'N/D'}
-											</td>
-											<td>${modalOrder.total}</td>
-											<td>{modalOrder.factura_state || 'Pendiente'}</td>
-											<td>
-												{modalOrder.factura_pdf || modalOrder.factura_xml ? (
-													<>
-														{/* PDF */}
-														{modalOrder.factura_pdf && (
-															<a
-																className='invoice-download-link'
-																href={modalOrder.factura_pdf}
-																target='_blank'
-																rel='noreferrer'
-															>
-																<button className='download-btn'>PDF</button>
-															</a>
-														)}
-														{/* XML */}
-														{modalOrder.factura_xml && (
-															<a
-																className='invoice-download-link'
-																href={modalOrder.factura_xml}
-																target='_blank'
-																rel='noreferrer'
-															>
-																<button className='download-btn'>XML</button>
-															</a>
-														)}
-													</>
-												) : (
-													<span className='no-invoice-msg'>
-														Aún no se ha generado la factura
-													</span>
-												)}
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
+						<div className='modal__header'>
+							<h3>Facturación</h3>
 						</div>
 
-						{/* DATOS DE FACTURACIÓN ADICIONALES */}
+						{/* Solo mostrar detalle si hay PDF o XML, en caso contrario, mostrar mensaje */}
+						{modalOrder.factura_pdf || modalOrder.factura_xml ? (
+							<div className='invoice-flexbox'>
+								<div className='invoice-row'>
+									<span className='label'>Folio:</span>
+									<span className='value'>
+										{modalOrder.factura_folio || `Factura #${modalOrder.id}`}
+									</span>
+								</div>
+
+								<div className='invoice-row'>
+									<span className='label'>Fecha de documento:</span>
+									<span className='value'>
+										{modalOrder.facturacion_date
+											? new Date(modalOrder.facturacion_date).toLocaleString(
+													'es-MX'
+											  )
+											: 'N/D'}
+									</span>
+								</div>
+
+								<div className='invoice-row'>
+									<span className='label'>Monto facturado:</span>
+									<span className='value'>
+										$ {CurrencyFormat(modalOrder.total)}
+									</span>
+								</div>
+
+								<div className='invoice-row'>
+									<span className='label'>Estado:</span>
+									<span className='value'>
+										{modalOrder.factura_state || 'Pendiente'}
+									</span>
+								</div>
+
+								<div className='invoice-row'>
+									<span className='label'>Descarga:</span>
+									<span className='value'>
+										{/* PDF */}
+										{modalOrder.factura_pdf && (
+											<a
+												className='invoice-download-link'
+												href={modalOrder.factura_pdf}
+												target='_blank'
+												rel='noreferrer'
+												download
+											>
+												<button className='download-btn'>PDF</button>
+											</a>
+										)}
+										{/* XML */}
+										{modalOrder.factura_xml && (
+											<a
+												className='invoice-download-link'
+												href={modalOrder.factura_xml}
+												target='_blank'
+												rel='noreferrer'
+												download
+											>
+												<button className='download-btn'>XML</button>
+											</a>
+										)}
+									</span>
+								</div>
+							</div>
+						) : (
+							<p className='no-invoice-msg'>Aún no se ha generado la factura</p>
+						)}
+
+						{/* DATOS DE FACTURACIÓN ADICIONALES (sean o no haya PDF/XML) */}
 						<div className='invoice-billing-info'>
-							<h4>Datos de facturación</h4>
+							<h4>Datos de facturación:</h4>
+							<br />
 							<p>
 								<strong>Razón Social:</strong> {modalOrder.billing_razon_social}
 							</p>
@@ -415,7 +424,6 @@ function UserOrdersList() {
 					</div>
 				</div>
 			)}
-
 			{/* Header: búsqueda y rango (solo desktop si no está cargando) */}
 			{!mobileView && !loading && (
 				<div className='orders-header'>
@@ -430,7 +438,6 @@ function UserOrdersList() {
 					</div>
 				</div>
 			)}
-
 			{/* Barra de filtros */}
 			{/* Barra de filtros (Search y Rango) */}
 			<div className='orders-filters'>
@@ -473,7 +480,6 @@ function UserOrdersList() {
 					</select>
 				</div>
 			</div>
-
 			{/* MOBILE => SCROLL INFINITO | DESKTOP => PAGINACIÓN */}
 			{mobileView ? (
 				<div
@@ -1195,41 +1201,23 @@ function UserOrdersList() {
 					)}
 				</>
 			)}
-
 			{/* ESTILOS */}
 			<style jsx>{`
-				.invoice-table-wrapper {
-					width: 100%;
-					overflow-x: auto; /* scroll horizontal */
-					-webkit-overflow-scrolling: touch;
-					margin-bottom: 15px;
-				}
-				.invoice-table {
-					min-width: 600px;
-					border-collapse: collapse;
-				}
-				.invoice-table th,
-				.invoice-table td {
-					white-space: nowrap;
-					padding: 10px;
-					border: 1px solid #eaeaea;
-				}
-				.invoice-billing-info {
-					line-height: 1.5;
+				.modal__header  {
 					margin-bottom: 20px;
+					text-align: center;
 				}
+				
 				.modal-backdrop {
 					position: fixed;
-					top: 0;
-					left: 0;
-					width: 100%;
-					height: 100%;
+					inset: 0;
 					background: rgba(0, 0, 0, 0.6);
 					display: flex;
 					align-items: center;
 					justify-content: center;
 					z-index: 2000;
 				}
+
 				.modal-content.invoice-modal {
 					background: #fff;
 					padding: 20px;
@@ -1238,30 +1226,55 @@ function UserOrdersList() {
 					border-radius: 5px;
 					position: relative;
 				}
+
 				.modal-close-button {
 					position: absolute;
 					top: -30px;
 					right: 10px;
 					background: transparent;
 					border: none;
-					font-size: 28px;
+					font-size: 36px;
 					line-height: 1;
 					cursor: pointer;
 					color: #fff;
 				}
-				.modal-close-button:hover {
-					color: #000;
+
+				/* Bloque contenedor en Flex (o Grid) para la información de la factura */
+				.invoice-flexbox {
+					display: flex;
+					flex-direction: column;
+					gap: 10px;
+					margin-bottom: 20px; /* algo de margen inferior */
 				}
-				.invoice-table {
-					width: 100%;
-					margin-top: 15px;
-					margin-bottom: 15px;
+
+				.invoice-row {
+					display: flex;
+					flex-wrap: wrap; /* permite que baje de línea en mobile si lo deseas */
+					justify-content: space-between;
+					align-items: center;
+					border-bottom: 1px solid #eee;
+					padding: 6px 0;
 				}
-				.invoice-table th {
-					background: #f5f5f5;
+
+				.invoice-row .label {
+					font-weight: 600;
+					margin-right: 10px;
 				}
+
+				.invoice-row .value {
+					/* Creas una clase "value" que se ajusta según pantalla */
+					color: #333;
+				}
+
+				.no-invoice-msg {
+					margin: 15px 0;
+					font-size: 15px;
+					color: #999;
+				}
+
+				/* Botón de descarga PDF / XML */
 				.download-btn {
-					background: var(--primary-color, #e00028);
+					background: var(--primary-color);
 					color: #fff;
 					border: none;
 					border-radius: 4px;
@@ -1269,23 +1282,30 @@ function UserOrdersList() {
 					padding: 5px 8px;
 					cursor: pointer;
 				}
+
 				.download-btn:hover {
 					background: #c7001b;
 				}
+
+				/* Datos adicionales de facturación */
+				.invoice-billing-info {
+					margin-top: 20px;
+					line-height: 1.5;
+				}
+
+				/* Botón Cerrar */
 				.btn-close-modal {
 					background: #ddd;
 					border: none;
 					padding: 8px 12px;
 					border-radius: 5px;
 					cursor: pointer;
-					margin-top: 10px; /* Espacio respecto a tabla */
+					margin-top: 20px;
+					color: var(--primary-color);
 				}
+
 				.btn-close-modal:hover {
 					background: #bbb;
-				}
-				.no-invoice-msg {
-					color: #999;
-					font-size: 13px;
 				}
 
 				.shipment-block__header,
@@ -1568,8 +1588,12 @@ function UserOrdersList() {
 						margin-bottom: 10px;
 					}
 
-					.invoice-modal {
-						max-width: 95%;
+					.invoice-row {
+						flex-direction: column;
+						align-items: flex-start;
+					}
+					.invoice-row .label {
+						margin-bottom: 3px;
 					}
 				}
 			`}</style>
