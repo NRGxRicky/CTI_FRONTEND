@@ -8,7 +8,7 @@ const UserNavLeft = () => {
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 
 	return (
-		<div className='nav-left' style={!mobileView ? { marginTop: ' 58px' } : {}}>
+		<div className='nav-left'>
 			<div className='nav-left-container'>
 				<Link href={`/mis-compras/`} legacyBehavior>
 					<a

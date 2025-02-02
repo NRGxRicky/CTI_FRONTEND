@@ -119,8 +119,6 @@ function UserOrdersList() {
 				}
 			} else {
 				console.error('Error al obtener las órdenes:', resp.statusText);
-				const data = await resp.json();
-				console.log(data);
 			}
 		} catch (err) {
 			console.error('Error de conexión:', err);
@@ -303,8 +301,6 @@ function UserOrdersList() {
 		);
 	}
 
-	console.log(orders);
-
 	// -----------------------------------------------------
 	// Render principal
 	// -----------------------------------------------------
@@ -393,29 +389,38 @@ function UserOrdersList() {
 						)}
 
 						{/* DATOS DE FACTURACIÓN ADICIONALES (sean o no haya PDF/XML) */}
+
 						<div className='invoice-billing-info'>
 							<h4>Datos de facturación:</h4>
 							<br />
-							<p>
-								<strong>Razón Social:</strong> {modalOrder.billing_razon_social}
-							</p>
-							<p>
-								<strong>RFC:</strong> {modalOrder.billing_rfc}
-							</p>
-							<p>
-								<strong>Uso de CFDI:</strong> {modalOrder.billing_uso_cfdi_full}
-							</p>
-							<p>
-								<strong>Régimen:</strong> {modalOrder.billing_regimen_full}
-							</p>
-							<p>
-								<strong>Forma de pago:</strong>{' '}
-								{modalOrder.billing_forma_pago_full}
-							</p>
-							<p>
-								<strong>Código Postal:</strong>{' '}
-								{modalOrder.billing_codigo_postal}
-							</p>
+							{modalOrder.billing_razon_social ? (
+								<>
+									<p>
+										<strong>Razón Social:</strong>{' '}
+										{modalOrder.billing_razon_social}
+									</p>
+									<p>
+										<strong>RFC:</strong> {modalOrder.billing_rfc}
+									</p>
+									<p>
+										<strong>Uso de CFDI:</strong>{' '}
+										{modalOrder.billing_uso_cfdi_full}
+									</p>
+									<p>
+										<strong>Régimen:</strong> {modalOrder.billing_regimen_full}
+									</p>
+									<p>
+										<strong>Forma de pago:</strong>{' '}
+										{modalOrder.billing_forma_pago_full}
+									</p>
+									<p>
+										<strong>Código Postal:</strong>{' '}
+										{modalOrder.billing_codigo_postal}
+									</p>
+								</>
+							) : (
+								<p>No se ingresaron datos de facturación (RFC genérico).</p>
+							)}
 						</div>
 
 						<button className='btn-close-modal' onClick={closeModal}>
@@ -843,7 +848,11 @@ function UserOrdersList() {
 											>
 												Facturación
 											</button>
-											<button className='btn-action'>Ver detalles</button>
+											<Link href={`mis-compras/${order.id}`} legacyBehavior>
+												<a>
+													<button className='btn-action'>Ver detalles</button>
+												</a>
+											</Link>
 										</div>
 									</div>
 								</div>
@@ -1178,7 +1187,11 @@ function UserOrdersList() {
 												>
 													Facturación
 												</button>
-												<button className='btn-action'>Ver detalles</button>
+												<Link href={`mis-compras/${order.id}`} legacyBehavior>
+													<a>
+														<button className='btn-action'>Ver detalles</button>
+													</a>
+												</Link>
 											</div>
 										</div>
 									</div>
@@ -1203,11 +1216,11 @@ function UserOrdersList() {
 			)}
 			{/* ESTILOS */}
 			<style jsx>{`
-				.modal__header  {
+				.modal__header {
 					margin-bottom: 20px;
 					text-align: center;
 				}
-				
+
 				.modal-backdrop {
 					position: fixed;
 					inset: 0;
@@ -1440,7 +1453,7 @@ function UserOrdersList() {
 					margin-bottom: 30px;
 				}
 				.order-card__status {
-					color: var(--primary-color, #e00028);
+					color: var(--primary-color);
 					font-size: 14px;
 				}
 				.order-card__delivery {
@@ -1482,8 +1495,8 @@ function UserOrdersList() {
 					background-color: #fff;
 					border-radius: 4px;
 					cursor: pointer;
-					border-color: #e00028;
-					color: #e00028;
+					border-color: var(--primary-color);
+					color: var(--primary-color);
 				}
 				.btn-action:hover {
 					background-color: #f5f5f5;
