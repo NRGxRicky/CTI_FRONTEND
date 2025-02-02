@@ -721,7 +721,6 @@ export default function UserOrderDetail({ orderId }) {
 					}
 					.od-col--side {
 						width: 100%;
-						order: -1;
 					}
 				}
 			`}</style>
