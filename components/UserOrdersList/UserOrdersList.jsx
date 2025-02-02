@@ -35,6 +35,10 @@ function UserOrdersList() {
 	// Para infinite scroll
 	const [hasMore, setHasMore] = useState(true);
 
+	// Estados para el modal de factura
+	const [showModal, setShowModal] = useState(false);
+	const [modalOrder, setModalOrder] = useState(null);
+
 	// Opciones de pago
 	const paymentOptions = [
 		{
@@ -161,9 +165,9 @@ function UserOrdersList() {
 	// -----------------------------------------------------
 	const handleSearch = () => {
 		setPageActive(1);
-  };
-  
-  const clearSearch = () => {
+	};
+
+	const clearSearch = () => {
 		setSearchTerm('');
 		refreshPage(1);
 	};
@@ -236,6 +240,26 @@ function UserOrdersList() {
 	};
 
 	// -----------------------------------------------------
+	// Lógica de Modal Factura
+	// -----------------------------------------------------
+	const openInvoiceModal = (order) => {
+		setModalOrder(order);
+		setShowModal(true);
+	};
+	const closeModal = () => {
+		setModalOrder(null);
+		setShowModal(false);
+	};
+
+	// Cerrar al hacer click en el backdrop
+	const handleBackdropClick = (e) => {
+		// Si el click proviene directamente del backdrop, no de un hijo
+		if (e.target.classList.contains('modal-backdrop')) {
+			closeModal();
+		}
+	};
+
+	// -----------------------------------------------------
 	// Render “loading” si Desktop, no hay orders
 	// -----------------------------------------------------
 	if (!mobileView && loading && orders.length === 0) {
@@ -279,11 +303,119 @@ function UserOrdersList() {
 		);
 	}
 
+	console.log(orders);
+
 	// -----------------------------------------------------
 	// Render principal
 	// -----------------------------------------------------
 	return (
-		<div className='orders__wrapper'>
+		<div className='orders__wrapper'>			{/* Modal para ver Factura */}
+			{showModal && modalOrder && (
+				<div className='modal-backdrop' onClick={handleBackdropClick}>
+					<div className='modal-content invoice-modal'>
+						{/* BOTÓN X arriba a la derecha */}
+						<button className='modal-close-button' onClick={closeModal}>
+							&times;
+						</button>
+
+						<h3>Facturación</h3>
+
+						<div className='invoice-details'>
+							<div className='invoice-table-wrapper'>
+								<table className='invoice-table'>
+									<thead>
+										<tr>
+											<th>Folio</th>
+											<th>Fecha de documento</th>
+											<th>Monto facturado</th>
+											<th>Estatus</th>
+											<th>Descarga</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>
+												{modalOrder.factura_folio || `Factura ${modalOrder.id}`}
+											</td>
+											<td>
+												{modalOrder.facturacion_date
+													? new Date(
+															modalOrder.facturacion_date
+													  ).toLocaleString('es-MX')
+													: 'N/D'}
+											</td>
+											<td>${modalOrder.total}</td>
+											<td>{modalOrder.factura_state || 'Pendiente'}</td>
+											<td>
+												{modalOrder.factura_pdf || modalOrder.factura_xml ? (
+													<>
+														{/* PDF */}
+														{modalOrder.factura_pdf && (
+															<a
+																className='invoice-download-link'
+																href={modalOrder.factura_pdf}
+																target='_blank'
+																rel='noreferrer'
+															>
+																<button className='download-btn'>PDF</button>
+															</a>
+														)}
+														{/* XML */}
+														{modalOrder.factura_xml && (
+															<a
+																className='invoice-download-link'
+																href={modalOrder.factura_xml}
+																target='_blank'
+																rel='noreferrer'
+															>
+																<button className='download-btn'>XML</button>
+															</a>
+														)}
+													</>
+												) : (
+													<span className='no-invoice-msg'>
+														Aún no se ha generado la factura
+													</span>
+												)}
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+						{/* DATOS DE FACTURACIÓN ADICIONALES */}
+						<div className='invoice-billing-info'>
+							<h4>Datos de facturación</h4>
+							<p>
+								<strong>Razón Social:</strong> {modalOrder.billing_razon_social}
+							</p>
+							<p>
+								<strong>RFC:</strong> {modalOrder.billing_rfc}
+							</p>
+							<p>
+								<strong>Uso de CFDI:</strong> {modalOrder.billing_uso_cfdi_full}
+							</p>
+							<p>
+								<strong>Régimen:</strong> {modalOrder.billing_regimen_full}
+							</p>
+							<p>
+								<strong>Forma de pago:</strong>{' '}
+								{modalOrder.billing_forma_pago_full}
+							</p>
+							<p>
+								<strong>Código Postal:</strong>{' '}
+								{modalOrder.billing_codigo_postal}
+							</p>
+						</div>
+
+						<button className='btn-close-modal' onClick={closeModal}>
+							Cerrar
+						</button>
+					</div>
+				</div>
+			)}
+
 			{/* Header: búsqueda y rango (solo desktop si no está cargando) */}
 			{!mobileView && !loading && (
 				<div className='orders-header'>
@@ -698,7 +830,13 @@ function UserOrdersList() {
 										{/* Col der: Acciones */}
 										<div className='order-card__content-right'>
 											<h4>Acciones</h4>
-											<button className='btn-action'>Facturación</button>
+											{/* Botón Facturación => openInvoiceModal */}
+											<button
+												className='btn-action'
+												onClick={() => openInvoiceModal(order)}
+											>
+												Facturación
+											</button>
 											<button className='btn-action'>Ver detalles</button>
 										</div>
 									</div>
@@ -1027,7 +1165,13 @@ function UserOrdersList() {
 
 											<div className='order-card__content-right'>
 												<h4>Acciones</h4>
-												<button className='btn-action'>Facturación</button>
+												{/* Botón Facturación => openInvoiceModal */}
+												<button
+													className='btn-action'
+													onClick={() => openInvoiceModal(order)}
+												>
+													Facturación
+												</button>
 												<button className='btn-action'>Ver detalles</button>
 											</div>
 										</div>
@@ -1054,6 +1198,96 @@ function UserOrdersList() {
 
 			{/* ESTILOS */}
 			<style jsx>{`
+				.invoice-table-wrapper {
+					width: 100%;
+					overflow-x: auto; /* scroll horizontal */
+					-webkit-overflow-scrolling: touch;
+					margin-bottom: 15px;
+				}
+				.invoice-table {
+					min-width: 600px;
+					border-collapse: collapse;
+				}
+				.invoice-table th,
+				.invoice-table td {
+					white-space: nowrap;
+					padding: 10px;
+					border: 1px solid #eaeaea;
+				}
+				.invoice-billing-info {
+					line-height: 1.5;
+					margin-bottom: 20px;
+				}
+				.modal-backdrop {
+					position: fixed;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					background: rgba(0, 0, 0, 0.6);
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					z-index: 2000;
+				}
+				.modal-content.invoice-modal {
+					background: #fff;
+					padding: 20px;
+					width: 95%;
+					max-width: 700px;
+					border-radius: 5px;
+					position: relative;
+				}
+				.modal-close-button {
+					position: absolute;
+					top: -30px;
+					right: 10px;
+					background: transparent;
+					border: none;
+					font-size: 28px;
+					line-height: 1;
+					cursor: pointer;
+					color: #fff;
+				}
+				.modal-close-button:hover {
+					color: #000;
+				}
+				.invoice-table {
+					width: 100%;
+					margin-top: 15px;
+					margin-bottom: 15px;
+				}
+				.invoice-table th {
+					background: #f5f5f5;
+				}
+				.download-btn {
+					background: var(--primary-color, #e00028);
+					color: #fff;
+					border: none;
+					border-radius: 4px;
+					margin-right: 5px;
+					padding: 5px 8px;
+					cursor: pointer;
+				}
+				.download-btn:hover {
+					background: #c7001b;
+				}
+				.btn-close-modal {
+					background: #ddd;
+					border: none;
+					padding: 8px 12px;
+					border-radius: 5px;
+					cursor: pointer;
+					margin-top: 10px; /* Espacio respecto a tabla */
+				}
+				.btn-close-modal:hover {
+					background: #bbb;
+				}
+				.no-invoice-msg {
+					color: #999;
+					font-size: 13px;
+				}
+
 				.shipment-block__header,
 				.return-card__header {
 					line-height: 2;
@@ -1332,6 +1566,10 @@ function UserOrdersList() {
 					}
 					.order-card__header {
 						margin-bottom: 10px;
+					}
+
+					.invoice-modal {
+						max-width: 95%;
 					}
 				}
 			`}</style>
