@@ -334,7 +334,7 @@ function UserOrdersList() {
 								</div>
 
 								<div className='invoice-row'>
-									<span className='label'>Fecha de documento:</span>
+									<span className='label'>Fecha del documento:</span>
 									<span className='value'>
 										{modalOrder.facturacion_date
 											? new Date(modalOrder.facturacion_date).toLocaleString(
@@ -1589,8 +1589,7 @@ function UserOrdersList() {
 					}
 
 					.invoice-row {
-						flex-direction: column;
-						align-items: flex-start;
+						flex-wrap: wrap;
 					}
 					.invoice-row .label {
 						margin-bottom: 3px;
