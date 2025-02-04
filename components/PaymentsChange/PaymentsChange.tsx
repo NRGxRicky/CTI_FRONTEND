@@ -84,7 +84,7 @@ const PaymentsChange = () => {
 						}}
 					>
 						<div className='payments-change__option__header'>
-							<span>Pagar a MSI/Pagos con:</span>
+							<span>Pagar a Pagos con:</span>
 						</div>
 						<div className='payments-change__option__body'>
 							<div className='payments-change__option__item'>

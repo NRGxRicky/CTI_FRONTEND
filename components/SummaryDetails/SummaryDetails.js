@@ -239,7 +239,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 				{cartMsi ? (
 					<div className='payments'>
 						<div className='payments__option__header'>
-							<span>Pagar a MSI/Pagos con:</span>
+							<span>Pagar a Pagos con:</span>
 						</div>
 						<div className='payments__option__body'>
 							{[
