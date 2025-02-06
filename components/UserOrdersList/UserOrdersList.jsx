@@ -350,7 +350,7 @@ function UserOrdersList() {
 								<div className='invoice-row'>
 									<span className='label'>Estado:</span>
 									<span className='value'>
-										{modalOrder.factura_state || 'Pendiente'}
+										{Capitalize(modalOrder.factura_state) || 'Pendiente'}
 									</span>
 								</div>
 
@@ -597,15 +597,18 @@ function UserOrdersList() {
 													return (
 														<div key={shipment.id} className='shipment-block'>
 															<div className='shipment-block__header'>
-																<h4>
-																	<strong>
-																		Envío: {shipment.tracking_number}
-																	</strong>{' '}
-																	<span style={{ fontSize: '12px' }}>
-																		({Capitalize(shipment.carrier)}) - Estado:{' '}
-																		{shipment.status}
-																	</span>
-																</h4>
+																{shipment.tracking_number &&
+																	shipment.carrier && (
+																		<h4>
+																			<strong>
+																				Envío: {shipment.tracking_number}
+																			</strong>{' '}
+																			<span style={{ fontSize: '12px' }}>
+																				({Capitalize(shipment.carrier)}) -
+																				Estado: {shipment.status}
+																			</span>
+																		</h4>
+																	)}
 															</div>
 															{shipment.tracking_url && (
 																<Link
@@ -936,15 +939,18 @@ function UserOrdersList() {
 														return (
 															<div key={shipment.id} className='shipment-block'>
 																<div className='shipment-block__header'>
-																	<h4>
-																		<strong>
-																			Envío: {shipment.tracking_number}
-																		</strong>{' '}
-																		<span style={{ fontSize: '12px' }}>
-																			({Capitalize(shipment.carrier)}) - Estado:{' '}
-																			{shipment.status}
-																		</span>
-																	</h4>
+																	{shipment.tracking_number &&
+																		shipment.carrier && (
+																			<h4>
+																				<strong>
+																					Envío: {shipment.tracking_number}
+																				</strong>{' '}
+																				<span style={{ fontSize: '12px' }}>
+																					({Capitalize(shipment.carrier)}) -
+																					Estado: {shipment.status}
+																				</span>
+																			</h4>
+																		)}
 																</div>
 																{shipment.tracking_url && (
 																	<Link

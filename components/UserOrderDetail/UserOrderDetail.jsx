@@ -205,8 +205,12 @@ export default function UserOrderDetail({ orderId }) {
 											<div className='timeline__info'>
 												<p>
 													<strong>{ship.status}</strong> <br />
-													Guía: {ship.tracking_number} (
-													{Capitalize(ship.carrier)})
+													{ship.tracking_number && ship.carrier && (
+														<span>
+															Guía: {ship.tracking_number} (
+															{Capitalize(ship.carrier)})
+														</span>
+													)}
 												</p>
 												{ship.tracking_url && (
 													<Link href={ship.tracking_url} legacyBehavior>
@@ -407,7 +411,7 @@ export default function UserOrderDetail({ orderId }) {
 									</p>
 									<p>
 										<strong>Estado factura:</strong>{' '}
-										{order.factura_state || 'Pendiente'}
+										{Capitalize(order.factura_state) || 'Pendiente'}
 									</p>
 									<p>
 										<strong>Monto:</strong> ${CurrencyFormat(order.total)}
