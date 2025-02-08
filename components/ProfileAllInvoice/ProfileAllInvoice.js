@@ -9,6 +9,7 @@ const ProfileAllInvoice = ({
 	activeinvoiceId, // Antes: activeAddressId
 	onCloseModal,
 	isProfileAddinvoiceVisible, // Antes: isProfileAddAddressVisible
+	profile = false,
 }) => {
 	const modalRef = useRef(null);
 
@@ -37,21 +38,22 @@ const ProfileAllInvoice = ({
 	}, []);
 
 	return (
-		<div className='modal-overlay'>
-			{/* Botón para cerrar el modal */}
-			<div className='modal-close' onClick={() => onCloseModal()}>
-				<span className='close'></span>
-			</div>
+		<div className={`modal-overlay ${profile && 'profile'}`} >
+			{!profile &&
+
+				< div className='modal-close' onClick={() => onCloseModal()}>
+					<span className='close'></span>
+				</div>
+			}
 
 			<div className='modal-container' ref={modalRef} tabIndex='-1'>
-				<h2>Elige un RFC</h2>
+				{!profile && <h2>Elige un RFC</h2>}
 				<div className='invoice-list'>
 					{rfcs.map((invoice) => (
 						<div
 							key={invoice.id}
-							className={`invoice-item ${
-								invoice.id === activeinvoiceId ? 'active' : ''
-							}`}
+							className={`invoice-item ${invoice.id === activeinvoiceId ? 'active' : ''
+								}`}
 						>
 							<div className='invoice-details'>
 								{/* Muestra los datos que tengas en tu objeto de facturación */}
@@ -98,6 +100,31 @@ const ProfileAllInvoice = ({
 
 			{/* Estilos del componente */}
 			<style jsx>{`
+
+				.profile {
+					position: relative !important;
+					background: none !important;
+					top: 0px !important;
+					height: auto !important;
+					width: 100% !important;
+					z-index: auto !important;
+				}
+
+				.profile .invoice-item {
+					min-width: 40%;
+				}
+
+				.profile .modal-container {
+					box-shadow: none;
+					width: 100%;
+					padding: 0 !important;
+				}
+
+				.profile .invoice-list  {
+					overflow: hidden;
+					max-height: none;
+				}
+
 				.modal-close {
 					position: absolute;
 					display: flex;
@@ -235,8 +262,8 @@ const ProfileAllInvoice = ({
 
 				@media only screen and (max-width: 62em) {
 					.invoice-item {
-						flex: 100%;
-						min-width: 100%;
+						flex: 100% !important;
+						min-width: 100% !important;
 					}
 
 					.invoice-details p {

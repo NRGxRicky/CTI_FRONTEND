@@ -9,6 +9,7 @@ const ProfileAllAddress = ({
 	activeAddressId,
 	onCloseModal,
 	isProfileAddAddressVisible,
+	profile = false,
 }) => {
 	const modalRef = useRef(null);
 
@@ -35,24 +36,26 @@ const ProfileAllAddress = ({
 	}, []);
 
 	return (
-		<div className='modal-overlay'>
-			<div
-				className='modal-close'
-				onClick={() => {
-					onCloseModal();
-				}}
-			>
-				<span className='close'></span>
-			</div>
+
+		<div className={`modal-overlay ${profile && 'profile'}`} >
+			{!profile &&
+				<div
+					className='modal-close'
+					onClick={() => {
+						onCloseModal();
+					}}
+				>
+					<span className='close'></span>
+				</div>
+			}
 			<div className='modal-container' ref={modalRef} tabIndex='-1'>
-				<h2>Elige una dirección</h2>
+				{!profile && <h2>Elige una dirección</h2>}
 				<div className='address-list'>
 					{domicilios.map((domicilio) => (
 						<div
 							key={domicilio.id}
-							className={`address-item ${
-								domicilio.id === activeAddressId ? 'active' : ''
-							}`}
+							className={`address-item ${domicilio.id === activeAddressId ? 'active' : ''
+								}`}
 						>
 							<div className='address-details'>
 								<p>
@@ -101,6 +104,31 @@ const ProfileAllAddress = ({
 			</div>
 
 			<style jsx>{`
+
+				.profile {
+					position: relative !important;
+					background: none !important;
+					top: 0px !important;
+					height: auto !important;
+					width: 100% !important;
+					z-index: auto !important;
+			
+				}
+
+				.profile .address-item {
+					min-width: 40%;
+				}
+
+				.profile .modal-container {
+					box-shadow: none;
+					width: 100%;
+					padding: 0 !important;
+				}
+
+				.profile .address-list {
+					overflow: hidden;
+					max-height: none;
+				}
         
         .modal-close {
           position: absolute;
@@ -232,8 +260,8 @@ const ProfileAllAddress = ({
 
 				@media only screen and (max-width: 62em) {
 					.address-item {
-            flex: 100%;
-            min-width: 100%;
+            flex: 100% !important;
+            min-width: 100% !important;
           
 				}
 

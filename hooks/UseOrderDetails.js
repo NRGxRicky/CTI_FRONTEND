@@ -22,7 +22,6 @@ export function UseOrderDetails(orderId) {
           throw new Error('Error al obtener la orden');
         }
         const data = await resp.json();
-        console.log(data)
         setOrder(data);
       } catch (err) {
         setError(err.message || 'Error inesperado');
