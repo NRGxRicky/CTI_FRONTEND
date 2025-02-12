@@ -537,8 +537,8 @@ export default function UserOrderDetail({ orderId }) {
 			{/* ====== ESTILOS ====== */}
 			<style jsx>{`
 				.order-detail__container {
-					max-width: 1200px;
-					margin: 0 auto;
+					max-width: 100%;
+					margin-left: 40px;
 					padding: 20px;
 				}
 
@@ -726,6 +726,9 @@ export default function UserOrderDetail({ orderId }) {
 					.od-col--side {
 						width: 100%;
 					}
+
+					.order-detail__container {
+						margin: 0;
 				}
 			`}</style>
 		</div>

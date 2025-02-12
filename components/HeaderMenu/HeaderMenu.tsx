@@ -57,7 +57,9 @@ const HeaderMenu = () => {
 						href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
 						legacyBehavior
 					>
-						<a style={{ color: 'var(--primary-color)', fontWeight: '600' }}>🔥 OFERTAS</a>
+						<a style={{ color: 'var(--primary-color)', fontWeight: '600' }}>
+							🔥 OFERTAS
+						</a>
 					</Link>
 				</li>
 			</ul>
@@ -66,17 +68,19 @@ const HeaderMenu = () => {
 				{`
 					.header-menu {
 						width: 100%;
-						height: 45px;
+						min-height: 45px;
 						display: none;
+						padding: 0 10px;
 						align-items: center;
-						justify-content: center;
 					}
 
 					.header-menu__list {
 						display: flex;
-						gap: 50px;
 						list-style: none;
 						align-items: center;
+						justify-content: space-evenly;
+						flex-wrap: wrap;
+						width: 100%;
 					}
 
 					.header-menu__list a {

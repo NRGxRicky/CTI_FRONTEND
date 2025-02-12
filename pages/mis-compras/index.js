@@ -42,7 +42,7 @@ const index = () => {
       }
       <style jsx>{`
 				.main-wrapper {
-					width: calc(100% - 200px);
+					width: 100%;
 				}
 				.profile {
 					display: flex;

@@ -154,6 +154,17 @@ const LoginMenu: React.FC = () => {
 										</Link>
 									)}
 									<div className='login-menu__body login-menu__body__logged-in'>
+										<Link href={`/profile/`} legacyBehavior>
+											<a>
+												<div
+													className='login-menu__body__item'
+													onClick={() => dispacth(hideAll())}
+												>
+													<span>Mi cuenta</span>
+												</div>
+											</a>
+										</Link>
+
 										<Link href={`/mis-compras/`} legacyBehavior>
 											<a>
 												<div
@@ -164,13 +175,37 @@ const LoginMenu: React.FC = () => {
 												</div>
 											</a>
 										</Link>
-										<Link href={`/profile/`} legacyBehavior>
+										<Link
+											href={`/profile/direcciones-y-facturacion/`}
+											legacyBehavior
+										>
+											<a>
+												<div
+													className='login-menu__body__item'
+													onClick={() => dispacth(hideAll())}
+												>
+													<span>Direcciones de envió y Facturación</span>
+												</div>
+											</a>
+										</Link>
+
+										<Link href={`/profile/mis-datos/`} legacyBehavior>
 											<a>
 												<div
 													className='login-menu__body__item'
 													onClick={() => dispacth(hideAll())}
 												>
 													<span>Mis datos</span>
+												</div>
+											</a>
+										</Link>
+										<Link href={`/profile/security/`} legacyBehavior>
+											<a>
+												<div
+													className='login-menu__body__item'
+													onClick={() => dispacth(hideAll())}
+												>
+													<span>Seguridad</span>
 												</div>
 											</a>
 										</Link>
@@ -219,6 +254,7 @@ const LoginMenu: React.FC = () => {
 					}
 					.login-menu__body__logged-in {
 						margin-left: 20px;
+						line-height: 1.5;
 					}
 
 					.login-menu__body__logged-in .login-menu__body__item {

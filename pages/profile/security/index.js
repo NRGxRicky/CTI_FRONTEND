@@ -5,6 +5,8 @@ import Router from 'next/router';
 import PostData from '../../../hooks/PosData';
 import Head from 'next/head';
 import { useEnv } from '../../../context/EnvContext';
+import Footer from '../../../components/Footer/Footer';
+import { useAppSelector } from '../../../lib/hooks';
 
 const index = () => {
 	const { isAuthenticated, loading, accessToken } = useAuth();
@@ -16,6 +18,8 @@ const index = () => {
 	const [update, setUpdate] = useState(false);
 	const [newPasswordMatch, setNewPasswordMatch] = useState(true);
 	const { storeName, metaDescription, titlePostDescription } = useEnv();
+
+	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 
 	const HandleSubmit = async (e) => {
 		e.preventDefault();
@@ -63,6 +67,7 @@ const index = () => {
 	if (!loading && !isAuthenticated) Router.push('/');
 
 	return (
+		<div>
 		<div className='profile container'>
 			<Head>
 				<title>{`Seguridad | ${storeName}: ${titlePostDescription}`}</title>
@@ -71,7 +76,7 @@ const index = () => {
 			<UserNavLeft />
 			<div className='main-wrapper'>
 				<div className='profile__title'>
-					<div>Contraseña</div>
+					<h2>Contraseña</h2>
 				</div>
 				<div
 					className={
@@ -85,7 +90,7 @@ const index = () => {
 							<div className='profile__section__title'>
 								Cambia la contraseña
 							</div>
-							<dvi
+							<div
 								className='profile__edit'
 								onClick={() => setChangePassword(true)}
 								style={
@@ -93,7 +98,7 @@ const index = () => {
 								}
 							>
 								Editar
-							</dvi>
+							</div>
 						</div>
 						<form onSubmit={(e) => HandleSubmit(e)}>
 							<div
@@ -190,7 +195,13 @@ const index = () => {
 						</button>
 					</div>
 				</div>
-			)}
+				)}
+			</div>
+
+			{!mobileView &&
+				< Footer />
+				}
+			
 
 			<style jsx>{`
 				.profile__label-alert {
@@ -199,7 +210,10 @@ const index = () => {
 				}
 
 				.main-wrapper {
-					width: calc(100% - 200px);
+					width: 100%;
+					margin-left: 20px;
+					padding: 0 20px;
+					min-height: 50dvh;
 				}
 
 				.profile {
@@ -344,19 +358,16 @@ const index = () => {
 					height: 40px;
 					margin-left: 10px;
 					border: 1px solid #eaeaea;
-					border-top: 0;
-					border-left: 0;
-					border-right: 0;
 					background-color: #ffffff;
 					color: rgb(114 114 114);
 					padding-left: 10px;
-					border-radius: 0;
+					border-radius: 5px;
 					font-size: 14px;
 				}
 
 				.profile__section__body input:focus,
 				.profile__section__body input:hover {
-					border-bottom: 2px solid var(--primary-color);
+					border: 1px solid var(--primary-color);
 					color: #000000;
 				}
 
@@ -366,7 +377,6 @@ const index = () => {
 				}
 
 				.profile__title {
-					font-size: 20px;
 					font-weight: 600;
 					margin-left: 20px;
 					display: flex;
@@ -407,6 +417,8 @@ const index = () => {
 
 					.main-wrapper {
 						width: 100%;
+						margin: 0;
+						padding: 0;
 					}
 
 					.profile {

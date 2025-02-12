@@ -52,7 +52,14 @@ const UserNavLeft = () => {
 	return (
 		// Se agregan clases condicionales al contenedor padre según el estado del scroll
 		<div className={`nav-left ${!fadeLeft ? 'no-left-fade' : ''} ${!fadeRight ? 'no-right-fade' : ''}`}>
-			<div className="nav-left-container" ref={scrollContainerRef} onScroll={handleScroll}>
+      <div className="nav-left-container" ref={scrollContainerRef} onScroll={handleScroll}>
+        
+        <Link href={`/profile/`} legacyBehavior>
+          <a className={router.pathname === '/profile' ? 'text--off active' : 'text--off'}>
+            <span>Mi cuenta</span>
+          </a>
+        </Link>
+
 				<Link href={`/mis-compras/`} legacyBehavior>
 					<a className={router.pathname === '/mis-compras' ? 'text--off active' : 'text--off'}>
 						<span>Mis compras</span>
@@ -68,8 +75,8 @@ const UserNavLeft = () => {
 						<span>Direcciones de envió y Facturación</span>
 					</a>
 				</Link>
-				<Link href={`/profile/`} legacyBehavior>
-					<a className={router.pathname === '/profile' ? 'text--off active' : 'text--off'}>
+				<Link href={`/profile/mis-datos/`} legacyBehavior>
+					<a className={router.pathname === '/profile/mis-datos' ? 'text--off active' : 'text--off'}>
 						<span>Mis datos</span>
 					</a>
 				</Link>

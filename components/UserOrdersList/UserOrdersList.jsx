@@ -1366,8 +1366,8 @@ function UserOrdersList() {
 
 				.orders__wrapper {
 					padding: 20px;
-					max-width: 1000px;
-					margin: 0 auto;
+					max-width: 100%;
+					margin-left: 40px;
 				}
 				.orders-header {
 					display: flex;
@@ -1580,7 +1580,7 @@ function UserOrdersList() {
 					flex: 1;
 				}
 
-				@media (max-width: 768px) {
+				@media (max-width: 992px) {
 					.order-card__header {
 						flex-direction: column;
 						gap: 10px;
@@ -1593,6 +1593,7 @@ function UserOrdersList() {
 					}
 					.orders__wrapper {
 						padding: 0px !important;
+						margin: 0;
 					}
 					.orders-filters,
 					.orders-header {

@@ -31,7 +31,7 @@ const index = () => {
         </title>
         <meta name='description' content={`${metaDescription}`} />
       </Head>
-      <div className='profile '>
+      <div className='profile'>
         <UserNavLeft />
         <div className='main-wrapper'>
           <div className='profile__title'>
@@ -45,7 +45,7 @@ const index = () => {
       }
       <style jsx>{`
 				.main-wrapper {
-					width: calc(100% - 200px);
+					width: 100%;
           padding: 0 20px;
           margin-left: 20px;
 				}

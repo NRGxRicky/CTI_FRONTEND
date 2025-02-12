@@ -126,7 +126,29 @@ const Footer: React.FC<FooterProps> = () => {
 							className='footer__column__container'
 							style={{ maxHeight: column3 ? '500px' : '0px' }}
 						>
-							<div className='footer__column__element'>Facturación</div>
+							<div className='footer__column__element'>
+								<Link href={`/profile/`} legacyBehavior>
+									<a>
+										<span>Mi cuenta</span>
+									</a>
+								</Link>
+							</div>
+
+							<div className='footer__column__element'>
+								<Link href={`/mis-compras/`} legacyBehavior>
+									<a>
+										<span>Mis compras</span>
+									</a>
+								</Link>
+							</div>
+
+							<div className='footer__column__element'>
+								<Link href={`/profile/mis-datos/`} legacyBehavior>
+									<a>
+										<span>Mis datos</span>
+									</a>
+								</Link>
+							</div>
 						</div>
 					</div>
 					<div className='footer__column'>
