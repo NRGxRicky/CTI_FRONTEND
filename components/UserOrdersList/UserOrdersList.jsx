@@ -277,19 +277,16 @@ function UserOrdersList() {
 						.cart__loading {
 							position: relative;
 							width: 100%;
-							min-height: 50dvh;
-							opacity: 0.8;
+							min-height: 50dvh;	
 							display: flex;
 							justify-content: center;
 							align-items: center;
-							z-index: 1000;
 						}
+
 						.cart__loading__container {
 							position: relative;
 							height: 25%;
 							width: 25%;
-							background-color: #fff;
-							opacity: 1;
 							border-radius: 2px;
 							display: flex;
 							justify-content: center;

@@ -34,6 +34,9 @@ const index = () => {
       <div className='profile '>
         <UserNavLeft />
         <div className='main-wrapper'>
+          <div className='profile__title'>
+            <h2>Direcciones de envió y Facturación</h2>
+          </div>
           <ProfileAddressesSection />
         </div>
       </div>
@@ -43,13 +46,21 @@ const index = () => {
       <style jsx>{`
 				.main-wrapper {
 					width: calc(100% - 200px);
-          padding: 20px;
+          padding: 0 20px;
           margin-left: 20px;
 				}
 				.profile {
 					display: flex;
 					flex-wrap: nowrap;
           min-height: 50dvh;
+				}
+
+        .profile__title {
+					font-weight: 600;
+					margin-left: 20px;
+					display: flex;
+					height: 50px;
+					align-items: flex-end;
 				}
 
 				.container {
@@ -61,11 +72,17 @@ const index = () => {
 					.main-wrapper {
 						width: 100%;
             margin-left: 0;
+            padding: 0;
 					}
 
 					.profile {
 						flex-direction: column;
 					}
+
+          .profile__title {
+						margin-bottom: 10px;
+					}
+
 				}
 			`}</style>
     </div>

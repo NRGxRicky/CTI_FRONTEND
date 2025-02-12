@@ -58,18 +58,19 @@ const UserNavLeft = () => {
 						<span>Mis compras</span>
 					</a>
 				</Link>
-				<Link href={`/profile/`} legacyBehavior>
-					<a className={router.pathname === '/profile' ? 'text--off active' : 'text--off'}>
-						<span>Mis datos</span>
-					</a>
-				</Link>
-				<Link href={`/profile/direcciones-y-facturacion`} legacyBehavior>
+				
+				<Link href={`/profile/direcciones-y-facturacion/`} legacyBehavior>
 					<a
 						className={
 							router.pathname === '/profile/direcciones-y-facturacion' ? 'text--off active' : 'text--off'
 						}
 					>
 						<span>Direcciones de envió y Facturación</span>
+					</a>
+				</Link>
+				<Link href={`/profile/`} legacyBehavior>
+					<a className={router.pathname === '/profile' ? 'text--off active' : 'text--off'}>
+						<span>Mis datos</span>
 					</a>
 				</Link>
 				<Link href={`/profile/security/`} legacyBehavior>
