@@ -176,7 +176,7 @@ const index = () => {
 					<div className='profile__section'>
 						<div className='profile__section__container'>
 							<div className='profile__section__header'>
-								<div className='profile__section__title'>Emails registrado</div>
+								<div className='profile__section__title'>Email registrado</div>
 							</div>
 							<div className='profile__section__body'>
 								{/* Puedes mostrar varios si el usuario tiene más de un correo, 

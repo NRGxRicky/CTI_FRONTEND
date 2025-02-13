@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { showPaymentsChange } from '../../lib/features/showOpacityContainerSlide';
@@ -18,15 +18,25 @@ const SummaryDetails = ({ urlAction, step }) => {
 		paymentMethod,
 		setPaymentMethod,
 		taxInvoice,
-		clearCart
+		clearCart,
 	} = useCart();
+
 	const dispatch = useAppDispatch();
 	const { cartMsi, accessToken } = useAuth();
 	const router = useRouter();
 
-	// Referencia donde se montará el botón de PayPal
+	// Referencia para PayPal
 	const paypalRef = useRef(null);
 
+	// Referencia para Mercado Pago (si deseas referenciar el contenedor)
+	const mercadoPagoRef = useRef(null);
+
+	// Estado para indicar si el script de Mercado Pago se ha cargado
+	const [mpScriptLoaded, setMpScriptLoaded] = useState(false);
+
+	//-------------------------------------------------------------------
+	// USE EFFECT: Renderizado de botón PayPal
+	//-------------------------------------------------------------------
 	useEffect(() => {
 		if (
 			typeof window !== 'undefined' &&
@@ -35,9 +45,8 @@ const SummaryDetails = ({ urlAction, step }) => {
 			paymentMethod === 'paypal' &&
 			step === 'confirm'
 		) {
-			// Evita re-render si ya fue renderizado:
+			// Evita re-render si ya fue renderizado
 			if (paypalRef.current.innerHTML.trim() !== '') {
-				// Ya hay botones renderizados. No hagas nada más.
 				return;
 			}
 
@@ -49,10 +58,9 @@ const SummaryDetails = ({ urlAction, step }) => {
 						shape: 'rect',
 						label: 'checkout',
 					},
-
-					// Paso 1: crear orden
+					// Paso 1: Crear la orden en PayPal
 					createOrder: (data, actions) => {
-						// 1) Generar array de ítems y convertir precios a número
+						// Generar array de ítems
 						const items = cart.map((item) => {
 							let unitPrice = cartMsi
 								? item.product.precio_final_descuento > 0
@@ -60,7 +68,6 @@ const SummaryDetails = ({ urlAction, step }) => {
 									: item.product.precio_final
 								: item.product.precio_contado;
 
-							// Convertir a número para usar toFixed():
 							unitPrice = parseFloat(unitPrice) || 0;
 
 							return {
@@ -75,7 +82,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 							};
 						});
 
-						// 2) Crear dirección de envío
+						// Dirección de envío
 						const shippingAddress = {
 							address_line_1:
 								address.calle +
@@ -90,7 +97,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 							country_code: 'MX',
 						};
 
-						// 3) Calcular totales
+						// Calcular totales
 						const itemTotal = items.reduce((acc, it) => {
 							return (
 								acc +
@@ -101,22 +108,20 @@ const SummaryDetails = ({ urlAction, step }) => {
 						const shippingCost = shipping;
 						const totalToPay = (itemTotal + shippingCost).toFixed(2);
 
-						// 4) Definir descripción global para la orden:
+						// Descripción global
 						let description;
 						if (cart.length === 1) {
-							// Usa el nombre del primer (y único) producto (o un fallback)
 							description =
 								cart[0].product.titulo?.substring(0, 127) || 'Producto único';
 						} else {
-							// Tienes varios productos
 							description = `Compra de ${cart.length} artículos`;
 						}
 
-						// 5) Retornar la creación de la orden
+						// Retornar la creación de la orden
 						return actions.order.create({
 							purchase_units: [
 								{
-									description, // Aquí inyectas la descripción calculada
+									description,
 									amount: {
 										currency_code: 'MXN',
 										value: totalToPay,
@@ -151,7 +156,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 
 						const bodyToSend = {
 							paypalData: order,
-							'requireInvoice': !!taxInvoice
+							requireInvoice: !!taxInvoice,
 						};
 
 						try {
@@ -163,17 +168,16 @@ const SummaryDetails = ({ urlAction, step }) => {
 										'Content-Type': 'application/json',
 										Authorization: `Bearer ${accessToken}`,
 									},
-
 									body: JSON.stringify(bodyToSend),
 								}
 							);
 							if (response.ok) {
 								const json = await response.json();
-								// Podrías redirigir a una página de confirmación
+								// Redirigir a la página de confirmación
 								router.push(`/compras/confirmacion/?orderId=${json.orderId}`);
 								setTimeout(() => {
 									clearCart();
-								}, 3000); // 3 segundo de retraso
+								}, 3000);
 							} else {
 								// Manejar error
 								const errData = await response.json();
@@ -194,7 +198,113 @@ const SummaryDetails = ({ urlAction, step }) => {
 				})
 				.render(paypalRef.current);
 		}
-	}, [paymentMethod, step, cart, address, shipping, cartMsi]);
+	}, [
+		paymentMethod,
+		step,
+		cart,
+		address,
+		shipping,
+		cartMsi,
+		accessToken,
+		router,
+		taxInvoice,
+		clearCart,
+	]);
+
+	//-------------------------------------------------------------------
+	// USE EFFECT: Renderizado de Mercado Pago (Checkout Pro embebido)
+	//-------------------------------------------------------------------
+	useEffect(() => {
+		// Solo corremos esta lógica si se selecciona MP y estamos en 'confirm'
+		if (step === 'confirm' && paymentMethod === 'mercadopago') {
+			// 1. Cargar script si no está cargado
+			const existingScript = document.getElementById('mercadoPagoScript');
+			if (!existingScript) {
+				const script = document.createElement('script');
+				script.id = 'mercadoPagoScript';
+				script.src = 'https://sdk.mercadopago.com/js/v2';
+				script.async = true;
+				script.onload = () => {
+					setMpScriptLoaded(true);
+					initMercadoPagoCheckout();
+				};
+				document.body.appendChild(script);
+			} else {
+				// Si ya existe, simplemente marcamos como cargado y llamamos a la función
+				setMpScriptLoaded(true);
+				initMercadoPagoCheckout();
+			}
+		}
+	}, [paymentMethod, step]);
+
+	// Función que crea la preferencia en tu server y luego inyecta MP Checkout
+	const initMercadoPagoCheckout = async () => {
+		try {
+			// A) Construye el array de items (similar a PayPal)
+			const items = cart.map((item) => {
+				let unitPrice = cartMsi
+					? item.product.precio_final_descuento > 0
+						? item.product.precio_final_descuento
+						: item.product.precio_final
+					: item.product.precio_contado;
+
+				unitPrice = parseFloat(unitPrice) || 0;
+
+				return {
+					title: item.product.titulo?.substring(0, 255) || 'Producto',
+					quantity: item.quantity,
+					currency_id: 'MXN',
+					unit_price: unitPrice,
+				};
+			});
+
+			// B) Llamamos a nuestro endpoint que crea la preferencia
+			const res = await fetch(
+				'https://api.pccdnapi.com/payments/mp/create_preference/',
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${accessToken}`,
+					},
+					body: JSON.stringify({
+						items,
+						shippingCost: parseFloat(shipping) || 0,
+					}),
+				}
+			);
+			const data = await res.json();
+			console.log(data);
+			if (!res.ok) {
+				console.error('Error al crear preferencia MP:', data);
+				return alert('Error al crear preferencia con Mercado Pago');
+			}
+
+			const { preferenceId } = data; // Ajusta según lo que devuelvas en tu endpoint
+
+			// C) Instanciamos MercadoPago con la Public Key
+			const mp = new window.MercadoPago(
+				process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY, // Tu PUBLIC KEY
+				{
+					locale: 'es-MX', // Ajusta según tu país
+				}
+			);
+
+			// D) Iniciamos el checkout PRO embebido
+			mp.checkout({
+				preference: {
+					id: preferenceId,
+				},
+				render: {
+					container: '.cho-container', // Contenedor donde se incrusta el botón
+					label: 'Pagar con Mercado Pago',
+				},
+			});
+		} catch (error) {
+			console.error(error);
+			alert('Error al inicializar Checkout de Mercado Pago');
+		}
+	};
 
 	return (
 		<div className='summary-details'>
@@ -362,9 +472,18 @@ const SummaryDetails = ({ urlAction, step }) => {
 					</Link>
 				)}
 
-				{/* Cuando step === 'confirm' y paymentMethod === 'paypal', renderizamos el contenedor para PayPal */}
+				{/* PayPal container */}
 				{step === 'confirm' && paymentMethod === 'paypal' && (
 					<div ref={paypalRef} style={{ marginTop: '15px' }} />
+				)}
+
+				{/* Mercado Pago container */}
+				{step === 'confirm' && paymentMethod === 'mercadopago' && (
+					<div
+						ref={mercadoPagoRef}
+						className='cho-container'
+						style={{ marginTop: '15px' }}
+					/>
 				)}
 			</div>
 
@@ -462,10 +581,10 @@ const SummaryDetails = ({ urlAction, step }) => {
 						border-radius: 5px;
 						padding: 5px;
 						box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-						cursor: pointer; /* para que el user sepa que puede clickeable */
+						cursor: pointer;
 					}
 
-					/* Estilo para opción activa */
+					/* Estilo para la opción activa */
 					.payments__option__item.active {
 						border: 1px solid var(--primary-color);
 						background-color: var(--background-price-color);
@@ -509,6 +628,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 					.proceed-checkout:hover {
 						background: #e00028;
 					}
+
 					.proceed-checkout:disabled {
 						background: #eaeaea;
 					}
