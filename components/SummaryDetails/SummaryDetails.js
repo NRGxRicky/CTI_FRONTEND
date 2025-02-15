@@ -1,13 +1,13 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { showPaymentsChange } from '../../lib/features/showOpacityContainerSlide';
 import { useAppDispatch } from '../../lib/hooks';
 import { useAuth } from '../../hooks/auth';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import useCart from '../../hooks/useCart';
-import { useRouter } from 'next/router';
-
+import Capitalize from '../../hooks/CapitalizeTitle';
 const SummaryDetails = ({ urlAction, step }) => {
 	const {
 		cart,
@@ -22,17 +22,15 @@ const SummaryDetails = ({ urlAction, step }) => {
 	} = useCart();
 
 	const dispatch = useAppDispatch();
-	const { cartMsi, accessToken } = useAuth();
+	const { cartMsi, accessToken, username } = useAuth();
 	const router = useRouter();
 
-	// Referencia para PayPal
+	// Referencias para PayPal y Mercado Pago
 	const paypalRef = useRef(null);
-
-	// Referencia para Mercado Pago (si deseas referenciar el contenedor)
 	const mercadoPagoRef = useRef(null);
 
-	// Estado para indicar si el script de Mercado Pago se ha cargado
-	const [mpScriptLoaded, setMpScriptLoaded] = useState(false);
+	// Referencia para guardar el controller de la Brick (para destruirla después)
+	const brickControllerRef = useRef(null);
 
 	//-------------------------------------------------------------------
 	// USE EFFECT: Renderizado de botón PayPal
@@ -71,7 +69,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 							unitPrice = parseFloat(unitPrice) || 0;
 
 							return {
-								name: item.product.titulo?.substring(0, 127) || 'Producto',
+								name: Capitalize(item.product.titulo?.substring(0, 127)) || 'Producto',
 								unit_amount: {
 									currency_code: 'MXN',
 									value: unitPrice.toFixed(2),
@@ -88,9 +86,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 								address.calle +
 								' ' +
 								address.numero +
-								(address.numero_interior
-									? ` Int. ${address.numero_interior}`
-									: ''),
+								(address.numero_interior ? ` Int. ${address.numero_interior}` : ''),
 							admin_area_2: address.ciudad, // ciudad
 							admin_area_1: address.estado, // estado
 							postal_code: address.codigo_postal,
@@ -99,10 +95,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 
 						// Calcular totales
 						const itemTotal = items.reduce((acc, it) => {
-							return (
-								acc +
-								parseFloat(it.unit_amount.value) * parseInt(it.quantity, 10)
-							);
+							return acc + parseFloat(it.unit_amount.value) * parseInt(it.quantity, 10);
 						}, 0);
 
 						const shippingCost = shipping;
@@ -112,7 +105,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 						let description;
 						if (cart.length === 1) {
 							description =
-								cart[0].product.titulo?.substring(0, 127) || 'Producto único';
+								Capitalize(cart[0].product.titulo?.substring(0, 127)) || 'Producto único';
 						} else {
 							description = `Compra de ${cart.length} artículos`;
 						}
@@ -157,20 +150,18 @@ const SummaryDetails = ({ urlAction, step }) => {
 						const bodyToSend = {
 							paypalData: order,
 							requireInvoice: !!taxInvoice,
+							payment_method: 'paypal'
 						};
 
 						try {
-							const response = await fetch(
-								'https://api.pccdnapi.com/orders/create/',
-								{
-									method: 'POST',
-									headers: {
-										'Content-Type': 'application/json',
-										Authorization: `Bearer ${accessToken}`,
-									},
-									body: JSON.stringify(bodyToSend),
-								}
-							);
+							const response = await fetch('https://api.pccdnapi.com/orders/create/', {
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json',
+									Authorization: `Bearer ${accessToken}`,
+								},
+								body: JSON.stringify(bodyToSend),
+							});
 							if (response.ok) {
 								const json = await response.json();
 								// Redirigir a la página de confirmación
@@ -182,8 +173,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 								// Manejar error
 								const errData = await response.json();
 								alert(
-									'Error al crear la orden: ' +
-										(errData.detail || response.statusText)
+									'Error al crear la orden: ' + (errData.detail || response.statusText)
 								);
 							}
 						} catch (err) {
@@ -212,36 +202,42 @@ const SummaryDetails = ({ urlAction, step }) => {
 	]);
 
 	//-------------------------------------------------------------------
-	// USE EFFECT: Renderizado de Mercado Pago (Checkout Pro embebido)
+	// USE EFFECT: Renderizado de Mercado Pago (Brick "wallet")
 	//-------------------------------------------------------------------
 	useEffect(() => {
-		// Solo corremos esta lógica si se selecciona MP y estamos en 'confirm'
-		if (step === 'confirm' && paymentMethod === 'mercadopago') {
-			// 1. Cargar script si no está cargado
-			const existingScript = document.getElementById('mercadoPagoScript');
-			if (!existingScript) {
-				const script = document.createElement('script');
-				script.id = 'mercadoPagoScript';
-				script.src = 'https://sdk.mercadopago.com/js/v2';
-				script.async = true;
-				script.onload = () => {
-					setMpScriptLoaded(true);
-					initMercadoPagoCheckout();
-				};
-				document.body.appendChild(script);
-			} else {
-				// Si ya existe, simplemente marcamos como cargado y llamamos a la función
-				setMpScriptLoaded(true);
-				initMercadoPagoCheckout();
-			}
+		let isMounted = true;
+		if (
+			typeof window !== 'undefined' &&
+			window.MercadoPago &&
+			mercadoPagoRef.current &&
+			paymentMethod === 'mercadopago' &&
+			step === 'confirm'
+		) {
+			initMercadoPagoCheckout();
 		}
+
+		// LIMPIA al desmontar o si cambia paymentMethod/step
+		return () => {
+			if (brickControllerRef.current) {
+				brickControllerRef.current.destroy();
+				brickControllerRef.current = null;
+			}
+			isMounted = false;
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [paymentMethod, step]);
 
-	// Función que crea la preferencia en tu server y luego inyecta MP Checkout
+	// Función que crea la preferencia en tu server Django y luego inyecta MP Checkout
 	const initMercadoPagoCheckout = async () => {
 		try {
-			// A) Construye el array de items (similar a PayPal)
-			const items = cart.map((item) => {
+			// Verifica que la SDK esté disponible
+			if (!window.MercadoPago) {
+				console.error('MercadoPago SDK no está cargada en el head');
+				return;
+			}
+
+			// A) Construye los items
+			const items = cart.map((item, index) => {
 				let unitPrice = cartMsi
 					? item.product.precio_final_descuento > 0
 						? item.product.precio_final_descuento
@@ -251,55 +247,92 @@ const SummaryDetails = ({ urlAction, step }) => {
 				unitPrice = parseFloat(unitPrice) || 0;
 
 				return {
-					title: item.product.titulo?.substring(0, 255) || 'Producto',
-					quantity: item.quantity,
+					id: `${item.product.sku || index}`,
+					title: Capitalize(item.product.titulo?.substring(0, 255)) || 'Producto',
 					currency_id: 'MXN',
+					picture_url: `https://api.pccdnapi.com/${item.product.imagen1s}` || '',
+					quantity: item.quantity,
 					unit_price: unitPrice,
 				};
 			});
 
-			// B) Llamamos a nuestro endpoint que crea la preferencia
-			const res = await fetch(
-				'https://api.pccdnapi.com/payments/mp/create_preference/',
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${accessToken}`,
-					},
-					body: JSON.stringify({
-						items,
-						shippingCost: parseFloat(shipping) || 0,
-					}),
-				}
-			);
+			// B) Construir un objeto "payer"
+			const payerObject = {
+				name: address?.nombres || '',
+				surname: address?.apellidos || '',
+				email: username || 'user@example.com',
+				phone: {
+					area_code: '+52',
+					number: address?.telefono || '',
+				},
+				address: {
+					street_name: address?.calle || '',
+					street_number: address?.numero || 0,
+					zip_code: address?.codigo_postal || '',
+				},
+			};
+
+			// C) Construir un objeto "shipments" para tu backend
+			const shipmentsData = {
+				cost: parseFloat(shipping) || 0,
+				free_shipping: false,
+				receiver_address: {
+					zip_code: address?.codigo_postal || '',
+					street_name: address?.calle || '',
+					city_name: address?.ciudad || '',
+					state_name: address?.estado || '',
+					street_number: address?.numero || 0,
+					country_name: 'Mexico',
+				},
+			};
+
+			console.log(shipmentsData)
+
+			// D) Llama a tu endpoint en Django
+			const res = await fetch('https://api.pccdnapi.com/payments/mp/create_preference/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${accessToken}`,
+				},
+				body: JSON.stringify({
+					items,
+					payer: payerObject,
+					shipments: shipmentsData,
+					shippingCost: parseFloat(shipping) || 0,
+					// Envías el objeto shipments
+				}),
+			});
 			const data = await res.json();
-			console.log(data);
 			if (!res.ok) {
 				console.error('Error al crear preferencia MP:', data);
 				return alert('Error al crear preferencia con Mercado Pago');
 			}
 
-			const { preferenceId } = data; // Ajusta según lo que devuelvas en tu endpoint
+			const { preferenceId } = data; // Ajusta si tu backend devuelve otro campo
 
-			// C) Instanciamos MercadoPago con la Public Key
+			// E) Instanciamos MercadoPago
 			const mp = new window.MercadoPago(
-				process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY, // Tu PUBLIC KEY
+				process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY, // tu Public Key
 				{
-					locale: 'es-MX', // Ajusta según tu país
+					locale: 'es-MX',
 				}
 			);
 
-			// D) Iniciamos el checkout PRO embebido
-			mp.checkout({
-				preference: {
-					id: preferenceId,
+			// F) Creamos el Brick "wallet"
+			const brickController = await mp.bricks().create('wallet', 'wallet_container', {
+				initialization: {
+					preferenceId,
 				},
-				render: {
-					container: '.cho-container', // Contenedor donde se incrusta el botón
-					label: 'Pagar con Mercado Pago',
+				customization: {
+					texts: {
+						valueProp: 'smart_option',
+					},
 				},
 			});
+
+			// Guardamos la referencia para destruirlo después
+			brickControllerRef.current = brickController;
 		} catch (error) {
 			console.error(error);
 			alert('Error al inicializar Checkout de Mercado Pago');
@@ -372,15 +405,12 @@ const SummaryDetails = ({ urlAction, step }) => {
 										'Divide tus pagos en quincenas con Aplazo, sin letras pequeñas.',
 								},
 							]
-								.filter(
-									(option) => !paymentMethod || paymentMethod === option.id
-								)
+								.filter((option) => !paymentMethod || paymentMethod === option.id)
 								.map((option) => (
 									<div
 										key={option.id}
-										className={`payments__option__item ${
-											paymentMethod === option.id ? 'active' : ''
-										}`}
+										className={`payments__option__item ${paymentMethod === option.id ? 'active' : ''
+											}`}
 										onClick={() => setPaymentMethod(option.id)}
 									>
 										<div className='payments__option__item__image'>
@@ -413,15 +443,12 @@ const SummaryDetails = ({ urlAction, step }) => {
 									label: 'Disfruta de un pago único con PayPal.',
 								},
 							]
-								.filter(
-									(option) => !paymentMethod || paymentMethod === option.id
-								)
+								.filter((option) => !paymentMethod || paymentMethod === option.id)
 								.map((option) => (
 									<div
 										key={option.id}
-										className={`payments__option__item ${
-											paymentMethod === option.id ? 'active' : ''
-										}`}
+										className={`payments__option__item ${paymentMethod === option.id ? 'active' : ''
+											}`}
 										onClick={() => setPaymentMethod(option.id)}
 									>
 										<div className='payments__option__item__image'>
@@ -481,7 +508,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 				{step === 'confirm' && paymentMethod === 'mercadopago' && (
 					<div
 						ref={mercadoPagoRef}
-						className='cho-container'
+						id='wallet_container'
 						style={{ marginTop: '15px' }}
 					/>
 				)}
@@ -490,155 +517,155 @@ const SummaryDetails = ({ urlAction, step }) => {
 			{/* ESTILOS */}
 			<style jsx>
 				{`
-					.checkout__error {
-						color: var(--primary-color);
-						line-height: 1.5;
-						margin-bottom: 15px;
-						text-align: center;
-					}
+          .checkout__error {
+            color: var(--primary-color);
+            line-height: 1.5;
+            margin-bottom: 15px;
+            text-align: center;
+          }
 
-					.payments__label-status {
-						font-size: 12px;
-						font-weight: 300;
-						margin-left: 5px;
-						border-radius: 5px;
-						background-color: var(--primary-color);
-						color: #fff;
-						padding: 2px 5px;
-					}
+          .payments__label-status {
+            font-size: 12px;
+            font-weight: 300;
+            margin-left: 5px;
+            border-radius: 5px;
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 2px 5px;
+          }
 
-					.summary-row__total {
-						display: flex;
-						gap: 10px;
-						margin-top: 10px;
-					}
+          .summary-row__total {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+          }
 
-					.summary-row {
-						display: flex;
-						justify-content: space-between;
-						align-items: baseline;
-						margin-bottom: 10px;
-						gap: 5px;
-					}
+          .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+            gap: 5px;
+          }
 
-					.summary-row.total {
-						border-top: 1px solid #eaeaea;
-						font-weight: bold;
-						font-size: 16px;
-					}
+          .summary-row.total {
+            border-top: 1px solid #eaeaea;
+            font-weight: bold;
+            font-size: 16px;
+          }
 
-					.summary-row.iva {
-						font-size: 12px;
-						font-weight: 300;
-						line-height: 22px;
-					}
+          .summary-row.iva {
+            font-size: 12px;
+            font-weight: 300;
+            line-height: 22px;
+          }
 
-					.cart__change-payment {
-						font-size: 12px;
-						margin-bottom: 10px;
-						color: var(--primary-color);
-						display: flex;
-						justify-content: right;
-					}
+          .cart__change-payment {
+            font-size: 12px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            display: flex;
+            justify-content: right;
+          }
 
-					.cart__change-payment__action {
-						text-decoration: underline;
-						cursor: pointer !important;
-					}
+          .cart__change-payment__action {
+            text-decoration: underline;
+            cursor: pointer !important;
+          }
 
-					.summary-details {
-						flex: 0.4;
-						width: 100%;
-					}
+          .summary-details {
+            flex: 0.4;
+            width: 100%;
+          }
 
-					.summary-details__content {
-						border: 1px solid #eaeaea;
-						padding: 20px;
-						border-radius: 5px;
-					}
+          .summary-details__content {
+            border: 1px solid #eaeaea;
+            padding: 20px;
+            border-radius: 5px;
+          }
 
-					.summary-details__title {
-						font-size: 16px;
-						font-weight: 600;
-						margin-bottom: 20px;
-					}
+          .summary-details__title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+          }
 
-					.payments__option__header {
-						font-weight: 600;
-						font-size: 16px;
-					}
+          .payments__option__header {
+            font-weight: 600;
+            font-size: 16px;
+          }
 
-					.payments__option__body {
-						margin-top: 10px;
-					}
+          .payments__option__body {
+            margin-top: 10px;
+          }
 
-					.payments__option__item {
-						display: flex;
-						align-items: center;
-						gap: 10px;
-						margin-top: 10px;
-						background-color: #fff;
-						border-radius: 5px;
-						padding: 5px;
-						box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-						cursor: pointer;
-					}
+          .payments__option__item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 5px;
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+            cursor: pointer;
+          }
 
-					/* Estilo para la opción activa */
-					.payments__option__item.active {
-						border: 1px solid var(--primary-color);
-						background-color: var(--background-price-color);
-					}
+          /* Estilo para la opción activa */
+          .payments__option__item.active {
+            border: 1px solid var(--primary-color);
+            background-color: var(--background-price-color);
+          }
 
-					.payments__option__item__image {
-						position: relative;
-						max-width: 200px;
-						max-height: 200px;
-						min-height: 50px;
-						min-width: 50px;
-						border: 1px solid #eaeaea;
-						border-radius: 5px;
-						background-color: #fff;
-					}
+          .payments__option__item__image {
+            position: relative;
+            max-width: 200px;
+            max-height: 200px;
+            min-height: 50px;
+            min-width: 50px;
+            border: 1px solid #eaeaea;
+            border-radius: 5px;
+            background-color: #fff;
+          }
 
-					.payments {
-						display: flex;
-						flex-direction: column;
-						border: 1px solid #eaeaea;
-						border-radius: 5px;
-						padding: 15px;
-						margin-bottom: 20px;
-						background-color: #eaeaea;
-						font-size: 12px;
-					}
+          .payments {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #eaeaea;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #eaeaea;
+            font-size: 12px;
+          }
 
-					.proceed-checkout {
-						flex: 1;
-						background: var(--primary-color);
-						color: #fff;
-						border: none;
-						border-radius: 4px;
-						padding: 10px;
-						font-size: 16px;
-						cursor: pointer;
-						text-align: center;
-						width: 100%;
-					}
+          .proceed-checkout {
+            flex: 1;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            width: 100%;
+          }
 
-					.proceed-checkout:hover {
-						background: #e00028;
-					}
+          .proceed-checkout:hover {
+            background: #e00028;
+          }
 
-					.proceed-checkout:disabled {
-						background: #eaeaea;
-					}
+          .proceed-checkout:disabled {
+            background: #eaeaea;
+          }
 
-					@media only screen and (max-width: 62em) {
-						.summary-details {
-							flex: 100%;
-						}
-					}
-				`}
+          @media only screen and (max-width: 62em) {
+            .summary-details {
+              flex: 100%;
+            }
+          }
+        `}
 			</style>
 		</div>
 	);

@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@mercadopago/sdk-react": "^0.0.23",
     "@reduxjs/toolkit": "^2.1.0",
     "embla-carousel": "^8.0.0-rc14",
     "embla-carousel-autoplay": "^8.1.3",
