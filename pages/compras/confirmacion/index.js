@@ -32,7 +32,7 @@ const Index = () => {
 		if (!orderId) return;
 
 
-		
+
 		const fetchOrder = async () => {
 			try {
 				const response = await fetch(
@@ -149,27 +149,43 @@ const Index = () => {
 			<div className='confirmation-page'>
 				<h1>¡Gracias por tu compra!</h1>
 				<hr className='separator' />
-
-				<p>
-					Tu pedido ha sido confirmado exitosamente. Se ha enviado la
-					información del pedido al correo: <strong>{username}</strong>.
-				</p>
-				<br />
-				<p>
-					Tu pedido puede tomar hasta 48 horas hábiles para ser procesado. Una
-					vez que se haya enviado, recibirás un correo de confirmación con los
-					detalles del envío y el número de seguimiento de la paquetería.
-				</p>
-				<br />
-				<p>
-					Próximamente recibirás la factura con el monto total de tu pedido,
-					incluidos los gastos de envío. Esta se generará de manera automática.
-				</p>
+				{order.status == 'PENDING' &&
+					<>
+						<p>
+							Tu compra se encuentra en <strong>Pendiente de pago</strong>.
+						</p>
+						<p>
+							Se ha enviado la
+							información de la compra al correo: <strong>{username}</strong>.
+						</p>
+						<br />
+						<p>Por favor, revisa los detalles de tu compra y completa el pago para que podamos procesarlo.</p>
+					</>
+				}
+				{order.status == 'CREATED' &&
+					<>
+						<p>
+							Tu compra ha sido confirmado exitosamente. Se ha enviado la
+							información de la compra al correo: <strong>{username}</strong>.
+						</p>
+						<br />
+						<p>
+							Tu compra puede tomar hasta 48 horas hábiles para ser procesado. Una
+							vez que se haya enviado, recibirás un correo de confirmación con los
+							detalles del envío y el número de seguimiento de la paquetería.
+						</p>
+						<br />
+						<p>
+							Próximamente recibirás la factura con el monto total de tu compra,
+							incluidos los gastos de envío. Esta se generará de manera automática.
+						</p>
+					</>
+				}
 				<hr className='separator' />
 
 				<div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
 					<a onClick={handlePrintOrder} className='print-button'>
-						Imprimir Pedido
+						Imprimir Compra
 					</a>
 				</div>
 
@@ -278,7 +294,7 @@ const Index = () => {
 					</div>
 					<div>
 						<button onClick={handleViewOrder} className='go-order-button'>
-							Ver Pedido
+							Ver Compra
 						</button>
 					</div>
 				</div>

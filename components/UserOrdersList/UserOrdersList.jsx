@@ -277,7 +277,7 @@ function UserOrdersList() {
 						.cart__loading {
 							position: relative;
 							width: 100%;
-							min-height: 50dvh;	
+							min-height: 50dvh;
 							display: flex;
 							justify-content: center;
 							align-items: center;
@@ -523,11 +523,21 @@ function UserOrdersList() {
 						{/* Mapeo de órdenes - Versión MÓVIL */}
 						{orders.map((order) => {
 							const orderNumber = `#${order.id}`;
-							const overallStatus = order.overall_status || 'En preparación';
+							let overallStatus = order.overall_status || 'En preparación';
 							const dateLabel = formatDate(order.overall_date);
-							const deliveredText = dateLabel
+							let deliveredText = dateLabel
 								? `${overallStatus} el ${dateLabel}`
 								: overallStatus;
+
+							order.status == 'PENDING' &&
+								(overallStatus = 'Pendiente de pago');
+							order.status == 'PENDING' &&
+								(deliveredText =
+									'El pago aún no ha sido aprobado o está siendo procesado');
+
+							order.status == 'CANCELED' && (overallStatus = 'Cancelado');
+							order.status == 'CANCELED' &&
+								(deliveredText = 'La compra fue cancelada');
 
 							const orderDate = order.created_at
 								? new Date(order.created_at).toLocaleDateString('es-MX')
@@ -867,11 +877,21 @@ function UserOrdersList() {
 						<div className='orders-list'>
 							{orders.map((order) => {
 								const orderNumber = `#${order.id}`;
-								const overallStatus = order.overall_status || 'En preparación';
+								let overallStatus = order.overall_status || 'En preparación';
 								const dateLabel = formatDate(order.overall_date);
-								const deliveredText = dateLabel
+								let deliveredText = dateLabel
 									? `${overallStatus} el ${dateLabel}`
 									: overallStatus;
+
+								order.status == 'PENDING' &&
+									(overallStatus = 'Pendiente de pago');
+								order.status == 'PENDING' &&
+									(deliveredText =
+										'El pago aún no ha sido aprobado o está siendo procesado');
+
+								order.status == 'CANCELED' && (overallStatus = 'Cancelado');
+								order.status == 'CANCELED' &&
+									(deliveredText = 'La compra fue cancelada');
 
 								const orderDate = order.created_at
 									? new Date(order.created_at).toLocaleDateString('es-MX')

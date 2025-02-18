@@ -205,7 +205,6 @@ const SummaryDetails = ({ urlAction, step }) => {
 	// USE EFFECT: Renderizado de Mercado Pago (Brick "wallet")
 	//-------------------------------------------------------------------
 	useEffect(() => {
-		let isMounted = true;
 		if (
 			typeof window !== 'undefined' &&
 			window.MercadoPago &&
@@ -215,16 +214,6 @@ const SummaryDetails = ({ urlAction, step }) => {
 		) {
 			initMercadoPagoCheckout();
 		}
-
-		// LIMPIA al desmontar o si cambia paymentMethod/step
-		return () => {
-			if (brickControllerRef.current) {
-				brickControllerRef.current.destroy();
-				brickControllerRef.current = null;
-			}
-			isMounted = false;
-		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [paymentMethod, step]);
 
 	// Función que crea la preferencia en tu server Django y luego inyecta MP Checkout
@@ -286,8 +275,6 @@ const SummaryDetails = ({ urlAction, step }) => {
 				},
 			};
 
-			console.log(shipmentsData)
-
 			// D) Llama a tu endpoint en Django
 			const res = await fetch('https://api.pccdnapi.com/payments/mp/create_preference/', {
 				method: 'POST',
@@ -300,6 +287,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 					payer: payerObject,
 					shipments: shipmentsData,
 					shippingCost: parseFloat(shipping) || 0,
+					requireInvoice: !!taxInvoice,
 					// Envías el objeto shipments
 				}),
 			});

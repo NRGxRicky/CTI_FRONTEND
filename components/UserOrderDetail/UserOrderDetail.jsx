@@ -125,11 +125,19 @@ export default function UserOrderDetail({ orderId }) {
 	// Datos principales
 	// -------------------------------------------------
 	const orderNumber = `#${order.id}`;
-	const overallStatus = order.overall_status || 'En preparación';
+	let overallStatus = order.overall_status || 'En preparación';
 	const dateLabel = formatDate(order.overall_date);
-	const deliveredText = dateLabel
+	let deliveredText = dateLabel
 		? `${overallStatus} el ${dateLabel}`
 		: overallStatus;
+
+	order.status == 'PENDING' && (overallStatus = 'Pendiente de pago');
+	order.status == 'PENDING' &&
+		(deliveredText = 'El pago aún no ha sido aprobado o está siendo procesado');
+
+	order.status == 'CANCELED' && (overallStatus = 'Cancelado');
+	order.status == 'CANCELED' && (deliveredText = 'La compra fue cancelada');
+
 	const orderDate = order.created_at
 		? new Date(order.created_at).toLocaleDateString('es-MX')
 		: '';
@@ -185,11 +193,6 @@ export default function UserOrderDetail({ orderId }) {
 								<strong>Estado:</strong> {overallStatus} <br />
 								{deliveredText}
 							</p>
-							{order.paypal_order_id && (
-								<p className='dim-text'>
-									PayPal Order ID: {order.paypal_order_id}
-								</p>
-							)}
 						</div>
 					</div>
 
@@ -491,7 +494,7 @@ export default function UserOrderDetail({ orderId }) {
 							<div className='side-summary__price-row'>
 								<span>Precio del producto(s)</span>
 								<span>
-									$
+									${' '}
 									{CurrencyFormat(
 										parseFloat(order.total) - parseFloat(order.shipping_cost)
 									)}
@@ -499,12 +502,12 @@ export default function UserOrderDetail({ orderId }) {
 							</div>
 							<div className='side-summary__price-row'>
 								<span>Envíos</span>
-								<span>-${CurrencyFormat(order.shipping_cost)}</span>
+								<span>$ {CurrencyFormat(order.shipping_cost)}</span>
 							</div>
 							<hr />
 							<div className='side-summary__price-row side-summary__total'>
 								<span>Total</span>
-								<span>${CurrencyFormat(order.total)}</span>
+								<span>$ {CurrencyFormat(order.total)}</span>
 							</div>
 
 							{paymentMethodData && (
