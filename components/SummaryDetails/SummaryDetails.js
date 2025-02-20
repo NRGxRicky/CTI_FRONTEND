@@ -8,6 +8,8 @@ import { useAuth } from '../../hooks/auth';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import useCart from '../../hooks/useCart';
 import Capitalize from '../../hooks/CapitalizeTitle';
+import { useEnv } from '../../context/EnvContext';
+
 const SummaryDetails = ({ urlAction, step }) => {
 	const {
 		cart,
@@ -24,6 +26,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 	const dispatch = useAppDispatch();
 	const { cartMsi, accessToken, username } = useAuth();
 	const router = useRouter();
+	const { storeId } = useEnv();
 
 	// Referencias para PayPal y Mercado Pago
 	const paypalRef = useRef(null);
@@ -324,6 +327,117 @@ const SummaryDetails = ({ urlAction, step }) => {
 		} catch (error) {
 			console.error(error);
 			alert('Error al inicializar Checkout de Mercado Pago');
+		}
+	};
+
+	// Se ejecuta cuando el usuario selecciona KueskiPay y está en el paso de confirmación
+	useEffect(() => {
+		if (paymentMethod === 'kueskipay' && step === 'confirm') {
+			initKueskiPayCheckout();
+		}
+	}, [paymentMethod, step]);
+
+	const initKueskiPayCheckout = async () => {
+		try {
+			// A) Construir la lista de ítems
+			const items = cart.map((item, index) => {
+				let unitPrice = cartMsi
+					? (item.product.precio_final_descuento > 0
+						? item.product.precio_final_descuento
+						: item.product.precio_final)
+					: item.product.precio_contado;
+				unitPrice = parseFloat(unitPrice) || 0;
+				return {
+					name: item.product.titulo?.substring(0, 255) || 'Producto',
+					description: item.product.descripcion || 'Sin descripción',
+					quantity: item.quantity,
+					price: unitPrice,
+					currency: 'MXN',
+					sku: item.product.sku || `${index}`,
+				};
+			});
+
+			// B) Calcular montos: subtotal, shipping, tax y total.
+			const subtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+			const shippingCost = parseFloat(shipping) || 0;
+			// Por ejemplo, calculamos 16% de IVA sobre el subtotal
+
+			const total = parseFloat((subtotal + shippingCost).toFixed(2));
+
+			// C) Construir el objeto "amount"
+			const amount = {
+				total: total,
+				currency: "MXN",
+				details: {
+					subtotal: subtotal,
+					shipping: shippingCost
+				},
+			};
+
+			// D) Construir el objeto "shipping"
+			const shippingData = {
+				name: {
+					name: address.nombres,
+					last: address.apellidos
+				},
+				address: {
+					address: `${address.calle} ${address.numero}`,
+					interior: address.numero_interior || "",
+					neighborhood: address.colonia || "",
+					city: address.ciudad,
+					state: address.estado,
+					zipcode: address.codigo_postal,
+					country: "MX"
+				},
+				phone_number: address.telefono,
+				email: address.email || "noreply@domain.com"
+			};
+
+			// F) Definir las URLs de callback (ajusta estas URLs según tu entorno)
+			const callbacks = {
+				on_success: "https://pccdnapi.com/success",
+				on_reject: "https://pccdnapi.com/carrito",
+				on_canceled: "https://pccdnapi.com/carrito",
+				on_failed: "https://pccdnapi.com/carrito"
+			};
+
+			// G) Armar el payload para el endpoint de KueskiPay
+			const payload = {
+				order_id: `Order-${Date.now()}`, // O tu lógica para generar el order_id
+				description: `Compra de ${cart.length} artículo(s)`,
+				amount: amount,
+				items: items,
+				shipping: shippingData,
+				callbacks: callbacks,
+				store_id: storeId
+			};
+
+			// H) Llamar a tu endpoint en el backend que crea el pago con KueskiPay
+			const res = await fetch('https://api.pccdnapi.com/payments/kp/create_payment/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${accessToken}`,
+				},
+				body: JSON.stringify(payload)
+			});
+
+			const data = await res.json();
+			if (!res.ok) {
+				console.error("Error creando el pago KueskiPay:", data);
+				return alert("Error al crear el pago con KueskiPay");
+			}
+			console.log(data)
+
+			// I) Procesar la respuesta: si es exitosa, se espera que KueskiPay devuelva en data.callback_url el URL al que redirigir
+			if (data.status === "success" && data.data && data.data.callback_url) {
+				window.location.href = data.data.callback_url;
+			} else {
+				alert("No se recibió URL de pago de KueskiPay");
+			}
+		} catch (error) {
+			console.error(error);
+			alert("Error al inicializar el pago con KueskiPay");
 		}
 	};
 
