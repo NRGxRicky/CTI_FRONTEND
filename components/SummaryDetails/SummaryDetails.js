@@ -333,7 +333,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 	// Se ejecuta cuando el usuario selecciona KueskiPay y está en el paso de confirmación
 	useEffect(() => {
 		if (paymentMethod === 'kueskipay' && step === 'confirm') {
-			initKueskiPayCheckout();
+			// initKueskiPayCheckout();
 		}
 	}, [paymentMethod, step]);
 
@@ -429,12 +429,14 @@ const SummaryDetails = ({ urlAction, step }) => {
 			}
 			console.log(data)
 
+
 			// I) Procesar la respuesta: si es exitosa, se espera que KueskiPay devuelva en data.callback_url el URL al que redirigir
 			if (data.status === "success" && data.data && data.data.callback_url) {
 				window.location.href = data.data.callback_url;
 			} else {
 				alert("No se recibió URL de pago de KueskiPay");
 			}
+
 		} catch (error) {
 			console.error(error);
 			alert("Error al inicializar el pago con KueskiPay");
@@ -614,7 +616,22 @@ const SummaryDetails = ({ urlAction, step }) => {
 						style={{ marginTop: '15px' }}
 					/>
 				)}
-			</div>
+
+
+			{/* KueskiPay container */}
+			{step === 'confirm' && paymentMethod === 'kueskipay' && (
+					<div className='kueskipay__containter checkout__error'>
+						Este método de pago aún no está disponible.
+					</div>
+			)}
+			
+			{/* KueskiPay container */}
+			{step === 'confirm' && paymentMethod === 'aplazo' && (
+				<div className='aplazo__containter checkout__error'>
+						Este método de pago aún no está disponible.
+				</div>
+			)}
+		</div>
 
 			{/* ESTILOS */}
 			<style jsx>
