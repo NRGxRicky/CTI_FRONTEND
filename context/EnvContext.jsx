@@ -22,7 +22,7 @@ export function EnvProvider({ children }) {
 		emojiFooter: process.env.NEXT_PUBLIC_FOOTER_EMOJI,
 		storeId: process.env.NEXT_PUBLIC_STORE_ID,
 		paypalClientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
-		googledAnalytics: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
+		googleAnalyticsId: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
 	};
 
 	return (
