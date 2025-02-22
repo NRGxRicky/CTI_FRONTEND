@@ -16,7 +16,7 @@ async function updateSitemap() {
 
     const sitemapContent = await response.text();
     // Guarda el archivo en la carpeta public para que Next.js lo sirva en https://pcstore.mx/sitemap.xml
-    const publicPath = path.join(__dirname, 'public', 'sitemap.xml');
+    const publicPath = path.join(__dirname, '../public/sitemap.xml');
     fs.writeFileSync(publicPath, sitemapContent, 'utf8');
     console.log('Sitemap actualizado correctamente.');
   } catch (error) {
