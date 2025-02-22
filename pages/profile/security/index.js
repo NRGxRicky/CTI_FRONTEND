@@ -64,7 +64,10 @@ const index = () => {
 		}
 	}, [confirmNewPassword, newPassword]);
 
-	if (!loading && !isAuthenticated) Router.push('/');
+	if (!loading && !isAuthenticated) {
+		Router.push(`/login?redirect=${encodeURIComponent(Router.asPath)}`);
+	}
+
 
 	return (
 		<div>
