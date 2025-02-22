@@ -22,12 +22,15 @@ import { useEnv } from '../context/EnvContext';
 export const getServerSideProps = async (context) => {
 	const { productId } = context.query;
 	const data = await FetchGetDetailProduct(productId);
+
 	return {
 		props: data,
 	};
 };
 
 const ProductItem = ({ item }) => {
+
+	
 	const convertTitle = Capitalize(item.titulo);
 
 	const { height, width } = WindowDimensions();
