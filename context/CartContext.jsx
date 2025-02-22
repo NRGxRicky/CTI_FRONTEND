@@ -14,7 +14,7 @@ export const CartProvider = ({ children }) => {
 	const { isAuthenticated, accessToken, cartMsi, updateDataUser } = useAuth();
 	const [cart, setCart] = useState([]);
 	const [subtotal, setSubtotal] = useState(0);
-	const [shipping, setShipping] = useState(129);
+	const [shipping, setShipping] = useState(139);
 	const [total, setTotal] = useState(0);
 	const router = useRouter();
 	const [loading, setLoading] = useState(true);
