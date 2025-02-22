@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow:
-
-Sitemap: https://pcstore.mx/services/sitemap/sitemap.xml
