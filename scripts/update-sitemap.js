@@ -16,7 +16,7 @@ async function updateSitemap() {
     const sitemapContent = await response.text();
 
     // Guarda el archivo en public/services/sitemap.xml
-    const publicPath = path.join(__dirname, '../public/services/sitemap.xml');
+    const publicPath = path.join(__dirname, '../public/services/sitemap/sitemap.xml');
     fs.writeFileSync(publicPath, sitemapContent, 'utf8');
     console.log('Sitemap actualizado correctamente.');
   } catch (error) {
