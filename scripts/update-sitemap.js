@@ -9,6 +9,8 @@ async function updateSitemap() {
     const storeId = process.env.NEXT_PUBLIC_STORE_ID;
     const sitemapUrl = `https://api.pccdnapi.com/services/${storeId}/sitemap.xml`;
 
+    console.log(storeId)
+
     const response = await fetch(sitemapUrl);
     if (!response.ok) {
       throw new Error(`Error al descargar el sitemap: ${response.status}`);
