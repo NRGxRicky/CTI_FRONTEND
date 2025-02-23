@@ -1,4 +1,6 @@
 // scripts/update-sitemap.js
+require('dotenv').config();
+
 const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch'); // Si usas Node.js 18+ puedes usar el global fetch
