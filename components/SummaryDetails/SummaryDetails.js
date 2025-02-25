@@ -484,7 +484,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 				{/* KUESKIPAY WIDGET */}
 				{((!paymentMethod) || paymentMethod === 'kueskipay') && (
 					<div className='kueskipay__widget-cart'>
-						<KueskiPayWidget product_price={total} product_title={'cart'} widget_type={'cart'}>
+						<KueskiPayWidget product_price={total} product_title={'cart'} widget_type={'cart'} />
 					</div>
 				)}
 
