@@ -11,6 +11,7 @@ import ProductsButtonsActions from '../ProductsButtonsActions/ProductsButtonsAct
 import { useAuth } from '../../hooks/auth';
 import { showPaymentsChange } from '../../lib/features/showOpacityContainerSlide';
 import { useAppDispatch } from '../../lib/hooks';
+import KueskiPayWidget from '../KueskiPayWidget/KueskiPayWidget';
 
 const DetailProduct = ({
 	item,
@@ -312,6 +313,14 @@ const DetailProduct = ({
 							</div>
 						</div>
 					</div>
+
+					{/* KUESKIPAY WIDGET */}
+					<KueskiPayWidget product_title={Capitalize(item.titulo)} product_price={
+						item.precio_final_descuento > 0
+							? CurrencyFormat(item.precio_final_descuento)
+							: CurrencyFormat(item.precio_final)
+					} />
+
 					{item.stock_total > 0 ? (
 						<div className='product__description'>
 							<div className='product__description__content'>

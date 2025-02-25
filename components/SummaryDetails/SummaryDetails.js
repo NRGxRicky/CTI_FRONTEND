@@ -9,6 +9,7 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import useCart from '../../hooks/useCart';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import { useEnv } from '../../context/EnvContext';
+import KueskiPayWidget from '../KueskiPayWidget/KueskiPayWidget';
 
 const SummaryDetails = ({ urlAction, step }) => {
 	const {
@@ -480,6 +481,13 @@ const SummaryDetails = ({ urlAction, step }) => {
 					<span>$ {CurrencyFormat(total, 2, '.', ',')}</span>
 				</div>
 
+				{/* KUESKIPAY WIDGET */}
+				{((!paymentMethod) || paymentMethod === 'kueskipay') && (
+					<div className='kueskipay__widget-cart'>
+						<KueskiPayWidget />
+					</div>
+				)}
+
 				{/* Sección de opciones de pago */}
 				{cartMsi ? (
 					<div className='payments'>
@@ -641,6 +649,10 @@ const SummaryDetails = ({ urlAction, step }) => {
 			{/* ESTILOS */}
 			<style jsx>
 				{`
+
+				.kueskipay__widget-cart {
+					margin-bottom: 20px;
+				}
 
 					.kueskypay__button {
 						background-color: #0075ff !important;

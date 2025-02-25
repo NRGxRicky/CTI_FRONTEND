@@ -1,31 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Preloader, TailSpin } from 'react-preloader-icon';
-import useCart from '../../../hooks/useCart';
+import { useAuth } from '../../../hooks/auth';
 
-export default function KueskiSuccess() {
+export default function KueskiCanceled() {
   const router = useRouter();
-  const { clearCart } = useCart();
   const { orderId } = router.query;
-
+  const { accessToken } = useAuth();
   const [processing, setProcessing] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!router.isReady) return; // Espera a que los parámetros estén listos
 
-    if (orderId) {
-      // Limpia el carrito y redirige a la página de confirmación
-      router.push(`/compras/confirmacion/?orderId=${orderId}`);
-      setTimeout(() => {
-        clearCart();
-      }, 3000);
-    
-    } else {
-      setError("No se recibió orderId");
+    async function cancelOrder() {
+      try {
+        const res = await fetch('https://api.pccdnapi.com/payments/kp/canceled', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ orderId }),
+        });
+
+        if (res.ok) {
+          // Si se canceló (eliminó) la orden, redirige al usuario al carrito
+          router.push('/carrito/');
+        } else {
+          const errData = await res.json();
+          setError(errData.error || 'Error al cancelar la orden');
+        }
+      } catch (err) {
+        console.error(err);
+        setError('Error de conexión.');
+      } finally {
+        setProcessing(false);
+      }
     }
-    setProcessing(false);
-  }, [router.isReady, orderId, clearCart, router]);
+
+    if (orderId && accessToken) {
+      cancelOrder();
+    }
+  }, [accessToken, orderId]);
 
   if (processing) {
     return (
@@ -89,5 +106,5 @@ export default function KueskiSuccess() {
     );
   }
 
-  return null; // Mientras se redirige, no se muestra nada
+  return null; // Mientras se procesa o se redirige, no se muestra nada
 }
