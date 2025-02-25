@@ -27,6 +27,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 	const { cartMsi, accessToken, username } = useAuth();
 	const router = useRouter();
 	const { storeId } = useEnv();
+	const [kueskiCallbackUrl, setKueskiCallbackUrl] = useState(null);
 
 	// Referencias para PayPal y Mercado Pago
 	const paypalRef = useRef(null);
@@ -333,7 +334,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 	// Se ejecuta cuando el usuario selecciona KueskiPay y está en el paso de confirmación
 	useEffect(() => {
 		if (paymentMethod === 'kueskipay' && step === 'confirm') {
-			// initKueskiPayCheckout();
+			initKueskiPayCheckout();
 		}
 	}, [paymentMethod, step]);
 
@@ -357,11 +358,9 @@ const SummaryDetails = ({ urlAction, step }) => {
 				};
 			});
 
-			// B) Calcular montos: subtotal, shipping, tax y total.
+			// B) Calcular montos: subtotal, shipping y total.
 			const subtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 			const shippingCost = parseFloat(shipping) || 0;
-			// Por ejemplo, calculamos 16% de IVA sobre el subtotal
-
 			const total = parseFloat((subtotal + shippingCost).toFixed(2));
 
 			// C) Construir el objeto "amount"
@@ -393,7 +392,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 				email: address.email || "noreply@domain.com"
 			};
 
-			// F) Definir las URLs de callback (ajusta estas URLs según tu entorno)
+			// E) Definir las URLs de callback (ajusta según tu entorno)
 			const callbacks = {
 				on_success: "https://pccdnapi.com/success",
 				on_reject: "https://pccdnapi.com/carrito",
@@ -401,18 +400,18 @@ const SummaryDetails = ({ urlAction, step }) => {
 				on_failed: "https://pccdnapi.com/carrito"
 			};
 
-			// G) Armar el payload para el endpoint de KueskiPay
+			// F) Armar el payload para el endpoint de KueskiPay
 			const payload = {
-				order_id: `Order-${Date.now()}`, // O tu lógica para generar el order_id
 				description: `Compra de ${cart.length} artículo(s)`,
 				amount: amount,
 				items: items,
 				shipping: shippingData,
 				callbacks: callbacks,
-				store_id: storeId
+				store_id: storeId,
+				requireInvoice: !!taxInvoice,
 			};
 
-			// H) Llamar a tu endpoint en el backend que crea el pago con KueskiPay
+			// G) Llamar a tu endpoint en el backend que crea el pago con KueskiPay
 			const res = await fetch('https://api.pccdnapi.com/payments/kp/create_payment/', {
 				method: 'POST',
 				headers: {
@@ -427,12 +426,11 @@ const SummaryDetails = ({ urlAction, step }) => {
 				console.error("Error creando el pago KueskiPay:", data);
 				return alert("Error al crear el pago con KueskiPay");
 			}
-			console.log(data)
+			console.log(data);
 
-
-			// I) Procesar la respuesta: si es exitosa, se espera que KueskiPay devuelva en data.callback_url el URL al que redirigir
-			if (data.status === "success" && data.data && data.data.callback_url) {
-				window.location.href = data.data.callback_url;
+			// H) Guardar el callback_url en el estado para renderizar el botón
+			if (data.status === "success" && data.merchant_response.data && data.merchant_response.data.callback_url) {
+				setKueskiCallbackUrl(data.merchant_response.data.callback_url);
 			} else {
 				alert("No se recibió URL de pago de KueskiPay");
 			}
@@ -618,24 +616,37 @@ const SummaryDetails = ({ urlAction, step }) => {
 				)}
 
 
-			{/* KueskiPay container */}
-			{step === 'confirm' && paymentMethod === 'kueskipay' && (
-					<div className='kueskipay__containter checkout__error'>
+				{/* KueskiPay container */}
+				{step === 'confirm' && paymentMethod === 'kueskipay' && (
+					<div className='kueskipay__container'>
+						{kueskiCallbackUrl && (
+							<button
+								className='proceed-checkout kueskypay__button'
+								onClick={() => (window.location.href = kueskiCallbackUrl)}
+							>
+								Continuar a Kueski Pay
+							</button>
+						)}
+					</div>
+				)}
+
+				{/* Aplazo container */}
+				{step === 'confirm' && paymentMethod === 'aplazo' && (
+					<div className='aplazo__containter checkout__error'>
 						Este método de pago aún no está disponible.
 					</div>
-			)}
-			
-			{/* KueskiPay container */}
-			{step === 'confirm' && paymentMethod === 'aplazo' && (
-				<div className='aplazo__containter checkout__error'>
-						Este método de pago aún no está disponible.
-				</div>
-			)}
-		</div>
+				)}
+			</div>
 
 			{/* ESTILOS */}
 			<style jsx>
 				{`
+
+					.kueskypay__button {
+						background-color: #0075ff !important;
+
+					}
+
           .checkout__error {
             color: var(--primary-color);
             line-height: 1.5;
