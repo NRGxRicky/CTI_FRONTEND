@@ -427,7 +427,6 @@ const SummaryDetails = ({ urlAction, step }) => {
 				console.error("Error creando el pago KueskiPay:", data);
 				return alert("Error al crear el pago con KueskiPay");
 			}
-			console.log(data);
 
 			// H) Guardar el callback_url en el estado para renderizar el botón
 			if (data.status === "success" && data.merchant_response.data && data.merchant_response.data.callback_url) {
