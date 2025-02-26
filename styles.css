@@ -5,7 +5,9 @@
 	outline: none;
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	-webkit-appearance: none;
+	-webkit-text-size-adjust: 100%;
 }
+
 
 body,
 html {
@@ -43,7 +45,7 @@ body {
 
 input,
 textarea,
-select {
+select, input::placeholder {
   font-size: 16px;
 }
 
