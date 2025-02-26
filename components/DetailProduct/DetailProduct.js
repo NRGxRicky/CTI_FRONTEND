@@ -281,7 +281,7 @@ const DetailProduct = ({
 										></input>
 									</div>
 									<div>
-										A un pago:
+										A un pago
 									</div>
 								</div>
 								<span className='text--light'>
@@ -307,7 +307,7 @@ const DetailProduct = ({
 										></input>
 									</div>
 									<div>
-										A Pagos:
+										A Pagos
 									</div>
 								</div>
 								<span className='text--light'>
@@ -582,7 +582,9 @@ const DetailProduct = ({
 					.product__price__header {
 						font-size: 16px;
 						display: flex;
-						gap: 10px;
+						flex-direction: row-reverse;
+
+						justify-content: space-between;
 					}
 					.product__info__container {
 					}
