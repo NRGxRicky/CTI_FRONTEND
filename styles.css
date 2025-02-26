@@ -1293,7 +1293,7 @@ button {
 		--active: var(--primary-color);
 		--active-inner: #fff;
 		--focus: 2px var(--primary-color);
-		--border: #e1c3bb;
+		--border: #c8c8c8;
 		--border-hover: var(--primary-color);
 		--background: #fff;
 		--disabled: #f6f8ff;
@@ -1308,7 +1308,7 @@ button {
 		position: relative;
 		margin: 0;
 		cursor: pointer;
-		border: 1px solid var(--bc, var(--border));
+		border: 2px solid var(--bc, var(--border));
 		background: var(--b, var(--background));
 		transition: background 0.3s, border-color 0.3s, box-shadow 0.2s;
 	}
@@ -1369,15 +1369,15 @@ button {
 		border-radius: 50%;
 	}
 	.radio-wrapper input[type='radio']:after {
-		width: 17px;
-		height: 17px;
+		width: 15px;
+		height: 15px;
 		border-radius: 50%;
 		background: var(--active-inner);
 		opacity: 0;
 		transform: scale(var(--s, 0.7));
 	}
 	.radio-wrapper input[type='radio']:checked {
-		--s: 0.6;
+		--s: 0.7;
 	}
 }
 

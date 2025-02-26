@@ -281,7 +281,7 @@ const DetailProduct = ({
 										></input>
 									</div>
 									<div>
-										A un pago
+										A un Pago
 									</div>
 								</div>
 								<span className='text--light'>
