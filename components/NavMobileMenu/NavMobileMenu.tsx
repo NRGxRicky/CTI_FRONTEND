@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import TruncateMarkup from 'react-truncate-markup';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+
 import {
 	showOpacity,
 	hideOpacity,
@@ -13,12 +14,6 @@ import {
 	blockBodyScroll,
 	unlockBodyScroll,
 } from '../../lib/features/showOpacityContainerSlide';
-import {
-	BrowserView,
-	MobileView,
-	isBrowser,
-	isMobile,
-} from 'react-device-detect';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import { useEnv } from '../../context/EnvContext';
 
@@ -26,6 +21,7 @@ const NavMobileMenu = () => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
+	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
@@ -66,12 +62,12 @@ const NavMobileMenu = () => {
 	};
 
 	useEffect(() => {
-		if (router.pathname.startsWith('/listado') && isMobile) {
+		if (router.pathname.startsWith('/listado') && mobileView) {
 			dispacth(blockBodyScroll());
 		} else {
 			dispacth(unlockBodyScroll());
 		}
-	}, [router.pathname, isMobile]);
+	}, [router.pathname, mobileView]);
 
 	return (
 		<nav className='header__mobile-nav-toggle col-xs-1 col-sm-1 col-md-1 col-lg-1'>

@@ -47,10 +47,34 @@ const HeaderBar: React.FC = () => {
 
 	const dispatch = useAppDispatch();
 	const { storeName, logoUrl } = useEnv();
+	const [windowsSize, setWindowsSize] = useState(0);
 
 	useEffect(() => {
 		dispatch(setMobileView(detectIsMobile));
 	}, [detectIsMobile]);
+
+	useEffect(() => {
+		if (windowsSize < 1024) {
+			dispatch(setMobileView(true));
+		}
+		else {
+			dispatch(setMobileView(false));
+		}
+
+	}, [windowsSize])
+
+	useEffect(() => {
+		const updateWindowDimensions = () => {
+			const newWidth = window.innerWidth;
+			setWindowsSize(newWidth);
+		};
+
+		window.addEventListener('resize', updateWindowDimensions);
+		if (windowsSize === 0) {
+			updateWindowDimensions();
+		}
+		return () => window.removeEventListener('resize', updateWindowDimensions);
+	}, [windowsSize]);
 
 	const handleInputChange = (value: string) => {
 		setQueryInInput(value);
