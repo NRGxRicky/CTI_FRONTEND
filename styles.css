@@ -46,7 +46,7 @@ body {
 input,
 textarea,
 select, input::placeholder {
-  font-size: 16px;
+  font-size: 16px !important;
 }
 
 @font-face {
