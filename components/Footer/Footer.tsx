@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import GoogleRatings from '../GoogleRatings/GoogleRatings';
 import { useEnv } from '../../context/EnvContext';
+import { deviceType, getUA } from 'react-device-detect';
 
 interface FooterProps {}
 
@@ -11,6 +12,12 @@ const Footer: React.FC<FooterProps> = () => {
 	const [column2, setColumn2] = useState(false);
 	const [column3, setColumn3] = useState(false);
 	const [column4, setColumn4] = useState(false);
+	const [userAgent, setUserAgent] = useState('');
+
+	useEffect(() => {
+
+		setUserAgent(getUA)
+	}, []);
 
 	const {
 		contactEmail,
@@ -305,7 +312,7 @@ const Footer: React.FC<FooterProps> = () => {
 				</div>
 				<aside className='footer__aside'>
 					© 2025 {storeName} - {legalName} - Hecho en Puebla, Puebla con{' '}
-					{emojiFooter}
+					{emojiFooter} {String(deviceType)} {userAgent}
 				</aside>
 			</div>
 			<style jsx>
