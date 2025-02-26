@@ -452,7 +452,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 					>
 						Cambiar modo de carrito:
 					</span>
-					<span className='payments__label-status'>
+					<span className='payments__label-status' onClick={() => dispatch(showPaymentsChange())}>
 						{cartMsi ? 'MSI/Pagos' : 'Contado'}
 					</span>
 				</div>
@@ -673,6 +673,7 @@ const SummaryDetails = ({ urlAction, step }) => {
             background-color: var(--primary-color);
             color: #fff;
             padding: 2px 5px;
+						cursor: pointer;
           }
 
           .summary-row__total {

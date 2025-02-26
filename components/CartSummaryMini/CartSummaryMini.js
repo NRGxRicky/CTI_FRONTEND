@@ -104,7 +104,9 @@ const CartSummaryMini = () => {
 						>
 							Cambiar modo de carrito:
 						</span>
-						<span className='payments-change__label-status'>
+							<span className='payments-change__label-status' onClick={() => {
+								dispatch(showPaymentsChange());
+							}}>
 							{cartMsi ? 'MSI/Pagos' : 'Contado'}
 						</span>
 					</div>
@@ -277,6 +279,7 @@ const CartSummaryMini = () => {
 						background-color:var(--primary-color);
 						color: #fff;
 						padding: 2px 5px;
+						cursor: pointer;
 					}
 
 				.cart__change-payment__action {

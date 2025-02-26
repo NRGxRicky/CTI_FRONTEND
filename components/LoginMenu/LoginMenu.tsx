@@ -103,7 +103,13 @@ const LoginMenu: React.FC = () => {
 												</button>
 											</div>
 											<div className='login-menu__body__item login-menu__body__item__button'>
-												<input type='submit' value='Iniciar Sesión' />
+												<button
+													type='submit'
+													value='Iniciar Sesión'
+													className='login-menu__login-button'
+												>
+													Iniciar Sesión
+												</button>
 											</div>
 										</form>
 										<Link href={`/login/forgot-password/`} legacyBehavior>
@@ -229,6 +235,17 @@ const LoginMenu: React.FC = () => {
 			</div>
 			<style jsx>
 				{`
+					.login-menu__login-button {
+						width: 100%;
+						padding: 8px;
+						background: var(--primary-color);
+						color: #ffffff;
+						border: none;
+						border-radius: 6px;
+						font-size: 16px;
+						cursor: pointer;
+					}
+
 					.eye-icon {
 						position: absolute;
 						right: 10px;

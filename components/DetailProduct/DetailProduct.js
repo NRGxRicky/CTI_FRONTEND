@@ -270,7 +270,20 @@ const DetailProduct = ({
 									internalCartMsi && dispatch(showPaymentsChange());
 								}}
 							>
-								<div className='product__price__header'>A un pago:</div>
+								<div className='product__price__header'>
+									<div className='radio-wrapper'>
+										<input
+											id='payment-one-pay'
+											type='radio'
+											name='payment-one-pay'
+											checked={!internalCartMsi}
+											readOnly
+										></input>
+									</div>
+									<div>
+										A un pago:
+									</div>
+								</div>
 								<span className='text--light'>
 									$ {CurrencyFormat(item.precio_contado)}
 								</span>
@@ -283,7 +296,20 @@ const DetailProduct = ({
 									!internalCartMsi && dispatch(showPaymentsChange());
 								}}
 							>
-								<div className='product__price__header'>A Pagos:</div>
+								<div className='product__price__header'>
+									<div className='radio-wrapper'>
+										<input
+											id='payment-msi'
+											type='radio'
+											name='payment-msi'
+											checked={internalCartMsi}
+											readOnly
+										></input>
+									</div>
+									<div>
+										A Pagos:
+									</div>
+								</div>
 								<span className='text--light'>
 									${' '}
 									{item.precio_final_descuento > 0
@@ -555,6 +581,8 @@ const DetailProduct = ({
 
 					.product__price__header {
 						font-size: 16px;
+						display: flex;
+						gap: 10px;
 					}
 					.product__info__container {
 					}

@@ -1301,7 +1301,7 @@ button {
 		-webkit-appearance: none;
 		-moz-appearance: none;
 		appearance: none;
-		height: 21px;
+		height: 19px;
 		outline: none;
 		display: inline-block;
 		vertical-align: top;
@@ -1348,7 +1348,7 @@ button {
 		box-shadow: 0 0 0 var(--focus);
 	}
 	.radio-wrapper input[type='radio']:not(.switch) {
-		width: 21px;
+		width: 19px;
 	}
 	.radio-wrapper input[type='radio']:not(.switch):after {
 		opacity: var(--o, 0);
@@ -1358,7 +1358,7 @@ button {
 	}
 	.radio-wrapper input[type='radio'] + label {
 		font-size: 14px;
-		line-height: 21px;
+		line-height: 19px;
 		display: inline-block;
 		vertical-align: top;
 		cursor: pointer;
@@ -1369,15 +1369,15 @@ button {
 		border-radius: 50%;
 	}
 	.radio-wrapper input[type='radio']:after {
-		width: 19px;
-		height: 19px;
+		width: 17px;
+		height: 17px;
 		border-radius: 50%;
 		background: var(--active-inner);
 		opacity: 0;
 		transform: scale(var(--s, 0.7));
 	}
 	.radio-wrapper input[type='radio']:checked {
-		--s: 0.5;
+		--s: 0.6;
 	}
 }
 
