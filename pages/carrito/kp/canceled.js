@@ -30,6 +30,9 @@ export default function KueskiCanceled() {
         } else {
           const errData = await res.json();
           setError(errData.error || 'Error al cancelar la orden');
+
+          // Derigir a carrito por posible error de que no exista.
+          router.push('/carrito/');
         }
       } catch (err) {
         console.error(err);

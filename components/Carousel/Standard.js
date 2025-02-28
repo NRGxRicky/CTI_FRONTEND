@@ -18,7 +18,9 @@ const Standard = () => {
 			const data = await fetch(
 				`https://api.pccdnapi.com/banners/index/standard?store_id=${storeId}`
 			);
-			setData(await data.json());
+
+			const json_data = await data.json()
+			setData(json_data);
 		} catch (error) {
 			setError(error);
 		} finally {
