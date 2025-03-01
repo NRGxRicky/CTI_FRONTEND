@@ -3,10 +3,8 @@ const GetShippingCost = (weightInKg) => {
 	const weight = parseFloat(weightInKg);
 
 	// Manejo de caso especial: peso <= 0
-	if (weight <= 0) {
-		return 0;
-	} else if (weight <= 1) {
-		return 140.0;
+	if (weight <= 1) {
+		return 139.0;
 	} else if (weight <= 2) {
 		return 145.0;
 	} else if (weight <= 3) {
