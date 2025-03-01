@@ -12,6 +12,7 @@ import { useAuth } from '../../hooks/auth';
 import { showPaymentsChange } from '../../lib/features/showOpacityContainerSlide';
 import { useAppDispatch } from '../../lib/hooks';
 import KueskiPayWidget from '../KueskiPayWidget/KueskiPayWidget';
+import ShippingQuote from '../ShippingQuote/ShippingQuote';
 
 const DetailProduct = ({
 	item,
@@ -401,7 +402,9 @@ const DetailProduct = ({
 												/>
 											)}
 										</span>
+										{/* <ShippingQuote productId={item.id} /> */}
 									</div>
+										
 
 									<div className='product__resume__stock'>
 										<div>
