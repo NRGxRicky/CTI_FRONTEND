@@ -67,10 +67,11 @@ const DetailProduct = ({
 			dayOfWeek !== 'domingo' &&
 			dayOfWeek !== 'sabado' &&
 			currentHour >= 9 &&
-			currentHour < 14
+			currentHour <= 12
 
 		let shippingStart;
-		if (currentHour > 13 && isWeekend) {
+
+		if (currentHour >= 13 && isWeekend) {
 			shippingStart = addDays(newToday, 2);
 		} else if (dayOfWeek === 'sábado') {
 			shippingStart = addDays(newToday, 4);
@@ -79,7 +80,7 @@ const DetailProduct = ({
 		}
 
 		const endTime = new Date();
-		if (isLaboral && currentHour < 14) {
+		if (isLaboral && currentHour <= 12) {
 			endTime.setHours(16, 0, 0, 0);
 			const timeRemaining = endTime - newToday;
 			const hoursRemaining = Math.floor(timeRemaining / 3600000);
@@ -477,7 +478,7 @@ const DetailProduct = ({
 															weekday: 'long',
 														}) === 'domingo'
 														? 'el Lunes '
-														: today.getHours() < 14
+														: today.getHours() <= 12
 															? 'Hoy '
 															: 'Mañana '}
 													en Ciudad de Puebla hay{' '}

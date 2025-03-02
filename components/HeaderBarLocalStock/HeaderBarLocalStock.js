@@ -67,7 +67,7 @@ const HeaderBarLocalStock = () => {
 						weekday: 'long',
 					}) === 'domingo'
 						? 'el Lunes '
-						: today.getHours() < 16
+						: today.getHours() <= 12
 						? 'Hoy '
 						: 'Mañana '}
 				</span>

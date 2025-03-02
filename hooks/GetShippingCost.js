@@ -1,9 +1,10 @@
 const GetShippingCost = (weightInKg) => {
-	// Convertimos a número por si llega como string
 	const weight = parseFloat(weightInKg);
 
-	// Manejo de caso especial: peso <= 0
-	if (weight <= 1) {
+	if (weight <= 0) {
+		// Podrías decidir si aquí se devuelve 0 o algún valor mínimo
+		return 139;
+	} else if (weight <= 1) {
 		return 139.0;
 	} else if (weight <= 2) {
 		return 145.0;
@@ -24,10 +25,10 @@ const GetShippingCost = (weightInKg) => {
 	} else if (weight <= 10) {
 		return 194.0;
 	} else {
-		// Lógica para pesos mayores a 10 kg
-		// (Podrías dejar el costo en 194, 
-		//  escalarlo por cada kg extra, o aplicar otra fórmula)
-		return 194.0;
+		// Para pesos mayores a 10 kg
+		// Redondeo hacia arriba y sumamos 6 MXN por cada kg extra
+		const extraKg = Math.ceil(weight - 10);
+		return 194.0 + extraKg * 6.0;
 	}
 };
 
