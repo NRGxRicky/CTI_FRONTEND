@@ -23,6 +23,7 @@ export function EnvProvider({ children }) {
 		storeId: process.env.NEXT_PUBLIC_STORE_ID,
 		paypalClientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
 		googleAnalyticsId: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
+		address: process.env.NEXT_PUBLIC_ADDRESS,
 	};
 
 	return (

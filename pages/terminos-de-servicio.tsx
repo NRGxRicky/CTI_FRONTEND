@@ -4,7 +4,16 @@ import Head from 'next/head';
 import { useEnv } from '../context/EnvContext';
 
 const TerminosDeServicio = () => {
-	const { storeName, metaDescription, titlePostDescription, legalName, contactEmail, rfc, phone } = useEnv();
+	const {
+		storeName,
+		metaDescription,
+		titlePostDescription,
+		legalName,
+		contactEmail,
+		rfc,
+		phone,
+		address,
+	} = useEnv();
 	return (
 		<div>
 			<Head>
@@ -449,8 +458,8 @@ const TerminosDeServicio = () => {
 								**SECCIÓN 14: INDEMNIZACIÓN**
 								<br />
 								<br />
-								Usted acepta indemnizar, defender y mantener indemne a
-								{' '}{storeName.toUpperCase()} y a nuestras matrices, subsidiarias,
+								Usted acepta indemnizar, defender y mantener indemne a{' '}
+								{storeName.toUpperCase()} y a nuestras matrices, subsidiarias,
 								afiliados, socios, funcionarios, directores, agentes,
 								contratistas, licenciantes, prestadores de servicios,
 								subcontratistas, proveedores, internos y empleados, de cualquier
@@ -546,7 +555,7 @@ const TerminosDeServicio = () => {
 								<br />
 								<br />
 								Las preguntas sobre los Términos del servicio deben enviarse a
-								nosotros en la dirección de correo electrónico{' '}{contactEmail}.
+								nosotros en la dirección de correo electrónico {contactEmail}.
 								<br />
 							</p>
 							<p>
@@ -574,6 +583,8 @@ const TerminosDeServicio = () => {
 								<span>{phone}</span>
 								<br />
 								Número de Identificación Fiscal (RFC):&nbsp;{rfc}
+								<br />
+								Domicilio: {address}.
 							</p>
 							<p>
 								<br />

@@ -16,6 +16,7 @@ NEXT_PUBLIC_PRIMARY_COLOR = '#ff002c'
 NEXT_PUBLIC_FAVICON_URL = /ico/favicon.ico
 NEXT_PUBLIC_BACKGROUND_PRICE = '#ffe7eb'
 NEXT_PUBLIC_FOOTER_EMOJI = ❤️
+NEXT_PUBLIC_ADDRESS = Calle 39 poniente 3515 Col. Las Ánimas, CP. 72400, Heroica Puebla de Zaragoza, Puebla. (No contamos con una tienda física para brindar atención presencial al público)
 NEXT_PUBLIC_STORE_ID = pcstore
 NEXT_PUBLIC_PAYPAL_CLIENT_ID = AQq20JM8YOkZYtj6C-uZto_TQxPqfYJ2J8PhMQZCwSpu-otnJBP_0qaZAYDEmhKIPgAGscT4JFJbuM2h
 NEXT_PUBLIC_PAYPAL_CLIENT_ID__SANDBOX = AbMQ3EsXSK2FYGRRMpUE3--b3mbaYCvn550n7MIvj_dllmo8z2HZut6yghmWUUlNJjQ6nC5FsKoSA2Yk

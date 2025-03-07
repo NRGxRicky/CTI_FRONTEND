@@ -15,7 +15,8 @@ NEXT_PUBLIC_LOGO_URL = /images/logo_cti.png
 NEXT_PUBLIC_PRIMARY_COLOR = '#2349f1'
 NEXT_PUBLIC_FAVICON_URL = /ico/favicon_cti.png
 NEXT_PUBLIC_BACKGROUND_PRICE = '#e7faff'
-NEXT_PUBLIC_FOOTER_EMOJI: 💙
+NEXT_PUBLIC_FOOTER_EMOJI = 💙
+NEXT_PUBLIC_ADDRESS = Blvd. Municipio Libre 1959-10B, Col. La Cima, CP. 72464 Heroica Puebla de Zaragoza, Pue. (No contamos con una tienda física para brindar atención presencial al público)
 NEXT_PUBLIC_STORE_ID = cti
 NEXT_PUBLIC_PAYPAL_CLIENT_ID = AW-FkSbA_lB6jDoGyO5NVgaIdzKWp_P2fPdMEFEbg-Fwf_b73CpGdX6QrkLlJ-xQr2nLXrFDaf8eDF9B
 NEXT_PUBLIC_PAYPAL_CLIENT_ID__SANDBOX = AbMQ3EsXSK2FYGRRMpUE3--b3mbaYCvn550n7MIvj_dllmo8z2HZut6yghmWUUlNJjQ6nC5FsKoSA2Yk

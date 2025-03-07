@@ -15,7 +15,7 @@ const PoliticasDeDevolucion = () => {
 		<div>
 			<Head>
 				<title>
-					{`Política de Devolución| ${storeName}: ${titlePostDescription}`}
+					{`Política de Devolución | ${storeName}: ${titlePostDescription}`}
 				</title>
 				<meta name='description' content={`${metaDescription}`} />
 			</Head>

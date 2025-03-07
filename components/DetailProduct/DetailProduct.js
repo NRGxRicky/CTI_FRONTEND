@@ -354,6 +354,7 @@ const DetailProduct = ({
 							<div className='product__description__content'>
 								<div className='product__resume'>
 									<div className='product__resume__shipping'>
+										
 										<span>
 											{item.envio_gratis ? (
 												<FreeShipping
@@ -403,7 +404,7 @@ const DetailProduct = ({
 												/>
 											)}
 										</span>
-										{/* <ShippingQuote productId={item.id} /> */}
+										{/* <ShippingQuote productId={item.id} / > */}
 									</div>
 										
 
