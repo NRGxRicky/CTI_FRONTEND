@@ -24,6 +24,8 @@ export function EnvProvider({ children }) {
 		paypalClientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
 		googleAnalyticsId: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
 		address: process.env.NEXT_PUBLIC_ADDRESS,
+		googlePlaceId: process.env.NEXT_PUBLIC_GOOGLE_PLACE_ID,
+		googleApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
 	};
 
 	return (

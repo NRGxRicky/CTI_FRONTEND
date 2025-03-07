@@ -10,6 +10,7 @@ import BestCategories from '../components/BestCategories/BestCategories';
 import CarouselProductsV4 from '../components/Carousel/CarouselProductsv4';
 import BenefitCarousel from '../components/BenefitCarousel/BenefitCarousel';
 import { useEnv } from '../context/EnvContext';
+import GoogleRatings from '../components/GoogleRatings/GoogleRatings';
 
 const Home = () => {
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
@@ -81,6 +82,8 @@ const Home = () => {
 
 				<BenefitCarousel />
 
+				
+				<GoogleRatings mobile={mobileView}/>
 				<InfoPageFooter />
 			</div>
 			<Footer />

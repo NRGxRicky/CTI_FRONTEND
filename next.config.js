@@ -16,6 +16,11 @@ module.exports = {
 				hostname: 'api.pccdnapi.com',
 				pathname: '**',
 			},
+			{
+				protocol: 'https',
+				hostname: 'lh3.googleusercontent.com',
+				pathname: '**',
+			},
 		],
 	},
 	eslint: {
