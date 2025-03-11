@@ -18,7 +18,7 @@ const FacebookPixel = () => {
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
             
-            fbq('init', '258517433751125');
+            fbq('init', ${process.env.NEXT_PUBLIC_FACEBOOK_PIXEL});
             fbq('track', 'PageView');
           `
         }}
