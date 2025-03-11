@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
-
+import { useEnv } from '../../context/EnvContext';
 // Importa tus íconos de carga:
 import { Preloader, TailSpin } from 'react-preloader-icon';
 
@@ -13,6 +14,10 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 	const [error, setError] = useState(null);
 	const [totalReviews, setTotalReviews] = useState(0);
 	const [averageRating, setAverageRating] = useState(0)
+
+	//	---	ENV	---
+	const { storeId, googleProfileUrl } = useEnv();
+
 
 	// --- CONFIG Embla ---
 	const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -48,7 +53,7 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 		const fetchReviews = async () => {
 			try {
 				const res = await fetch(
-					`/api/google-reviews`
+					`/api/${storeId}/google-reviews`
 				);
 				const data = await res.json();
 
@@ -113,17 +118,34 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 
 	return (
 		<div className='reviews-carousel'>
-			<div className='reviews-carousel__header'>OPINIONES EN GOOGLE</div>
-
-			{/* Bloque de promedio y contador, debajo del título */}
-			<div className='review-overall'>
-				<div className='stars'>
-					{'★'.repeat(Math.round(averageRating))}
-					{'☆'.repeat(5 - Math.round(averageRating))}
+			<div className='reviews-carousel__head'>
+				<div className='reviews-carousel__logo'>
+					<Image
+						src={'/images/google-logo.webp'}
+						alt={`Google`}
+						fill
+						sizes='48px'
+						style={{ objectFit: 'cover' }}
+					/>
 				</div>
-				<p className='reviews-count text--off'>
-					{totalReviews} Reseñas de Google
-				</p>
+				<div>
+					<div className='reviews-carousel__header'>OPINIONES EN GOOGLE</div>
+
+					{/* Bloque de promedio y contador, debajo del título */}
+					<div className='review-overall'>
+						<div className='stars'>
+							{'★'.repeat(Math.round(averageRating))}
+							{'☆'.repeat(5 - Math.round(averageRating))}
+						</div>
+						<Link legacyBehavior href={googleProfileUrl}>
+							<a>
+								<p className='reviews-count text--off'>
+									{totalReviews} Reseñas de Google
+								</p>
+							</a>
+						</Link>
+					</div>
+				</div>
 			</div>
 
 			<div className='embla' ref={emblaRef}>
@@ -210,12 +232,21 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 
 			{/* Estilos */}
 			<style jsx>{`
-				.review-overall {
+				.reviews-carousel__logo {
+					position: relative;
+					width: 48px;
+					height: 48px;
 					margin: 0 15px;
 				}
 
+
+				.reviews-carousel__head {
+					display: flex;
+					align-items: center;
+				}
+
 				.reviews-carousel__header {
-					margin: 5px 15px;
+					margin: 5px 0;
 					font-size: 20px;
 					font-weight: 700;
 				}
@@ -237,6 +268,11 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 
 				.reviews-count {
 					font-weight: 600;
+				}
+
+				.reviews-count:hover {
+					text-decoration: underline;
+					color: var(--primary-color);
 				}
 
 				.embla {

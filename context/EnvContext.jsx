@@ -26,6 +26,7 @@ export function EnvProvider({ children }) {
 		address: process.env.NEXT_PUBLIC_ADDRESS,
 		googlePlaceId: process.env.NEXT_PUBLIC_GOOGLE_PLACE_ID,
 		googleApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+		googleProfileUrl: process.env.NEXT_PUBLIC_GOOGLE_PROFILE_URL,
 	};
 
 	return (

@@ -7,6 +7,7 @@ import Head from 'next/head';
 import { AuthProvider } from '../hooks/auth';
 import { CartProvider } from '../context/CartContext';
 import GoogleAnalytics from '../components/GoogleAnalytics/GoogleAnalytics';
+import FacebookPixel from '../components/FacebookPixel/FacebookPixel';
 import NextTopLoader from 'nextjs-toploader';
 import { EnvProvider } from '../context/EnvContext';
 
@@ -32,6 +33,7 @@ function MyApp({ Component, pageProps }) {
 			<EnvProvider>
 				<NextTopLoader color={process.env.NEXT_PUBLIC_PRIMARY_COLOR}  />
 				<GoogleAnalytics />
+				<FacebookPixel />
 				<Head>
 					<meta
 						name='viewport'
