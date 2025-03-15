@@ -11,16 +11,17 @@ import SummaryDetails from '../SummaryDetails/SummaryDetails';
 import formasDePago from '../../hooks/formasDePago';
 import regimenesFiscales from '../../hooks/regimenesFiscales';
 import usosCFDI from '../../hooks/usosCFDI';
-
+import { useAuth } from '../../hooks/auth';
 const CartConfirmMethod = () => {
 	const {
 		cart,
 		address,
 		taxInvoice,
 		paymentMethod,
-		cartMsi,
 		// subtotal, shipping, total... (si los necesitas directamente aquí)
 	} = useCart();
+
+	const { cartMsi } = useAuth();
 
 	/* === Helpers para mostrar las descripciones (usos, regímenes, formas de pago) === */
 	const getUsoCFDIDescription = (usoKey) => {

@@ -29,6 +29,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 	const router = useRouter();
 	const { storeId } = useEnv();
 	const [kueskiCallbackUrl, setKueskiCallbackUrl] = useState(null);
+	const [aplazoCheckoutUrl, setAplazoCheckoutUrl] = useState(null);
 
 	// Referencias para PayPal y Mercado Pago
 	const paypalRef = useRef(null);
@@ -393,21 +394,12 @@ const SummaryDetails = ({ urlAction, step }) => {
 				email: address.email || "noreply@domain.com"
 			};
 
-			// E) Definir las URLs de callback (ajusta según tu entorno)
-			const callbacks = {
-				on_success: "https://pccdnapi.com/success",
-				on_reject: "https://pccdnapi.com/carrito",
-				on_canceled: "https://pccdnapi.com/carrito",
-				on_failed: "https://pccdnapi.com/carrito"
-			};
-
 			// F) Armar el payload para el endpoint de KueskiPay
 			const payload = {
 				description: `Compra de ${cart.length} artículo(s)`,
 				amount: amount,
 				items: items,
 				shipping: shippingData,
-				callbacks: callbacks,
 				store_id: storeId,
 				requireInvoice: !!taxInvoice,
 			};
@@ -438,6 +430,47 @@ const SummaryDetails = ({ urlAction, step }) => {
 		} catch (error) {
 			console.error(error);
 			alert("Error al inicializar el pago con KueskiPay");
+		}
+	};
+
+	// APLAZO
+
+	useEffect(() => {
+		if (paymentMethod === 'aplazo' && step === 'confirm') {
+			initAplazoCheckout();
+		}
+	}, [paymentMethod, step]);
+
+	const initAplazoCheckout = async () => {
+		try {
+			// Prepara el payload tal cual tu lógica de carrito, dirección, etc.
+			const body = {
+				description: `Compra de ${cart.length} producto(s)`,
+				requireInvoice: !!taxInvoice,
+				store_id: storeId, // El mismo que usas en Kueski, MP, etc.
+				// Lo que necesites para "products", "shipping_address", etc.
+			};
+
+			const res = await fetch('https://api.pccdnapi.com/payments/aplazo/create_payment/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${accessToken}`,
+				},
+				body: JSON.stringify(body),
+			});
+
+			const data = await res.json();
+			if (data.status === 'success' && data.aplazo_response && data.aplazo_response.url) {
+				// Guárdalo en un estado local
+				setAplazoCheckoutUrl(data.aplazo_response.url);
+			} else {
+				alert('Error al generar pago con Aplazo');
+				console.error('aplazo error: ', data);
+			}
+		} catch (error) {
+			console.error(error);
+			alert('Error al inicializar el pago con Aplazo');
 		}
 	};
 
@@ -639,8 +672,22 @@ const SummaryDetails = ({ urlAction, step }) => {
 
 				{/* Aplazo container */}
 				{step === 'confirm' && paymentMethod === 'aplazo' && (
-					<div className='aplazo__containter checkout__error'>
-						Este método de pago aún no está disponible.
+					<div className='aplazo__container'>
+						{aplazoCheckoutUrl ? (
+							<button
+								className='proceed-checkout aplazo__button'
+								onClick={() => (window.location.href = aplazoCheckoutUrl)}
+							>
+								Continuar con Aplazo
+							</button>
+						) : (
+								<button
+									className='proceed-checkout aplazo__button'
+									disabled
+								>
+									Generando link de pago con Aplazo...
+								</button>
+						)}
 					</div>
 				)}
 			</div>
@@ -648,6 +695,19 @@ const SummaryDetails = ({ urlAction, step }) => {
 			{/* ESTILOS */}
 			<style jsx>
 				{`
+
+				.aplazo__button:disabled {
+					background-color: #eaeaea !important;
+					font-weight: 300;
+					border-radius: 50px !important;
+				}
+
+				.aplazo__button {
+					background-color: #00e6f5 !important;
+					color: #000000 !important;
+					font-weight: 600;
+					border-radius: 50px !important;
+				}
 
 				.kueskipay__widget-cart {
 					margin-bottom: 20px;
