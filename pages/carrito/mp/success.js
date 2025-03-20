@@ -10,7 +10,6 @@ export default function MercadoPagoSuccess() {
 	const router = useRouter();
 	const { accessToken } = useAuth();
   const { clearCart, taxInvoice, } = useCart();
-
 	const [processing, setProcessing] = useState(true);
 	const [error, setError] = useState(null);
 

@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import useCart from '../../../hooks/useCart';
+import { useAuth } from '../../../hooks/auth';
 
 export default function AplazoSuccess() {
   const router = useRouter();
   const { clearCart } = useCart();
   const { orderId } = router.query;
+  const { isAuthenticated } = useAuth()
 
   const [processing, setProcessing] = useState(true);
   const [error, setError] = useState(null);
@@ -14,18 +16,20 @@ export default function AplazoSuccess() {
   useEffect(() => {
     if (!router.isReady) return; // Espera a que los parámetros estén listos
 
-    if (orderId) {
-      // Limpia el carrito y redirige a la página de confirmación
-      router.push(`/compras/confirmacion/?orderId=${orderId}`);
-      setTimeout(() => {
-        clearCart();
-      }, 3000);
+    if (isAuthenticated) {
+      if (orderId) {
+        // Limpia el carrito y redirige a la página de confirmación
+        router.push(`/compras/confirmacion/?orderId=${orderId}`);
+        setTimeout(() => {
+          clearCart();
+        }, 3000);
     
-    } else {
-      setError("No se recibió orderId");
+      } else {
+        setError("No se recibió orderId");
+      }
     }
     setProcessing(false);
-  }, [router.isReady, orderId, clearCart, router]);
+  }, [router.isReady, isAuthenticated]);
 
   if (processing) {
     return (
