@@ -321,6 +321,7 @@ export const CartProvider = ({ children }) => {
 				if (response.ok) {
 					const backendCart = await response.json();
 					setCart(backendCart.cart_items);
+					setShipping(backendCart.shipping_cost);
 				}
 			} catch (error) {
 				console.error('Error removing item from cart:', error);
