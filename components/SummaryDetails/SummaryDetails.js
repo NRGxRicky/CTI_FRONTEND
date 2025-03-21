@@ -520,6 +520,16 @@ const SummaryDetails = ({ urlAction, step }) => {
 					</div>
 				)}
 
+				{/* APLAZO WIDGET */}
+				{((!paymentMethod) || paymentMethod === 'aplazo') && (
+				<div className='aplazo-widget'>
+					<aplazo-placement product-price={
+						total * 100
+					}
+					></aplazo-placement>
+					</div>
+				)}
+
 				{/* Sección de opciones de pago */}
 				{cartMsi ? (
 					<div className='payments'>
@@ -710,7 +720,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 				}
 
 				.kueskipay__widget-cart {
-					margin-bottom: 20px;
+
 				}
 
 					.kueskypay__button {
@@ -836,7 +846,7 @@ const SummaryDetails = ({ urlAction, step }) => {
             border: 1px solid #eaeaea;
             border-radius: 5px;
             padding: 15px;
-            margin-bottom: 20px;
+            margin: 20px 0;
             background-color: #eaeaea;
             font-size: 12px;
           }

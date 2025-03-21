@@ -349,12 +349,22 @@ const DetailProduct = ({
 							: CurrencyFormat(item.precio_final)
 					} />
 
+					{/* APLAZO WIDGET */}
+					<div className='aplazo-widget' style={{marginTop: 10}}>
+					<aplazo-placement product-price={
+						item.precio_final_descuento > 0
+							? parseFloat(item.precio_final_descuento * 100)
+							: parseFloat(item.precio_final * 100)
+					}
+						></aplazo-placement>
+					</div>
+
 					{item.stock_total > 0 ? (
 						<div className='product__description'>
 							<div className='product__description__content'>
 								<div className='product__resume'>
 									<div className='product__resume__shipping'>
-										
+
 										<span>
 											{item.envio_gratis ? (
 												<FreeShipping
@@ -406,7 +416,7 @@ const DetailProduct = ({
 										</span>
 										{/* <ShippingQuote productId={item.id} / > */}
 									</div>
-										
+
 
 									<div className='product__resume__stock'>
 										<div>

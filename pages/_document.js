@@ -12,9 +12,7 @@ class MyDocument extends Document {
 					<script id="kpay-advertising-script"
 						src={`https://cdn.kueskipay.com/widgets.js?authorization=${process.env.NEXT_PUBLIC_KUESKIPAY_API_KEY}&integration=API&sandbox=false`}>
 					</script>
-
-
-					
+					<script src='https://cdn.aplazo.mx/aplazo-widgets.min.js'></script>
 
 					<link
 						href={process.env.NEXT_PUBLIC_FAVICON_URL}
