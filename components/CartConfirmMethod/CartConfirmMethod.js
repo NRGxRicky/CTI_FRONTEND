@@ -66,7 +66,7 @@ const CartConfirmMethod = () => {
 			title: 'Aplazo',
 			subtitle:
 				'Divide tus pagos en quincenas con Aplazo, sin letras pequeñas.',
-			imgSrc: '/images/logo-aplazo.png',
+			imgSrc: '/images/logo-aplazo_v2.png',
 		},
 		{
 			id: 'deposit',
@@ -83,7 +83,7 @@ const CartConfirmMethod = () => {
 
 	return (
 		<div className='cart-confirm-method'>
-			
+
 			{/* Columna Izquierda: Entrega, Pago y Facturación separados */}
 			<div className='column-left'>
 				{/* Sección Entrega */}

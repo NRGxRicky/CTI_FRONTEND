@@ -36,7 +36,7 @@ const paymentOptions = [
 		id: 'aplazo',
 		title: 'Aplazo',
 		subtitle: 'Divide tus pagos en quincenas con Aplazo.',
-		imgSrc: '/images/logo-aplazo.png',
+		imgSrc: '/images/logo-aplazo_v2.png',
 	},
 	{
 		id: 'deposit',

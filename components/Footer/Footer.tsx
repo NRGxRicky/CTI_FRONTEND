@@ -293,7 +293,7 @@ const Footer: React.FC<FooterProps> = () => {
 						</div>
 						<div className='footer__column__element footer__column__element__payment'>
 							<Image
-								src='/images/logo-aplazo.png'
+								src='/images/logo-aplazo_v2.png'
 								fill
 								style={{ objectFit: 'contain' }}
 								alt={'Aplazo'}

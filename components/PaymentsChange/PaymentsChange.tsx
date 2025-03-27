@@ -16,7 +16,7 @@ const PaymentsChange = () => {
 
 	const handleChangePayment = (paymentStatus: boolean) => {
 		updateDataUser(paymentStatus);
-		setPaymentMethod(null)
+		setPaymentMethod(null);
 	};
 
 	useEffect(() => {
@@ -126,7 +126,7 @@ const PaymentsChange = () => {
 							<div className='payments-change__option__item'>
 								<div className='payments-change__option__item__image'>
 									<Image
-										src='/images/logo-aplazo.png'
+										src='/images/logo-aplazo_v2.png'
 										fill
 										style={{ objectFit: 'contain', padding: 5 }}
 										alt='Aplazo'

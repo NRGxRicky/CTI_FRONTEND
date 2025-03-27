@@ -60,7 +60,7 @@ const CartPaymentMethod = () => {
 			title: 'Aplazo',
 			subtitle:
 				'Divide tus pagos en quincenas con Aplazo, sin letras pequeñas.',
-			imgSrc: '/images/logo-aplazo.png',
+			imgSrc: '/images/logo-aplazo_v2.png',
 			msi: true,
 			contado: false,
 		},
@@ -239,12 +239,11 @@ const CartPaymentMethod = () => {
 									key={option.id}
 									className={
 										/** 2) Clase 'active' cuando paymentMethod coincida con la opción */
-										`cart-payment-method__item ${
-											paymentMethod === option.id ? 'active' : ''
+										`cart-payment-method__item ${paymentMethod === option.id ? 'active' : ''
 										}`
 									}
 									onClick={() => setPaymentMethod(option.id)}
-									/** 3) Al hacer click en la tarjeta, guardamos la forma de pago */
+								/** 3) Al hacer click en la tarjeta, guardamos la forma de pago */
 								>
 									<div className='radio-wrapper'>
 										<input

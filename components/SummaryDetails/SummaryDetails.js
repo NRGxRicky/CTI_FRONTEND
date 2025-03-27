@@ -522,11 +522,11 @@ const SummaryDetails = ({ urlAction, step }) => {
 
 				{/* APLAZO WIDGET */}
 				{((!paymentMethod) || paymentMethod === 'aplazo') && (
-				<div className='aplazo-widget'>
-					<aplazo-placement product-price={
-						total * 100
-					}
-					></aplazo-placement>
+					<div className='aplazo-widget'>
+						<aplazo-placement product-price={
+							total * 100
+						}
+						></aplazo-placement>
 					</div>
 				)}
 
@@ -552,7 +552,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 								},
 								{
 									id: 'aplazo',
-									img: '/images/logo-aplazo.png',
+									img: '/images/logo-aplazo_v2.png',
 									label:
 										'Divide tus pagos en quincenas con Aplazo, sin letras pequeñas.',
 								},
@@ -691,12 +691,12 @@ const SummaryDetails = ({ urlAction, step }) => {
 								Continuar con Aplazo
 							</button>
 						) : (
-								<button
-									className='proceed-checkout aplazo__button'
-									disabled
-								>
-									Generando link de pago con Aplazo...
-								</button>
+							<button
+								className='proceed-checkout aplazo__button'
+								disabled
+							>
+								Generando link de pago con Aplazo...
+							</button>
 						)}
 					</div>
 				)}
