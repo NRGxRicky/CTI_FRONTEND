@@ -29,7 +29,48 @@ const CartSummaryMini = () => {
 	const [showScrollDown, setShowScrollDown] = useState(false);
 	const [arrowUp, setArrowUp] = useState(0);
 	const [arrowDown, setArrowDown] = useState(0);
-	const { cartMsi } = useAuth();
+	const { cartMsi, accessToken } = useAuth();
+
+	// -----------------------
+	// FUNCIÓN: Crear Cotización PDF (llamada a tu backend)
+	// -----------------------
+	const handleCreateQuotation = async () => {
+		try {
+			// Ajusta la URL de tu endpoint real:
+			// Por ejemplo, si tu DRF está montado en /api/cart/quotation-pdf:
+			const response = await fetch('https://api.pccdnapi.com/cart/quotation-pdf', {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${accessToken}`,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error('Error al generar PDF de cotización');
+			}
+
+			// Obtenemos el PDF como Blob
+			const blob = await response.blob();
+
+			// Creamos un objeto URL para ese blob
+			const url = window.URL.createObjectURL(blob);
+
+			// Forzamos la descarga con un <a> oculto
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = 'Cotizacion-PCStore.pdf';
+			link.click();
+
+			// Limpiamos el objeto URL
+			window.URL.revokeObjectURL(url);
+
+			// Opción alternativa: abrir en una pestaña (si no quieres descarga):
+			// window.open(url, '_blank');
+		} catch (error) {
+			console.error('Error al crear la cotización PDF:', error);
+		}
+	};
 
 	const checkScroll = () => {
 		if (cartItemsRef.current) {
@@ -240,7 +281,10 @@ const CartSummaryMini = () => {
 						</div>
 					</div>
 					<div className='cart-actions'>
-						{/* <button className='quote-button'>Crear cotización</button> */}
+							{/* ---- BOTÓN CREAR COTIZACIÓN ---- */}
+							<button className='quote-button' onClick={handleCreateQuotation}>
+								Crear cotización
+							</button>
 						<Link href={`/carrito`} legacyBehavior>
 							<button
 								className='view-cart-button'
