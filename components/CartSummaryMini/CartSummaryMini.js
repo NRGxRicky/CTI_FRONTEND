@@ -12,6 +12,7 @@ import {
 } from '../../lib/features/showOpacityContainerSlide';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useAuth } from '../../hooks/auth';
+import Router from 'next/router';
 
 const CartSummaryMini = () => {
 	const {
@@ -29,44 +30,57 @@ const CartSummaryMini = () => {
 	const [showScrollDown, setShowScrollDown] = useState(false);
 	const [arrowUp, setArrowUp] = useState(0);
 	const [arrowDown, setArrowDown] = useState(0);
-	const { cartMsi, accessToken } = useAuth();
+	const { cartMsi, accessToken, isAuthenticated } = useAuth();
 
 	// -----------------------
 	// FUNCIÓN: Crear Cotización PDF (llamada a tu backend)
 	// -----------------------
 	const handleCreateQuotation = async () => {
 		try {
-			// Ajusta la URL de tu endpoint real:
-			// Por ejemplo, si tu DRF está montado en /api/cart/quotation-pdf:
-			const response = await fetch('https://api.pccdnapi.com/cart/quotation-pdf', {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${accessToken}`,
-				},
-			});
+			dispatch(hideAll())
+			if (!isAuthenticated) { Router.push(`/login?redirect=${encodeURIComponent(Router.asPath)}`) }
 
-			if (!response.ok) {
-				throw new Error('Error al generar PDF de cotización');
+			else {
+				const response = await fetch(
+					'https://api.pccdnapi.com/cart/quotation-pdf',
+					{
+						method: 'GET',
+						headers: {
+							// En una petición GET no es necesario Content‑Type
+							Authorization: `Bearer ${accessToken}`,
+						},
+					},
+				);
+
+				if (!response.ok) {
+					throw new Error('Error al generar PDF de cotización');
+				}
+
+				// ────── 1)Obtener el nombre desde Content‑Disposition ──────
+				let filename = 'Cotizacion.pdf';            // valor por defecto
+				const dispo = response.headers.get('Content-Disposition');
+				if (dispo && dispo.includes('filename=')) {
+					// Extraemos lo que esté entre las comillas
+					const match = dispo.match(/filename[^;=\n]*=(['"]?)([^'";\n]+)\1/);
+					if (match && match[2]) {
+						filename = decodeURIComponent(match[2]);
+					}
+				}
+
+				// ────── 2)Descargar el blob ──────
+				const blob = await response.blob();
+				const url = window.URL.createObjectURL(blob);
+
+				const link = document.createElement('a');
+				link.href = url;
+				link.download = filename;   // ← usamos el nombre dinámico
+				link.style.display = 'none';
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+
+				window.URL.revokeObjectURL(url);
 			}
-
-			// Obtenemos el PDF como Blob
-			const blob = await response.blob();
-
-			// Creamos un objeto URL para ese blob
-			const url = window.URL.createObjectURL(blob);
-
-			// Forzamos la descarga con un <a> oculto
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = 'Cotizacion-PCStore.pdf';
-			link.click();
-
-			// Limpiamos el objeto URL
-			window.URL.revokeObjectURL(url);
-
-			// Opción alternativa: abrir en una pestaña (si no quieres descarga):
-			// window.open(url, '_blank');
 		} catch (error) {
 			console.error('Error al crear la cotización PDF:', error);
 		}
@@ -145,9 +159,9 @@ const CartSummaryMini = () => {
 						>
 							Cambiar modo de carrito:
 						</span>
-							<span className='payments-change__label-status' onClick={() => {
-								dispatch(showPaymentsChange());
-							}}>
+						<span className='payments-change__label-status' onClick={() => {
+							dispatch(showPaymentsChange());
+						}}>
 							{cartMsi ? 'MSI/Pagos' : 'Contado'}
 						</span>
 					</div>
@@ -185,8 +199,8 @@ const CartSummaryMini = () => {
 													src={
 														item.product.imagen1s
 															? item.product.imagen1xs.includes(
-																	'https://api.pccdnapi.com'
-															  )
+																'https://api.pccdnapi.com'
+															)
 																? item.product.imagen1xs
 																: `https://api.pccdnapi.com${item.product.imagen1xs}`
 															: '/images/not-available.png'
@@ -214,7 +228,13 @@ const CartSummaryMini = () => {
 												</div>
 											</a>
 										</Link>
-										<div className='item-sku'>{item.product.sku}</div>
+										<div className='item-sku'>
+											<TruncateMarkup lines={1}>
+												<span>
+													{item.product.sku}
+												</span>
+											</TruncateMarkup>
+										</div>
 										<div className='item-stock'>
 											Disponible: {item.product.stock_total} Pzs.
 										</div>
@@ -236,8 +256,8 @@ const CartSummaryMini = () => {
 											!cartMsi
 												? item.product.precio_contado * item.quantity
 												: item.product.precio_final_descuento > 0
-												? item.product.precio_final_descuento * item.quantity
-												: item.product.precio_final * item.quantity,
+													? item.product.precio_final_descuento * item.quantity
+													: item.product.precio_final * item.quantity,
 											2,
 											'.',
 											','
@@ -281,10 +301,10 @@ const CartSummaryMini = () => {
 						</div>
 					</div>
 					<div className='cart-actions'>
-							{/* ---- BOTÓN CREAR COTIZACIÓN ---- */}
-							<button className='quote-button' onClick={handleCreateQuotation}>
-								Crear cotización
-							</button>
+						{/* ---- BOTÓN CREAR COTIZACIÓN ---- */}
+						<button className='quote-button' onClick={handleCreateQuotation}>
+							Crear cotización
+						</button>
 						<Link href={`/carrito`} legacyBehavior>
 							<button
 								className='view-cart-button'
@@ -310,7 +330,7 @@ const CartSummaryMini = () => {
 				</div>
 			)}
 			<style jsx>{`
-
+				
 					.price--compare {
 						font-size: 12px !important;
 					}
@@ -442,6 +462,8 @@ const CartSummaryMini = () => {
 					margin-bottom: 15px;
 					position: relative;
 					overflow-y: auto;
+					max-width: 100%;
+
 				}
 
 				.cart-item {
@@ -450,11 +472,27 @@ const CartSummaryMini = () => {
 					margin-bottom: 10px;
 					border-bottom: 1px solid #eaeaea;
 					padding-bottom: 10px;
+					width: 100%;
+					gap: 10px;
 				}
 				.item-details {
 					display: flex;
 					gap: 10px;
+					max-width: calc(100% - 170px);
 				}
+
+					.item-details > div {
+					flex: 1;       
+					min-width: 0;   
+				}
+
+				.item-name,
+				.item-sku {
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
+
 				.item-image {
 					width: 50px;
 					height: 50px;
@@ -465,17 +503,21 @@ const CartSummaryMini = () => {
 					font-weight: bold;
 					margin-bottom: 5px;
 					padding-right: 15px;
-					max-width: 250px;
 				}
 				.item-sku,
 				.item-stock {
 					font-size: 12px;
-					color: #666;
+					color: #666;     
+  				white-space: nowrap;  
+  				overflow: hidden;  
+  				text-overflow: ellipsis;
 				}
 				.item-actions {
 					display: flex;
 					align-items: center;
+					justify-content: right;
 					gap: 10px;
+					min-width: 150px;
 				}
 				.item-quantity {
 					font-weight: bold;
@@ -541,10 +583,10 @@ const CartSummaryMini = () => {
 					cursor: pointer;
 				}
 				.quote-button {
-					background: #007bff;
+					background: #ffb116;
 				}
 				.quote-button:hover {
-					background: #0056b3;
+					background: #ffa01b;
 				}
 				.view-cart-button:hover {
 					background: #e00028;
@@ -563,6 +605,7 @@ const CartSummaryMini = () => {
         .cart-summary {
 				  max-height: unset;
 				}
+
 			`}</style>
 		</div>
 	);
