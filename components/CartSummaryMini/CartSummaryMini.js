@@ -316,7 +316,7 @@ const CartSummaryMini = () => {
 									&nbsp;Generando…
 								</>
 							) : (
-								'Crear cotización'
+								'Crear Cotización'
 							)}
 						</button>
 
