@@ -189,11 +189,9 @@ export const CartProvider = ({ children }) => {
 	// Calcular Peso total local
 	useEffect(() => {
 		if (!isAuthenticated) {
-			let pesoTotal = parseFloat(0);
-			cart.map(
-				(item) => (pesoTotal += parseFloat(item.product.peso * item.quantity))
-			);
-			const costoEnvio = GetShippingCost(pesoTotal);
+			// En lugar de calcular solo el peso total, pasamos el array de productos completo
+			// para que la función pueda agruparlos por almacén
+			const costoEnvio = GetShippingCost(cart);
 			setShipping(costoEnvio);
 		}
 	}, [cart]);
@@ -205,7 +203,7 @@ export const CartProvider = ({ children }) => {
 				? parseFloat(item.product.precio_contado)
 				: parseFloat(item.product.precio_final_descuento) > 0
 				? parseFloat(item.product.precio_final_descuento)
-					: parseFloat(item.product.precio_final);
+				: parseFloat(item.product.precio_final);
 			const priceTotal = parseInt(item.quantity) * price;
 			return acc + priceTotal;
 		}, 0);
@@ -362,7 +360,7 @@ export const CartProvider = ({ children }) => {
 				taxInvoice,
 				setTaxInvoice,
 				paymentMethod,
-				setPaymentMethod
+				setPaymentMethod,
 			}}
 		>
 			{children}

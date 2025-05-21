@@ -391,7 +391,7 @@ const DetailProduct = ({
 											) : (
 												<FreeShipping
 													modeCard={true}
-													label={`Recíbelo por $${item.costo_envio
+													label={`Recíbelo por $ ${item.costo_envio
 														} entre el ${Capitalize(
 															shippingIntervalStart.toLocaleDateString('es-ES', {
 																weekday: 'long',
