@@ -230,6 +230,11 @@ export default function UserQuoteDetail({ quoteId }) {
 	// Si la cotización es muy antigua, también se considera expirada
 	const isEffectivelyExpired = isExpired || isTooOld;
 
+	// Sobrescribir el statusLabel si está efectivamente expirada
+	if (isEffectivelyExpired) {
+		statusLabel = 'Expirado';
+	}
+
 	// Crear clase de estilo para el estado
 	let statusClass = '';
 	if (isEffectivelyExpired) {
@@ -324,7 +329,6 @@ export default function UserQuoteDetail({ quoteId }) {
 										<strong>RFC:</strong> {quote.facturacion_rfc}
 									</p>
 								)}
-								
 							</div>
 						)}
 					</div>
@@ -343,7 +347,9 @@ export default function UserQuoteDetail({ quoteId }) {
 														{item.product_image_url && (
 															<Image
 																src={item.product_image_url}
-																alt={Capitalize(item.product_titulo) || 'Producto'}
+																alt={
+																	Capitalize(item.product_titulo) || 'Producto'
+																}
 																fill
 																style={{ objectFit: 'contain' }}
 																sizes='auto'

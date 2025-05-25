@@ -406,6 +406,11 @@ function UserQuotesList() {
 					// Si la cotización es muy antigua, también se considera expirada
 					const isEffectivelyExpired = isExpired || isTooOld;
 
+					// Sobrescribir el statusLabel si está efectivamente expirada
+					if (isEffectivelyExpired) {
+						statusLabel = 'Expirado';
+					}
+
 					// Crear clase de estilo para el estado
 					let statusClass = '';
 					if (isEffectivelyExpired) {
@@ -545,7 +550,8 @@ function UserQuotesList() {
 																		<a>{Capitalize(item.product_titulo)}</a>
 																	</Link>
 																) : (
-																	Capitalize(item.product_titulo))}
+																	Capitalize(item.product_titulo)
+																)}
 															</p>
 															<p className='sku'>SKU: {item.product_sku}</p>
 															<p className='price'>
@@ -969,6 +975,7 @@ function UserQuotesList() {
 						.quote-card__header {
 							flex-direction: column;
 							gap: 10px;
+							align-items: center;
 						}
 						.quote-card__content {
 							grid-template-columns: 1fr;
