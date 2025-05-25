@@ -237,11 +237,14 @@ const CartConfirmMethod = () => {
 									<p>
 										{item.quantity} x ${' '}
 										{CurrencyFormat(
-											cartMsi
-												? item.product.precio_final_descuento > 0
-													? item.product.precio_final_descuento
-													: item.product.precio_final
-												: item.product.precio_contado,
+											// Verificar si el producto tiene precio de cotización
+											item.unit_price && item.quote_id
+												? parseFloat(item.unit_price)
+												: cartMsi
+													? item.product.precio_final_descuento > 0
+														? item.product.precio_final_descuento
+														: item.product.precio_final
+													: item.product.precio_contado,
 											2,
 											'.',
 											','
@@ -252,11 +255,14 @@ const CartConfirmMethod = () => {
 									<span>
 										${' '}
 										{CurrencyFormat(
-											cartMsi
-												? item.product.precio_final_descuento > 0
-													? item.product.precio_final_descuento * item.quantity
-													: item.product.precio_final * item.quantity
-												: item.product.precio_contado * item.quantity,
+											// Verificar si el producto tiene precio de cotización
+											item.unit_price && item.quote_id
+												? parseFloat(item.unit_price) * item.quantity
+												: cartMsi
+													? item.product.precio_final_descuento > 0
+														? item.product.precio_final_descuento * item.quantity
+														: item.product.precio_final * item.quantity
+													: item.product.precio_contado * item.quantity,
 											2,
 											'.',
 											','
