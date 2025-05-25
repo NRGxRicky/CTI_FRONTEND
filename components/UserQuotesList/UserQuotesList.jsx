@@ -506,7 +506,6 @@ function UserQuotesList() {
 													<strong>RFC:</strong> {quote.facturacion_rfc}
 												</p>
 											)}
-											
 										</div>
 									)}
 								</div>
@@ -722,7 +721,7 @@ function UserQuotesList() {
 					}
 
 					.delete-quote-link {
-						color: #dc3545;
+						color: var(--primary-color);
 						text-decoration: none;
 						font-size: 13px;
 						margin-bottom: 8px;
@@ -987,6 +986,15 @@ function UserQuotesList() {
 
 						.delete-quote-link {
 							margin-bottom: 5px;
+						}
+
+						.quotes-list {
+							padding: 0 10px;
+							gap: 0px;
+						}
+
+						.quote-card {
+							gap: 15px;
 						}
 					}
 				`}</style>

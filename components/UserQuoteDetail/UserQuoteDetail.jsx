@@ -821,7 +821,7 @@ export default function UserQuoteDetail({ quoteId }) {
 					}
 					.orders-header {
 						padding: 10px;
-						margin: 0;
+						margin: 15px;
 						border-bottom: 1px solid #eaeaea;
 					}
 					.loading-container {

@@ -304,6 +304,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 				}),
 			});
 			const data = await res.json();
+
 			if (!res.ok) {
 				console.error('Error al crear preferencia MP:', data);
 				return alert('Error al crear preferencia con Mercado Pago');
@@ -827,6 +828,8 @@ const SummaryDetails = ({ urlAction, step }) => {
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 20px;
+						display: flex;
+						justify-content: space-between;
           }
 
           .payments__option__header {
