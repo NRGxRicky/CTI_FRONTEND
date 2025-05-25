@@ -1312,6 +1312,11 @@ function UserQuotesList() {
 						margin: 0;
 						border-bottom: 1px solid #eaeaea;
 					}
+
+					.quotes-filters {
+						margin-bottom: 15px;
+					}
+
 					.quote-card__header {
 						flex-direction: column;
 						gap: 10px;
