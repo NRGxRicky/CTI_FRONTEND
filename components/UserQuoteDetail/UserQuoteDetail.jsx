@@ -7,6 +7,7 @@ import { useQuoteDetails } from '../../hooks/useQuoteDetails';
 import useCart from '../../hooks/useCart';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import { useRouter } from 'next/router';
+import Capitalize from '../../hooks/CapitalizeTitle';
 
 export default function UserQuoteDetail({ quoteId }) {
 	const { quote, loading, error } = useQuoteDetails(quoteId);
@@ -342,7 +343,7 @@ export default function UserQuoteDetail({ quoteId }) {
 														{item.product_image_url && (
 															<Image
 																src={item.product_image_url}
-																alt={item.product_titulo || 'Producto'}
+																alt={Capitalize(item.product_titulo) || 'Producto'}
 																fill
 																style={{ objectFit: 'contain' }}
 																sizes='auto'
@@ -356,10 +357,10 @@ export default function UserQuoteDetail({ quoteId }) {
 													<strong>{item.quantity} x</strong>{' '}
 													{item.product_slug ? (
 														<Link href={`/${item.product_slug}`} legacyBehavior>
-															<a>{item.product_titulo}</a>
+															<a>{Capitalize(item.product_titulo)}</a>
 														</Link>
 													) : (
-														item.product_titulo
+														Capitalize(item.product_titulo)
 													)}
 												</p>
 												<p className='sku'>SKU: {item.product_sku}</p>

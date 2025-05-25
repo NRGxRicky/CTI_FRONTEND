@@ -542,11 +542,10 @@ function UserQuotesList() {
 																		href={`/${item.product_slug}`}
 																		legacyBehavior
 																	>
-																		<a>{item.product_titulo}</a>
+																		<a>{Capitalize(item.product_titulo)}</a>
 																	</Link>
 																) : (
-																	item.product_titulo
-																)}
+																	Capitalize(item.product_titulo))}
 															</p>
 															<p className='sku'>SKU: {item.product_sku}</p>
 															<p className='price'>
@@ -994,7 +993,12 @@ function UserQuotesList() {
 						}
 
 						.quote-card {
-							gap: 15px;
+							gap: 0;
+						}
+
+						.quote-card {
+							margin-top: 15px;
+							margin-bottom: 0;
 						}
 					}
 				`}</style>
@@ -1311,10 +1315,6 @@ function UserQuotesList() {
 						padding: 10px;
 						margin: 0;
 						border-bottom: 1px solid #eaeaea;
-					}
-
-					.quotes-filters {
-						margin-bottom: 15px;
 					}
 
 					.quote-card__header {
