@@ -11,7 +11,7 @@ import useDebounce from '../../hooks/useDebounce';
 import SummaryDetails from '../SummaryDetails/SummaryDetails';
 
 const CartSummary = () => {
-	const { cart, removeFromCart, addToCart, loading } =
+	const { cart, removeFromCart, addToCart, loading, hasQuoteItems } =
 		useCart();
 
 	const [isLoading, setIsLoading] = useState(false);
@@ -20,6 +20,11 @@ const CartSummary = () => {
 	const debouncedInputValues = useDebounce(inputValues, 1200);
 
 	const handleIncrement = async (item) => {
+		if (hasQuoteItems) {
+			alert('No puedes modificar la cantidad cuando hay productos de cotización en el carrito.');
+			return;
+		}
+
 		setIsLoading(true);
 		try {
 			const newQuantity = item.quantity + 1;
@@ -43,6 +48,11 @@ const CartSummary = () => {
 	};
 
 	const handleDecrement = async (item) => {
+		if (hasQuoteItems) {
+			alert('No puedes modificar la cantidad cuando hay productos de cotización en el carrito.');
+			return;
+		}
+
 		setIsLoading(true);
 		try {
 			const newQuantity = item.quantity - 1;
@@ -104,6 +114,13 @@ const CartSummary = () => {
 	}, [debouncedInputValues]);
 
 	const handleInputChange = (e, item) => {
+		if (hasQuoteItems) {
+			alert('No puedes modificar la cantidad cuando hay productos de cotización en el carrito.');
+			// Restaura el valor anterior
+			e.target.value = item.quantity;
+			return;
+		}
+
 		const value = e.target.value; // Permite capturar valores vacíos
 		const parsedValue = parseInt(value, 10);
 
@@ -114,6 +131,11 @@ const CartSummary = () => {
 					? ''
 					: parsedValue,
 		}));
+	};
+
+	const handleRemoveItem = (itemId) => {
+		// Permitimos eliminar productos aunque haya productos de cotización
+		removeFromCart(itemId);
 	};
 
 	return (
@@ -172,8 +194,8 @@ const CartSummary = () => {
 														src={
 															item.product.imagen1s
 																? item.product.imagen1xs.includes(
-																		'https://api.pccdnapi.com'
-																  )
+																	'https://api.pccdnapi.com'
+																)
 																	? item.product.imagen1xs
 																	: `https://api.pccdnapi.com${item.product.imagen1xs}`
 																: '/images/not-available.png'
@@ -202,21 +224,26 @@ const CartSummary = () => {
 										<p>
 											Precio unitario: $
 											{CurrencyFormat(
-												!cartMsi
-													? item.product.precio_contado
-													: item.product.precio_final_descuento > 0
-													? item.product.precio_final_descuento
-													: item.product.precio_final,
+												item.unit_price && item.quote_id
+													? item.unit_price
+													: !cartMsi
+														? item.product.precio_contado
+														: item.product.precio_final_descuento > 0
+															? item.product.precio_final_descuento
+															: item.product.precio_final,
 												2,
 												'.',
 												','
 											)}
+											{item.quote_id && (
+												<span className="from-quote"> (de cotización #{item.quote_id})</span>
+											)}
 										</p>
 									</div>
 									<div className='item-quantity'>
-										<div className='product__resume__stock__action'>
+										<div className={`product__resume__stock__action ${hasQuoteItems ? 'disabled' : ''}`}>
 											<span
-												className='product_resume__stock__action__quantity'
+												className={`product_resume__stock__action__quantity ${hasQuoteItems ? 'disabled' : ''}`}
 												onClick={() => handleDecrement(item)}
 											>
 												<span>-</span>
@@ -233,7 +260,10 @@ const CartSummary = () => {
 												}
 												max={item.product.stock_total}
 												onChange={(e) => handleInputChange(e, item)}
+												disabled={hasQuoteItems}
 												onBlur={() => {
+													if (hasQuoteItems) return;
+
 													const quantity = inputValues[item.id] || 0;
 													const validQuantity = Math.min(
 														quantity === '' || quantity === 0 ? 1 : quantity,
@@ -253,7 +283,7 @@ const CartSummary = () => {
 												}}
 											/>
 											<span
-												className='product_resume__stock__action__quantity'
+												className={`product_resume__stock__action__quantity ${hasQuoteItems ? 'disabled' : ''}`}
 												onClick={() => handleIncrement(item)}
 											>
 												<span>+</span>
@@ -265,27 +295,48 @@ const CartSummary = () => {
 									</div>
 
 									<div className='item-price'>
-										{item.product.precio_final_descuento > 0 && (
-											<span className='price--compare text--off'>
+										{item.unit_price && item.quote_id ? (
+											// Si viene de una cotización
+											<>
 												${' '}
 												{CurrencyFormat(
-													item.product.precio_final * item.quantity
+													item.unit_price * item.quantity,
+													2,
+													'.',
+													','
 												)}
-											</span>
-										)}
-										${' '}
-										{CurrencyFormat(
-											!cartMsi
-												? item.product.precio_contado * item.quantity
-												: item.product.precio_final_descuento > 0
-												? item.product.precio_final_descuento * item.quantity
-												: item.product.precio_final * item.quantity,
-											2,
-											'.',
-											','
+											</>
+										) : (
+											// Si es un producto normal
+											<>
+												{item.product.precio_final_descuento > 0 && (
+													<span className='price--compare text--off'>
+														${' '}
+														{CurrencyFormat(
+															item.product.precio_final * item.quantity
+														)}
+													</span>
+												)}
+												${' '}
+												{CurrencyFormat(
+													!cartMsi
+														? item.product.precio_contado * item.quantity
+														: item.product.precio_final_descuento > 0
+															? item.product.precio_final_descuento * item.quantity
+															: item.product.precio_final * item.quantity,
+													2,
+													'.',
+													','
+												)}
+											</>
 										)}
 										<div className='item-delete'>
-											<a onClick={() => removeFromCart(item.id)}>Eliminar</a>
+											<a
+												onClick={() => handleRemoveItem(item.id)}
+											// Ya no deshabilitamos el botón de eliminar
+											>
+												Eliminar
+											</a>
 										</div>
 									</div>
 								</div>
@@ -537,6 +588,14 @@ const CartSummary = () => {
 					line-height: 3;
 				}
 
+				.from-quote {
+					display: inline-block;
+					font-size: 0.85rem;
+					color: var(--primary-color);
+					font-weight: 500;
+					margin-left: 5px;
+				}
+				
 				@media only screen and (max-width: 62em) {
 					.item-price {
 						flex: 50%;
@@ -552,6 +611,26 @@ const CartSummary = () => {
 					.cart__counter-label {
 						font-size: 12px;
 					}
+				}
+
+				.product_resume__stock__action__quantity.disabled {
+					color: #999;
+					cursor: not-allowed !important;
+				}
+				
+				.product__resume__stock__action.disabled {
+					border-color: #ddd;
+				}
+
+				.product_resume__stock__action__quantity_current:disabled {
+					background-color: #f5f5f5;
+					color: #999;
+				}
+
+				.item-delete a.disabled {
+					opacity: 0.5;
+					cursor: not-allowed;
+					color: #999;
 				}
 			`}</style>
 		</div>

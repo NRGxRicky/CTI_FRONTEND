@@ -28,6 +28,7 @@ const CartSummaryMini = () => {
 		shipping,
 		total,
 		loading,
+		hasQuoteItems
 	} = useCart();
 
 	const dispatch = useAppDispatch();
@@ -61,6 +62,7 @@ const CartSummaryMini = () => {
 				},
 			);
 
+
 			if (!response.ok) throw new Error('Error al generar PDF de cotización');
 
 			// Nombre de archivo desde Content‑Disposition
@@ -82,6 +84,9 @@ const CartSummaryMini = () => {
 			link.click();
 			document.body.removeChild(link);
 			window.URL.revokeObjectURL(url);
+			Router.push('/mis-cotizaciones');
+			dispatch(hideAll())
+
 		} catch (err) {
 			console.error('Error al crear la cotización PDF:', err);
 		} finally {
@@ -121,6 +126,16 @@ const CartSummaryMini = () => {
 		return () => clearTimeout(t);
 	}, [cart]);
 
+	const handleRemoveItem = (itemId) => {
+		// Permitimos eliminar productos aunque haya productos de cotización
+		removeFromCart(itemId);
+	};
+
+	const handleClearCart = () => {
+		// Permitimos vaciar el carrito aunque haya productos de cotización
+		clearCart();
+	};
+
 	/* ───────────────────────── Render ───────────────────────── */
 	return (
 		<div className="cart-summary">
@@ -149,16 +164,17 @@ const CartSummaryMini = () => {
 					{/*  Cambio de modo MSI / contado  */}
 					<div className="cart__change-payment">
 						<span
-							className="cart__change-payment__action"
-							onClick={() => dispatch(showPaymentsChange())}
+							className={`cart__change-payment__action ${hasQuoteItems ? 'disabled' : ''}`}
+							onClick={() => !hasQuoteItems && dispatch(showPaymentsChange())}
 						>
 							Cambiar modo de carrito:
 						</span>
 						<span
-							className="payments-change__label-status"
-							onClick={() => dispatch(showPaymentsChange())}
+							className={`payments-change__label-status ${hasQuoteItems ? 'disabled' : ''}`}
+							onClick={() => !hasQuoteItems && dispatch(showPaymentsChange())}
 						>
 							{cartMsi ? 'MSI/Pagos' : 'Contado'}
+							{hasQuoteItems && ' (fijo por cotización)'}
 						</span>
 					</div>
 
@@ -167,7 +183,10 @@ const CartSummaryMini = () => {
 						<span className="cart__counter-label text--off">
 							Tienes {cart.reduce((t, i) => t + i.quantity, 0)} artículo(s) en tu carrito:
 						</span>
-						<button onClick={clearCart} className="clear-cart-button">
+						<button
+							onClick={handleClearCart}
+							className="clear-cart-button"
+						>
 							Borrar todos
 						</button>
 					</div>
@@ -241,25 +260,37 @@ const CartSummaryMini = () => {
 									<div className="item-quantity">{item.quantity} Pza.</div>
 
 									<div className="item-price">
-										{item.product.precio_final_descuento > 0 && (
-											<span className="price--compare text--off">
-												$ {CurrencyFormat(item.product.precio_final * item.quantity)}
-											</span>
-										)}
-										$ {CurrencyFormat(
-											!cartMsi
-												? item.product.precio_contado * item.quantity
-												: item.product.precio_final_descuento > 0
-													? item.product.precio_final_descuento * item.quantity
-													: item.product.precio_final * item.quantity,
-											2,
-											'.',
-											',',
+										{/* Si hay unit_price y quote_id, mostrar ese precio (desde cotización) */}
+										{item.unit_price && item.quote_id ? (
+											<>
+												<div>${CurrencyFormat(item.unit_price, 2, '.', ',')}</div>
+												<div className="item-price-subtotal">
+													${CurrencyFormat(item.unit_price * item.quantity, 2, '.', ',')}
+												</div>
+											</>
+										) : (
+											<>
+												{item.product.precio_final_descuento > 0 && (
+													<span className="price--compare text--off">
+														$ {CurrencyFormat(item.product.precio_final * item.quantity)}
+													</span>
+												)}
+												$ {CurrencyFormat(
+													!cartMsi
+														? item.product.precio_contado * item.quantity
+														: item.product.precio_final_descuento > 0
+															? item.product.precio_final_descuento * item.quantity
+															: item.product.precio_final * item.quantity,
+													2,
+													'.',
+													',',
+												)}
+											</>
 										)}
 									</div>
 
 									<a
-										onClick={() => removeFromCart(item.id)}
+										onClick={() => handleRemoveItem(item.id)}
 										className="remove-item-button"
 									>
 										<span className="close" />
@@ -310,7 +341,7 @@ const CartSummaryMini = () => {
 										use={TailSpin}
 										size={18}
 										strokeWidth={8}
-											strokeColor="#666"
+										strokeColor="#666"
 										duration={900}
 									/>
 									&nbsp;Generando…
@@ -364,9 +395,20 @@ const CartSummaryMini = () => {
           cursor: pointer;
         }
 
+        .payments-change__label-status.disabled {
+          background-color: #666;
+          cursor: not-allowed;
+        }
+
         .cart__change-payment__action {
           text-decoration: underline;
           cursor: pointer !important;
+          color: var(--primary-color);
+        }
+
+        .cart__change-payment__action.disabled {
+          color: #666;
+          text-decoration: none;
         }
 
         .cart__change-payment {
@@ -607,7 +649,7 @@ const CartSummaryMini = () => {
           background: #e00028;
         }
 
-        /* Botón “Crear cotización” deshabilitado */
+        /* Botón "Crear cotización" deshabilitado */
         .quote-button.disabled {
           background: #eaeaea;
           cursor: not-allowed;
@@ -635,6 +677,23 @@ const CartSummaryMini = () => {
           .cart-actions {
             flex-wrap: wrap;
           }
+        }
+
+        .cart__change-payment__action.disabled,
+        .payments-change__label-status.disabled {
+          cursor: not-allowed !important;
+          opacity: 0.7;
+        }
+
+        .cart__change-payment__action.disabled {
+          text-decoration: none;
+        }
+
+        .clear-cart-button.disabled,
+        .remove-item-button.disabled {
+          opacity: 0.5;
+          cursor: not-allowed !important;
+          color: #999;
         }
       `}</style>
 		</div>

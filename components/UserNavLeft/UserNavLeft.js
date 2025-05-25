@@ -4,93 +4,99 @@ import { useRouter } from 'next/router';
 import { useAppSelector } from '../../lib/hooks';
 
 const UserNavLeft = () => {
-	const router = useRouter();
-	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
+  const router = useRouter();
+  const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 
-	// Referencia al contenedor scrollable
-	const scrollContainerRef = useRef(null);
-	// Estados para controlar si se muestra el fade en cada extremo
-	const [fadeLeft, setFadeLeft] = useState(false);
-	const [fadeRight, setFadeRight] = useState(false);
+  // Referencia al contenedor scrollable
+  const scrollContainerRef = useRef(null);
+  // Estados para controlar si se muestra el fade en cada extremo
+  const [fadeLeft, setFadeLeft] = useState(false);
+  const [fadeRight, setFadeRight] = useState(false);
 
-	// Función que revisa la posición del scroll
-	const handleScroll = () => {
-		if (scrollContainerRef.current) {
-			const scrollLeft = scrollContainerRef.current.scrollLeft;
-			const maxScrollLeft =
-				scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth;
-			setFadeLeft(scrollLeft > 0);
-			setFadeRight(scrollLeft < maxScrollLeft);
-		}
-	};
+  // Función que revisa la posición del scroll
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const scrollLeft = scrollContainerRef.current.scrollLeft;
+      const maxScrollLeft =
+        scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth;
+      setFadeLeft(scrollLeft > 0);
+      setFadeRight(scrollLeft < maxScrollLeft);
+    }
+  };
 
-	// Al montar el componente (y en redimensiones) se revisa el estado del scroll
-	useEffect(() => {
-		if (scrollContainerRef.current) {
-			handleScroll();
-		}
-		window.addEventListener('resize', handleScroll);
-		return () => {
-			window.removeEventListener('resize', handleScroll);
-		};
-	}, []);
+  // Al montar el componente (y en redimensiones) se revisa el estado del scroll
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      handleScroll();
+    }
+    window.addEventListener('resize', handleScroll);
+    return () => {
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, []);
 
-	// Efecto para desplazar el item activo al centro en móvil
-	useEffect(() => {
-		if (typeof window !== 'undefined' && window.innerWidth <= 960) {
-			const activeElement = document.querySelector('.nav-left a.active');
-			if (activeElement) {
-				activeElement.scrollIntoView({
-					behavior: 'smooth',
-					inline: 'center',
-					block: 'nearest'
-				});
-			}
-		}
-	}, [router.pathname]);
+  // Efecto para desplazar el item activo al centro en móvil
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 960) {
+      const activeElement = document.querySelector('.nav-left a.active');
+      if (activeElement) {
+        activeElement.scrollIntoView({
+          behavior: 'smooth',
+          inline: 'center',
+          block: 'nearest'
+        });
+      }
+    }
+  }, [router.pathname]);
 
-	return (
-		// Se agregan clases condicionales al contenedor padre según el estado del scroll
-		<div className={`nav-left ${!fadeLeft ? 'no-left-fade' : ''} ${!fadeRight ? 'no-right-fade' : ''}`}>
+  return (
+    // Se agregan clases condicionales al contenedor padre según el estado del scroll
+    <div className={`nav-left ${!fadeLeft ? 'no-left-fade' : ''} ${!fadeRight ? 'no-right-fade' : ''}`}>
       <div className="nav-left-container" ref={scrollContainerRef} onScroll={handleScroll}>
-        
+
         <Link href={`/profile/`} legacyBehavior>
           <a className={router.pathname === '/profile' ? 'text--off active' : 'text--off'}>
             <span>Mi cuenta</span>
           </a>
         </Link>
 
-				<Link href={`/mis-compras/`} legacyBehavior>
-					<a className={router.pathname === '/mis-compras' ? 'text--off active' : 'text--off'}>
-						<span>Mis compras</span>
-					</a>
-				</Link>
-				
-				<Link href={`/profile/direcciones-y-facturacion/`} legacyBehavior>
-					<a
-						className={
-							router.pathname === '/profile/direcciones-y-facturacion' ? 'text--off active' : 'text--off'
-						}
-					>
-						<span>Direcciones de envió y Facturación</span>
-					</a>
-				</Link>
-				<Link href={`/profile/mis-datos/`} legacyBehavior>
-					<a className={router.pathname === '/profile/mis-datos' ? 'text--off active' : 'text--off'}>
-						<span>Mis datos</span>
-					</a>
-				</Link>
-				<Link href={`/profile/security/`} legacyBehavior>
-					<a
-						className={
-							router.pathname === '/profile/security' ? 'text--off active' : 'text--off'
-						}
-					>
-						<span>Seguridad</span>
-					</a>
-				</Link>
-			</div>
-			<style jsx>{`
+        <Link href={`/mis-compras/`} legacyBehavior>
+          <a className={router.pathname === '/mis-compras' ? 'text--off active' : 'text--off'}>
+            <span>Mis compras</span>
+          </a>
+        </Link>
+
+        <Link href={`/mis-cotizaciones/`} legacyBehavior>
+          <a className={router.pathname === '/mis-cotizaciones' ? 'text--off active' : 'text--off'}>
+            <span>Mis cotizaciones</span>
+          </a>
+        </Link>
+
+        <Link href={`/profile/direcciones-y-facturacion/`} legacyBehavior>
+          <a
+            className={
+              router.pathname === '/profile/direcciones-y-facturacion' ? 'text--off active' : 'text--off'
+            }
+          >
+            <span>Direcciones de envió y Facturación</span>
+          </a>
+        </Link>
+        <Link href={`/profile/mis-datos/`} legacyBehavior>
+          <a className={router.pathname === '/profile/mis-datos' ? 'text--off active' : 'text--off'}>
+            <span>Mis datos</span>
+          </a>
+        </Link>
+        <Link href={`/profile/security/`} legacyBehavior>
+          <a
+            className={
+              router.pathname === '/profile/security' ? 'text--off active' : 'text--off'
+            }
+          >
+            <span>Seguridad</span>
+          </a>
+        </Link>
+      </div>
+      <style jsx>{`
         .nav-left {
           margin-top: 50px;
           width: 180px;
@@ -175,8 +181,8 @@ const UserNavLeft = () => {
           }
         }
       `}</style>
-		</div>
-	);
+    </div>
+  );
 };
 
 export default UserNavLeft;

@@ -21,6 +21,7 @@ const index = () => {
 	useEffect(() => {
 		if (!loadingCart && cart && cart.length < 1) {
 			Router.push('/carrito');
+		
 		}
 	}, [loadingCart, cart]);
 

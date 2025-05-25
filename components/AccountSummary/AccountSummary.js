@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const AccountSummary = () => {
 	return (
-    <div className='account-summary'>
+		<div className='account-summary'>
 			<h2 className='account-summary__title'>Resumen de tu cuenta</h2>
 
 			{/* CONTENEDOR DE SECCIONES (cards) */}
@@ -19,6 +19,21 @@ const AccountSummary = () => {
 							<li>Rastrear Compras</li>
 							<li>Descarga tus facturas fiscales</li>
 							<li>Ver el detalle de tus compras</li>
+						</ul>
+					</a>
+				</Link>
+
+				{/* SECCIÓN: MIS COTIZACIONES */}
+				<Link href='/mis-cotizaciones' legacyBehavior>
+					<a className='account-summary__card'>
+						<div className='account-summary__card-header'>
+							<h3>Mis cotizaciones</h3>
+						</div>
+						<ul>
+							<li>Consulta tus cotizaciones</li>
+							<li>Descarga cotizaciones en PDF</li>
+							<li>Procesa tus cotizaciones a compras</li>
+							<li>Gestiona cotizaciones para tus proyectos</li>
 						</ul>
 					</a>
 				</Link>

@@ -12,11 +12,17 @@ const PaymentsChange = () => {
 	const dispatch = useAppDispatch();
 	const { cartMsi, updateDataUser } = useAuth();
 	const [payment, setPayment] = useState(false);
-	const { setPaymentMethod } = useCart();
+	const { setPaymentMethod, hasQuoteItems } = useCart();
 
 	const handleChangePayment = (paymentStatus: boolean) => {
+		if (hasQuoteItems) {
+			// No permitir el cambio si hay productos de cotización
+			dispatch(hideAll());
+			return;
+		}
 		updateDataUser(paymentStatus);
 		setPaymentMethod(null);
+		dispatch(hideAll());
 	};
 
 	useEffect(() => {
@@ -32,24 +38,41 @@ const PaymentsChange = () => {
 				dispatch(hideAll());
 			}}
 		>
-			<div className='payments-change__container'>
+			<div
+				className='payments-change__container'
+				onClick={(e) => e.stopPropagation()}
+			>
 				<div className='payments-change__header'>
-					<span>
-						Estás a punto de cambiar la forma de pago predeterminada de tu
-						carrito:
-					</span>
-					<span className='payments-change__label-status'>
-						{payment ? 'MSI/Pagos' : 'Contado'}
-					</span>
-					<div className='payments-change__label-help text--off'>
-						Haz clic en la opción de pago que prefieras.
-					</div>
+					{hasQuoteItems ? (
+						<div className='payments-change__quote-warning'>
+							<span>
+								No es posible cambiar el modo de pago porque tienes productos de
+								cotización en el carrito.
+							</span>
+							<span className='payments-change__quote-info'>
+								Los productos de cotización deben mantener el precio cotizado.
+							</span>
+						</div>
+					) : (
+						<>
+							<span>
+								Estás a punto de cambiar la forma de pago predeterminada de tu
+								carrito:
+							</span>
+							<span className='payments-change__label-status'>
+								{payment ? 'MSI/Pagos' : 'Contado'}
+							</span>
+							<div className='payments-change__label-help text--off'>
+								Haz clic en la opción de pago que prefieras.
+							</div>
+						</>
+					)}
 				</div>
 				<div className='payments-change__body'>
 					<div
 						className={`payments-change__option ${
 							payment ? 'payment-disable' : 'payment-enable'
-						}`}
+						} ${hasQuoteItems ? 'quote-disabled' : ''}`}
 						onClick={() => {
 							handleChangePayment(false);
 						}}
@@ -78,7 +101,7 @@ const PaymentsChange = () => {
 					<div
 						className={`payments-change__option ${
 							!payment ? 'payment-disable' : 'payment-enable'
-						}`}
+						} ${hasQuoteItems ? 'quote-disabled' : ''}`}
 						onClick={() => {
 							handleChangePayment(true);
 						}}
@@ -147,6 +170,29 @@ const PaymentsChange = () => {
 			</div>
 			<style jsx>
 				{`
+					.payments-change__quote-warning {
+						color: var(--primary-color);
+						display: flex;
+						flex-direction: column;
+						padding: 10px 0;
+					}
+
+					.payments-change__quote-info {
+						font-size: 14px;
+						font-weight: 400;
+						margin-top: 5px;
+					}
+
+					.quote-disabled {
+						opacity: 0.5;
+						cursor: not-allowed !important;
+						border-color: #666 !important;
+					}
+
+					.quote-disabled .payments-change__option__header {
+						background-color: #666 !important;
+					}
+
 					.payments-change {
 						position: fixed;
 						top: 61px;
@@ -163,7 +209,7 @@ const PaymentsChange = () => {
 						min-width: 100px;
 						min-height: 100px;
 						max-width: 75dvw;
-            max-height: calc(100dvh - 61px);
+						max-height: calc(100dvh - 61px);
 						border-radius: 5px;
 						padding: 0 20px 30px 20px;
 					}
@@ -194,21 +240,19 @@ const PaymentsChange = () => {
 					.payments-change__option {
 						border: 1px solid #eaeaea;
 						border-radius: 5px;
-            width: 100%;
-			box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+						width: 100%;
+						box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 					}
 
 					.payments-change__option__header {
 						font-weight: 600;
 						font-size: 16px;
 						border-bottom: 1px solid #eaeaea;
-            padding: 15px 10px
-
+						padding: 15px 10px;
 					}
 
 					.payments-change__option__header span {
 						line-height: 1.5;
-					
 					}
 
 					.payments-change__option__body {
@@ -222,7 +266,6 @@ const PaymentsChange = () => {
 						align-items: center;
 						gap: 10px;
 						margin-top: 10px;
-						
 					}
 
 					.payments-change__option__item__image {
@@ -246,16 +289,16 @@ const PaymentsChange = () => {
 					}
 
 					.payment-enable {
-						border-color:var(--primary-color) !important;
+						border-color: var(--primary-color) !important;
 						background-color: var(--background-price-color);
 					}
 
-          .payments-change__option:hover {
-            border-color:var(--primary-color) !important;
-          }
+					.payments-change__option:hover {
+						border-color: var(--primary-color) !important;
+					}
 
 					.payment-enable .payments-change__option__header {
-						background-color:var(--primary-color);
+						background-color: var(--primary-color);
 						color: #fff;
 					}
 
@@ -268,32 +311,31 @@ const PaymentsChange = () => {
 						font-weight: 300;
 						margin-left: 10px;
 						border-radius: 5px;
-						background-color:var(--primary-color);
+						background-color: var(--primary-color);
 						color: #fff;
 						padding: 5px 10px;
 					}
 
-          @media only screen and (max-width: 62em) { 
-          .payments-change__container {
-            max-width: 
-            100dvw !important;
-            overflow-y: auto;
-          }
-          .payments-change__body {
-            flex-wrap: wrap;
-          }
-          .payments-change__header {
-            font-size: 14px;
-          }
+					@media only screen and (max-width: 62em) {
+						.payments-change__container {
+							max-width: 100dvw !important;
+							overflow-y: auto;
+						}
+						.payments-change__body {
+							flex-wrap: wrap;
+						}
+						.payments-change__header {
+							font-size: 14px;
+						}
 
-          .payments-change__option__item__label {
-						font-size: 12px;
-            
+						.payments-change__option__item__label {
+							font-size: 12px;
+						}
+
+						.payments-change__option__header {
+							font-size: 14px;
+						}
 					}
-
-          .payments-change__option__header {
-              font-size: 14px;
-          }
 				`}
 			</style>
 		</div>

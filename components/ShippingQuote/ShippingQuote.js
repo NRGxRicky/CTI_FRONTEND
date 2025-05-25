@@ -37,7 +37,6 @@ function ShippingQuote({ productId }) {
         const data = await response.json();
         setShippingData(data);
 
-        console.log(data)
       } catch (err) {
         setError(err.message);
       } finally {
@@ -46,7 +45,6 @@ function ShippingQuote({ productId }) {
     }
 
     if (accessToken) {
-      console.log('se llama')
       fetchShipping();
     }
   }, [accessToken]);

@@ -199,6 +199,14 @@ export const CartProvider = ({ children }) => {
 	// Calcular subtotal, envío y total
 	useEffect(() => {
 		const preSubtotal = cart.reduce((acc, item) => {
+			// Si el item tiene un unit_price y quote_id, usar ese precio (desde la cotización)
+			if (item.unit_price && item.quote_id) {
+				const priceTotal =
+					parseInt(item.quantity) * parseFloat(item.unit_price);
+				return acc + priceTotal;
+			}
+
+			// Sino, usar la lógica normal
 			const price = !cartMsi
 				? parseFloat(item.product.precio_contado)
 				: parseFloat(item.product.precio_final_descuento) > 0
@@ -212,9 +220,28 @@ export const CartProvider = ({ children }) => {
 		setTotal(preSubtotal + shipping);
 	}, [cart, shipping, cartMsi]);
 
+	// Verificar si hay productos de cotización en el carrito
+	const hasQuoteItems = cart.some((item) => item.quote_id && item.unit_price);
+
 	// Agregar al Carrito
-	const addToCart = async (product, quantity = 1, updateQuantity = false) => {
+	const addToCart = async (
+		product,
+		quantity = 1,
+		updateQuantity = false,
+		quoteId = null
+	) => {
 		setLoading(true);
+
+		// Si hay productos de cotización y este producto no pertenece a la misma cotización, bloquear
+		if (hasQuoteItems && !quoteId) {
+			// Si intentamos agregar un producto que no es de cotización, mostramos mensaje y bloqueamos
+			alert(
+				'No puedes añadir productos normales cuando tienes productos de cotización en el carrito.'
+			);
+			setLoading(false);
+			return;
+		}
+
 		if (isAuthenticated) {
 			try {
 				const response = await fetch('https://api.pccdnapi.com/cart/', {
@@ -227,6 +254,7 @@ export const CartProvider = ({ children }) => {
 						product_id: product.id,
 						quantity,
 						update_quantity: updateQuantity,
+						quote_id: quoteId,
 					}),
 				});
 
@@ -258,7 +286,10 @@ export const CartProvider = ({ children }) => {
 				);
 				localcheckBackend(prevCart);
 			} else {
-				const prevCart = [...cart, { id: product.id, product, quantity }];
+				const prevCart = [
+					...cart,
+					{ id: product.id, product, quantity, quote_id: quoteId },
+				];
 				localcheckBackend(prevCart);
 			}
 		}
@@ -303,6 +334,8 @@ export const CartProvider = ({ children }) => {
 
 	// Eliminar del carrito
 	const removeFromCart = async (productId) => {
+		// Ya no bloqueamos la eliminación de productos
+		// El usuario debe poder eliminar productos de cotización si lo desea
 		setLoading(true);
 		if (isAuthenticated) {
 			try {
@@ -333,6 +366,8 @@ export const CartProvider = ({ children }) => {
 	};
 
 	const clearCart = () => {
+		// Ya no bloqueamos la limpieza del carrito
+		// El usuario debe poder vaciar el carrito incluso con productos de cotización
 		setLoading(true);
 		setCart([]);
 		if (isAuthenticated) {
@@ -361,6 +396,7 @@ export const CartProvider = ({ children }) => {
 				setTaxInvoice,
 				paymentMethod,
 				setPaymentMethod,
+				hasQuoteItems,
 			}}
 		>
 			{children}

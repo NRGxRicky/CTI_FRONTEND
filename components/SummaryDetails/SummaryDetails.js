@@ -22,6 +22,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 		setPaymentMethod,
 		taxInvoice,
 		clearCart,
+		hasQuoteItems
 	} = useCart();
 
 	const dispatch = useAppDispatch();
@@ -66,11 +67,14 @@ const SummaryDetails = ({ urlAction, step }) => {
 					createOrder: (data, actions) => {
 						// Generar array de ítems
 						const items = cart.map((item) => {
-							let unitPrice = cartMsi
-								? item.product.precio_final_descuento > 0
-									? item.product.precio_final_descuento
-									: item.product.precio_final
-								: item.product.precio_contado;
+							// Si hay precio de cotización, usarlo
+							let unitPrice = item.unit_price && item.quote_id
+								? parseFloat(item.unit_price)
+								: cartMsi
+									? item.product.precio_final_descuento > 0
+										? item.product.precio_final_descuento
+										: item.product.precio_final
+									: item.product.precio_contado;
 
 							unitPrice = parseFloat(unitPrice) || 0;
 
@@ -233,11 +237,13 @@ const SummaryDetails = ({ urlAction, step }) => {
 
 			// A) Construye los items
 			const items = cart.map((item, index) => {
-				let unitPrice = cartMsi
-					? item.product.precio_final_descuento > 0
-						? item.product.precio_final_descuento
-						: item.product.precio_final
-					: item.product.precio_contado;
+				let unitPrice = item.unit_price && item.quote_id
+					? parseFloat(item.unit_price)
+					: cartMsi
+						? item.product.precio_final_descuento > 0
+							? item.product.precio_final_descuento
+							: item.product.precio_final
+						: item.product.precio_contado;
 
 				unitPrice = parseFloat(unitPrice) || 0;
 
@@ -344,11 +350,13 @@ const SummaryDetails = ({ urlAction, step }) => {
 		try {
 			// A) Construir la lista de ítems
 			const items = cart.map((item, index) => {
-				let unitPrice = cartMsi
-					? (item.product.precio_final_descuento > 0
-						? item.product.precio_final_descuento
-						: item.product.precio_final)
-					: item.product.precio_contado;
+				let unitPrice = item.unit_price && item.quote_id
+					? parseFloat(item.unit_price)
+					: cartMsi
+						? (item.product.precio_final_descuento > 0
+							? item.product.precio_final_descuento
+							: item.product.precio_final)
+						: item.product.precio_contado;
 				unitPrice = parseFloat(unitPrice) || 0;
 				return {
 					name: item.product.titulo?.substring(0, 255) || 'Producto',
@@ -480,18 +488,25 @@ const SummaryDetails = ({ urlAction, step }) => {
 				{/* Toggle modo carrito */}
 				<div className='cart__change-payment'>
 					<span
-						className='cart__change-payment__action'
-						onClick={() => dispatch(showPaymentsChange())}
+						className={`cart__change-payment__action ${hasQuoteItems ? 'disabled' : ''}`}
+						onClick={() => !hasQuoteItems && dispatch(showPaymentsChange())}
 					>
 						Cambiar modo de carrito:
 					</span>
-					<span className='payments__label-status' onClick={() => dispatch(showPaymentsChange())}>
+					<span
+						className={`payments__label-status ${hasQuoteItems ? 'disabled' : ''}`}
+						onClick={() => !hasQuoteItems && dispatch(showPaymentsChange())}
+					>
 						{cartMsi ? 'MSI/Pagos' : 'Contado'}
+						{hasQuoteItems && ' (fijo por cotización)'}
 					</span>
 				</div>
 
 				<div className='summary-details__title'>
 					<span>Resumen del Carrito</span>
+					{hasQuoteItems && (
+						<span className='quote-badge'>Cotización Activa</span>
+					)}
 				</div>
 
 				{/* Productos, envío y total */}
@@ -500,6 +515,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 						{cart.reduce((acc, item) => acc + item.quantity, 0)} Producto(s):
 					</span>
 					<span>$ {CurrencyFormat(subtotal, 2, '.', ',')}</span>
+
 				</div>
 				<div className='summary-row'>
 					<span>Envío:</span>
@@ -745,6 +761,16 @@ const SummaryDetails = ({ urlAction, step }) => {
             padding: 2px 5px;
 						cursor: pointer;
           }
+          
+          .payments__label-status.disabled {
+            background-color: #666;
+            cursor: not-allowed;
+          }
+
+          .cart__change-payment__action.disabled {
+            color: #666;
+            text-decoration: none;
+          }
 
           .summary-row__total {
             display: flex;
@@ -777,7 +803,8 @@ const SummaryDetails = ({ urlAction, step }) => {
             margin-bottom: 10px;
             color: var(--primary-color);
             display: flex;
-            justify-content: right;
+						align-items: center;
+
           }
 
           .cart__change-payment__action {
@@ -872,10 +899,37 @@ const SummaryDetails = ({ urlAction, step }) => {
             background: #eaeaea;
           }
 
+          .cart__change-payment__action.disabled,
+          .payments__label-status.disabled {
+            cursor: not-allowed !important;
+            opacity: 0.7;
+          }
+
+          .cart__change-payment__action.disabled {
+            text-decoration: none;
+          }
+
           @media only screen and (max-width: 62em) {
             .summary-details {
               flex: 100%;
             }
+          }
+
+          .quote-indicator {
+            color: var(--primary-color);
+            font-size: 0.8rem;
+            margin-left: 5px;
+            font-weight: 500;
+          }
+
+          .quote-badge {
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+            font-weight: 500;
           }
         `}
 			</style>

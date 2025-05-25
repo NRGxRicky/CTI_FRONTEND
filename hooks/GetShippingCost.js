@@ -25,18 +25,42 @@ const calculateCostByWarehouse = (weightInKg) => {
 
 // Función para determinar el almacén de un producto
 const getProductWarehouse = (product) => {
-	// Verificamos existencias para determinar el almacén
-	if (product.pch_existencia_total > 0 || product.pch_articulo) {
-		return 'pch';
-	} else if (product.ct_existencia_total > 0 || product.ct_articulo) {
-		return 'ct';
-	} else if (product.cva_existencia_total > 0 || product.cva_articulo) {
-		return 'cva';
-	} else if (product.ingram_existencia_total > 0 || product.ingram_articulo) {
-		return 'ingram';
-	} else if (product.origen_inventario && product.origen_inventario !== 'PROPIO') {
+	// Primero verificamos si hay un origen_mayorista definido y stock disponible
+	if (product.origen_mayorista && product.stock_total > 0) {
+		return product.origen_mayorista.toLowerCase();
+	}
+
+	// Detectar almacenes dinámicamente a partir de las propiedades del producto
+	// Buscar propiedades que terminen en "_existencia_total" o "_articulo"
+	const warehouseProperties = Object.keys(product).filter(key =>
+		key.endsWith('_existencia_total') || key.endsWith('_articulo')
+	);
+
+	// Extraer los nombres de almacén de las propiedades encontradas
+	const warehouseIds = new Set();
+	warehouseProperties.forEach(prop => {
+		// Extraer el ID del almacén (la parte antes de "_existencia_total" o "_articulo")
+		const match = prop.match(/^(.+)_(existencia_total|articulo)$/);
+		if (match) {
+			warehouseIds.add(match[1]);
+		}
+	});
+
+	// Verificar cada almacén detectado
+	for (const warehouseId of warehouseIds) {
+		const existenciaField = `${warehouseId}_existencia_total`;
+		const articuloField = `${warehouseId}_articulo`;
+
+		if ((product[existenciaField] && product[existenciaField] > 0) || product[articuloField]) {
+			return warehouseId;
+		}
+	}
+
+	// Verificar otros campos de origen
+	if (product.origen_inventario && product.origen_inventario !== 'PROPIO') {
 		return product.origen_inventario.toLowerCase();
 	} else if (product.origen_mayorista) {
+		// Si hay origen_mayorista pero no stock, lo usamos como última opción
 		return product.origen_mayorista.toLowerCase();
 	}
 
@@ -69,7 +93,6 @@ const GetShippingCost = (weightOrProducts) => {
 			const itemWeight = parseFloat(item.product.peso || 0) * item.quantity;
 			groups[warehouse].totalWeight += itemWeight;
 			groups[warehouse].items.push(item);
-
 
 			return groups;
 		}, {});

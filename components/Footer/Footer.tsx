@@ -143,6 +143,14 @@ const Footer: React.FC<FooterProps> = () => {
 							</div>
 
 							<div className='footer__column__element'>
+								<Link href={`/mis-cotizaciones/`} legacyBehavior>
+									<a>
+										<span>Mis cotizaciones</span>
+									</a>
+								</Link>
+							</div>
+
+							<div className='footer__column__element'>
 								<Link href={`/profile/mis-datos/`} legacyBehavior>
 									<a>
 										<span>Mis datos</span>
