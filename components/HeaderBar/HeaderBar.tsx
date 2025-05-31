@@ -25,6 +25,13 @@ import {
 	showLoginMenuState,
 	showCart,
 } from '../../lib/features/showOpacityContainerSlide';
+import {
+	setQueryInInput,
+	setQueryInInputWithSearchBar,
+	clearQueryInInput,
+	clearQueryInInputKeepSearchBar,
+	addToRecentSearches,
+} from '../../lib/features/searchInputSlice';
 import { isMobile as detectIsMobile } from 'react-device-detect';
 import { setMobileView } from '../../lib/features/mobileSlide';
 import CartSummaryMini from '../CartSummaryMini/CartSummaryMini';
@@ -33,15 +40,18 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import { useEnv } from '../../context/EnvContext';
 
 const HeaderBar: React.FC = () => {
-	const textInput = useRef<HTMLInputElement | null>(null);
+	const textInput = useRef<HTMLInputElement | null>(null); // Mobile input
+	const desktopInput = useRef<HTMLInputElement | null>(null); // Desktop input
 	const searchButton = useRef<HTMLButtonElement | null>(null);
 	const router = useRouter();
 	const { q } = router.query;
-	const [queryInInput, setQueryInInput] = useState<string | undefined>();
 	const { nombres, loading, isAuthenticated } = useAuth();
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
+	);
+	const queryInInput = useAppSelector(
+		(state) => state.searchInput.queryInInput
 	);
 	const { cart, total } = useCart();
 
@@ -50,8 +60,14 @@ const HeaderBar: React.FC = () => {
 	const [windowsSize, setWindowsSize] = useState(0);
 
 	useEffect(() => {
+		if (q && typeof q === 'string') {
+			dispatch(setQueryInInput(q));
+		}
+	}, [q, dispatch]);
+
+	useEffect(() => {
 		dispatch(setMobileView(detectIsMobile));
-	}, [detectIsMobile]);
+	}, [detectIsMobile, dispatch]);
 
 	useEffect(() => {
 		if (windowsSize < 1024) {
@@ -59,7 +75,7 @@ const HeaderBar: React.FC = () => {
 		} else {
 			dispatch(setMobileView(false));
 		}
-	}, [windowsSize]);
+	}, [windowsSize, dispatch]);
 
 	useEffect(() => {
 		const updateWindowDimensions = () => {
@@ -75,7 +91,18 @@ const HeaderBar: React.FC = () => {
 	}, [windowsSize]);
 
 	const handleInputChange = (value: string) => {
-		setQueryInInput(value);
+		if (value === '') {
+			// Si el usuario borra todo el contenido, mantener search bar abierto para mostrar búsquedas recientes
+			dispatch(clearQueryInInputKeepSearchBar());
+		} else {
+			dispatch(setQueryInInputWithSearchBar(value));
+		}
+	};
+
+	const handleInputFocus = (e: ChangeEvent<HTMLInputElement>) => {
+		dispatch(setQueryInInputWithSearchBar(e.target.value));
+		dispatch(showOpacity());
+		dispatch(showSearchBar());
 	};
 
 	const searchVisibleValue = useAppSelector(
@@ -96,6 +123,9 @@ const HeaderBar: React.FC = () => {
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (queryInInput) {
+			// Agregar a búsquedas recientes antes de navegar
+			dispatch(addToRecentSearches(queryInInput));
+
 			await router.replace({
 				pathname: '/listado/all/index',
 				query: {
@@ -111,19 +141,25 @@ const HeaderBar: React.FC = () => {
 		}
 	};
 
-	const focusSearchInEnd = (e: ChangeEvent<HTMLInputElement>) => {
-		setQueryInInput(e.target.value);
-		dispatch(showOpacity());
-	};
-
 	const handleMobileSearch = () => {
 		dispatch(showSearchBar());
+		dispatch(showOpacity());
 		textInput?.current?.focus();
 	};
 
 	useEffect(() => {
 		showLoginMenu && dispatch(showLoginMenuState());
-	}, [showLoginMenu]);
+	}, [showLoginMenu, dispatch]);
+
+	// Sincronizar el valor de ambos inputs con el estado global
+	useEffect(() => {
+		if (textInput.current && textInput.current.value !== queryInInput) {
+			textInput.current.value = queryInInput;
+		}
+		if (desktopInput.current && desktopInput.current.value !== queryInInput) {
+			desktopInput.current.value = queryInInput;
+		}
+	}, [queryInInput]);
 
 	return (
 		<div>
@@ -153,7 +189,8 @@ const HeaderBar: React.FC = () => {
 								<form onSubmit={(e) => handleSubmit(e)}>
 									<div className='header-bar__form-container'>
 										<input
-											onFocus={focusSearchInEnd}
+											ref={desktopInput}
+											onFocus={handleInputFocus}
 											onChange={(e) => handleInputChange(e.target.value)}
 											className='header-bar__input'
 											type='search'
@@ -186,7 +223,7 @@ const HeaderBar: React.FC = () => {
 								</form>
 							</div>
 							<div className='col-sm-1 col-md-5 col-lg-6 search-box'>
-								<InstantSearch queryInInput={queryInInput} />
+								<InstantSearch />
 							</div>
 						</div>
 						<div className='header-bar__section header-bar__section__icons header-bar--right col-xs-8 col-sm-6 col-md-5 col-lg-4'>
@@ -329,7 +366,7 @@ const HeaderBar: React.FC = () => {
 							</div>
 							<input
 								ref={textInput}
-								onFocus={focusSearchInEnd}
+								onFocus={handleInputFocus}
 								onChange={(e) => handleInputChange(e.target.value)}
 								className='header-bar__input'
 								type='search'
@@ -344,6 +381,7 @@ const HeaderBar: React.FC = () => {
 								onClick={() => {
 									if (textInput.current) {
 										textInput.current.value = '';
+										dispatch(clearQueryInInputKeepSearchBar());
 										textInput.current.focus();
 									}
 								}}
@@ -369,7 +407,7 @@ const HeaderBar: React.FC = () => {
 					</form>
 				</div>
 				<div className='col-sm-12 col-md-12 col-lg-12 search-box search-box__mobile'>
-					<InstantSearch queryInInput={queryInInput} />
+					<InstantSearch />
 				</div>
 			</div>
 			<div

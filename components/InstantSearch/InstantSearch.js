@@ -6,14 +6,20 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import {
-	showOpacity,
-	hideOpacity,
 	hideAll,
 	showSearchBar,
 } from '../../lib/features/showOpacityContainerSlide';
+import {
+	setQueryInInput,
+	resetShouldShowSearchBar,
+	hydrate,
+	addToRecentSearches,
+	removeFromRecentSearches,
+	clearAllRecentSearches
+} from '../../lib/features/searchInputSlice';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 
-const InstantSearch = ({ queryInInput }) => {
+const InstantSearch = () => {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
@@ -24,7 +30,19 @@ const InstantSearch = ({ queryInInput }) => {
 	const locationStockOnly = useAppSelector(
 		(state) => state.locationSlide.locationStockOnly
 	);
+	const queryInInput = useAppSelector((state) => state.searchInput.queryInInput);
+	const shouldShowSearchBar = useAppSelector((state) => state.searchInput.shouldShowSearchBar);
+	const recentSearches = useAppSelector((state) => state.searchInput.recentSearches);
+	const isHydrated = useAppSelector((state) => state.searchInput.isHydrated);
 	const dispacth = useAppDispatch();
+
+	// Función para realizar una búsqueda con una consulta reciente
+	const searchWithRecentQuery = (query) => {
+		dispacth(addToRecentSearches(query));
+		dispacth(setQueryInInput(query));
+		router.push(`/listado/all/index?q=${query}`);
+		dispacth(hideAll(false));
+	};
 
 	const fetchData = async () => {
 		try {
@@ -41,18 +59,37 @@ const InstantSearch = ({ queryInInput }) => {
 	};
 
 	const redirecToResults = () => {
+		dispacth(addToRecentSearches(queryInInput));
 		router.push(`/listado/all/index?q=${queryInInput}`);
 		dispacth(hideAll(false));
 	};
+
+	// Hidratar búsquedas recientes del localStorage después del montaje
+	useEffect(() => {
+		if (!isHydrated) {
+			dispacth(hydrate());
+		}
+	}, [isHydrated, dispacth]);
 
 	useEffect(() => {
 		if (queryInInput !== undefined) {
 			if (queryInInput.length > 0) {
 				fetchData();
-				dispacth(showSearchBar());
+				if (shouldShowSearchBar) {
+					dispacth(showSearchBar());
+					dispacth(resetShouldShowSearchBar());
+				}
+			} else if (queryInInput.length === 0) {
+				// Cuando está vacío, limpiar los datos para mostrar búsquedas recientes
+				setData(null);
+				setError(false);
+				if (shouldShowSearchBar) {
+					dispacth(showSearchBar());
+					dispacth(resetShouldShowSearchBar());
+				}
 			}
 		}
-	}, [queryInInput]);
+	}, [queryInInput, shouldShowSearchBar]);
 
 	if (loading) {
 		return (
@@ -131,7 +168,10 @@ const InstantSearch = ({ queryInInput }) => {
 					<div
 						key={producto.id}
 						className='search-box__item'
-						onClick={() => dispacth(hideAll())}
+						onClick={() => {
+							dispacth(addToRecentSearches(queryInInput));
+							dispacth(hideAll());
+						}}
 					>
 						<Link href={`/${producto.slug}`} legacyBehavior>
 							<a className='search-box__link'>
@@ -298,8 +338,150 @@ const InstantSearch = ({ queryInInput }) => {
 				</style>
 			</div>
 		);
+	} else if ((!queryInInput || queryInInput.length === 0) && recentSearches.length > 0) {
+		// Mostrar búsquedas recientes cuando no hay consulta y hay búsquedas guardadas
+		return (
+			<div
+				className='search-box'
+				style={!searchVisibleValue ? { display: 'none' } : { display: 'block' }}
+			>
+				<div className='recent-searches-header'>
+					<span className='recent-searches-title'>Búsquedas recientes</span>
+					<button
+						className='clear-recent-btn'
+						onClick={() => {
+							dispacth(clearAllRecentSearches());
+						}}
+					>
+						Borrar búsquedas recientes
+					</button>
+				</div>
+
+				{recentSearches.map((searchQuery, index) => (
+					<div key={index} className='recent-search-item'>
+						<div
+							className='recent-search-content'
+							onClick={() => searchWithRecentQuery(searchQuery)}
+						>
+							<div className='recent-search-icon'>
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+									<circle cx="12" cy="12" r="10" />
+									<polyline points="12,6 12,12 16,14" />
+								</svg>
+							</div>
+							<span className='recent-search-text'>{searchQuery}</span>
+						</div>
+						<button
+							className='remove-recent-btn'
+							onClick={(e) => {
+								e.stopPropagation();
+								dispacth(removeFromRecentSearches(searchQuery));
+							}}
+						>
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+								<line x1="18" y1="6" x2="6" y2="18" />
+								<line x1="6" y1="6" x2="18" y2="18" />
+							</svg>
+						</button>
+					</div>
+				))}
+
+				<style jsx>
+					{`
+						.search-box {
+							height: 100%;
+							padding: 10px;
+						}
+
+						.recent-searches-header {
+							display: flex;
+							justify-content: space-between;
+							align-items: center;
+							padding: 10px 0;
+							border-bottom: 1px solid #eaeaea;
+							margin-bottom: 10px;
+						}
+
+						.recent-searches-title {
+							font-weight: 600;
+							color: #333;
+						}
+
+						.clear-recent-btn {
+							background: none;
+							border: none;
+							color: var(--primary-color);
+							cursor: pointer;
+							font-size: 14px;
+							padding: 5px;
+						}
+
+						.clear-recent-btn:hover {
+							text-decoration: underline;
+						}
+
+						.recent-search-item {
+							display: flex;
+							align-items: center;
+							justify-content: space-between;
+							padding: 12px 8px;
+							border-radius: 4px;
+							margin-bottom: 2px;
+							cursor: pointer;
+						}
+
+						.recent-search-item:hover {
+							background-color: #f5f5f5;
+						}
+
+						.recent-search-content {
+							display: flex;
+							align-items: center;
+							flex-grow: 1;
+							cursor: pointer;
+						}
+
+						.recent-search-icon {
+							margin-right: 12px;
+							color: #666;
+							display: flex;
+							align-items: center;
+						}
+
+						.recent-search-text {
+							color: #333;
+							font-size: 14px;
+						}
+
+						.remove-recent-btn {
+							background: none;
+							border: none;
+							cursor: pointer;
+							padding: 4px;
+							color: #999;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+						}
+
+						.remove-recent-btn:hover {
+							color: #666;
+						}
+
+						@media only screen and (max-width: 48em) {
+							.recent-searches-header {
+								flex-direction: column;
+								align-items: flex-start;
+								gap: 8px;
+							}
+						}
+					`}
+				</style>
+			</div>
+		);
 	} else {
 		return <div></div>;
 	}
 };
+
 export default InstantSearch;
