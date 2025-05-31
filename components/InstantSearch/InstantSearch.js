@@ -14,8 +14,7 @@ import {
 	resetShouldShowSearchBar,
 	hydrate,
 	addToRecentSearches,
-	removeFromRecentSearches,
-	clearAllRecentSearches
+	removeFromRecentSearches
 } from '../../lib/features/searchInputSlice';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 
@@ -339,17 +338,6 @@ const InstantSearch = () => {
 				className='search-box'
 				style={!searchVisibleValue ? { display: 'none' } : { display: 'block' }}
 			>
-				<div className='recent-searches-header'>
-					<span className='recent-searches-title'>Búsquedas recientes</span>
-					<button
-						className='clear-recent-btn'
-						onClick={() => {
-							dispacth(clearAllRecentSearches());
-						}}
-					>
-						Borrar búsquedas recientes
-					</button>
-				</div>
 
 				{recentSearches.map((searchQuery, index) => (
 					<div key={index} className='recent-search-item'>
@@ -385,33 +373,6 @@ const InstantSearch = () => {
 						.search-box {
 							height: 100%;
 							padding: 10px;
-						}
-
-						.recent-searches-header {
-							display: flex;
-							justify-content: space-between;
-							align-items: center;
-							padding: 10px 0;
-							border-bottom: 1px solid #eaeaea;
-							margin-bottom: 10px;
-						}
-
-						.recent-searches-title {
-							font-weight: 600;
-							color: #333;
-						}
-
-						.clear-recent-btn {
-							background: none;
-							border: none;
-							color: var(--primary-color);
-							cursor: pointer;
-							font-size: 14px;
-							padding: 5px;
-						}
-
-						.clear-recent-btn:hover {
-							text-decoration: underline;
 						}
 
 						.recent-search-item {
@@ -460,14 +421,6 @@ const InstantSearch = () => {
 
 						.remove-recent-btn:hover {
 							color: #666;
-						}
-
-						@media only screen and (max-width: 48em) {
-							.recent-searches-header {
-								flex-direction: column;
-								align-items: flex-start;
-								gap: 8px;
-							}
 						}
 					`}
 				</style>
