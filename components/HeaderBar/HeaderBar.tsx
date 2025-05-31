@@ -56,12 +56,10 @@ const HeaderBar: React.FC = () => {
 	useEffect(() => {
 		if (windowsSize < 1024) {
 			dispatch(setMobileView(true));
-		}
-		else {
+		} else {
 			dispatch(setMobileView(false));
 		}
-
-	}, [windowsSize])
+	}, [windowsSize]);
 
 	useEffect(() => {
 		const updateWindowDimensions = () => {

@@ -631,6 +631,9 @@ const DetailProduct = ({
 
 					.product__out_sotck__label {
 						flex-basis: 100%;
+    				display: flex;
+    				flex-direction: column;
+    				gap: 10px;
 					}
 					.shipping-local__icon {
 						height: 40px;

@@ -1,28 +1,29 @@
 'use client';
 
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
-import { hideAll, unlockBodyScroll } from '../../lib/features/showOpacityContainerSlide';
+import {
+	hideAll,
+	unlockBodyScroll,
+} from '../../lib/features/showOpacityContainerSlide';
 
 const OpacityContainer = () => {
 	const opacityContainerValue = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.opacityConatiner
 	);
-		const bodyScroll = useAppSelector(
-			(state: any) => state.showOpacityContainerReducer.bodyScroll
-		);
+	const bodyScroll = useAppSelector(
+		(state: any) => state.showOpacityContainerReducer.bodyScroll
+	);
 
 	useEffect(() => {
 		if (bodyScroll) {
-			document.body.classList.add('open-modal')
-
-		}
-		else {
+			document.body.classList.add('open-modal');
+		} else {
 			document.body.classList.remove('open-modal');
-			document.body.focus()
+			document.body.focus();
 		}
-		}, [bodyScroll]);
-	
+	}, [bodyScroll]);
+
 	const dispatch = useAppDispatch();
 	return (
 		<div>
@@ -34,7 +35,6 @@ const OpacityContainer = () => {
 				}}
 				onClick={() => {
 					dispatch(hideAll());
-
 				}}
 			></div>
 			<style jsx>
