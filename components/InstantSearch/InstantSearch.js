@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Preloader, TailSpin } from 'react-preloader-icon';
+import Spinner from '../Spinner/Spinner';
 import Image from 'next/image';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import Link from 'next/link';
@@ -98,13 +98,7 @@ const InstantSearch = () => {
 				style={!searchVisibleValue ? { display: 'none' } : { display: 'block' }}
 			>
 				<div className='search-box__loader'>
-					<Preloader
-						use={TailSpin}
-						size={30}
-						strokeWidth={8}
-						strokeColor='var(--primary-color)'
-						duration={900}
-					/>
+					<Spinner />
 				</div>
 
 				<style jsx>
