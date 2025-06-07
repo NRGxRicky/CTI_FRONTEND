@@ -119,6 +119,11 @@ const HeaderBar: React.FC = () => {
 		dispatch(showSearchBar());
 	};
 
+	const handleShowSummaryCartmini = () => {
+		dispatch(showCart());
+	};
+
+
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (!queryInInput) return;
