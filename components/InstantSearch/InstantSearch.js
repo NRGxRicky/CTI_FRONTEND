@@ -340,10 +340,9 @@ const InstantSearch = () => {
 			>
 
 				{recentSearches.map((searchQuery, index) => (
-					<div key={index} className='recent-search-item'>
+					<div key={index} className='recent-search-item' onClick={() => searchWithRecentQuery(searchQuery)}>
 						<div
-							className='recent-search-content'
-							onClick={() => searchWithRecentQuery(searchQuery)}
+							className='recent-search-content'		
 						>
 							<div className='recent-search-icon'>
 								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">

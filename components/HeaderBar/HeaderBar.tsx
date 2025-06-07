@@ -750,7 +750,7 @@ const HeaderBar: React.FC = () => {
 					}
 
 					.mobile__clear-fix {
-						height: 60px !important;
+						height: 59px !important;
 					}
 				}
 			`}</style>
