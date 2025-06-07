@@ -8,7 +8,7 @@ import React, {
 	FormEvent,
 } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 import InstantSearch from '../InstantSearch/InstantSearch';
 import LoginMenu from '../LoginMenu/LoginMenu';
 import { useAuth } from '../../hooks/auth';
@@ -40,11 +40,23 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import { useEnv } from '../../context/EnvContext';
 
 const HeaderBar: React.FC = () => {
-	const textInput = useRef<HTMLInputElement | null>(null); // Mobile input
-	const desktopInput = useRef<HTMLInputElement | null>(null); // Desktop input
+	/**
+	 * Refs
+	 */
+	const textInput = useRef<HTMLInputElement | null>(null); // Mobile
+	const desktopInput = useRef<HTMLInputElement | null>(null); // Desktop
 	const searchButton = useRef<HTMLButtonElement | null>(null);
+
+	/**
+	 * Router & Search params (App Router)
+	 */
 	const router = useRouter();
-	const { q } = router.query;
+	const searchParams = useSearchParams();
+	const q = searchParams.get('q') ?? '';
+
+	/**
+	 * Global state selectors
+	 */
 	const { nombres, loading, isAuthenticated } = useAuth();
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 	const maxPageResults = useAppSelector(
@@ -55,44 +67,46 @@ const HeaderBar: React.FC = () => {
 	);
 	const { cart, total } = useCart();
 
+	/**
+	 * Local state
+	 */
 	const dispatch = useAppDispatch();
 	const { storeName, logoUrl } = useEnv();
-	const [windowsSize, setWindowsSize] = useState(0);
+	const [windowWidth, setWindowWidth] = useState(0);
 
+	/**
+	 * Sync query param → searchInput slice
+	 */
 	useEffect(() => {
-		if (q && typeof q === 'string') {
-			dispatch(setQueryInInput(q));
-		}
+		dispatch(setQueryInInput(q));
 	}, [q, dispatch]);
 
+	/**
+	 * Initial mobile detection (only once)
+	 */
 	useEffect(() => {
 		dispatch(setMobileView(detectIsMobile));
-	}, [detectIsMobile, dispatch]);
+	}, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+	/**
+	 * Update mobileView on resize
+	 */
+	useEffect(() => {
+		const update = () => setWindowWidth(window.innerWidth);
+		window.addEventListener('resize', update);
+		update(); // first run
+		return () => window.removeEventListener('resize', update);
+	}, []);
 
 	useEffect(() => {
-		if (windowsSize < 1024) {
-			dispatch(setMobileView(true));
-		} else {
-			dispatch(setMobileView(false));
-		}
-	}, [windowsSize, dispatch]);
+		dispatch(setMobileView(windowWidth < 1024));
+	}, [windowWidth, dispatch]);
 
-	useEffect(() => {
-		const updateWindowDimensions = () => {
-			const newWidth = window.innerWidth;
-			setWindowsSize(newWidth);
-		};
-
-		window.addEventListener('resize', updateWindowDimensions);
-		if (windowsSize === 0) {
-			updateWindowDimensions();
-		}
-		return () => window.removeEventListener('resize', updateWindowDimensions);
-	}, [windowsSize]);
-
+	/**
+	 * Handlers
+	 */
 	const handleInputChange = (value: string) => {
 		if (value === '') {
-			// Si el usuario borra todo el contenido, mantener search bar abierto para mostrar búsquedas recientes
 			dispatch(clearQueryInInputKeepSearchBar());
 		} else {
 			dispatch(setQueryInInputWithSearchBar(value));
@@ -105,53 +119,39 @@ const HeaderBar: React.FC = () => {
 		dispatch(showSearchBar());
 	};
 
+	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		if (!queryInInput) return;
+
+		dispatch(addToRecentSearches(queryInInput));
+
+		const url = `/listado/all/index?q=${encodeURIComponent(
+			queryInInput
+		)}&page_size=${maxPageResults}&page=1&filter_available=true`;
+
+		router.replace(url);
+		dispatch(hideAll());
+		textInput.current?.blur();
+	};
+
+	const handleMobileSearch = () => {
+		dispatch(showSearchBar());
+		dispatch(showOpacity());
+		textInput.current?.focus();
+	};
+
+	// Derived UI state selectors
 	const searchVisibleValue = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.searchBar
 	);
 	const showLoginMenu = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.loginMenu
 	);
-
 	const showSummaryCartmini = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.cart
 	);
 
-	const handleShowSummaryCartmini = () => {
-		dispatch(showCart());
-	};
-
-	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		if (queryInInput) {
-			// Agregar a búsquedas recientes antes de navegar
-			dispatch(addToRecentSearches(queryInInput));
-
-			await router.replace({
-				pathname: '/listado/all/index',
-				query: {
-					q: queryInInput,
-					page_size: maxPageResults,
-					page: 1,
-					filter_available: true,
-				},
-			});
-
-			dispatch(hideAll());
-			textInput?.current?.blur();
-		}
-	};
-
-	const handleMobileSearch = () => {
-		dispatch(showSearchBar());
-		dispatch(showOpacity());
-		textInput?.current?.focus();
-	};
-
-	useEffect(() => {
-		showLoginMenu && dispatch(showLoginMenuState());
-	}, [showLoginMenu, dispatch]);
-
-	// Sincronizar el valor de ambos inputs con el estado global
+	// Sync both inputs with global value
 	useEffect(() => {
 		if (textInput.current && textInput.current.value !== queryInInput) {
 			textInput.current.value = queryInInput;
@@ -166,27 +166,34 @@ const HeaderBar: React.FC = () => {
 			<div className={`header-bar ${mobileView ? 'header-bar--mobile' : ''}`}>
 				<div className='header-bar__container'>
 					<div className='header-bar__primary header-bar--left row around-xs middle-xs center-xs'>
-						<NavMobileMenu />
-						<div className='header-bar__section col-xs-2 col-sm-5 col-md-2 col-lg-2'>
-							<a className='header-bar__logo' href='/'>
-								<Image
-									src={logoUrl}
-									width='98'
-									height='42'
-									sizes='auto'
+						{/*  Logo — Option B responsive (fill) */}
+						<div className='header-bar__section col-xs-4 col-sm-4 col-md-2 col-lg-2 header-bar__logo'>
+							<NavMobileMenu />
+							<a href='/'>
+								<div
 									style={{
-										width: '98',
-										height: 'auto',
+										width: 98, // ← puedes ajustar vía media‑queries
+										height: 42,
+										position: 'relative',
 									}}
-									alt={storeName}
-									priority={true}
-									draggable='false'
-								/>
+								>
+									<Image
+										src={logoUrl}
+										alt={storeName}
+										fill
+										sizes='98px' // breakpoints opcionales
+										style={{ objectFit: 'contain' }}
+										priority
+										draggable={false}
+									/>
+								</div>
 							</a>
 						</div>
-						<div className='header-bar__search-bar col-xs-6 col-sm-6 col-md-5 col-lg-6'>
+
+						{/* Search bar (desktop) */}
+						<div className='header-bar__search-bar'>
 							<div className='header-bar__box'>
-								<form onSubmit={(e) => handleSubmit(e)}>
+								<form onSubmit={handleSubmit}>
 									<div className='header-bar__form-container'>
 										<input
 											ref={desktopInput}
@@ -205,6 +212,7 @@ const HeaderBar: React.FC = () => {
 											className='header-bar__button-search'
 											ref={searchButton}
 										>
+											{/* svg lupa */}
 											<svg
 												className='header-bar__icon'
 												width='25'
@@ -221,14 +229,14 @@ const HeaderBar: React.FC = () => {
 										</button>
 									</div>
 								</form>
-							</div>
-							<div className='col-sm-1 col-md-5 col-lg-6 search-box'>
-								<InstantSearch />
+								<div className='search-box'>
+									<InstantSearch />
+								</div>
 							</div>
 						</div>
-						<div className='header-bar__section header-bar__section__icons header-bar--right col-xs-8 col-sm-6 col-md-5 col-lg-4'>
+						<div className='header-bar__section header-bar__section__icons header-bar--right col-xs-6 col-sm-6 col-md-5 col-lg-4'>
 							<div
-								className='header-bar__section-icon'
+								className='header-bar__section-icon header-bar__mobile__search-icon__mobile'
 								onClick={handleMobileSearch}
 							>
 								<div className='header-bar__mobile__search-icon'>
@@ -434,6 +442,7 @@ const HeaderBar: React.FC = () => {
 					width: 100%;
 					display: flex;
 					align-items: center;
+					justify-content: space-between;
 				}
 
 				.cart-close {
@@ -512,6 +521,7 @@ const HeaderBar: React.FC = () => {
 					position: relative;
 					padding: 2px 0;
 					border-bottom: 1px solid #eaeaea;
+					z-index: 1000;
 				}
 
 				.header-bar--mobile {
@@ -539,15 +549,17 @@ const HeaderBar: React.FC = () => {
 				}
 
 				.header-bar__logo {
-					margin-right: 7px;
-					max-height: 42px;
-					user-select: none;
+					display: flex;
+					align-items: center;
+					gap: 10px;
 				}
 
 				.header-bar__search-bar {
 					margin: 0;
 					padding: 0;
 					display: none;
+					flex: 1;
+					width: auto;
 				}
 
 				.header-bar__form-container {
@@ -664,11 +676,48 @@ const HeaderBar: React.FC = () => {
 				}
 
 				@media only screen and (min-width: 62em) {
-					.header-bar__search-bar {
-						display: block;
+					/* === Anchura idéntica al input === */
+					.header-bar__box {
+						position: relative; /* ancla para search-box */
 					}
 
-					.header-bar__mobile__search-icon,
+					.search-box {
+						position: absolute;
+						top: 100%; /* justo debajo del form */
+						left: 0;
+						width: 100%;
+						min-width: 0; /* evita desbordes */
+						z-index: 400; /* ya lo tenías */
+					}
+					/* ⬅️ Contenedor principal en una sola fila */
+					.header-bar__primary {
+						display: flex;
+						align-items: center;
+						flex-wrap: nowrap; /* evita saltos de línea */
+						gap: 1rem; /* separa los elementos */
+					}
+
+					/* ⬅️ Logo e íconos NO crecen  */
+					.header-bar__logo,
+					.header-bar__section__icons {
+						flex: 0 0 auto;
+					}
+
+					/* ⬅️ La barra ocupa lo que sobre, pero sin forzar 100 % */
+					.header-bar__search-bar {
+						display: flex;
+						flex: 1 1 auto; /* grow = 1, shrink = 1, basis = auto */
+						min-width: 0; /* permite que el input se encoja */
+					}
+
+					/* El wrapper interno también se estira */
+					.header-bar__box {
+						flex: 1;
+						width: 100%;
+					}
+
+					/* Ocultamos versión móvil */
+					.header-bar__mobile__search-icon__mobile,
 					.header-bar__mobile {
 						display: none;
 					}

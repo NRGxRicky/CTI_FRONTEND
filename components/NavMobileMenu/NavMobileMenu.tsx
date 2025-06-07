@@ -70,7 +70,7 @@ const NavMobileMenu = () => {
 	}, [router.pathname, mobileView]);
 
 	return (
-		<nav className='header__mobile-nav-toggle col-xs-1 col-sm-1 col-md-1 col-lg-1'>
+		<nav className='header__mobile-nav-toggle' >
 			<button
 				className={`burger-button ${menuMobileOpen ? 'active' : ''}`}
 				onClick={toggleMenu}
@@ -318,7 +318,6 @@ const NavMobileMenu = () => {
 				.mobile-menu__inner {
 					height: calc(100% - 58px);
 					top: 60px;
-					width: 90%;
 					background-color: #fff;
 					position: fixed;
 					z-index: 400;
@@ -344,11 +343,7 @@ const NavMobileMenu = () => {
 					transition: transform 0.3s, opacity 0.3s;
 				}
 
-				@media only screen and (min-width: 62em) {
-					.header__mobile-nav-toggle {
-						display: none;
-					}
-				}
+				
 
 				.burger-button.active .burger-line:nth-child(1) {
           			transform: rotate(-45deg) translate(-4px, 6px);
