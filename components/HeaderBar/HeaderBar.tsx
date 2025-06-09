@@ -348,7 +348,7 @@ const HeaderBar: React.FC = () => {
 					{showLoginMenu && <LoginMenu />}
 					{!mobileView && <HeaderMenu />}
 				</div>
-				{/* <HeaderBarLocalStock /> */}
+				<HeaderBarLocalStock />
 			</div>
 
 			<div
