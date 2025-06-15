@@ -259,8 +259,8 @@ const CartShippingMethod = () => {
 					position: fixed;
 					background: #0f0f0f;
 					width: 100%;
-					height: calc(100% - 61px);
-					top: 61px;
+					height: calc(100% - 59px);
+					top: 59px;
 					left: 0px;
 					opacity: 0.8;
 					display: flex;

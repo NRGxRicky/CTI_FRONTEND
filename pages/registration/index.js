@@ -230,8 +230,8 @@ const Register = () => {
 												strengthLevel === 100
 													? '#00b300'
 													: strengthLevel >= 60
-													? '#ff9900'
-													: 'var(--primary-color)',
+														? '#ff9900'
+														: 'var(--primary-color)',
 										}}
 									></div>
 								</div>
@@ -312,7 +312,7 @@ const Register = () => {
 					display: flex;
 					justify-content: center;
 					align-items: center;
-					min-height: calc(100dvh - 61px);
+					min-height: calc(100dvh - 59px);
 					background-color: #f7f7f7;
 				}
 

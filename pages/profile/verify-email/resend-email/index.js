@@ -106,7 +106,7 @@ const ResendVerificationEmail = () => {
 					display: flex;
 					justify-content: center;
 					align-items: center;
-					min-height: calc(100dvh - 61px);
+					min-height: calc(100dvh - 59px);
 					background-color: #f7f7f7;
 				}
 

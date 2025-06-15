@@ -149,10 +149,10 @@ const ProfileAllAddress = ({
         }
 				.modal-overlay {
 					position: fixed;
-					top: 61px;
+					top: 59px;
 					left: 0;
 					width: 100dvw;
-					height: calc(100dvh - 61px);
+					height: calc(100dvh - 59px);
 					background: rgba(0, 0, 0, 0.5);
 					display: flex;
           flex-direction: column;
@@ -175,7 +175,7 @@ const ProfileAllAddress = ({
 				.address-list {
 					display: flex;
 					gap: 15px;
-					max-height: calc(50dvh - 61px);
+					max-height: calc(50dvh - 60px);
 					overflow-y: auto;
 					flex-wrap: wrap;
 				}

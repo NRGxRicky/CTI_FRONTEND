@@ -161,9 +161,9 @@ const PaymentsChange = () => {
 
 					.payments-change {
 						position: fixed;
-						top: 61px;
+						top: 59px;
 						width: 100dvw;
-						height: calc(100dvh - 61px);
+						height: calc(100dvh - 59px);
 						z-index: 1000;
 						display: flex;
 						align-items: center;
@@ -175,7 +175,7 @@ const PaymentsChange = () => {
 						min-width: 100px;
 						min-height: 100px;
 						max-width: 75dvw;
-						max-height: calc(100dvh - 61px);
+						max-height: calc(100dvh - 59px);
 						border-radius: 5px;
 						padding: 0 20px 30px 20px;
 					}

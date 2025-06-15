@@ -59,6 +59,7 @@ const HeaderBar: React.FC = () => {
 	 */
 	const { nombres, loading, isAuthenticated } = useAuth();
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
+	const headerBar = useAppSelector((state) => state.showOpacityContainerReducer.headerBar);
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
 	);
@@ -168,7 +169,10 @@ const HeaderBar: React.FC = () => {
 
 	return (
 		<div>
-			<div className={`header-bar ${mobileView ? 'header-bar--mobile' : ''}`}>
+			<div
+				className={`header-bar ${mobileView ? 'header-bar--mobile' : ''} ${headerBar ? 'header-bar--show' : ''}`}
+				
+			>
 				<div className='header-bar__container'>
 					<div className='header-bar__primary header-bar--left row around-xs middle-xs center-xs'>
 						{/*  Logo — Option B responsive (fill) */}
@@ -429,6 +433,11 @@ const HeaderBar: React.FC = () => {
 			></div>
 
 			<style jsx>{`
+
+				.header-bar--show {
+					z-index: 1000;
+				}
+
 				.header-bar__cart-icon {
 					position: relative;
 					margin-top: 3px;
@@ -526,7 +535,7 @@ const HeaderBar: React.FC = () => {
 					position: relative;
 					padding: 2px 0;
 					border-bottom: 1px solid #eaeaea;
-					z-index: 1000;
+
 				}
 
 				.header-bar--mobile {

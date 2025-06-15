@@ -329,9 +329,9 @@ const ProfileAddInvoice = ({
 					width: 100dvw;
 					z-index: 1000;
 					position: fixed;
-					top: 61px !important;
+					top: 59px !important;
 					left: 0;
-					height: calc(100dvh - 61px);
+					height: calc(100dvh - 59px);
 					background: rgba(0, 0, 0, 0.5);
 				}
 

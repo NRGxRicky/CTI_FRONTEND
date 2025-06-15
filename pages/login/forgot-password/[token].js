@@ -167,7 +167,7 @@ const Token = ({ tokenRecovery }) => {
 							display: flex;
 							justify-content: center;
 							align-items: center;
-							min-height: calc(100dvh - 61px);
+							min-height: calc(100dvh - 59px);
 							background-color: #f7f7f7;
 						}
 
@@ -246,9 +246,8 @@ const Token = ({ tokenRecovery }) => {
 									</button>
 								</div>
 								<p
-									className={`password-length ${
-										password.length < 8 ? 'error' : ''
-									}`}
+									className={`password-length ${password.length < 8 ? 'error' : ''
+										}`}
 								>
 									{password.length < 8
 										? 'La contraseña debe tener al menos 8 caracteres.'
@@ -287,8 +286,8 @@ const Token = ({ tokenRecovery }) => {
 												strengthLevel === 100
 													? '#00b300'
 													: strengthLevel >= 60
-													? '#ff9900'
-													: 'var(--primary-color)',
+														? '#ff9900'
+														: 'var(--primary-color)',
 										}}
 									></div>
 								</div>
@@ -328,7 +327,7 @@ const Token = ({ tokenRecovery }) => {
 						display: flex;
 						justify-content: center;
 						align-items: center;
-						min-height: calc(100dvh - 61px);
+						min-height: calc(100dvh - 59px);
 						background-color: #f7f7f7;
 					}
 

@@ -475,7 +475,7 @@ const CartSummaryMini = () => {
           display: flex;
           flex-direction: column;
           position: absolute;
-          top: 59px;
+          top: 57px;
           right: 0;
           z-index: 1000;
           min-height: 200px;
@@ -675,7 +675,7 @@ const CartSummaryMini = () => {
         @media only screen and (max-width: 62em) {
           .cart-summary {
             width: 100%;
-            height: calc(100dvh - 61px);
+            height: calc(100dvh - 59px);
             max-height: unset;
           }
           .cart-actions {

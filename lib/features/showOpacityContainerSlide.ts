@@ -13,6 +13,7 @@ export const showOpacityContainerSlide = createSlice({
 		cart: false,
 		PaymentsChange: false,
 		ProfileAddAddress: false,
+		headerBar: false,
 	},
 	reducers: {
 		showOpacity: (state) => {
@@ -32,6 +33,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.cart = false;
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
+			state.headerBar = false;
 		},
 		showProfileAddAddress: (state) => {
 			state.searchBar = false;
@@ -43,6 +45,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.cart = false;
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = true;
+			state.headerBar = false;
 		},
 		showSearchBar: (state) => {
 			state.searchBar = true;
@@ -54,6 +57,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.cart = false;
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
+			state.headerBar = false;
 		},
 		showLoginMenuState: (state) => {
 			state.searchBar = false;
@@ -65,6 +69,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.cart = false;
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
+			state.headerBar = false;
 		},
 		showCart: (state) => {
 			state.searchBar = false;
@@ -76,6 +81,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.cart = true;
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
+			state.headerBar = false;
 		},
 		showPaymentsChange: (state) => {
 			state.searchBar = false;
@@ -87,6 +93,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.cart = false;
 			state.PaymentsChange = true;
 			state.ProfileAddAddress = false;
+			state.headerBar = false;
 		},
 
 		showNavMobileMenu: (state) => {
@@ -100,6 +107,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.cart = false;
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
+			state.headerBar = true;
 		},
 		showNavMobileSort: (state) => {
 			state.searchBar = false;
@@ -111,6 +119,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.cart = false;
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
+			state.headerBar = false;
 		},
 		showNavMobileFilters: (state) => {
 			state.searchBar = false;
@@ -122,6 +131,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.cart = false;
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
+			state.headerBar = false;
 		},
 		blockBodyScroll: (state) => {
 			state.bodyScroll = true;
