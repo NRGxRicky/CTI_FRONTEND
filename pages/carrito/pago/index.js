@@ -5,7 +5,7 @@ import FooterMini from '../../../components/FooterMini/FooterMini';
 import { useAuth } from '../../../hooks/auth';
 import Router from 'next/router';
 import useCart from '../../../hooks/useCart';
-import CartPaymentMethod from '../../../components/CartPaymentMethod/ CartPaymentMethod';
+import CartPaymentMethod from '../../../components/CartPaymentMethod/CartPaymentMethod';
 import StatusBarCart from '../../../components/StatusBarCart/StatusBarCart';
 import { useEnv } from '../../../context/EnvContext';
 

@@ -10,10 +10,10 @@ import Image from 'next/image';
 import formasDePago from '../../hooks/formasDePago';
 import regimenesFiscales from '../../hooks/regimenesFiscales';
 import usosCFDI from '../../hooks/usosCFDI';
+import { getPaymentOptionsByType } from '../constants/paymentOptions';
 
 const CartPaymentMethod = () => {
-	const { taxInvoice, setTaxInvoice, paymentMethod, setPaymentMethod, } =
-		useCart();
+	const { taxInvoice, setTaxInvoice, paymentMethod, setPaymentMethod } = useCart();
 	const [loadingData, setLoadingData] = useState(false);
 	const [profile, setProfile] = useState({
 		domicilios: [],
@@ -24,47 +24,8 @@ const CartPaymentMethod = () => {
 	const [editingInvoice, setEditingInvoice] = useState(null);
 	const { accessToken, cartMsi } = useAuth();
 	const [activeInvoiceId, setActiveInvoiceId] = useState(taxInvoice?.id || 0);
-	const [isProfileAddInvoiceVisible, setProfileAddInvoiceVisible] =
-		useState(false);
+	const [isProfileAddInvoiceVisible, setProfileAddInvoiceVisible] = useState(false);
 	const [billingActivated, setBillingActivated] = useState(false);
-
-	const paymentOptions = [
-		{
-			id: 'paypal',
-			title: 'PayPal',
-			subtitle: 'Disfruta de un pago único con PayPal.',
-			imgSrc: '/images/paypal-logo-footer.png',
-			msi: false,
-			contado: true,
-		},
-		{
-			id: 'mercadopago',
-			title: 'Mercado Pago',
-			subtitle:
-				'Hasta 3 MSI con tarjetas participantes Mercado Pago o hasta 12 pagos con Mercado Crédito.',
-			imgSrc: '/images/logo-mercado-pago.png',
-			msi: true,
-			contado: false,
-		},
-		{
-			id: 'kueskipay',
-			title: 'Kueski Pay',
-			subtitle:
-				'Paga en hasta 12 quincenas con Kueski Pay, sin comisiones ocultas.',
-			imgSrc: '/images/Logotipo_Kueski_pay.png',
-			msi: true,
-			contado: false,
-		},
-		{
-			id: 'aplazo',
-			title: 'Aplazo',
-			subtitle:
-				'Divide tus pagos en quincenas con Aplazo, sin letras pequeñas.',
-			imgSrc: '/images/logo-aplazo_v2.png',
-			msi: true,
-			contado: false,
-		},
-	];
 
 	/* === Helpers para mostrar las descripciones (usos, regímenes, formas de pago) === */
 	const getUsoCFDIDescription = (usoKey) => {
@@ -99,7 +60,6 @@ const CartPaymentMethod = () => {
 				setActiveInvoiceId(activeInvoice.id);
 				setBillingActivated(true);
 			} else {
-				// Si no hay invoice activo, dejamos taxInvoice en null
 				setTaxInvoice(null);
 				setActiveInvoiceId(0);
 				setBillingActivated(false);
@@ -118,7 +78,6 @@ const CartPaymentMethod = () => {
 	const handleToggleFactura = (e) => {
 		const isChecked = e.target.checked;
 		if (isChecked) {
-			// Activar facturación: si existe un invoice activo, lo usamos; si no, el usuario agregará uno
 			const activeInvoice = profile.PccomputoUsuarioDatosFacturacion.find(
 				(d) => d.active
 			);
@@ -130,7 +89,6 @@ const CartPaymentMethod = () => {
 				setActiveInvoiceId(0);
 			}
 		} else {
-			// Desactivar facturación: usar RFC genérico
 			setTaxInvoice(null);
 			setActiveInvoiceId(0);
 		}
@@ -208,7 +166,7 @@ const CartPaymentMethod = () => {
 			);
 
 			if (response.ok) {
-				getDataProfile(); // Actualiza la lista después de eliminar
+				getDataProfile();
 				alert('Facturación eliminada correctamente.');
 			} else {
 				alert('Error al eliminar la Facturación.');
@@ -231,19 +189,13 @@ const CartPaymentMethod = () => {
 					</div>
 
 					<div className='cart-payment-method__payments-options'>
-						{/** 1) Filtrar según cartMsi */}
-						{paymentOptions
-							.filter((opt) => (cartMsi ? opt.msi : opt.contado)) // Si cartMsi es true, muestra solo los que tengan msi:true; de lo contrario, muestra los de contado:true
+						{getPaymentOptionsByType(cartMsi)
+						
 							.map((option) => (
 								<div
 									key={option.id}
-									className={
-										/** 2) Clase 'active' cuando paymentMethod coincida con la opción */
-										`cart-payment-method__item ${paymentMethod === option.id ? 'active' : ''
-										}`
-									}
+									className={`cart-payment-method__item ${paymentMethod === option.id ? 'active' : ''}`}
 									onClick={() => setPaymentMethod(option.id)}
-								/** 3) Al hacer click en la tarjeta, guardamos la forma de pago */
 								>
 									<div className='radio-wrapper'>
 										<input
@@ -256,7 +208,6 @@ const CartPaymentMethod = () => {
 									</div>
 
 									<div className='cart-payment-method__item__logo'>
-										{/* 4) Mostrar la imagen con Next.js o <img> */}
 										<Image
 											src={option.imgSrc}
 											alt={option.title}
@@ -292,7 +243,7 @@ const CartPaymentMethod = () => {
 						<label className='switch'>
 							<input
 								type='checkbox'
-								checked={billingActivated} // Activo si hay un invoice seleccionado
+								checked={billingActivated}
 								onChange={handleToggleFactura}
 							/>
 							<span className='slider' />
@@ -580,8 +531,8 @@ const CartPaymentMethod = () => {
 
 				/* ==== WARNING BOX ==== */
 				.warning-box {
-					border: 1px solid #ffb84d; /* Borde naranja claro */
-					background-color: #fff8ee; /* Fondo crema/naranja muy claro */
+					border: 1px solid #ffb84d;
+					background-color: #fff8ee;
 					padding: 15px;
 					border-radius: 6px;
 					margin-bottom: 15px;

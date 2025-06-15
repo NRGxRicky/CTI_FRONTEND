@@ -84,16 +84,19 @@ const PaymentsChange = () => {
 							<div className='payments-change__option__item'>
 								<div className='payments-change__option__item__image'>
 									<Image
-										src='/images/paypal-logo-footer.png'
+										src='/images/logo-mercado-pago.png'
 										fill
 										style={{ objectFit: 'contain', padding: 5 }}
-										alt='Paypal'
+										alt='Mercado Pago'
 										draggable='false'
 										sizes='auto'
 									/>
 								</div>
 								<div className='payments-change__option__item__label'>
-									<span>Disfruta de un pago único con PayPal.</span>
+									<span>
+										Disfruta de un pago único con Mercado Pago o 12 con Mercado
+										Crédito.
+									</span>
 								</div>
 							</div>
 						</div>
@@ -113,19 +116,16 @@ const PaymentsChange = () => {
 							<div className='payments-change__option__item'>
 								<div className='payments-change__option__item__image'>
 									<Image
-										src='/images/logo-mercado-pago.png'
+										src='/images/paypal-logo-footer.png'
 										fill
 										style={{ objectFit: 'contain', padding: 5 }}
-										alt='Mercado Pago'
+										alt='PayPal'
 										draggable='false'
 										sizes='auto'
 									/>
 								</div>
 								<div className='payments-change__option__item__label'>
-									<span>
-										Hasta 3 MSI con tarjetas participantes Mercado Pago o hasta
-										12 pagos con Mercado Crédito.
-									</span>
+									<span>Hasta 3 MSI con tarjetas participantes PayPal.</span>
 								</div>
 							</div>
 							<div className='payments-change__option__item'>

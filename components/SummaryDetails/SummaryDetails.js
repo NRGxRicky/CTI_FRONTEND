@@ -10,6 +10,7 @@ import useCart from '../../hooks/useCart';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import { useEnv } from '../../context/EnvContext';
 import KueskiPayWidget from '../KueskiPayWidget/KueskiPayWidget';
+import { getPaymentOptionsByType } from '../constants/paymentOptions';
 
 const SummaryDetails = ({ urlAction, step }) => {
 	const {
@@ -554,27 +555,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 							<span>Pagar a Pagos con:</span>
 						</div>
 						<div className='payments__option__body'>
-							{[
-								{
-									id: 'mercadopago',
-									img: '/images/logo-mercado-pago.png',
-									label:
-										'Hasta 3 MSI con tarjetas participantes Mercado Pago o hasta 12 pagos con Mercado Crédito.',
-								},
-								{
-									id: 'kueskipay',
-									img: '/images/Logotipo_Kueski_pay.png',
-									label:
-										'Paga en hasta 12 quincenas con Kueski Pay, sin comisiones ocultas.',
-								},
-								{
-									id: 'aplazo',
-									img: '/images/logo-aplazo_v2.png',
-									label:
-										'Divide tus pagos en quincenas con Aplazo, sin letras pequeñas.',
-								},
-							]
-								.filter((option) => !paymentMethod || paymentMethod === option.id)
+							{getPaymentOptionsByType(true)
 								.map((option) => (
 									<div
 										key={option.id}
@@ -584,7 +565,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 									>
 										<div className='payments__option__item__image'>
 											<Image
-												src={option.img}
+												src={option.imgSrc}
 												fill
 												style={{ objectFit: 'contain', padding: 5 }}
 												alt={option.id}
@@ -593,7 +574,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 											/>
 										</div>
 										<div className='payments__option__item__label'>
-											<span>{option.label}</span>
+											<span>{option.subtitle}</span>
 										</div>
 									</div>
 								))}
@@ -605,14 +586,8 @@ const SummaryDetails = ({ urlAction, step }) => {
 							<span>Pagar en una sola exhibición con:</span>
 						</div>
 						<div className='payments__option__body'>
-							{[
-								{
-									id: 'paypal',
-									img: '/images/paypal-logo-footer.png',
-									label: 'Disfruta de un pago único con PayPal.',
-								},
-							]
-								.filter((option) => !paymentMethod || paymentMethod === option.id)
+							{getPaymentOptionsByType(false)
+								
 								.map((option) => (
 									<div
 										key={option.id}
@@ -622,7 +597,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 									>
 										<div className='payments__option__item__image'>
 											<Image
-												src={option.img}
+												src={option.imgSrc}
 												fill
 												style={{ objectFit: 'contain', padding: 5 }}
 												alt={option.id}
@@ -631,7 +606,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 											/>
 										</div>
 										<div className='payments__option__item__label'>
-											<span>{option.label}</span>
+											<span>{option.subtitle}</span>
 										</div>
 									</div>
 								))}

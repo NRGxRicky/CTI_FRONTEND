@@ -6,49 +6,14 @@ import { Preloader, TailSpin } from 'react-preloader-icon';
 // Hooks
 import { useAuth } from '../../hooks/auth';
 import { UseOrderDetails } from '../../hooks/UseOrderDetails';
-
 // Utils
 import Capitalize from '../../hooks/CapitalizeTitle';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
-
-// Opciones de pago
-const paymentOptions = [
-	{
-		id: 'paypal',
-		title: 'PayPal',
-		subtitle: 'Disfruta de un pago único con PayPal.',
-		imgSrc: '/images/paypal-logo-footer.png',
-	},
-	{
-		id: 'mercadopago',
-		title: 'Mercado Pago',
-		subtitle:
-			'Hasta 3 MSI con tarjetas participantes o 12 con Mercado Crédito.',
-		imgSrc: '/images/logo-mercado-pago.png',
-	},
-	{
-		id: 'kueskipay',
-		title: 'Kueski Pay',
-		subtitle: 'Paga en hasta 12 quincenas con Kueski Pay.',
-		imgSrc: '/images/Logotipo_Kueski_pay.png',
-	},
-	{
-		id: 'aplazo',
-		title: 'Aplazo',
-		subtitle: 'Divide tus pagos en quincenas con Aplazo.',
-		imgSrc: '/images/logo-aplazo_v2.png',
-	},
-	{
-		id: 'deposit',
-		title: 'Depósito/Transferencia Interbancaria',
-		subtitle: '',
-		imgSrc: '/images/logos/deposit-3banks.png',
-	},
-];
+// Config
+import { getPaymentOption } from '../constants/paymentOptions';
 
 // Función para identificar el método de pago seleccionado
-const selectedPayment = (paymentMethod) =>
-	paymentOptions.find((opt) => opt.id === paymentMethod);
+const selectedPayment = (paymentMethod) => getPaymentOption(paymentMethod);
 
 export default function UserOrderDetail({ orderId }) {
 	const { order, loading, error } = UseOrderDetails(orderId);
@@ -732,8 +697,7 @@ export default function UserOrderDetail({ orderId }) {
 
 					.order-detail__container {
 						margin: 0;
-				}
-			`}</style>
+				`}</style>
 		</div>
 	);
 }

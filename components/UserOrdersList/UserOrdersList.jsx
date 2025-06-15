@@ -10,6 +10,7 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import ListProductsPagination from '../ListProductsPagination/ListProductsPagination';
 import Link from 'next/link';
 import TruncateMarkup from 'react-truncate-markup';
+import { getPaymentOption } from '../constants/paymentOptions';
 
 function UserOrdersList() {
 	const { accessToken } = useAuth();
@@ -39,44 +40,8 @@ function UserOrdersList() {
 	const [showModal, setShowModal] = useState(false);
 	const [modalOrder, setModalOrder] = useState(null);
 
-	// Opciones de pago
-	const paymentOptions = [
-		{
-			id: 'paypal',
-			title: 'PayPal',
-			subtitle: 'Disfruta de un pago único con PayPal.',
-			imgSrc: '/images/paypal-logo-footer.png',
-		},
-		{
-			id: 'mercadopago',
-			title: 'Mercado Pago',
-			subtitle:
-				'Hasta 3 MSI con tarjetas participantes o 12 con Mercado Crédito.',
-			imgSrc: '/images/logo-mercado-pago.png',
-		},
-		{
-			id: 'kueskipay',
-			title: 'Kueski Pay',
-			subtitle: 'Paga en hasta 12 quincenas con Kueski Pay.',
-			imgSrc: '/images/Logotipo_Kueski_pay.png',
-		},
-		{
-			id: 'aplazo',
-			title: 'Aplazo',
-			subtitle: 'Divide tus pagos en quincenas con Aplazo.',
-			imgSrc: '/images/logo-aplazo_v2.png',
-		},
-		{
-			id: 'deposit',
-			title: 'Depósito/Transferencia Interbancaria',
-			subtitle: '',
-			imgSrc: '/images/logos/deposit-3banks.png',
-		},
-	];
-
 	// Mapear ID de método de pago a su info
-	const selectedPayment = (paymentMethod) =>
-		paymentOptions.find((opt) => opt.id === paymentMethod);
+	const selectedPayment = (paymentMethod) => getPaymentOption(paymentMethod);
 
 	// ------------------------------------------
 	// fetchOrders => recibe isConcat (opcional)
@@ -159,7 +124,7 @@ function UserOrdersList() {
 	}, [accessToken, searchTerm, dateRange, pageActive, mobileView]);
 
 	// -----------------------------------------------------
-	// Búsqueda => click “Buscar” o Enter
+	// Búsqueda => click "Buscar" o Enter
 	// -----------------------------------------------------
 	const handleSearch = () => {
 		setPageActive(1);
@@ -258,7 +223,7 @@ function UserOrdersList() {
 	};
 
 	// -----------------------------------------------------
-	// Render “loading” si Desktop, no hay orders
+	// Render "loading" si Desktop, no hay orders
 	// -----------------------------------------------------
 	if (!mobileView && loading && orders.length === 0) {
 		return (

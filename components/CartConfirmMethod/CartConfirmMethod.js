@@ -12,6 +12,8 @@ import formasDePago from '../../hooks/formasDePago';
 import regimenesFiscales from '../../hooks/regimenesFiscales';
 import usosCFDI from '../../hooks/usosCFDI';
 import { useAuth } from '../../hooks/auth';
+import { getPaymentOption } from '../constants/paymentOptions';
+
 const CartConfirmMethod = () => {
 	const {
 		cart,
@@ -39,47 +41,8 @@ const CartConfirmMethod = () => {
 		return found ? `${found.c_FormaPago} - ${found.Descripción}` : formaKey;
 	};
 
-	// Ejemplo de métodos de pago, si quieres mostrar su logo o título:
-	const paymentOptions = [
-		{
-			id: 'paypal',
-			title: 'PayPal',
-			subtitle: 'Disfruta de un pago único con PayPal.',
-			imgSrc: '/images/paypal-logo-footer.png',
-		},
-		{
-			id: 'mercadopago',
-			title: 'Mercado Pago',
-			subtitle:
-				'Hasta 3 MSI con tarjetas participantes Mercado Pago o hasta 12 pagos con Mercado Crédito.',
-			imgSrc: '/images/logo-mercado-pago.png',
-		},
-		{
-			id: 'kueskipay',
-			title: 'Kueski Pay',
-			subtitle:
-				'Paga en hasta 12 quincenas con Kueski Pay, sin comisiones ocultas.',
-			imgSrc: '/images/Logotipo_Kueski_pay.png',
-		},
-		{
-			id: 'aplazo',
-			title: 'Aplazo',
-			subtitle:
-				'Divide tus pagos en quincenas con Aplazo, sin letras pequeñas.',
-			imgSrc: '/images/logo-aplazo_v2.png',
-		},
-		{
-			id: 'deposit',
-			title: 'Depósito o transferencia Interbancaria',
-			subtitle: '',
-			imgSrc: '/images/logos/deposit-3banks.png',
-		},
-	];
-
 	// Hallar el método de pago seleccionado
-	const selectedPayment = paymentOptions.find(
-		(opt) => opt.id === paymentMethod
-	);
+	const selectedPayment = getPaymentOption(paymentMethod);
 
 	return (
 		<div className='cart-confirm-method'>
