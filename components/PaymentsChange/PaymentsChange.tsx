@@ -4,6 +4,7 @@ import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 import { useAuth } from '../../hooks/auth';
 import Image from 'next/image';
 import useCart from '../../hooks/useCart';
+import { getPaymentOptionsByType } from '../constants/paymentOptions';
 
 const PaymentsChange = () => {
 	const statePaymentsChange = useAppSelector(
@@ -81,24 +82,23 @@ const PaymentsChange = () => {
 							<span>Pagar en una sola exhibición con:</span>
 						</div>
 						<div className='payments-change__option__body'>
-							<div className='payments-change__option__item'>
-								<div className='payments-change__option__item__image'>
-									<Image
-										src='/images/logo-mercado-pago.png'
-										fill
-										style={{ objectFit: 'contain', padding: 5 }}
-										alt='Mercado Pago'
-										draggable='false'
-										sizes='auto'
-									/>
+							{getPaymentOptionsByType(false).map((option) => (
+								<div key={option.id} className='payments-change__option__item'>
+									<div className='payments-change__option__item__image'>
+										<Image
+											src={option.imgSrc}
+											fill
+											style={{ objectFit: 'contain', padding: 5 }}
+											alt={option.title}
+											draggable='false'
+											sizes='auto'
+										/>
+									</div>
+									<div className='payments-change__option__item__label'>
+										<span>{option.subtitle}</span>
+									</div>
 								</div>
-								<div className='payments-change__option__item__label'>
-									<span>
-										Disfruta de un pago único con Mercado Pago o 12 con Mercado
-										Crédito.
-									</span>
-								</div>
-							</div>
+							))}
 						</div>
 					</div>
 					<div
@@ -113,57 +113,23 @@ const PaymentsChange = () => {
 							<span>Pagar a Pagos con:</span>
 						</div>
 						<div className='payments-change__option__body'>
-							<div className='payments-change__option__item'>
-								<div className='payments-change__option__item__image'>
-									<Image
-										src='/images/paypal-logo-footer.png'
-										fill
-										style={{ objectFit: 'contain', padding: 5 }}
-										alt='PayPal'
-										draggable='false'
-										sizes='auto'
-									/>
+							{getPaymentOptionsByType(true).map((option) => (
+								<div key={option.id} className='payments-change__option__item'>
+									<div className='payments-change__option__item__image'>
+										<Image
+											src={option.imgSrc}
+											fill
+											style={{ objectFit: 'contain', padding: 5 }}
+											alt={option.title}
+											draggable='false'
+											sizes='auto'
+										/>
+									</div>
+									<div className='payments-change__option__item__label'>
+										<span>{option.subtitle}</span>
+									</div>
 								</div>
-								<div className='payments-change__option__item__label'>
-									<span>Hasta 3 MSI con tarjetas participantes PayPal.</span>
-								</div>
-							</div>
-							<div className='payments-change__option__item'>
-								<div className='payments-change__option__item__image'>
-									<Image
-										src='/images/Logotipo_Kueski_pay.png'
-										fill
-										style={{ objectFit: 'contain', padding: 5 }}
-										alt='Kueski Pay'
-										draggable='false'
-										sizes='auto'
-									/>
-								</div>
-								<div className='payments-change__option__item__label'>
-									<span>
-										Paga en hasta 12 quincenas con Kueski Pay, sin comisiones
-										ocultas.
-									</span>
-								</div>
-							</div>
-							<div className='payments-change__option__item'>
-								<div className='payments-change__option__item__image'>
-									<Image
-										src='/images/logo-aplazo_v2.png'
-										fill
-										style={{ objectFit: 'contain', padding: 5 }}
-										alt='Aplazo'
-										draggable='false'
-										sizes='auto'
-									/>
-								</div>
-								<div className='payments-change__option__item__label'>
-									<span>
-										Divide tus pagos en quincenas con Aplazo, sin letras
-										pequeñas.
-									</span>
-								</div>
-							</div>
+							))}
 						</div>
 					</div>
 				</div>

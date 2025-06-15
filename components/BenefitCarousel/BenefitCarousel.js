@@ -215,10 +215,10 @@ const BenefitCarousel = () => {
 							</svg>
 							<div className='card-content'>
 								<h3 className='card-title'>
-									Compra Protegida con PayPal, KueskiPay y Aplazo
+									Compra Protegida con MercadoPago, PayPal, KueskiPay y Aplazo
 								</h3>
 								<p className='card-description'>
-									Paga con PayPal, KueskiPay y Aplazo y disfruta de una garantía
+									Paga con MercadoPago, PayPal, KueskiPay y Aplazo y disfruta de una garantía
 									de compra segura y protegida.
 								</p>
 							</div>
