@@ -1,405 +1,293 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import Spinner from '../Spinner/Spinner';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import Image from 'next/image';
-import Capitalize from '../../hooks/CapitalizeTitle';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import CurrencyFormat from '../../hooks/CurrencyFormat';
-import {
-	hideAll,
-	showSearchBar,
-} from '../../lib/features/showOpacityContainerSlide';
-import {
-	setQueryInInput,
-	resetShouldShowSearchBar,
-	hydrate,
-	addToRecentSearches,
-	removeFromRecentSearches
-} from '../../lib/features/searchInputSlice';
+import TruncateMarkup from 'react-truncate-markup';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
-import SkeletonLoader from '../SkeletonLoader/SkeletonLoader';
+import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 
-const InstantSearch = () => {
-	const [data, setData] = useState(null);
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(false);
-	const [currentQuery, setCurrentQuery] = useState('');
-	const timeoutRef = useRef(null);
-	const router = useRouter();
-	const searchVisibleValue = useAppSelector(
-		(state) => state.showOpacityContainerReducer.searchBar
-	);
-	const locationStockOnly = useAppSelector(
-		(state) => state.locationSlide.locationStockOnly
-	);
-	const queryInInput = useAppSelector((state) => state.searchInput.queryInInput);
-	const shouldShowSearchBar = useAppSelector((state) => state.searchInput.shouldShowSearchBar);
-	const recentSearches = useAppSelector((state) => state.searchInput.recentSearches);
-	const isHydrated = useAppSelector((state) => state.searchInput.isHydrated);
-	const dispacth = useAppDispatch();
+const IconSearch = () => (
+	<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+);
+const IconClock = () => (
+	<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+);
 
-	// Efecto para hidratar las búsquedas recientes
+function highlightWords(text, words, color = '#333') {
+	if (!words || words.length === 0) return text;
+
+	let result = text;
+	words.forEach(word => {
+		const regex = new RegExp(word.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'), 'gi');
+		result = result.replace(regex, `<b style="color: ${color};">$&</b>`);
+	});
+
+	return <span dangerouslySetInnerHTML={{ __html: result }} />;
+}
+
+const InstantSearch = ({ query, recentSearches, onSelect }) => {
+	const [suggestions, setSuggestions] = useState({ products: [], queries: [], brands: [], categories: [], query_words: [] });
+	const [showDropdown, setShowDropdown] = useState(true);
+	const [containerWidth, setContainerWidth] = useState(0);
+	const { searchBar } = useAppSelector((state) => state.showOpacityContainerReducer);
+	const dispatch = useAppDispatch();
+
+	// Hook para detectar cambios de tamaño de ventana
 	useEffect(() => {
-		if (!isHydrated) {
-			dispacth(hydrate());
-		}
-	}, [isHydrated, dispacth]);
-
-	// Función para realizar una búsqueda con una consulta reciente
-	const searchWithRecentQuery = (query) => {
-		dispacth(addToRecentSearches(query));
-		dispacth(setQueryInInput(query));
-		router.push(`/listado/all/index?q=${query}`);
-		dispacth(hideAll(false));
-	};
-
-	const redirecToResults = () => {
-		dispacth(addToRecentSearches(queryInInput));
-		router.push(`/listado/all/index?q=${queryInInput}`);
-		dispacth(hideAll(false));
-	};
-
-	const fetchData = async (query) => {
-		try {
-			setError(false);
-			const data = await fetch(
-				`https://api.pccdnapi.com/listado/instantsearch/?q=${query}&filter_available_store=${locationStockOnly}`
-			);
-			const jsonData = await data.json();
-			setData(jsonData);
-		} catch (error) {
-			setError(error);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	// Implementación del debounce
-	const debouncedSearch = useCallback((query) => {
-		if (timeoutRef.current) {
-			clearTimeout(timeoutRef.current);
-		}
-		setLoading(true);
-		timeoutRef.current = setTimeout(() => {
-			if (query.length > 0) {
-				fetchData(query);
-			} else {
-				setData(null);
-				setLoading(false);
-			}
-		}, 1000);
-	}, [locationStockOnly]);
-
-	// Limpiar el timeout cuando el componente se desmonte
-	useEffect(() => {
-		return () => {
-			if (timeoutRef.current) {
-				clearTimeout(timeoutRef.current);
-			}
+		const handleResize = () => {
+			setContainerWidth(window.innerWidth);
 		};
+
+		handleResize(); // Calcular inicial
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
 	}, []);
 
 	useEffect(() => {
-		if (queryInInput !== undefined) {
-			if (queryInInput.length > 0) {
-				debouncedSearch(queryInInput);
-				if (shouldShowSearchBar) {
-					dispacth(showSearchBar());
-					dispacth(resetShouldShowSearchBar());
-				}
-			} else if (queryInInput.length === 0) {
-				setData(null);
-				setError(false);
-				setLoading(false);
-				if (shouldShowSearchBar) {
-					dispacth(showSearchBar());
-					dispacth(resetShouldShowSearchBar());
-				}
-			}
-		}
-	}, [queryInInput, shouldShowSearchBar, debouncedSearch]);
+		let debounceTimeout;
+		let abortController = null;
 
-	// Si searchVisibleValue es false, no renderizamos nada
-	if (!searchVisibleValue) {
-		return null;
-	}
+		if (!query || query.trim() === '') {
+			setSuggestions({ products: [], queries: [], brands: [], categories: [], query_words: [] });
+			return;
+		}
+
+
+		debounceTimeout = setTimeout(() => {
+			abortController = new AbortController();
+			fetch(
+				`https://api.pccdnapi.com/search/suggestions/?q=${encodeURIComponent(query)}`,
+				{ signal: abortController.signal }
+			)
+				.then((res) => res.json())
+				.then((data) => {
+					setSuggestions(data);
+					setShowDropdown(true);
+					console.log(data);
+				})
+				.catch((err) => {
+					if (err.name !== 'AbortError') {
+						console.error('Error al obtener sugerencias:', err);
+					}
+				});
+		}, 300);
+
+		return () => {
+			clearTimeout(debounceTimeout);
+			if (abortController) abortController.abort();
+		};
+	}, [query]);
+
+	const queryWords = (suggestions.query_words || []).map(w => w.toLowerCase());
+
+	// Calcular ancho dinámico para el título
+	const calculateTitleMaxWidth = () => {
+		let maxWidth;
+		if (containerWidth <= 320) maxWidth = containerWidth - 60;
+		else if (containerWidth <= 480) maxWidth = containerWidth - 80;
+		else if (containerWidth <= 768) maxWidth = containerWidth - 100;
+		else maxWidth = containerWidth - 120;
+
+		// Límite máximo para pantallas grandes - permite que TruncateMarkup funcione
+		return Math.min(maxWidth, 800);
+	};
+
+
+
+	// Filtrar búsquedas recientes según el query
+	const filteredRecentSearches = !query
+		? recentSearches.slice(0, 8) // Si no hay query, solo mostrar primeros 8
+		: recentSearches.filter(r =>
+			r.toLowerCase().includes(query.toLowerCase())
+		); // Si hay query, mostrar todos los que coincidan
+
+	// Excluir de sugerencias las que ya están en recientes filtradas
+	const filteredSuggestedQueries = suggestions.queries
+		? suggestions.queries.filter(
+			q => !filteredRecentSearches.some(r => r.toLowerCase() === q.toLowerCase())
+		)
+		: [];
 
 	return (
-		<div className='search-box'>
-			<div className='search-box__content'>
-				{loading && (
-					<div className='search-box__loader-overlay'>
-						<SkeletonLoader />
-					</div>
-				)}
-				{error && (
-					<div className='search-box__error'>
-						Error
-					</div>
-				)}
-				{!loading && data && data.results && data.results.length > 0 && (
-					<>
-
-						{data.results.map((producto) => (
-							<div
-								key={producto.id}
-								className='search-box__item'
-								onClick={() => {
-									dispacth(addToRecentSearches(queryInInput));
-									dispacth(hideAll());
-								}}
-							>
-								<Link href={`/${producto.slug}`} legacyBehavior>
-									<a className='search-box__link'>
-										<div className='search-box__item__box'>
-											<div className='search-box_item__container'>
-												<div className='search-box__item__image'>
-													<div className='search-box__image'>
-														<Image
-															src={
-																producto.imagen1xs
-																	? producto.imagen1xs
-																	: '/images/not-available.png'
-															}
-															fill
-															style={{ objectFit: 'contain' }}
-															alt={Capitalize(producto.titulo)}
-															sizes='auto'
-														/>
-													</div>
-												</div>
-												<div className='search-box__item__title'>
-													<div>
-														<span>{Capitalize(producto.titulo)}</span>
-													</div>
-													<div className='search_box__item__model text--off'>
-														<span>{producto.modelo.toUpperCase()}</span>
-													</div>
-												</div>
-											</div>
-											<div className='search-box__info'>
-												<div className='search-box__price'>
-													<span>
-														{producto.precio_final_descuento > 0 && (
-															<>
-																<div className='text--off'>
-																	<span className='price--compare'>
-																		$ {CurrencyFormat(producto.precio_final)}
-																	</span>
-																</div>
-															</>
-														)}
-														$ {CurrencyFormat(producto.precio_contado, 2, '.', ',')}
-													</span>
-												</div>
-												<div className='search-box__stock text--off'>
-													<span>
-														{producto.stock_total}{' '}
-														{producto.stock_total > 1
-															? 'disponibles'
-															: 'disponible'}
-													</span>
-												</div>
-											</div>
-										</div>
-									</a>
-								</Link>
-							</div>
-						))}
-						{data.count > 5 && (
-							<div className='search-box__see-all' onClick={redirecToResults}>
-								<span>Ver todos los {data.count} resultados</span>
-							</div>
-						)}
-					</>
-				)}
-				{(!queryInInput || queryInInput.length === 0) && !loading && !error && recentSearches && recentSearches.length > 0 && (
-					<div className='recent-searches-container'>
-						{recentSearches.map((searchQuery, index) => (
-							<div key={index} className='recent-search-item' onClick={() => searchWithRecentQuery(searchQuery)}>
-								<div className='recent-search-content'>
-									<div className='recent-search-icon'>
-										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-											<circle cx="12" cy="12" r="10" />
-											<polyline points="12,6 12,12 16,14" />
-										</svg>
-									</div>
-									<span className='recent-search-text'>{searchQuery}</span>
-								</div>
-								<button
-									className='remove-recent-btn'
-									onClick={(e) => {
-										e.stopPropagation();
-										dispacth(removeFromRecentSearches(searchQuery));
-									}}
+		showDropdown && (
+			<div className={`search-dropdown ${searchBar ? 'search-dropdown--show' : 'search-dropdown--hide'}`}>
+				{/* Producto destacado */}
+				{suggestions.products && suggestions.products.length > 0 && (
+					<Link href={suggestions.products[0].url} legacyBehavior>
+						<a className="search-dropdown__featured" onClick={() => dispatch(hideAll())}>
+							{suggestions.products[0].image && (
+								<Image
+									src={`https://api.pccdnapi.com${suggestions.products[0].image}`}
+									alt={suggestions.products[0].original_title}
+									width={40}
+									height={40}
+									style={{ objectFit: 'contain', marginRight: 12, borderRadius: 4 }}
+								/>
+							)}
+							<div style={{ flex: 1, minWidth: 0 }}>
+								<div
+									className="search-dropdown__featured-title"
+									style={{ maxWidth: `${calculateTitleMaxWidth()}px` }}
 								>
-									<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-										<line x1="18" y1="6" x2="6" y2="18" />
-										<line x1="6" y1="6" x2="18" y2="18" />
-									</svg>
-								</button>
+									<TruncateMarkup lines={1}>
+										<span>
+											{highlightWords(suggestions.products[0].original_title, queryWords)}
+										</span>
+									</TruncateMarkup>
+								</div>
+								{suggestions.products[0].category && <div className="search-dropdown__featured-category">en {highlightWords(suggestions.products[0].category, queryWords, 'var(--primary-color)')}</div>}
+							</div>
+						</a>
+					</Link>
+				)}
+				{/* Búsquedas recientes */}
+				{filteredRecentSearches.length > 0 && (
+					<div>
+						{filteredRecentSearches.map((r, i) => (
+							<div key={r + '-' + i} tabIndex={0} onClick={() => onSelect(r)} className="dropdown-item">
+								<span className="dropdown-item__icon"><IconClock /></span> {highlightWords(r, queryWords)}
 							</div>
 						))}
 					</div>
 				)}
-			</div>
-			<style jsx>{`
-				.search-box {
-					position: relative;
-					width: 100%;
-					height: 100%;
-				}
-				.search-box__content {
-					overflow-y: auto;
-					-webkit-overflow-scrolling: touch;
-					position: relative;
-				}
-				.search-box__loader-overlay {
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					z-index: 10;
-				}
-				.search-box__loading-overlay {
-					position: absolute;
-					top: 0;
-					left: 0;
-					right: 0;
-					bottom: 0;
-					background: rgba(255, 255, 255, 0.8);
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					z-index: 1;
-					border-radius: 5px;
-				}
-				.search-box__error {
-					height: 200px;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-				}
-				.search-box__item {
-					padding: 10px;
-					border-bottom: 1px solid #eaeaea;
-				}
-				.search-box__item:last-child {
-					border: 0;
-				}
-				.search-box__item__box:hover {
-					background-color: var(--background-price-color);
-					border-radius: 0.37em;
-				}
-				.search-box__item__box {
-					display: flex;
-					flex-direction: row;
-					align-items: center;
-					justify-content: space-between;
-					padding: 10px;
-					max-width: 100%;
-				}
-				.search-box_item__container {
-					display: flex;
-					flex-direction: row;
-					width: 100%;
-					align-items: center;
-				}
-				.search-box__item__image {
-					position: relative;
-					min-width: 70px;
-					height: 50px;
-					mix-blend-mode: multiply;
-				}
-				.search-box__image {
-					position: relative;
-					height: 50px;
-					width: 50px;
-				}
-				.search-box__info {
-					text-align: right;
-					width: 15%;
-					min-width: 100px;
-				}
-				.search-box__item__title {
-					font-weight: 600;
-				}
-				.search-box__price {
-					font-weight: 600;
-				}
-				.search_box__item__model {
-					line-height: 30px;
-				}
-				.search-box__link {
-					width: 100%;
-				}
-				.search-box__see-all {
-					cursor: pointer;
-					text-align: center;
-					line-height: 30px;
-					color: var(--primary-color);
-					font-weight: 600;
-					padding: 10px;
-				}
-				.search-box__stock {
-					line-height: 30px;
-				}
-				.recent-search-item {
-					display: flex;
-					align-items: center;
-					justify-content: space-between;
-					padding: 12px 8px;
-					border-radius: 4px;
-					margin-bottom: 2px;
-					cursor: pointer;
-				}
-				.recent-search-item:hover {
-					background-color: #f5f5f5;
-				}
-				.recent-search-content {
-					display: flex;
-					align-items: center;
-					flex-grow: 1;
-					cursor: pointer;
-				}
-				.recent-search-icon {
-					margin-right: 12px;
-					color: #666;
-					display: flex;
-					align-items: center;
-				}
-				.recent-search-text {
-					color: #333;
-					font-size: 14px;
-				}
-				.remove-recent-btn {
-					background: none;
-					border: none;
-					cursor: pointer;
-					padding: 4px;
-					color: #999;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-				}
-				.remove-recent-btn:hover {
-					color: #666;
-				}
-				.recent-searches-container {
-					padding: 10px;
-				}
-				@media only screen and (max-width: 48em) {
-					.search-box__item__box {
-						flex-wrap: wrap;
-					}
-					.search-box__info {
+				{/* Queries sugeridas */}
+				{filteredSuggestedQueries.length > 0 && (
+					<div>
+						{filteredSuggestedQueries.map((s, i) => (
+							<div key={s + '-' + i} tabIndex={0} onClick={() => onSelect(s)} className="dropdown-item">
+								<span className="dropdown-item__icon"><IconSearch /></span> {highlightWords(s, queryWords)}
+							</div>
+						))}
+					</div>
+				)}
+				{/* Marcas sugeridas */}
+				{suggestions.brands && suggestions.brands.length > 0 && (
+					<div>
+						<div className="dropdown-title">Marcas</div>
+						{suggestions.brands.map((b, i) => (
+							<Link key={b.name + '-' + i} href={`/listado/${encodeURIComponent(b.slug)}/index`} legacyBehavior>
+								<a className="dropdown-item" onClick={() => dispatch(hideAll())}>
+									<span className="dropdown-item__icon"><IconSearch /></span> {highlightWords(b.name, queryWords)}
+								</a>
+							</Link>
+						))}
+					</div>
+				)}
+				{/* Categorías sugeridas */}
+				{suggestions.categories && suggestions.categories.length > 0 && (
+					<div>
+						<div className="dropdown-title">Categorías</div>
+						{suggestions.categories.map((c, i) => (
+							<Link key={c.name + '-' + i} href={`/listado/all/${c.slug}`} legacyBehavior>
+								<a className="dropdown-item" onClick={() => dispatch(hideAll())}>
+									<span className="dropdown-item__icon"><IconSearch /></span> {highlightWords(c.name, queryWords)}
+								</a>
+							</Link>
+						))}
+					</div>
+				)}
+				<style jsx>{`
+					.search-dropdown {
+						background: #fff;
+						box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+						z-index: 500;
+						border-radius: 8px;
+						margin-top: 2px;
+						height: 100%;
+						overflow-y: auto;
+						min-width: 50px;
 						width: 100%;
-						flex-grow: 1;
+						position: relative;
 					}
 
-				}
-			`}</style>
-		</div>
+					.search-dropdown--show {
+						display: block;
+					}
+
+					.search-dropdown--hide {
+						display: none;
+					}
+
+					.search-dropdown__featured {
+						display: flex;
+						align-items: center;
+						padding: 12px 16px;
+						border-bottom: 1px solid #f0f0f0;
+						cursor: pointer;
+						text-decoration: none;
+						transition: background 0.2s;
+						width: 100%;
+						min-width: 0;
+						position: relative;
+					}
+
+					.search-dropdown__featured:hover {
+						background: #f5f5f5;
+					}
+
+					.search-dropdown__featured-title {
+						font-weight: 500;
+						width: 100%;
+						overflow: hidden;
+						white-space: nowrap;
+						text-overflow: ellipsis;
+					}
+
+					.search-dropdown__featured-category {
+						color: var(--primary-color);
+						font-size: 13px;
+					}
+
+					.dropdown-title {
+						font-weight: bold;
+						color: #888;
+						padding: 8px 16px;
+						font-size: 13px;
+						background: #f7f7f7;
+					}
+
+					.dropdown-item {
+						padding: 10px 16px;
+						cursor: pointer;
+						display: flex;
+						align-items: center;
+						transition: background 0.2s;
+						white-space: pre-line;
+						text-decoration: none;
+						color: #6d6d6d;
+					}
+
+					.dropdown-item:hover {
+						background: #f5f5f5;
+						text-decoration: none;
+						color: inherit;
+					}
+
+					.dropdown-item__icon {
+						margin-right: 8px;
+						display: flex;
+						align-items: center;
+							color: #6d6d6d;
+					}
+
+					@media only screen and (max-width: 62em) {
+						.search-dropdown {
+							z-index: 500;
+							border-radius: 0;
+							box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+							margin-top: 0;
+						}
+					}
+				`}</style>
+			</div>
+		)
 	);
+};
+
+InstantSearch.propTypes = {
+	query: PropTypes.string.isRequired,
+	recentSearches: PropTypes.array.isRequired,
+	onSelect: PropTypes.func.isRequired,
 };
 
 export default InstantSearch;

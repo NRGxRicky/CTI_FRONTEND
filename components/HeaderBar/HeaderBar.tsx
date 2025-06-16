@@ -31,6 +31,9 @@ import {
 	clearQueryInInput,
 	clearQueryInInputKeepSearchBar,
 	addToRecentSearches,
+	addRecentSearchBackend,
+	fetchRecentSearchesBackend,
+	hydrate,
 } from '../../lib/features/searchInputSlice';
 import { isMobile as detectIsMobile } from 'react-device-detect';
 import { setMobileView } from '../../lib/features/mobileSlide';
@@ -46,9 +49,10 @@ const HeaderBar: React.FC = () => {
 	const textInput = useRef<HTMLInputElement | null>(null); // Mobile
 	const desktopInput = useRef<HTMLInputElement | null>(null); // Desktop
 	const searchButton = useRef<HTMLButtonElement | null>(null);
+	const syncDone = useRef(false);
 
 	/**
-	 * Router & Search params (App Router)
+	 * Router & Search params (App Router)
 	 */
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -57,9 +61,14 @@ const HeaderBar: React.FC = () => {
 	/**
 	 * Global state selectors
 	 */
-	const { nombres, loading, isAuthenticated } = useAuth();
+	const { nombres, loading, isAuthenticated, accessToken } = useAuth();
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
-	const headerBar = useAppSelector((state) => state.showOpacityContainerReducer.headerBar);
+	const headerBar = useAppSelector(
+		(state) => state.showOpacityContainerReducer.headerBar
+	);
+	const inputSearch = useAppSelector(
+		(state) => state.showOpacityContainerReducer.inputSearch
+	);
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
 	);
@@ -67,6 +76,9 @@ const HeaderBar: React.FC = () => {
 		(state) => state.searchInput.queryInInput
 	);
 	const { cart, total } = useCart();
+	const recentSearches = useAppSelector(
+		(state) => state.searchInput.recentSearches
+	);
 
 	/**
 	 * Local state
@@ -76,7 +88,7 @@ const HeaderBar: React.FC = () => {
 	const [windowWidth, setWindowWidth] = useState(0);
 
 	/**
-	 * Sync query param → searchInput slice
+	 * Sync query param → searchInput slice
 	 */
 	useEffect(() => {
 		dispatch(setQueryInInput(q));
@@ -104,6 +116,13 @@ const HeaderBar: React.FC = () => {
 	}, [windowWidth, dispatch]);
 
 	/**
+	 * Hidratación inicial de búsquedas recientes desde localStorage
+	 */
+	useEffect(() => {
+		dispatch(hydrate());
+	}, [dispatch]);
+
+	/**
 	 * Handlers
 	 */
 	const handleInputChange = (value: string) => {
@@ -120,24 +139,37 @@ const HeaderBar: React.FC = () => {
 		dispatch(showSearchBar());
 	};
 
+	const handleInputBlur = () => {
+		dispatch(hideAll());
+	};
+
 	const handleShowSummaryCartmini = () => {
 		dispatch(showCart());
 	};
-
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (!queryInInput) return;
 
-		dispatch(addToRecentSearches(queryInInput));
+		if (!isAuthenticated && !loading) {
+			dispatch(addToRecentSearches(queryInInput));
+		}
+
+		if (accessToken) {
+			dispatch(
+				addRecentSearchBackend({ query: queryInInput, accessToken })
+			).then(() => {
+				dispatch(fetchRecentSearchesBackend(accessToken));
+			});
+		}
 
 		const url = `/listado/all/index?q=${encodeURIComponent(
 			queryInInput
 		)}&page_size=${maxPageResults}&page=1&filter_available=true`;
-
 		router.replace(url);
 		dispatch(hideAll());
 		textInput.current?.blur();
+		desktopInput.current?.blur();
 	};
 
 	const handleMobileSearch = () => {
@@ -167,6 +199,52 @@ const HeaderBar: React.FC = () => {
 		}
 	}, [queryInInput]);
 
+	const handleSelectSuggestion = (text: string) => {
+		if (loading) return;
+
+		dispatch(setQueryInInputWithSearchBar(text));
+		if (!isAuthenticated) {
+			dispatch(addToRecentSearches(text));
+		}
+		if (accessToken) {
+			dispatch(addRecentSearchBackend({ query: text, accessToken })).then(
+				() => {
+					dispatch(fetchRecentSearchesBackend(accessToken));
+				}
+			);
+		}
+		const url = `/listado/all/index?q=${encodeURIComponent(
+			text
+		)}&page_size=${maxPageResults}&page=1&filter_available=true`;
+		router.replace(url);
+		dispatch(hideAll());
+	};
+
+	useEffect(() => {
+		if (accessToken && !syncDone.current) {
+			syncDone.current = true;
+			const localRecents = JSON.parse(
+				localStorage.getItem('recentSearches') || '[]'
+			);
+			dispatch(fetchRecentSearchesBackend(accessToken)).then(() => {
+				setTimeout(() => {
+					const backendRecents = recentSearches;
+					const toSync = localRecents.filter(
+						(item) =>
+							!backendRecents.some(
+								(b) => b.toLowerCase() === item.toLowerCase()
+							)
+					);
+					toSync.forEach((query) => {
+						dispatch(addRecentSearchBackend({ query, accessToken }));
+					});
+					// Eliminar los recientes locales después de sincronizar
+					localStorage.removeItem('recentSearches');
+				}, 0);
+			});
+		}
+	}, [accessToken, dispatch, recentSearches]);
+
 	return (
 		<div>
 			<div
@@ -176,13 +254,13 @@ const HeaderBar: React.FC = () => {
 			>
 				<div className='header-bar__container'>
 					<div className='header-bar__primary header-bar--left row around-xs middle-xs center-xs'>
-						{/*  Logo — Option B responsive (fill) */}
+						{/*  Logo — Option B responsive (fill) */}
 						<div className='header-bar__section col-xs-4 col-sm-4 col-md-2 col-lg-2 header-bar__logo'>
 							<NavMobileMenu />
 							<a href='/'>
 								<div
 									style={{
-										width: 98, // ← puedes ajustar vía media‑queries
+										width: 98, // ← puedes ajustar vía media‑queries
 										height: 42,
 										position: 'relative',
 									}}
@@ -191,7 +269,7 @@ const HeaderBar: React.FC = () => {
 										src={logoUrl}
 										alt={storeName}
 										fill
-										sizes='98px' // breakpoints opcionales
+										sizes='98px' // breakpoints opcionales
 										style={{ objectFit: 'contain' }}
 										priority
 										draggable={false}
@@ -200,7 +278,7 @@ const HeaderBar: React.FC = () => {
 							</a>
 						</div>
 
-						{/* Search bar (desktop) */}
+						{/* Search bar (desktop) */}
 						<div className='header-bar__search-bar'>
 							<div className='header-bar__box'>
 								<form onSubmit={handleSubmit}>
@@ -216,11 +294,17 @@ const HeaderBar: React.FC = () => {
 											defaultValue={q}
 											autoComplete='off'
 											required
+											style={{
+												zIndex: inputSearch ? 200 : 0,
+											}}
 										/>
 										<button
 											type='submit'
 											className='header-bar__button-search'
 											ref={searchButton}
+											style={{
+												zIndex: inputSearch ? 200 : 0,
+											}}
 										>
 											{/* svg lupa */}
 											<svg
@@ -239,9 +323,15 @@ const HeaderBar: React.FC = () => {
 										</button>
 									</div>
 								</form>
-								<div className='search-box'>
-									<InstantSearch />
-								</div>
+								{!loading && (
+									<div className='search-box'>
+										<InstantSearch
+											query={queryInInput}
+											recentSearches={recentSearches}
+											onSelect={handleSelectSuggestion}
+										/>
+									</div>
+								)}
 							</div>
 						</div>
 						<div className='header-bar__section header-bar__section__icons header-bar--right col-xs-6 col-sm-6 col-md-5 col-lg-4'>
@@ -424,9 +514,15 @@ const HeaderBar: React.FC = () => {
 						</div>
 					</form>
 				</div>
-				<div className='col-sm-12 col-md-12 col-lg-12 search-box search-box__mobile'>
-					<InstantSearch />
-				</div>
+				{!loading && searchVisibleValue && (
+					<div className='col-sm-12 col-md-12 col-lg-12 search-box search-box__mobile'>
+						<InstantSearch
+							query={queryInInput}
+							recentSearches={recentSearches}
+							onSelect={handleSelectSuggestion}
+						/>
+					</div>
+				)}
 			</div>
 			<div
 				className='mobile__clear-fix'
@@ -440,9 +536,8 @@ const HeaderBar: React.FC = () => {
 					justify-content: center;
 					width: 30px;
 					height: 30px;
-
 				}
-				
+
 				.header-bar--show {
 					z-index: 1000;
 				}
@@ -674,7 +769,6 @@ const HeaderBar: React.FC = () => {
 					z-index: 400;
 					padding: 0;
 					position: absolute;
-					width: 100%;
 					border-radius: 0 0 5px 5px;
 					background: #fff;
 				}
@@ -682,8 +776,9 @@ const HeaderBar: React.FC = () => {
 				.search-box__mobile {
 					border-radius: 0;
 					margin-top: -2px;
-					max-height: calc(100% - 54px);
+					height: calc(100% - 54px);
 					overflow: auto;
+				
 				}
 
 				.header-bar__mobile__close {
@@ -762,6 +857,7 @@ const HeaderBar: React.FC = () => {
 					.header-bar__mobile {
 						z-index: 200;
 						position: fixed;
+						width: 100dvw;
 					}
 
 					.mobile__clear-fix {

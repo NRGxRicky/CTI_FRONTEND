@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
 interface SearchInputState {
 	queryInInput: string;
@@ -69,29 +70,29 @@ export const searchInputSlice = createSlice({
 		},
 		setRecentSearches: (state, action: PayloadAction<string[]>) => {
 			state.recentSearches = action.payload;
-			saveRecentSearchesToStorage(state.recentSearches);
 		},
 		addToRecentSearches: (state, action: PayloadAction<string>) => {
 			const query = action.payload.trim();
 			if (query === '') return;
-
-			// Remover si ya existe y agregar al principio, limitado a 8
 			const updatedSearches = [
 				query,
 				...state.recentSearches.filter((item) => item !== query),
 			].slice(0, 8);
 			state.recentSearches = updatedSearches;
-			saveRecentSearchesToStorage(state.recentSearches);
+			// Guardar automáticamente en localStorage para usuarios no autenticados
+			saveRecentSearchesToStorage(updatedSearches);
 		},
 		removeFromRecentSearches: (state, action: PayloadAction<string>) => {
 			state.recentSearches = state.recentSearches.filter(
 				(item) => item !== action.payload
 			);
+			// Actualizar localStorage también
 			saveRecentSearchesToStorage(state.recentSearches);
 		},
 		clearAllRecentSearches: (state) => {
 			state.recentSearches = [];
-			saveRecentSearchesToStorage(state.recentSearches);
+			// Limpiar localStorage también
+			saveRecentSearchesToStorage([]);
 		},
 	},
 });
@@ -108,5 +109,43 @@ export const {
 	removeFromRecentSearches,
 	clearAllRecentSearches,
 } = searchInputSlice.actions;
+
+const RECENT_SEARCHES_URL = 'https://api.pccdnapi.com/search/recent/';
+
+// Obtener recientes del backend
+export const fetchRecentSearchesBackend = createAsyncThunk(
+	'searchInput/fetchRecentSearchesBackend',
+	async (accessToken: string, { dispatch }) => {
+		const res = await fetch(RECENT_SEARCHES_URL, {
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+				'Content-Type': 'application/json',
+			},
+		});
+		if (res.ok) {
+			const data = await res.json();
+			dispatch(setRecentSearches(data));
+		}
+	}
+);
+
+// Agregar búsqueda reciente al backend
+export const addRecentSearchBackend = createAsyncThunk(
+	'searchInput/addRecentSearchBackend',
+	async (
+		{ query, accessToken }: { query: string; accessToken: string },
+		{ dispatch }
+	) => {
+		await fetch(RECENT_SEARCHES_URL, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ query }),
+		});
+		dispatch(addToRecentSearches(query));
+	}
+);
 
 export default searchInputSlice.reducer;

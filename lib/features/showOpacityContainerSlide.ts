@@ -14,6 +14,7 @@ export const showOpacityContainerSlide = createSlice({
 		PaymentsChange: false,
 		ProfileAddAddress: false,
 		headerBar: false,
+		inputSearch: false,
 	},
 	reducers: {
 		showOpacity: (state) => {
@@ -34,6 +35,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
 			state.headerBar = false;
+			state.inputSearch = false;
 		},
 		showProfileAddAddress: (state) => {
 			state.searchBar = false;
@@ -46,6 +48,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = true;
 			state.headerBar = false;
+			state.inputSearch = false;
 		},
 		showSearchBar: (state) => {
 			state.searchBar = true;
@@ -58,6 +61,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
 			state.headerBar = false;
+			state.inputSearch = true;
 		},
 		showLoginMenuState: (state) => {
 			state.searchBar = false;
@@ -70,6 +74,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
 			state.headerBar = false;
+			state.inputSearch = false;
 		},
 		showCart: (state) => {
 			state.searchBar = false;
@@ -82,6 +87,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
 			state.headerBar = false;
+			state.inputSearch = false;
 		},
 		showPaymentsChange: (state) => {
 			state.searchBar = false;
@@ -94,6 +100,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.PaymentsChange = true;
 			state.ProfileAddAddress = false;
 			state.headerBar = false;
+			state.inputSearch = false;
 		},
 
 		showNavMobileMenu: (state) => {
@@ -108,6 +115,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
 			state.headerBar = true;
+			state.inputSearch = false;
 		},
 		showNavMobileSort: (state) => {
 			state.searchBar = false;
@@ -132,6 +140,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
 			state.headerBar = false;
+			state.inputSearch = false;
 		},
 		blockBodyScroll: (state) => {
 			state.bodyScroll = true;
