@@ -14,15 +14,35 @@ const IconClock = () => (
 );
 
 function highlightWords(text, words, color = '#333') {
-	if (!words || words.length === 0) return text;
+	if (!words || words.length === 0 || !text) return text;
 
-	let result = text;
-	words.forEach(word => {
-		const regex = new RegExp(word.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'), 'gi');
-		result = result.replace(regex, `<b style="color: ${color};">$&</b>`);
-	});
+	// Validar color de forma simple
+	const safeColor = color.includes('var(--') || color.startsWith('#') || color.match(/^[a-zA-Z]+$/) ? color : '#333';
 
-	return <span dangerouslySetInnerHTML={{ __html: result }} />;
+	// Crear regex para todas las palabras
+	const wordsPattern = words.filter(word => word && word.trim()).join('|');
+	if (!wordsPattern) return text;
+
+	const regex = new RegExp(`(${wordsPattern})`, 'gi');
+	const parts = text.split(regex);
+
+	return (
+		<span>
+			{parts.map((part, index) => {
+				const isMatch = words.some(word =>
+					word && part.toLowerCase() === word.toLowerCase()
+				);
+
+				return isMatch ? (
+					<b key={index} style={{ color: safeColor }}>
+						{part}
+					</b>
+				) : (
+					part
+				);
+			})}
+		</span>
+	);
 }
 
 const InstantSearch = ({ query, recentSearches, onSelect }) => {
@@ -31,6 +51,41 @@ const InstantSearch = ({ query, recentSearches, onSelect }) => {
 	const [containerWidth, setContainerWidth] = useState(0);
 	const { searchBar } = useAppSelector((state) => state.showOpacityContainerReducer);
 	const dispatch = useAppDispatch();
+
+	// Función para sanitizar una cadena simple - solo lo básico
+	const sanitizeString = (str) => {
+		if (!str) return '';
+		return String(str)
+			.replace(/[<>]/g, '') // Solo remover < >
+			.trim();
+	};
+
+	// Sanitizar query y búsquedas recientes
+	const safeQuery = sanitizeString(query);
+	const safeRecentSearches = recentSearches.map(sanitizeString).filter(Boolean);
+
+	// Función para sanitizar datos del API - simplificada
+	const sanitizeApiData = (data) => {
+		const sanitizeObject = (obj) => {
+			const sanitized = {};
+			Object.keys(obj).forEach(key => {
+				if (typeof obj[key] === 'string') {
+					sanitized[key] = sanitizeString(obj[key]);
+				} else {
+					sanitized[key] = obj[key];
+				}
+			});
+			return sanitized;
+		};
+
+		return {
+			products: (data.products || []).map(sanitizeObject),
+			queries: (data.queries || []).map(sanitizeString),
+			brands: (data.brands || []).map(sanitizeObject),
+			categories: (data.categories || []).map(sanitizeObject),
+			query_words: (data.query_words || []).map(sanitizeString)
+		};
+	};
 
 	// Hook para detectar cambios de tamaño de ventana
 	useEffect(() => {
@@ -47,7 +102,7 @@ const InstantSearch = ({ query, recentSearches, onSelect }) => {
 		let debounceTimeout;
 		let abortController = null;
 
-		if (!query || query.trim() === '') {
+		if (!safeQuery || safeQuery.trim() === '') {
 			setSuggestions({ products: [], queries: [], brands: [], categories: [], query_words: [] });
 			return;
 		}
@@ -56,12 +111,12 @@ const InstantSearch = ({ query, recentSearches, onSelect }) => {
 		debounceTimeout = setTimeout(() => {
 			abortController = new AbortController();
 			fetch(
-				`https://api.pccdnapi.com/search/suggestions/?q=${encodeURIComponent(query)}`,
+				`https://api.pccdnapi.com/search/suggestions/?q=${encodeURIComponent(safeQuery)}`,
 				{ signal: abortController.signal }
 			)
 				.then((res) => res.json())
 				.then((data) => {
-					setSuggestions(data);
+					setSuggestions(sanitizeApiData(data));
 					setShowDropdown(true);
 					console.log(data);
 				})
@@ -76,7 +131,7 @@ const InstantSearch = ({ query, recentSearches, onSelect }) => {
 			clearTimeout(debounceTimeout);
 			if (abortController) abortController.abort();
 		};
-	}, [query]);
+	}, [safeQuery]);
 
 	const queryWords = (suggestions.query_words || []).map(w => w.toLowerCase());
 
@@ -92,13 +147,11 @@ const InstantSearch = ({ query, recentSearches, onSelect }) => {
 		return Math.min(maxWidth, 800);
 	};
 
-
-
 	// Filtrar búsquedas recientes según el query
-	const filteredRecentSearches = !query
-		? recentSearches.slice(0, 8) // Si no hay query, solo mostrar primeros 8
-		: recentSearches.filter(r =>
-			r.toLowerCase().includes(query.toLowerCase())
+	const filteredRecentSearches = !safeQuery
+		? safeRecentSearches.slice(0, 8) // Si no hay query, solo mostrar primeros 8
+		: safeRecentSearches.filter(r =>
+			r.toLowerCase().includes(safeQuery.toLowerCase())
 		); // Si hay query, mostrar todos los que coincidan
 
 	// Excluir de sugerencias las que ya están en recientes filtradas
@@ -267,7 +320,7 @@ const InstantSearch = ({ query, recentSearches, onSelect }) => {
 						margin-right: 8px;
 						display: flex;
 						align-items: center;
-							color: #6d6d6d;
+						color: #6d6d6d;
 					}
 
 					@media only screen and (max-width: 62em) {
