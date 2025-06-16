@@ -170,8 +170,9 @@ const HeaderBar: React.FC = () => {
 	return (
 		<div>
 			<div
-				className={`header-bar ${mobileView ? 'header-bar--mobile' : ''} ${headerBar ? 'header-bar--show' : ''}`}
-				
+				className={`header-bar ${mobileView ? 'header-bar--mobile' : ''} ${
+					headerBar ? 'header-bar--show' : ''
+				}`}
 			>
 				<div className='header-bar__container'>
 					<div className='header-bar__primary header-bar--left row around-xs middle-xs center-xs'>
@@ -371,8 +372,8 @@ const HeaderBar: React.FC = () => {
 									version='1.1'
 									xmlns='http://www.w3.org/2000/svg'
 									viewBox='0 0 31.494 31.494'
-									width='40px'
-									height='40px'
+									width='30px'
+									height='30px'
 								>
 									<path
 										d='M10.273,5.009c0.444-0.444,1.143-0.444,1.587,0c0.429,0.429,0.429,1.143,0,1.571l-8.047,8.047h26.554
@@ -433,7 +434,15 @@ const HeaderBar: React.FC = () => {
 			></div>
 
 			<style jsx>{`
+				.header-bar__mobile__close {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					width: 30px;
+					height: 30px;
 
+				}
+				
 				.header-bar--show {
 					z-index: 1000;
 				}
@@ -535,7 +544,6 @@ const HeaderBar: React.FC = () => {
 					position: relative;
 					padding: 2px 0;
 					border-bottom: 1px solid #eaeaea;
-
 				}
 
 				.header-bar--mobile {
@@ -667,10 +675,8 @@ const HeaderBar: React.FC = () => {
 					padding: 0;
 					position: absolute;
 					width: 100%;
-					margin-top: 1px;
-					border-radius: 5px;
+					border-radius: 0 0 5px 5px;
 					background: #fff;
-					box-shadow: rgb(0 0 0 / 20%) 0 6px 16px 0;
 				}
 
 				.search-box__mobile {
