@@ -6,6 +6,104 @@ import TruncateMarkup from 'react-truncate-markup';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 
+// Hook personalizado para efecto de escritura tipo IA
+const useTypewriter = (text, speed = 50, enabled = true) => {
+	const [displayText, setDisplayText] = useState('');
+	const [isComplete, setIsComplete] = useState(false);
+
+	useEffect(() => {
+		if (!enabled || !text) {
+			setDisplayText(text);
+			setIsComplete(true);
+			return;
+		}
+
+		setDisplayText('');
+		setIsComplete(false);
+		let i = 0;
+
+		const timer = setInterval(() => {
+			setDisplayText(text.slice(0, i + 1));
+			i++;
+			if (i >= text.length) {
+				setIsComplete(true);
+				clearInterval(timer);
+			}
+		}, speed);
+
+		return () => clearInterval(timer);
+	}, [text, speed, enabled]);
+
+	return { displayText, isComplete };
+};
+
+// Componente TypewriterText
+const TypewriterText = ({
+	children,
+	speed = 50,
+	delay = 0,
+	enabled = true,
+	highlight = null,
+	className = '',
+	style = {}
+}) => {
+	const [startTyping, setStartTyping] = useState(false);
+	const text = typeof children === 'string' ? children : '';
+	const { displayText, isComplete } = useTypewriter(text, speed, enabled && startTyping);
+
+	useEffect(() => {
+		if (delay > 0) {
+			const timer = setTimeout(() => setStartTyping(true), delay);
+			return () => clearTimeout(timer);
+		} else {
+			setStartTyping(true);
+		}
+	}, [delay]);
+
+	// Si no está habilitado el efecto, no mostrar nada (evitar flash de contenido)
+	if (!enabled) {
+		return <span className={className} style={style}></span>;
+	}
+
+	// Si aún no ha comenzado a escribir (debido al delay), no mostrar nada
+	if (!startTyping) {
+		return <span className={className} style={style}></span>;
+	}
+
+	// Si es texto simple y tenemos highlight
+	if (typeof children === 'string' && highlight) {
+		return (
+			<span className={className} style={style}>
+				{highlight(displayText)}
+				{!isComplete && <span className="typewriter-cursor">|</span>}
+			</span>
+		);
+	}
+
+	// Si es texto simple sin highlight
+	if (typeof children === 'string') {
+		return (
+			<span className={className} style={style}>
+				{displayText}
+				{!isComplete && <span className="typewriter-cursor">|</span>}
+			</span>
+		);
+	}
+
+	// Si es JSX, mostrar tal como está (para casos complejos)
+	return <span className={className} style={style}>{children}</span>;
+};
+
+TypewriterText.propTypes = {
+	children: PropTypes.node.isRequired,
+	speed: PropTypes.number,
+	delay: PropTypes.number,
+	enabled: PropTypes.bool,
+	highlight: PropTypes.func,
+	className: PropTypes.string,
+	style: PropTypes.object,
+};
+
 const IconSearch = () => (
 	<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
 );
@@ -53,6 +151,8 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 	const [suggestions, setSuggestions] = useState({ products: [], queries: [], brands: [], categories: [], query_words: [] });
 	const [showDropdown, setShowDropdown] = useState(true);
 	const [containerWidth, setContainerWidth] = useState(0);
+	const [showTypewriterEffect, setShowTypewriterEffect] = useState(true);
+	const [isTransitioning, setIsTransitioning] = useState(false);
 	const { searchBar } = useAppSelector((state) => state.showOpacityContainerReducer);
 	const dispatch = useAppDispatch();
 
@@ -126,9 +226,9 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 
 		if (!safeQuery || safeQuery.trim() === '') {
 			setSuggestions({ products: [], queries: [], brands: [], categories: [], query_words: [] });
+			setShowTypewriterEffect(false);
 			return;
 		}
-
 
 		debounceTimeout = setTimeout(() => {
 			abortController = new AbortController();
@@ -138,8 +238,24 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 			)
 				.then((res) => res.json())
 				.then((data) => {
-					setSuggestions(sanitizeApiData(data));
-					setShowDropdown(true);
+					// Primero preparar los datos pero no mostrarlos aún
+					const newSuggestions = sanitizeApiData(data);
+
+					// Iniciar transición fade out
+					setIsTransitioning(true);
+					setShowTypewriterEffect(false);
+
+					// Fade out completo, luego cambiar datos y fade in
+					setTimeout(() => {
+						setSuggestions(newSuggestions);
+						setShowDropdown(true);
+
+						// Pequeño delay para que se rendericen los nuevos datos
+						setTimeout(() => {
+							setIsTransitioning(false);
+							setShowTypewriterEffect(true);
+						}, 50);
+					}, 200); // Tiempo del fade out
 				})
 				.catch((err) => {
 					if (err.name !== 'AbortError') {
@@ -184,7 +300,7 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 
 	return (
 		showDropdown && (
-			<div className={`search-dropdown ${searchBar ? 'search-dropdown--show' : 'search-dropdown--hide'}`}>
+			<div className={`search-dropdown ${searchBar ? 'search-dropdown--show' : 'search-dropdown--hide'} ${isTransitioning ? 'search-dropdown--fading' : ''}`}>
 				{/* Producto destacado */}
 				{suggestions.products && suggestions.products.length > 0 && (
 					<Link href={suggestions.products[0].url} legacyBehavior>
@@ -204,12 +320,27 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 									style={{ maxWidth: `${calculateTitleMaxWidth()}px` }}
 								>
 									<TruncateMarkup lines={1}>
-										<span>
-											{highlightWords(suggestions.products[0].original_title, queryWords)}
-										</span>
+										<TypewriterText
+											speed={30}
+											enabled={showTypewriterEffect}
+											highlight={(text) => highlightWords(text, queryWords)}
+										>
+											{suggestions.products[0].original_title}
+										</TypewriterText>
 									</TruncateMarkup>
 								</div>
-								{suggestions.products[0].category && <div className="search-dropdown__featured-category">en {highlightWords(suggestions.products[0].category, queryWords, 'var(--primary-color)')}</div>}
+								{suggestions.products[0].category && (
+									<div className="search-dropdown__featured-category">
+										en <TypewriterText
+											speed={25}
+											delay={200}
+											enabled={showTypewriterEffect}
+											highlight={(text) => highlightWords(text, queryWords, 'var(--primary-color)')}
+										>
+											{suggestions.products[0].category}
+										</TypewriterText>
+									</div>
+								)}
 							</div>
 						</a>
 					</Link>
@@ -224,7 +355,16 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 									onSelect(r);
 								}}>
 									<span className="dropdown-item__icon"><IconClock /></span>
-									<span className="dropdown-item__text">{highlightWords(r, queryWords)}</span>
+									<span className="dropdown-item__text">
+										<TypewriterText
+											speed={40}
+											delay={i * 100}
+											enabled={showTypewriterEffect}
+											highlight={(text) => highlightWords(text, queryWords)}
+										>
+											{r}
+										</TypewriterText>
+									</span>
 								</div>
 								<button
 									className="remove-item-btn"
@@ -248,7 +388,15 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 								trackSearch(s);
 								onSelect(s);
 							}} className="dropdown-item">
-								<span className="dropdown-item__icon"><IconSearch /></span> {highlightWords(s, queryWords)}
+								<span className="dropdown-item__icon"><IconSearch /></span>
+								<TypewriterText
+									speed={35}
+									delay={300 + i * 80}
+									enabled={showTypewriterEffect}
+									highlight={(text) => highlightWords(text, queryWords)}
+								>
+									{s}
+								</TypewriterText>
 							</div>
 						))}
 					</div>
@@ -264,7 +412,15 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 									onSelect(b.name);
 									dispatch(hideAll());
 								}}>
-									<span className="dropdown-item__icon"><IconSearch /></span> {highlightWords(b.name, queryWords)}
+									<span className="dropdown-item__icon"><IconSearch /></span>
+									<TypewriterText
+										speed={30}
+										delay={500 + i * 100}
+										enabled={showTypewriterEffect}
+										highlight={(text) => highlightWords(text, queryWords)}
+									>
+										{b.name}
+									</TypewriterText>
 								</a>
 							</Link>
 						))}
@@ -281,16 +437,35 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 									onSelect(c.name);
 									dispatch(hideAll());
 								}}>
-									<span className="dropdown-item__icon"><IconSearch /></span> {highlightWords(c.name, queryWords)}
+									<span className="dropdown-item__icon"><IconSearch /></span>
+									<TypewriterText
+										speed={30}
+										delay={700 + i * 120}
+										enabled={showTypewriterEffect}
+										highlight={(text) => highlightWords(text, queryWords)}
+									>
+										{c.name}
+									</TypewriterText>
 								</a>
 							</Link>
 						))}
 					</div>
 				)}
+				{/* eslint-disable-next-line react/no-unknown-property */}
 				<style jsx>{`
-
 					a:hover {
 						color: inherit;
+					}
+
+					:global(.typewriter-cursor) {
+						animation: typewriter-blink 1s infinite;
+						color: var(--primary-color, #007bff);
+						font-weight: normal;
+					}
+
+					@keyframes typewriter-blink {
+						0%, 50% { opacity: 1; }
+						51%, 100% { opacity: 0; }
 					}
 
 					.search-dropdown {
@@ -304,6 +479,8 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 						min-width: 50px;
 						width: 100%;
 						position: relative;
+						opacity: 1;
+						transition: opacity 0.2s ease-in-out;
 					}
 
 					.search-dropdown--show {
@@ -312,6 +489,10 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 
 					.search-dropdown--hide {
 						display: none;
+					}
+
+					.search-dropdown--fading {
+						opacity: 0.3;
 					}
 
 					.search-dropdown__featured {
@@ -356,45 +537,50 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 						display: flex;
 						align-items: center;
 						justify-content: space-between;
-						padding: 0;
+						padding: 12px 16px;
+						transition: background 0.2s;
+					}
+
+					.dropdown-item--with-remove:hover {
+						background: #f5f5f5;
 					}
 
 					.dropdown-item__content {
 						flex: 1;
-
+						padding: 0;
 						cursor: pointer;
 						display: flex;
 						align-items: center;
-						transition: background 0.2s;
+						transition: none;
 						white-space: pre-line;
 						color: #6d6d6d;
-					}
-
-					.dropdown-item__content:hover {
-						background: #f5f5f5;
+						min-width: 0;
 					}
 
 					.dropdown-item__text {
 						flex: 1;
+						min-width: 0;
 					}
 
 					.remove-item-btn {
 						background: none;
 						border: none;
 						cursor: pointer;
-
+						padding: 8px;
 						color: #aaa;
 						transition: all 0.2s;
 						display: flex;
 						align-items: center;
 						justify-content: center;
-						margin-right: 6px;
+						margin-left: 8px;
 						border-radius: 4px;
 						opacity: 0.7;
+						min-width: 30px;
+						height: 30px;
 					}
 
 					.remove-item-btn:hover {
-						background: #f5f5f5;
+						background: #e0e0e0;
 						color: #666;
 						opacity: 1;
 					}
@@ -420,7 +606,7 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 						margin-right: 8px;
 						display: flex;
 						align-items: center;
-						color: #6d6d6d;
+						color: #333;
 					}
 
 					@media only screen and (max-width: 62em) {
