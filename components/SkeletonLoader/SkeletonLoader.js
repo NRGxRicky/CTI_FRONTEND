@@ -2,7 +2,7 @@ import React from 'react';
 
 const SkeletonLoader = () => (
   <div className="skeleton-list">
-    {[...Array(6)].map((_, i) => (
+    {[...Array(5)].map((_, i) => (
       <div className="search-box__item" key={i}>
         <div className="search-box__item__box">
           <div className="search-box_item__container">
