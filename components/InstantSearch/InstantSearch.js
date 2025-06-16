@@ -227,6 +227,8 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 		if (!safeQuery || safeQuery.trim() === '') {
 			setSuggestions({ products: [], queries: [], brands: [], categories: [], query_words: [] });
 			setShowTypewriterEffect(false);
+			setIsTransitioning(false);
+			setShowDropdown(true); // Asegurarse de que el dropdown se muestre para búsquedas recientes
 			return;
 		}
 
@@ -356,14 +358,20 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 								}}>
 									<span className="dropdown-item__icon"><IconClock /></span>
 									<span className="dropdown-item__text">
-										<TypewriterText
-											speed={40}
-											delay={i * 100}
-											enabled={showTypewriterEffect}
-											highlight={(text) => highlightWords(text, queryWords)}
-										>
-											{r}
-										</TypewriterText>
+										{!safeQuery ? (
+											// Si no hay query, mostrar texto normal sin efecto
+											highlightWords(r, queryWords)
+										) : (
+											// Si hay query, usar efecto typewriter
+											<TypewriterText
+												speed={40}
+												delay={i * 100}
+												enabled={showTypewriterEffect}
+												highlight={(text) => highlightWords(text, queryWords)}
+											>
+												{r}
+											</TypewriterText>
+										)}
 									</span>
 								</div>
 								<button
@@ -473,7 +481,7 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 						box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 						z-index: 500;
 						border-radius: 8px;
-						margin-top: 2px;
+
 						height: 100%;
 						overflow-y: auto;
 						min-width: 50px;
