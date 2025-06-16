@@ -33,6 +33,8 @@ import {
 	addToRecentSearches,
 	addRecentSearchBackend,
 	fetchRecentSearchesBackend,
+	removeRecentSearchBackend,
+	removeFromRecentSearches,
 	hydrate,
 } from '../../lib/features/searchInputSlice';
 import { isMobile as detectIsMobile } from 'react-device-detect';
@@ -125,6 +127,24 @@ const HeaderBar: React.FC = () => {
 	/**
 	 * Handlers
 	 */
+	// Función para trackear búsquedas
+	const trackSearch = async (query: string) => {
+		if (!query || query.length < 2) return;
+
+		try {
+			const response = await fetch('https://api.pccdnapi.com/search/track/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ query: query.trim().toLowerCase() }),
+			});
+
+		} catch (error) {
+			console.error('Error al trackear búsqueda:', error);
+		}
+	};
+
 	const handleInputChange = (value: string) => {
 		if (value === '') {
 			dispatch(clearQueryInInputKeepSearchBar());
@@ -150,6 +170,9 @@ const HeaderBar: React.FC = () => {
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (!queryInInput) return;
+
+		// Trackear la búsqueda como popular
+		trackSearch(queryInInput);
 
 		if (!isAuthenticated && !loading) {
 			dispatch(addToRecentSearches(queryInInput));
@@ -202,6 +225,9 @@ const HeaderBar: React.FC = () => {
 	const handleSelectSuggestion = (text: string) => {
 		if (loading) return;
 
+		// Trackear la búsqueda como popular
+		trackSearch(text);
+
 		dispatch(setQueryInInputWithSearchBar(text));
 		if (!isAuthenticated) {
 			dispatch(addToRecentSearches(text));
@@ -218,6 +244,16 @@ const HeaderBar: React.FC = () => {
 		)}&page_size=${maxPageResults}&page=1&filter_available=true`;
 		router.replace(url);
 		dispatch(hideAll());
+	};
+
+	const handleRemoveRecentSearch = (query: string) => {
+		if (accessToken && isAuthenticated) {
+			// Usuario logueado - eliminar del backend
+			dispatch(removeRecentSearchBackend({ query, accessToken }));
+		} else {
+			// Usuario no logueado - eliminar del localStorage
+			dispatch(removeFromRecentSearches(query));
+		}
 	};
 
 	useEffect(() => {
@@ -282,7 +318,12 @@ const HeaderBar: React.FC = () => {
 						<div className='header-bar__search-bar'>
 							<div className='header-bar__box'>
 								<form onSubmit={handleSubmit}>
-									<div className='header-bar__form-container'>
+									<div
+										className='header-bar__form-container'
+										style={{
+											zIndex: inputSearch ? 200 : 0,
+										}}
+									>
 										<input
 											ref={desktopInput}
 											onFocus={handleInputFocus}
@@ -294,17 +335,12 @@ const HeaderBar: React.FC = () => {
 											defaultValue={q}
 											autoComplete='off'
 											required
-											style={{
-												zIndex: inputSearch ? 200 : 0,
-											}}
 										/>
 										<button
 											type='submit'
 											className='header-bar__button-search'
 											ref={searchButton}
-											style={{
-												zIndex: inputSearch ? 200 : 0,
-											}}
+											
 										>
 											{/* svg lupa */}
 											<svg
@@ -329,6 +365,7 @@ const HeaderBar: React.FC = () => {
 											query={queryInInput}
 											recentSearches={recentSearches}
 											onSelect={handleSelectSuggestion}
+											onRemoveRecentSearch={handleRemoveRecentSearch}
 										/>
 									</div>
 								)}
@@ -520,6 +557,7 @@ const HeaderBar: React.FC = () => {
 							query={queryInInput}
 							recentSearches={recentSearches}
 							onSelect={handleSelectSuggestion}
+							onRemoveRecentSearch={handleRemoveRecentSearch}
 						/>
 					</div>
 				)}
@@ -778,7 +816,6 @@ const HeaderBar: React.FC = () => {
 					margin-top: -2px;
 					height: calc(100% - 54px);
 					overflow: auto;
-				
 				}
 
 				.header-bar__mobile__close {

@@ -148,4 +148,56 @@ export const addRecentSearchBackend = createAsyncThunk(
 	}
 );
 
+// Limpiar todas las búsquedas recientes del backend
+export const clearRecentSearchesBackend = createAsyncThunk(
+	'searchInput/clearRecentSearchesBackend',
+	async (accessToken: string, { dispatch }) => {
+		const response = await fetch(
+			'https://api.pccdnapi.com/search/recent/clear/',
+			{
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+					'Content-Type': 'application/json',
+				},
+			}
+		);
+
+		if (response.ok) {
+			dispatch(clearAllRecentSearches());
+			return true;
+		} else {
+			throw new Error('Error al limpiar búsquedas recientes');
+		}
+	}
+);
+
+// Eliminar una búsqueda reciente específica del backend
+export const removeRecentSearchBackend = createAsyncThunk(
+	'searchInput/removeRecentSearchBackend',
+	async (
+		{ query, accessToken }: { query: string; accessToken: string },
+		{ dispatch }
+	) => {
+		const response = await fetch(
+			'https://api.pccdnapi.com/search/recent/remove/',
+			{
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ query }),
+			}
+		);
+
+		if (response.ok) {
+			dispatch(removeFromRecentSearches(query));
+			return true;
+		} else {
+			throw new Error('Error al eliminar búsqueda reciente');
+		}
+	}
+);
+
 export default searchInputSlice.reducer;

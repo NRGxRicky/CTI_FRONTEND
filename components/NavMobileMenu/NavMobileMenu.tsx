@@ -8,7 +8,6 @@ import {
 	showOpacity,
 	hideOpacity,
 	hideAll,
-	showSearchBar,
 	showLoginMenuState,
 	showNavMobileMenu,
 	blockBodyScroll,

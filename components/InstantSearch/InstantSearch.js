@@ -13,6 +13,10 @@ const IconClock = () => (
 	<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
 );
 
+const IconClose = () => (
+	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+);
+
 function highlightWords(text, words, color = '#333') {
 	if (!words || words.length === 0 || !text) return text;
 
@@ -45,12 +49,30 @@ function highlightWords(text, words, color = '#333') {
 	);
 }
 
-const InstantSearch = ({ query, recentSearches, onSelect }) => {
+const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }) => {
 	const [suggestions, setSuggestions] = useState({ products: [], queries: [], brands: [], categories: [], query_words: [] });
 	const [showDropdown, setShowDropdown] = useState(true);
 	const [containerWidth, setContainerWidth] = useState(0);
 	const { searchBar } = useAppSelector((state) => state.showOpacityContainerReducer);
 	const dispatch = useAppDispatch();
+
+	// Función para trackear búsquedas
+	const trackSearch = async (query) => {
+		if (!query || query.length < 2) return;
+
+		try {
+			await fetch('https://api.pccdnapi.com/search/track/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ query: query.trim().toLowerCase() })
+			});
+
+		} catch (error) {
+			console.error('Error al trackear búsqueda:', error);
+		}
+	};
 
 	// Función para sanitizar una cadena simple - solo lo básico
 	const sanitizeString = (str) => {
@@ -118,7 +140,6 @@ const InstantSearch = ({ query, recentSearches, onSelect }) => {
 				.then((data) => {
 					setSuggestions(sanitizeApiData(data));
 					setShowDropdown(true);
-					console.log(data);
 				})
 				.catch((err) => {
 					if (err.name !== 'AbortError') {
@@ -197,8 +218,24 @@ const InstantSearch = ({ query, recentSearches, onSelect }) => {
 				{filteredRecentSearches.length > 0 && (
 					<div>
 						{filteredRecentSearches.map((r, i) => (
-							<div key={r + '-' + i} tabIndex={0} onClick={() => onSelect(r)} className="dropdown-item">
-								<span className="dropdown-item__icon"><IconClock /></span> {highlightWords(r, queryWords)}
+							<div key={r + '-' + i} className="dropdown-item dropdown-item--with-remove">
+								<div className="dropdown-item__content" onClick={() => {
+									trackSearch(r);
+									onSelect(r);
+								}}>
+									<span className="dropdown-item__icon"><IconClock /></span>
+									<span className="dropdown-item__text">{highlightWords(r, queryWords)}</span>
+								</div>
+								<button
+									className="remove-item-btn"
+									onClick={(e) => {
+										e.stopPropagation();
+										onRemoveRecentSearch(r);
+									}}
+									title={`Eliminar "${r}"`}
+								>
+									<IconClose />
+								</button>
 							</div>
 						))}
 					</div>
@@ -207,7 +244,10 @@ const InstantSearch = ({ query, recentSearches, onSelect }) => {
 				{filteredSuggestedQueries.length > 0 && (
 					<div>
 						{filteredSuggestedQueries.map((s, i) => (
-							<div key={s + '-' + i} tabIndex={0} onClick={() => onSelect(s)} className="dropdown-item">
+							<div key={s + '-' + i} tabIndex={0} onClick={() => {
+								trackSearch(s);
+								onSelect(s);
+							}} className="dropdown-item">
 								<span className="dropdown-item__icon"><IconSearch /></span> {highlightWords(s, queryWords)}
 							</div>
 						))}
@@ -219,7 +259,11 @@ const InstantSearch = ({ query, recentSearches, onSelect }) => {
 						<div className="dropdown-title">Marcas</div>
 						{suggestions.brands.map((b, i) => (
 							<Link key={b.name + '-' + i} href={`/listado/${encodeURIComponent(b.slug)}/index`} legacyBehavior>
-								<a className="dropdown-item" onClick={() => dispatch(hideAll())}>
+								<a className="dropdown-item" onClick={() => {
+									trackSearch(b.name);
+									onSelect(b.name);
+									dispatch(hideAll());
+								}}>
 									<span className="dropdown-item__icon"><IconSearch /></span> {highlightWords(b.name, queryWords)}
 								</a>
 							</Link>
@@ -232,7 +276,11 @@ const InstantSearch = ({ query, recentSearches, onSelect }) => {
 						<div className="dropdown-title">Categorías</div>
 						{suggestions.categories.map((c, i) => (
 							<Link key={c.name + '-' + i} href={`/listado/all/${c.slug}`} legacyBehavior>
-								<a className="dropdown-item" onClick={() => dispatch(hideAll())}>
+								<a className="dropdown-item" onClick={() => {
+									trackSearch(c.name);
+									onSelect(c.name);
+									dispatch(hideAll());
+								}}>
 									<span className="dropdown-item__icon"><IconSearch /></span> {highlightWords(c.name, queryWords)}
 								</a>
 							</Link>
@@ -240,6 +288,11 @@ const InstantSearch = ({ query, recentSearches, onSelect }) => {
 					</div>
 				)}
 				<style jsx>{`
+
+					a:hover {
+						color: inherit;
+					}
+
 					.search-dropdown {
 						background: #fff;
 						box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -294,13 +347,60 @@ const InstantSearch = ({ query, recentSearches, onSelect }) => {
 					.dropdown-title {
 						font-weight: bold;
 						color: #888;
-						padding: 8px 16px;
+						padding: 10px 16px;
 						font-size: 13px;
 						background: #f7f7f7;
 					}
 
+					.dropdown-item--with-remove {
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+						padding: 0;
+					}
+
+					.dropdown-item__content {
+						flex: 1;
+
+						cursor: pointer;
+						display: flex;
+						align-items: center;
+						transition: background 0.2s;
+						white-space: pre-line;
+						color: #6d6d6d;
+					}
+
+					.dropdown-item__content:hover {
+						background: #f5f5f5;
+					}
+
+					.dropdown-item__text {
+						flex: 1;
+					}
+
+					.remove-item-btn {
+						background: none;
+						border: none;
+						cursor: pointer;
+
+						color: #aaa;
+						transition: all 0.2s;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						margin-right: 6px;
+						border-radius: 4px;
+						opacity: 0.7;
+					}
+
+					.remove-item-btn:hover {
+						background: #f5f5f5;
+						color: #666;
+						opacity: 1;
+					}
+
 					.dropdown-item {
-						padding: 10px 16px;
+						padding: 12px 16px;
 						cursor: pointer;
 						display: flex;
 						align-items: center;
@@ -341,6 +441,7 @@ InstantSearch.propTypes = {
 	query: PropTypes.string.isRequired,
 	recentSearches: PropTypes.array.isRequired,
 	onSelect: PropTypes.func.isRequired,
+	onRemoveRecentSearch: PropTypes.func.isRequired,
 };
 
 export default InstantSearch;

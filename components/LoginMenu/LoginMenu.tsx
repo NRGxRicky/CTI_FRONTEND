@@ -8,7 +8,6 @@ import {
 	showOpacity,
 	hideOpacity,
 	hideAll,
-	showSearchBar,
 	showLoginMenuState,
 } from '../../lib/features/showOpacityContainerSlide';
 import EyeClose from '../../components/Icons/EyeClose';
