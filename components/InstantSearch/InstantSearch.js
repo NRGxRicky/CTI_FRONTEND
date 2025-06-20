@@ -614,7 +614,7 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 						margin-right: 8px;
 						display: flex;
 						align-items: center;
-						color: #333;
+						color: #6d6d6d;
 					}
 
 					@media only screen and (max-width: 62em) {

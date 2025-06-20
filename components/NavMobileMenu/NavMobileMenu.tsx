@@ -1,27 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import TruncateMarkup from 'react-truncate-markup';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 
 import {
-	showOpacity,
-	hideOpacity,
 	hideAll,
-	showLoginMenuState,
 	showNavMobileMenu,
 	blockBodyScroll,
 	unlockBodyScroll,
 } from '../../lib/features/showOpacityContainerSlide';
-import Capitalize from '../../hooks/CapitalizeTitle';
 import { useEnv } from '../../context/EnvContext';
 
+interface Subcategory {
+	id: number;
+	name: string;
+	slug: string;
+	subcategories?: Subcategory[];
+}
+
+interface Category {
+	id: number;
+	name: string;
+	slug: string;
+	subcategories?: Subcategory[];
+}
+
+interface CategoriesData {
+	results: Category[];
+	count: number;
+}
+
+interface Panel {
+	id: string;
+	title: string;
+	items: Category[] | Subcategory[];
+	parentId?: string;
+	level: number;
+}
+
 const NavMobileMenu = () => {
-	const [data, setData] = useState({ results: [] });
+	const [data, setData] = useState<CategoriesData>({ results: [], count: 0 });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
-	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
+	const [panels, setPanels] = useState<Panel[]>([]);
+	const [currentPanelIndex, setCurrentPanelIndex] = useState(0);
+	const isNavigatingBack = useRef(false);
 
+	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
 	);
@@ -31,22 +56,127 @@ const NavMobileMenu = () => {
 	const fetchData = async () => {
 		try {
 			setLoading(true);
-			const data = await fetch(
-				`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=index`
+			setError(false);
+
+			const response = await fetch(
+				`https://api.pccdnapi.com/categories/mobile-menu/`,
+				{
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				}
 			);
-			setData(await data.json());
+
+			if (!response.ok) {
+				throw new Error(`Error ${response.status}: ${response.statusText}`);
+			}
+
+			const data: CategoriesData = await response.json();
+
+			if (data && Array.isArray(data.results)) {
+				setData(data);
+				setError(false);
+				initializePanels(data.results);
+			} else {
+				throw new Error('Estructura de datos incorrecta');
+			}
 		} catch (error) {
-			setError(error);
+			console.error('Error fetching categories:', error);
+			setError(true);
+
+			try {
+				const fallbackResponse = await fetch(
+					`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=index`,
+					{
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					}
+				);
+
+				if (fallbackResponse.ok) {
+					const fallbackData = await fallbackResponse.json();
+					const transformedData: CategoriesData = {
+						results:
+							fallbackData.results?.map((category: any) => ({
+								...category,
+								subcategories: [],
+							})) || [],
+						count: fallbackData.results?.length || 0,
+					};
+					setData(transformedData);
+					setError(false);
+					initializePanels(transformedData.results);
+				}
+			} catch (fallbackError) {
+				console.error('Error with fallback endpoint:', fallbackError);
+			}
 		} finally {
 			setLoading(false);
 		}
+	};
+
+	const initializePanels = (categories: Category[]) => {
+		const mainPanel: Panel = {
+			id: 'main',
+			title: 'Categorías',
+			items: categories,
+			level: 0,
+		};
+		setPanels([mainPanel]);
+		setCurrentPanelIndex(0);
+	};
+
+	const navigateToPanel = (category: Category | Subcategory) => {
+		// Verificar si tiene subcategorías
+		const hasSubcategories =
+			category.subcategories && category.subcategories.length > 0;
+
+		if (hasSubcategories) {
+			const newPanel: Panel = {
+				id: `category-${category.id}`,
+				title: category.name,
+				items: category.subcategories!,
+				parentId: panels[currentPanelIndex].id,
+				level: panels[currentPanelIndex].level + 1,
+			};
+
+			const newPanels = [...panels.slice(0, currentPanelIndex + 1), newPanel];
+			setPanels(newPanels);
+		}
+	};
+
+	const navigateBack = () => {
+		if (currentPanelIndex > 0) {
+			isNavigatingBack.current = true;
+			setCurrentPanelIndex(currentPanelIndex - 1);
+		}
+	};
+
+	const resetToMain = () => {
+		setCurrentPanelIndex(0);
+		setPanels(panels.slice(0, 1));
 	};
 
 	useEffect(() => {
 		fetchData();
 	}, []);
 
-	const dispacth = useAppDispatch();
+	useEffect(() => {
+		// Esta bandera evita que el efecto se dispare al navegar hacia atrás.
+		if (isNavigatingBack.current) {
+			isNavigatingBack.current = false;
+			return;
+		}
+
+		// Si el número de paneles ha aumentado, significa que hemos navegado hacia adelante.
+		// Actualizamos el índice para disparar la animación de deslizamiento.
+		if (panels.length > currentPanelIndex + 1) {
+			setCurrentPanelIndex(panels.length - 1);
+		}
+	}, [panels, currentPanelIndex]);
+
+	const dispatch = useAppDispatch();
 	const menuMobileOpen = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.navMobileMenu
 	);
@@ -54,304 +184,433 @@ const NavMobileMenu = () => {
 
 	const toggleMenu = () => {
 		if (!menuMobileOpen) {
-			dispacth(showNavMobileMenu());
+			dispatch(showNavMobileMenu());
 		} else {
-			dispacth(hideAll());
+			dispatch(hideAll());
+			setTimeout(() => {
+				resetToMain();
+			}, 300);
 		}
 	};
 
 	useEffect(() => {
 		if (router.pathname.startsWith('/listado') && mobileView) {
-			dispacth(blockBodyScroll());
+			dispatch(blockBodyScroll());
 		} else {
-			dispacth(unlockBodyScroll());
+			dispatch(unlockBodyScroll());
 		}
 	}, [router.pathname, mobileView]);
+
+	const renderBreadcrumb = () => {
+		const breadcrumbItems = [];
+		for (let i = 0; i <= currentPanelIndex; i++) {
+			if (i === 0) {
+				breadcrumbItems.push('Categorías');
+			} else {
+				breadcrumbItems.push(panels[i].title);
+			}
+		}
+		return breadcrumbItems.join(' > ');
+	};
 
 	return (
 		<nav className='header__mobile-nav-toggle'>
 			<button
 				className={`burger-button ${menuMobileOpen ? 'active' : ''}`}
 				onClick={toggleMenu}
+				aria-label='Menú de navegación'
 			>
-				<div className='burger-line' onClick={toggleMenu}></div>
-				<div className='burger-line' onClick={toggleMenu}></div>
-				<div className='burger-line' onClick={toggleMenu}></div>
+				<div className='burger-line'></div>
+				<div className='burger-line'></div>
+				<div className='burger-line'></div>
 			</button>
+
 			<div
-				className='mobile-menu__inner'
+				className='mobile-menu__container'
 				style={{
 					left: menuMobileOpen ? 0 : '-100%',
 					opacity: menuMobileOpen ? 1 : 0,
 				}}
 			>
-				<div className='mobile-menu__panel'>
-					<ul className='mobile-menu__list'>
-						<li onClick={toggleMenu} className='mobile-menu__nav-item'>
-							<Link
-								href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
-								legacyBehavior
+				<div className='mobile-menu__panels-wrapper'>
+					{panels.map((panel, index) => (
+						<div
+							key={panel.id}
+							className='mobile-menu__panel'
+							style={{
+								transform: `translateX(${(index - currentPanelIndex) * 100}%)`,
+							}}
+						>
+							<div className='mobile-menu__panel-header'>
+								{index > 0 && (
+									<button
+										className='mobile-menu__back-button'
+										onClick={navigateBack}
+										aria-label='Volver'
+									>
+										<svg
+											className='mobile-menu__back-icon'
+											viewBox='0 0 24 24'
+											fill='currentColor'
+										>
+											<path d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z' />
+										</svg>
+									</button>
+								)}
+								<div className='mobile-menu__header-content'>
+									<h2 className='mobile-menu__panel-title'>{panel.title}</h2>
+									{panel.level > 0 && (
+										<div className='mobile-menu__breadcrumb'>
+											{renderBreadcrumb()}
+										</div>
+									)}
+								</div>
+							</div>
+
+							<div
+								className={`mobile-menu__panel-content ${
+									index === 0 ? 'main-panel-content' : 'sub-panel-content'
+								}`}
 							>
-								<a
-									className='mobile-menu__nav-link'
-									style={{ color: 'var(--primary-color)', fontWeight: '600' }}
-								>
-									🔥 OFERTAS
-								</a>
-							</Link>
-						</li>
-						{data.results
-							.filter((i) => i.slug !== 'index')
-							.filter((i) => i.portada)
-							.map((item, index) => (
-								<li
-									onClick={toggleMenu}
-									className='mobile-menu__nav-item'
-									key={index}
-								>
-									<Link
-										href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
-										legacyBehavior
-									>
-										<a className='mobile-menu__nav-link'>
-											<TruncateMarkup lines={1}>
-												<span>{Capitalize(item.name)}</span>
-											</TruncateMarkup>
-										</a>
-									</Link>
-								</li>
-							))}
-					</ul>
-					<ul className='mobile-menu__list text--off'>
-						<li className='mobile-menu__nav-item'>
-							<h5 className='mobile-menu__section-title'>Necesitas ayuda?</h5>
-						</li>
-						<li className='mobile-menu__nav-item'>
-							<div className='mobile-menu__nav-link'>
-								<svg
-									focusable='false'
-									className='icon icon--bi-phone '
-									viewBox='0 0 24 24'
-									role='presentation'
-								>
-									<g
-										strokeWidth='2'
-										fill='none'
-										fillRule='evenodd'
-										strokeLinecap='square'
-									>
-										<path
-											d='M17 15l-3 3-8-8 3-3-5-5-3 3c0 9.941 8.059 18 18 18l3-3-5-5z'
-											stroke='#474747'
-										></path>
-										<path
-											d='M14 1c4.971 0 9 4.029 9 9m-9-5c2.761 0 5 2.239 5 5'
-											stroke='var(--primary-color)'
-										></path>
-									</g>
-								</svg>
-								<span>Llámanos {phone}</span>
+								{loading && index === 0 && (
+									<div className='mobile-menu__loading'>
+										<div className='mobile-menu__spinner'></div>
+										<span>Cargando...</span>
+									</div>
+								)}
+
+								{error && index === 0 && !loading && (
+									<div className='mobile-menu__error'>
+										<span>Error al cargar categorías</span>
+										<button
+											onClick={fetchData}
+											className='mobile-menu__retry-btn'
+										>
+											Reintentar
+										</button>
+									</div>
+								)}
+
+								{!loading && !error && (
+									<ul className='mobile-menu__panel-list'>
+										{panel.items.map((item) => {
+											const hasSubcategories =
+												item.subcategories && item.subcategories.length > 0;
+
+											return (
+												<li key={item.id} className='mobile-menu__panel-item'>
+													{hasSubcategories ? (
+														<button
+															className='mobile-menu__item-button'
+															onClick={() => navigateToPanel(item)}
+														>
+															<span className='mobile-menu__item-text'>
+																{item.name}
+															</span>
+															<div className='mobile-menu__item-info'>
+																<span className='mobile-menu__item-count'>
+																	{item.subcategories?.length} subcategorías
+																</span>
+																<svg
+																	className='mobile-menu__arrow-icon'
+																	viewBox='0 0 24 24'
+																	fill='currentColor'
+																>
+																	<path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z' />
+																</svg>
+															</div>
+														</button>
+													) : (
+														<Link
+															href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
+															legacyBehavior
+														>
+															<a
+																className='mobile-menu__item-link'
+																onClick={toggleMenu}
+															>
+																<span className='mobile-menu__item-text'>
+																	{item.name}
+																</span>
+															</a>
+														</Link>
+													)}
+												</li>
+											);
+										})}
+									</ul>
+								)}
+
+								{index === 0 && !loading && !error && (
+									<div className='mobile-menu__panel-content-inner'></div>
+								)}
 							</div>
-						</li>
-						<li className='mobile-menu__nav-item'>
-							<div className='mobile-menu__nav-link'>
-								<svg
-									focusable='false'
-									className='icon icon--bi-email'
-									viewBox='0 0 22 22'
-									role='presentation'
-								>
-									<g fill='none' fillRule='evenodd'>
-										<path
-											stroke='var(--primary-color)'
-											d='M.916667 10.08333367l3.66666667-2.65833334v4.65849997zm20.1666667 0L17.416667 7.42500033v4.65849997z'
-										></path>
-										<path
-											stroke='#474747'
-											strokeWidth='2'
-											d='M4.58333367 7.42500033L.916667 10.08333367V21.0833337h20.1666667V10.08333367L17.416667 7.42500033'
-										></path>
-										<path
-											stroke='#474747'
-											strokeWidth='2'
-											d='M4.58333367 12.1000003V.916667H17.416667v11.1833333m-16.5-2.01666663L21.0833337 21.0833337m0-11.00000003L11.0000003 15.5833337'
-										></path>
-										<path
-											d='M8.25000033 5.50000033h5.49999997M8.25000033 9.166667h5.49999997'
-											stroke='var(--primary-color)'
-											strokeWidth='2'
-											strokeLinecap='square'
-										></path>
-									</g>
-								</svg>
-								<a
-									href={contactEmail}
-									target='_blank'
-									rel='noopener'
-									aria-describedby='a11y-new-window-message'
-								>
-									{contactEmail}
-								</a>
-							</div>
-						</li>
-					</ul>
-					<ul className='mobile-menu__list text--off'>
-						<li className='mobile-menu__nav-item'>
-							<h5 className='mobile-menu__section-title'>Siguenos</h5>
-						</li>
-						<li className='mobile-menu__nav-item'>
-							<div className='mobile-menu__nav-link'>
-								<svg
-									focusable='false'
-									className='icon icon--facebook'
-									viewBox='0 0 30 30'
-								>
-									<path
-										d='M15 30C6.71572875 30 0 23.2842712 0 15 0 6.71572875 6.71572875 0 15 0c8.2842712 0 15 6.71572875 15 15 0 8.2842712-6.7157288 15-15 15zm3.2142857-17.1429611h-2.1428678v-2.1425646c0-.5852979.8203285-1.07160109 1.0714928-1.07160109h1.071375v-2.1428925h-2.1428678c-2.3564786 0-3.2142536 1.98610393-3.2142536 3.21449359v2.1425646h-1.0714822l.0032143 2.1528011 1.0682679-.0099086v7.499969h3.2142536v-7.499969h2.1428678v-2.1428925z'
-										fill='currentColor'
-										fillRule='evenodd'
-									></path>
-								</svg>
-								<a href={facebookUrl} target='_blank' rel='noopener'>
-									Facebook
-								</a>
-							</div>
-						</li>
-						<li className='mobile-menu__nav-item'>
-							<div className='mobile-menu__nav-link'>
-								<svg
-									focusable='false'
-									className='icon icon--instagram'
-									role='presentation'
-									viewBox='0 0 30 30'
-								>
-									<path
-										d='M15 30C6.71572875 30 0 23.2842712 0 15 0 6.71572875 6.71572875 0 15 0c8.2842712 0 15 6.71572875 15 15 0 8.2842712-6.7157288 15-15 15zm.0000159-23.03571429c-2.1823849 0-2.4560363.00925037-3.3131306.0483571-.8553081.03901103-1.4394529.17486384-1.9505835.37352345-.52841925.20532625-.9765517.48009406-1.42331254.926823-.44672894.44676084-.72149675.89489329-.926823 1.42331254-.19865961.5111306-.33451242 1.0952754-.37352345 1.9505835-.03910673.8570943-.0483571 1.1307457-.0483571 3.3131306 0 2.1823531.00925037 2.4560045.0483571 3.3130988.03901103.8553081.17486384 1.4394529.37352345 1.9505835.20532625.5284193.48009406.9765517.926823 1.4233125.44676084.446729.89489329.7214968 1.42331254.9268549.5111306.1986278 1.0952754.3344806 1.9505835.3734916.8570943.0391067 1.1307457.0483571 3.3131306.0483571 2.1823531 0 2.4560045-.0092504 3.3130988-.0483571.8553081-.039011 1.4394529-.1748638 1.9505835-.3734916.5284193-.2053581.9765517-.4801259 1.4233125-.9268549.446729-.4467608.7214968-.8948932.9268549-1.4233125.1986278-.5111306.3344806-1.0952754.3734916-1.9505835.0391067-.8570943.0483571-1.1307457.0483571-3.3130988 0-2.1823849-.0092504-2.4560363-.0483571-3.3131306-.039011-.8553081-.1748638-1.4394529-.3734916-1.9505835-.2053581-.52841925-.4801259-.9765517-.9268549-1.42331254-.4467608-.44672894-.8948932-.72149675-1.4233125-.926823-.5111306-.19865961-1.0952754-.33451242-1.9505835-.37352345-.8570943-.03910673-1.1307457-.0483571-3.3130988-.0483571zm0 1.44787387c2.1456068 0 2.3997686.00819774 3.2471022.04685789.7834742.03572556 1.2089592.1666342 1.4921162.27668167.3750864.14577303.6427729.31990322.9239522.60111439.2812111.28117926.4553413.54886575.6011144.92395217.1100474.283157.2409561.708642.2766816 1.4921162.0386602.8473336.0468579 1.1014954.0468579 3.247134 0 2.1456068-.0081977 2.3997686-.0468579 3.2471022-.0357255.7834742-.1666342 1.2089592-.2766816 1.4921162-.1457731.3750864-.3199033.6427729-.6011144.9239522-.2811793.2812111-.5488658.4553413-.9239522.6011144-.283157.1100474-.708642.2409561-1.4921162.2766816-.847206.0386602-1.1013359.0468579-3.2471022.0468579-2.1457981 0-2.3998961-.0081977-3.247134-.0468579-.7834742-.0357255-1.2089592-.1666342-1.4921162-.2766816-.37508642-.1457731-.64277291-.3199033-.92395217-.6011144-.28117927-.2811793-.45534136-.5488658-.60111439-.9239522-.11004747-.283157-.24095611-.708642-.27668167-1.4921162-.03866015-.8473336-.04685789-1.1014954-.04685789-3.2471022 0-2.1456386.00819774-2.3998004.04685789-3.247134.03572556-.7834742.1666342-1.2089592.27668167-1.4921162.14577303-.37508642.31990322-.64277291.60111439-.92395217.28117926-.28121117.54886575-.45534136.92395217-.60111439.283157-.11004747.708642-.24095611 1.4921162-.27668167.8473336-.03866015 1.1014954-.04685789 3.247134-.04685789zm0 9.26641182c-1.479357 0-2.6785873-1.1992303-2.6785873-2.6785555 0-1.479357 1.1992303-2.6785873 2.6785873-2.6785873 1.4793252 0 2.6785555 1.1992303 2.6785555 2.6785873 0 1.4793252-1.1992303 2.6785555-2.6785555 2.6785555zm0-6.8050167c-2.2790034 0-4.1264612 1.8474578-4.1264612 4.1264612 0 2.2789716 1.8474578 4.1264294 4.1264612 4.1264294 2.2789716 0 4.1264294-1.8474578 4.1264294-4.1264294 0-2.2790034-1.8474578-4.1264612-4.1264294-4.1264612zm5.2537621-.1630297c0-.532566-.431737-.96430298-.964303-.96430298-.532534 0-.964271.43173698-.964271.96430298 0 .5325659.431737.964271.964271.964271.532566 0 .964303-.4317051.964303-.964271z'
-										fill='currentColor'
-										fillRule='evenodd'
-									></path>
-								</svg>
-								<a href={instagramUrl} target='_blank' rel='noopener'>
-									Instagram
-								</a>
-							</div>
-						</li>
-						<li className='mobile-menu__nav-item'>
-							<div className='mobile-menu__nav-link'>
-								<svg
-									focusable='false'
-									className='icon icon--tiktok'
-									viewBox='0 0 30 30'
-								>
-									<path
-										fillRule='evenodd'
-										clipRule='evenodd'
-										d='M30 15c0 8.284-6.716 15-15 15-8.284 0-15-6.716-15-15C0 6.716 6.716 0 15 0c8.284 0 15 6.716 15 15zm-7.902-1.966c.133 0 .267-.007.4-.02h.002v-2.708a4.343 4.343 0 01-4.002-3.877h-2.332l-.024 11.363c0 1.394-1.231 2.493-2.625 2.493a2.524 2.524 0 010-5.048c.077 0 .152.01.227.02l.078.01v-2.436a3.334 3.334 0 00-.306-.016 4.945 4.945 0 104.946 4.945v-6.69a4.345 4.345 0 003.636 1.964z'
-										fill='currentColor'
-									></path>
-								</svg>
-								<a href={tiktokUrl} target='_blank' rel='noopener'>
-									TikTok
-								</a>
-							</div>
-						</li>
-					</ul>
+						</div>
+					))}
 				</div>
 			</div>
+
 			<style jsx>
 				{`
-				.icon--bi-phone,
-				.icon--bi-email,
-				.icon--facebook,
-				.icon--instagram,
-				.icon--tiktok {
-					margin-right: 16px;
-					width: 24px;
-					height: 24px;
-				}
-				.mobile-menu__inner .icon {
-					display: inline-block;
-					height: 1em;
-					width: 1em;
-					fill: currentColor;
-					vertical-align: middle;
-					background: none;
-					pointer-events: none;
-					overflow: visible;
-				}
+					.mobile-menu__container {
+						height: 100vh;
+						top: 59px;
+						background: #ffffff;
+						position: fixed;
+						z-index: 400;
+						transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+						width: min(90vw, 380px);
+						box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+						overflow: hidden;
+					}
 
-				.mobile-menu__section-title {
-					text-transform: uppercase;
-					color: #474747;
-					padding: 15px 0;
-				}
+					.mobile-menu__panels-wrapper {
+						position: relative;
+						width: 100%;
+						height: 100%;
+						display: flex;
+					}
 
-				.mobile-menu__nav-link {
-					padding: 15px 0;
-				}
+					.mobile-menu__panel {
+						position: absolute;
+						top: 0;
+						left: 0;
+						width: 100%;
+						height: 100%;
+						transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+						display: flex;
+						flex-direction: column;
+					}
 
-				.mobile-menu__nav-item {
-					display: flex;
-					align-items: center;
-					justify-content: space-between;
-					width: 100%;
-				}
+					.mobile-menu__panel-header {
+						display: flex;
+						align-items: center;
+						padding: 20px 24px;
+						background-color: #474747;
+						min-height: 72px;
+						color: white;
+						flex-shrink: 0;
+					}
 
-				.mobile-menu__list {
-					padding: 25px 20px;
-					list-style: none;
-					display: flex;
-					flex-direction: column;
-					width: 100%;
-					font-size: 18px;
-					border-bottom: 1px solid #d8d8d8;
-				}
+					.mobile-menu__back-button {
+						background: rgba(255, 255, 255, 0.1);
+						border: none;
+						padding: 12px;
+						margin-right: 16px;
+						cursor: pointer;
+						color: white;
+						border-radius: 12px;
+						transition: background-color 0.2s ease;
+					}
 
-				.mobile-menu__panel {
-					position: relative;
-					padding: 0 20px;
-					overflow-y: auto;
-					width: 100%;
-					height: calc(100% - 20px);
-				}
-				.mobile-menu__inner {
-					height: calc(100% - 59px);
-					top: 59px;
-					background-color: #fff;
-					position: fixed;
-					z-index: 400;
-					transition: left 0.5s, opacity 0.5s;
-				}
+					.mobile-menu__back-button:hover {
+						background: rgba(255, 255, 255, 0.2);
+					}
 
-				.burger-button {
-					display: flex;
-					flex-direction: column;
-					justify-content: space-between;
-					width: 30px;
-					height: 16px;
-					background: none;
-					border: none;
-					cursor: pointer;
-					align-items: center;
-				}
+					.mobile-menu__back-icon {
+						width: 22px;
+						height: 22px;
+					}
 
-				.burger-line {
-					width: 20px;
-					height: 2px;
-					background-color: #474747;
-					transition: transform 0.3s, opacity 0.3s;
-				}
+					.mobile-menu__header-content {
+						flex: 1;
+						display: flex;
+						flex-direction: column;
+					}
 
-				
+					.mobile-menu__panel-title {
+						font-size: 20px;
+						font-weight: 600;
+						margin: 0;
+						color: white;
+					}
 
-				.burger-button.active .burger-line:nth-child(1) {
-          			transform: rotate(-45deg) translate(-4px, 6px);
-        		}
-        		.burger-button.active .burger-line:nth-child(2) {
-          			opacity: 0;
-       			}
-        		.burger-button.active .burger-line:nth-child(3) {
-          			transform: rotate(45deg) translate(-4px, -6px);
+					.mobile-menu__breadcrumb {
+						font-size: 12px;
+						color: rgba(255, 255, 255, 0.7);
+						margin-top: 4px;
+						white-space: nowrap;
+						overflow: hidden;
+						text-overflow: ellipsis;
+					}
+
+					.mobile-menu__panel-content {
+						flex: 1;
+						overflow-y: auto;
+						scroll-behavior: smooth;
+					}
+
+					.main-panel-content {
+						background-color: #ffffff;
+						color: #474747;
+					}
+
+					.sub-panel-content {
+						background-color: #ffffff;
+					}
+
+					.mobile-menu__panel-list {
+						list-style: none;
+						padding: 0;
+						margin: 0;
+					}
+
+					.mobile-menu__item-button,
+					.mobile-menu__item-link {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						width: 100%;
+						padding: 14px 24px;
+						background: none;
+						border: none;
+						text-decoration: none;
+						cursor: pointer;
+						transition: background-color 0.2s ease, color 0.2s ease;
+						text-align: left;
+						color: #474747;
+						border-bottom: 1px solid #edf2f7;
+					}
+
+					.mobile-menu__item-button:hover,
+					.mobile-menu__item-link:hover {
+						background-color: #f7fafc;
+						color: var(--primary-color);
+					}
+
+					.mobile-menu__panel-item:last-child > .mobile-menu__item-button,
+					.mobile-menu__panel-item:last-child > .mobile-menu__item-link {
+						border-bottom: none;
+					}
+
+					.mobile-menu__item-text {
+						font-weight: 500;
+						font-size: 16px;
+						line-height: 1.5;
+						flex: 1;
+					}
+
+					.mobile-menu__item-info {
+						display: flex;
+						align-items: center;
+						gap: 8px;
+					}
+
+					.mobile-menu__item-count {
+						font-size: 12px;
+						color: #a0aec0;
+						font-weight: 400;
+					}
+
+					.mobile-menu__arrow-icon {
+						width: 20px;
+						height: 20px;
+						color: #a0aec0;
+						transition: color 0.2s ease;
+					}
+
+					.mobile-menu__panel-content-inner {
+						padding: 24px;
+					}
+
+					.burger-button {
+						display: flex;
+						flex-direction: column;
+						justify-content: space-between;
+						width: 30px;
+						height: 16px;
+						background: none;
+						border: none;
+						cursor: pointer;
+						align-items: center;
+						transition: all 0.3s ease;
+					}
+
+					.burger-line {
+						width: 20px;
+						height: 2px;
+						background-color: #374151;
+						transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+						border-radius: 1px;
+					}
+
+					.burger-button.active .burger-line:nth-child(1) {
+						transform: rotate(-45deg) translate(-4px, 6px);
+						background-color: var(--primary-color);
+					}
+
+					.burger-button.active .burger-line:nth-child(2) {
+						opacity: 0;
+						transform: scale(0);
+					}
+
+					.burger-button.active .burger-line:nth-child(3) {
+						transform: rotate(45deg) translate(-4px, -6px);
+						background-color: var(--primary-color);
+					}
+
+					@keyframes spin {
+						0% {
+							transform: rotate(0deg);
+						}
+						100% {
+							transform: rotate(360deg);
+						}
+					}
+
+					.mobile-menu__loading,
+					.mobile-menu__error {
+						display: flex;
+						flex-direction: column;
+						align-items: center;
+						justify-content: center;
+						padding: 80px 24px;
+						color: #64748b;
+					}
+
+					.mobile-menu__spinner {
+						width: 40px;
+						height: 40px;
+						border: 4px solid #f1f5f9;
+						border-top: 4px solid var(--primary-color);
+						border-radius: 50%;
+						animation: spin 1s linear infinite;
+						margin-bottom: 20px;
+					}
+
+					.mobile-menu__retry-btn {
+						background: var(--primary-color);
+						color: white;
+						border: none;
+						padding: 14px 28px;
+						border-radius: 12px;
+						cursor: pointer;
+						margin-top: 20px;
+						font-size: 15px;
+						font-weight: 700;
+						transition: background-color 0.2s ease;
+					}
+
+					.mobile-menu__retry-btn:hover {
+						opacity: 0.9;
+					}
+
+					.mobile-menu__panel-content::-webkit-scrollbar {
+						width: 6px;
+					}
+
+					.mobile-menu__panel-content::-webkit-scrollbar-track {
+						background: transparent;
+					}
+
+					.mobile-menu__panel-content::-webkit-scrollbar-thumb {
+						background: #d1d5db;
+						border-radius: 3px;
+					}
+
+					.mobile-menu__panel-content::-webkit-scrollbar-thumb:hover {
+						background: #9ca3af;
+					}
 				`}
 			</style>
 		</nav>
