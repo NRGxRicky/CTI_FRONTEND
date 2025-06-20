@@ -424,7 +424,7 @@ const NavMobileMenu = () => {
 			<style jsx>
 				{`
 					.mobile-menu__container {
-						height: 100vh;
+						height: 100dvh;
 						top: 0;
 						background: #ffffff;
 						position: fixed;
