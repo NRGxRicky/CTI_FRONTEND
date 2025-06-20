@@ -1,7 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+import { useEnv } from '../../context/EnvContext';
+import Capitalize from '../../hooks/CapitalizeTitle';
 
 import {
 	hideAll,
@@ -9,7 +11,6 @@ import {
 	blockBodyScroll,
 	unlockBodyScroll,
 } from '../../lib/features/showOpacityContainerSlide';
-import { useEnv } from '../../context/EnvContext';
 
 interface Subcategory {
 	id: number;
@@ -40,7 +41,7 @@ interface Panel {
 
 const NavMobileMenu = () => {
 	const [data, setData] = useState<CategoriesData>({ results: [], count: 0 });
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
 	const [panels, setPanels] = useState<Panel[]>([]);
 	const [currentPanelIndex, setCurrentPanelIndex] = useState(0);
@@ -53,7 +54,18 @@ const NavMobileMenu = () => {
 	const { contactEmail, instagramUrl, facebookUrl, tiktokUrl, phone } =
 		useEnv();
 
-	const fetchData = async () => {
+	const fetchData = useCallback(async () => {
+		const initializePanels = (categories: Category[]) => {
+			const mainPanel: Panel = {
+				id: 'main',
+				title: 'Categorías',
+				items: categories,
+				level: 0,
+			};
+			setPanels([mainPanel]);
+			setCurrentPanelIndex(0);
+		};
+
 		try {
 			setLoading(true);
 			setError(false);
@@ -114,18 +126,7 @@ const NavMobileMenu = () => {
 		} finally {
 			setLoading(false);
 		}
-	};
-
-	const initializePanels = (categories: Category[]) => {
-		const mainPanel: Panel = {
-			id: 'main',
-			title: 'Categorías',
-			items: categories,
-			level: 0,
-		};
-		setPanels([mainPanel]);
-		setCurrentPanelIndex(0);
-	};
+	}, []);
 
 	const navigateToPanel = (category: Category | Subcategory) => {
 		// Verificar si tiene subcategorías
@@ -141,8 +142,10 @@ const NavMobileMenu = () => {
 				level: panels[currentPanelIndex].level + 1,
 			};
 
+			// Añadir el nuevo panel y actualizar el índice
 			const newPanels = [...panels.slice(0, currentPanelIndex + 1), newPanel];
 			setPanels(newPanels);
+			// El índice se actualizará automáticamente en el useEffect
 		}
 	};
 
@@ -150,6 +153,8 @@ const NavMobileMenu = () => {
 		if (currentPanelIndex > 0) {
 			isNavigatingBack.current = true;
 			setCurrentPanelIndex(currentPanelIndex - 1);
+			// Limpiar paneles innecesarios al navegar hacia atrás
+			setPanels(panels.slice(0, currentPanelIndex));
 		}
 	};
 
@@ -158,9 +163,25 @@ const NavMobileMenu = () => {
 		setPanels(panels.slice(0, 1));
 	};
 
+	const dispatch = useAppDispatch();
+	const menuMobileOpen = useAppSelector(
+		(state: any) => state.showOpacityContainerReducer.navMobileMenu
+	);
+	const router = useRouter();
+
 	useEffect(() => {
-		fetchData();
-	}, []);
+		if (menuMobileOpen && data.results.length === 0) {
+			fetchData();
+		}
+	}, [menuMobileOpen, data.results.length, fetchData]);
+
+	useEffect(() => {
+		if (router.pathname.startsWith('/listado') && mobileView) {
+			dispatch(blockBodyScroll());
+		} else {
+			dispatch(unlockBodyScroll());
+		}
+	}, [router.pathname, mobileView]);
 
 	useEffect(() => {
 		// Esta bandera evita que el efecto se dispare al navegar hacia atrás.
@@ -176,11 +197,38 @@ const NavMobileMenu = () => {
 		}
 	}, [panels, currentPanelIndex]);
 
-	const dispatch = useAppDispatch();
-	const menuMobileOpen = useAppSelector(
-		(state: any) => state.showOpacityContainerReducer.navMobileMenu
-	);
-	const router = useRouter();
+	const renderBreadcrumb = () => {
+		const breadcrumbItems = [];
+		for (let i = 0; i <= currentPanelIndex; i++) {
+			if (i === 0) {
+				breadcrumbItems.push('Categorías');
+			} else {
+				// Truncar títulos muy largos para el breadcrumb
+				const title =
+					panels[i].title.length > 15
+						? panels[i].title.substring(0, 15) + '...'
+						: panels[i].title;
+				breadcrumbItems.push(Capitalize(title));
+			}
+		}
+
+		return breadcrumbItems.map((item, index) => (
+			<React.Fragment key={index}>
+				<span className='breadcrumb-item'>{item}</span>
+				{index < breadcrumbItems.length - 1 && (
+					<svg
+						className='breadcrumb-arrow'
+						viewBox='0 0 24 24'
+						fill='currentColor'
+						width='12'
+						height='12'
+					>
+						<path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z' />
+					</svg>
+				)}
+			</React.Fragment>
+		));
+	};
 
 	const toggleMenu = () => {
 		if (!menuMobileOpen) {
@@ -191,26 +239,6 @@ const NavMobileMenu = () => {
 				resetToMain();
 			}, 300);
 		}
-	};
-
-	useEffect(() => {
-		if (router.pathname.startsWith('/listado') && mobileView) {
-			dispatch(blockBodyScroll());
-		} else {
-			dispatch(unlockBodyScroll());
-		}
-	}, [router.pathname, mobileView]);
-
-	const renderBreadcrumb = () => {
-		const breadcrumbItems = [];
-		for (let i = 0; i <= currentPanelIndex; i++) {
-			if (i === 0) {
-				breadcrumbItems.push('Categorías');
-			} else {
-				breadcrumbItems.push(panels[i].title);
-			}
-		}
-		return breadcrumbItems.join(' > ');
 	};
 
 	return (
@@ -258,13 +286,28 @@ const NavMobileMenu = () => {
 									</button>
 								)}
 								<div className='mobile-menu__header-content'>
-									<h2 className='mobile-menu__panel-title'>{panel.title}</h2>
+									<h2 className='mobile-menu__panel-title'>
+										{Capitalize(panel.title)}
+									</h2>
 									{panel.level > 0 && (
 										<div className='mobile-menu__breadcrumb'>
 											{renderBreadcrumb()}
 										</div>
 									)}
 								</div>
+								<button
+									className='mobile-menu__close-button'
+									onClick={toggleMenu}
+									aria-label='Cerrar menú'
+								>
+									<svg
+										className='mobile-menu__close-icon'
+										viewBox='0 0 24 24'
+										fill='currentColor'
+									>
+										<path d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z' />
+									</svg>
+								</button>
 							</div>
 
 							<div
@@ -275,7 +318,6 @@ const NavMobileMenu = () => {
 								{loading && index === 0 && (
 									<div className='mobile-menu__loading'>
 										<div className='mobile-menu__spinner'></div>
-										<span>Cargando...</span>
 									</div>
 								)}
 
@@ -292,7 +334,41 @@ const NavMobileMenu = () => {
 								)}
 
 								{!loading && !error && (
-									<ul className='mobile-menu__panel-list'>
+									<ul className='mobile-menu__panel-list divide-y divide-gray-200'>
+										{/* Botón de OFERTAS como primer elemento */}
+										<li className='mobile-menu__panel-item'>
+											<Link
+												href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
+												legacyBehavior
+											>
+												<a
+													className='mobile-menu__item-link mobile-menu__item-offers'
+													onClick={toggleMenu}
+												>
+													<div className='mobile-menu__item-offers-content'>
+														<svg
+															className='mobile-menu__offers-icon'
+															xmlns='http://www.w3.org/2000/svg'
+															viewBox='0 0 24 24'
+															fill='currentColor'
+														>
+															<path d='M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.76-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z' />
+														</svg>
+														<span className='mobile-menu__item-text mobile-menu__item-offers-text'>
+															{Capitalize('Ofertas')}
+														</span>
+													</div>
+													<svg
+														className='mobile-menu__arrow-icon'
+														viewBox='0 0 24 24'
+														fill='currentColor'
+													>
+														<path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z' />
+													</svg>
+												</a>
+											</Link>
+										</li>
+
 										{panel.items.map((item) => {
 											const hasSubcategories =
 												item.subcategories && item.subcategories.length > 0;
@@ -305,20 +381,15 @@ const NavMobileMenu = () => {
 															onClick={() => navigateToPanel(item)}
 														>
 															<span className='mobile-menu__item-text'>
-																{item.name}
+																{Capitalize(item.name)}
 															</span>
-															<div className='mobile-menu__item-info'>
-																<span className='mobile-menu__item-count'>
-																	{item.subcategories?.length} subcategorías
-																</span>
-																<svg
-																	className='mobile-menu__arrow-icon'
-																	viewBox='0 0 24 24'
-																	fill='currentColor'
-																>
-																	<path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z' />
-																</svg>
-															</div>
+															<svg
+																className='mobile-menu__arrow-icon'
+																viewBox='0 0 24 24'
+																fill='currentColor'
+															>
+																<path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z' />
+															</svg>
 														</button>
 													) : (
 														<Link
@@ -330,7 +401,7 @@ const NavMobileMenu = () => {
 																onClick={toggleMenu}
 															>
 																<span className='mobile-menu__item-text'>
-																	{item.name}
+																	{Capitalize(item.name)}
 																</span>
 															</a>
 														</Link>
@@ -354,14 +425,14 @@ const NavMobileMenu = () => {
 				{`
 					.mobile-menu__container {
 						height: 100vh;
-						top: 59px;
+						top: 0;
 						background: #ffffff;
 						position: fixed;
-						z-index: 400;
 						transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 						width: min(90vw, 380px);
 						box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 						overflow: hidden;
+						z-index: 1000;
 					}
 
 					.mobile-menu__panels-wrapper {
@@ -385,9 +456,9 @@ const NavMobileMenu = () => {
 					.mobile-menu__panel-header {
 						display: flex;
 						align-items: center;
-						padding: 20px 24px;
+						padding: 10px 24px;
 						background-color: #474747;
-						min-height: 72px;
+						min-height: 60px;
 						color: white;
 						flex-shrink: 0;
 					}
@@ -408,8 +479,8 @@ const NavMobileMenu = () => {
 					}
 
 					.mobile-menu__back-icon {
-						width: 22px;
-						height: 22px;
+						width: 28px;
+						height: 28px;
 					}
 
 					.mobile-menu__header-content {
@@ -419,25 +490,50 @@ const NavMobileMenu = () => {
 					}
 
 					.mobile-menu__panel-title {
-						font-size: 20px;
+						font-size: 18px;
 						font-weight: 600;
 						margin: 0;
 						color: white;
 					}
 
 					.mobile-menu__breadcrumb {
-						font-size: 12px;
+						font-size: 10px;
 						color: rgba(255, 255, 255, 0.7);
 						margin-top: 4px;
 						white-space: nowrap;
 						overflow: hidden;
 						text-overflow: ellipsis;
+						max-width: 100%;
+						line-height: 1.2;
+						display: flex;
+						align-items: center;
+						gap: 4px;
+					}
+
+					.breadcrumb-item {
+						display: inline-block;
+					}
+
+					.breadcrumb-arrow {
+						display: inline-block;
+						vertical-align: middle;
+						margin: 0 2px;
+						color: rgba(255, 255, 255, 0.5);
+					}
+
+					.mobile-menu__level-indicator {
+						font-size: 10px;
+						color: rgba(255, 255, 255, 0.5);
+						margin-top: 2px;
+						font-weight: 400;
+						text-transform: uppercase;
+						letter-spacing: 0.5px;
 					}
 
 					.mobile-menu__panel-content {
 						flex: 1;
 						overflow-y: auto;
-						scroll-behavior: smooth;
+						background: #ffffff;
 					}
 
 					.main-panel-content {
@@ -451,68 +547,69 @@ const NavMobileMenu = () => {
 
 					.mobile-menu__panel-list {
 						list-style: none;
-						padding: 0;
 						margin: 0;
+						padding: 0 0 30px 0;
+					}
+
+					.mobile-menu__panel-item {
+						border-bottom: 1px solid #eaeaea;
+					}
+
+					.mobile-menu__panel-item:last-child {
+						border-bottom: none;
 					}
 
 					.mobile-menu__item-button,
 					.mobile-menu__item-link {
 						display: flex;
-						justify-content: space-between;
 						align-items: center;
+						justify-content: space-between;
 						width: 100%;
-						padding: 14px 24px;
+						padding: 16px 20px;
 						background: none;
 						border: none;
-						text-decoration: none;
-						cursor: pointer;
-						transition: background-color 0.2s ease, color 0.2s ease;
 						text-align: left;
-						color: #474747;
-						border-bottom: 1px solid #edf2f7;
+						cursor: pointer;
+						text-decoration: none;
+						color: inherit;
+						transition: background-color 0.2s ease;
 					}
 
 					.mobile-menu__item-button:hover,
 					.mobile-menu__item-link:hover {
-						background-color: #f7fafc;
-						color: var(--primary-color);
+						background-color: #f7f7f7;
 					}
 
-					.mobile-menu__panel-item:last-child > .mobile-menu__item-button,
-					.mobile-menu__panel-item:last-child > .mobile-menu__item-link {
-						border-bottom: none;
+					.mobile-menu__item-button:active,
+					.mobile-menu__item-link:active {
+						background-color: #f0f0f0;
 					}
 
 					.mobile-menu__item-text {
+						font-size: 14px;
 						font-weight: 500;
-						font-size: 16px;
-						line-height: 1.5;
+						color: #474747;
 						flex: 1;
-					}
-
-					.mobile-menu__item-info {
-						display: flex;
-						align-items: center;
-						gap: 8px;
-					}
-
-					.mobile-menu__item-count {
-						font-size: 12px;
-						color: #a0aec0;
-						font-weight: 400;
+						margin-right: 12px;
 					}
 
 					.mobile-menu__arrow-icon {
-						width: 20px;
-						height: 20px;
-						color: #a0aec0;
+						width: 16px;
+						height: 16px;
+						color: #666;
 						transition: color 0.2s ease;
+					}
+
+					.mobile-menu__item-button:hover .mobile-menu__arrow-icon,
+					.mobile-menu__item-link:hover .mobile-menu__arrow-icon {
+						color: var(--primary-color);
 					}
 
 					.mobile-menu__panel-content-inner {
 						padding: 24px;
 					}
 
+					/* Burger button styles */
 					.burger-button {
 						display: flex;
 						flex-direction: column;
@@ -558,58 +655,145 @@ const NavMobileMenu = () => {
 						}
 					}
 
-					.mobile-menu__loading,
+					.mobile-menu__loading {
+						display: flex;
+						flex-direction: column;
+						align-items: center;
+						justify-content: center;
+						padding: 40px 20px;
+						color: #666;
+						height: 100%;
+						width: 100%;
+					}
+
+					.mobile-menu__spinner {
+						width: 24px;
+						height: 24px;
+						border: 2px solid #eaeaea;
+						border-top: 2px solid var(--primary-color);
+						border-radius: 50%;
+						animation: spin 1s linear infinite;
+						margin-bottom: 12px;
+					}
+
 					.mobile-menu__error {
 						display: flex;
 						flex-direction: column;
 						align-items: center;
 						justify-content: center;
-						padding: 80px 24px;
-						color: #64748b;
-					}
-
-					.mobile-menu__spinner {
-						width: 40px;
-						height: 40px;
-						border: 4px solid #f1f5f9;
-						border-top: 4px solid var(--primary-color);
-						border-radius: 50%;
-						animation: spin 1s linear infinite;
-						margin-bottom: 20px;
+						padding: 40px 20px;
+						color: #666;
+						text-align: center;
 					}
 
 					.mobile-menu__retry-btn {
+						margin-top: 12px;
+						padding: 8px 16px;
 						background: var(--primary-color);
-						color: white;
+						color: #ffffff;
 						border: none;
-						padding: 14px 28px;
-						border-radius: 12px;
+						border-radius: 4px;
+						font-size: 12px;
 						cursor: pointer;
-						margin-top: 20px;
-						font-size: 15px;
-						font-weight: 700;
 						transition: background-color 0.2s ease;
 					}
 
 					.mobile-menu__retry-btn:hover {
-						opacity: 0.9;
+						background: #e6001e;
 					}
 
-					.mobile-menu__panel-content::-webkit-scrollbar {
-						width: 6px;
+					/* Responsive adjustments */
+					@media (max-width: 480px) {
+						.mobile-menu__container {
+							width: 100vw;
+						}
+
+						.mobile-menu__panel-header {
+							padding: 14px 16px;
+						}
+
+						.mobile-menu__item-button,
+						.mobile-menu__item-link {
+							padding: 14px 16px;
+						}
+
+						.mobile-menu__panel-title {
+							font-size: 14px;
+						}
+
+						.mobile-menu__item-text {
+							font-size: 13px;
+						}
 					}
 
-					.mobile-menu__panel-content::-webkit-scrollbar-track {
+					/* Estilos para el botón de ofertas */
+					.mobile-menu__item-offers {
+						background: linear-gradient(
+							45deg,
+							var(--primary-color),
+							color-mix(in srgb, var(--primary-color) 70%, white 30%)
+						) !important;
+						border: none;
+						margin: 0;
+						width: 100%;
+					}
+
+					.mobile-menu__item-offers:hover {
+						background: linear-gradient(
+							45deg,
+							var(--primary-color),
+							color-mix(in srgb, var(--primary-color) 70%, white 30%)
+						) !important;
+						transform: none;
+						box-shadow: none;
+						filter: brightness(1.1);
+					}
+
+					.mobile-menu__item-offers .mobile-menu__item-text {
+						color: white !important;
+					}
+
+					.mobile-menu__item-offers .mobile-menu__arrow-icon {
+						color: white !important;
+					}
+
+					.mobile-menu__item-offers-content {
+						display: flex;
+						align-items: center;
+					}
+
+					.mobile-menu__offers-icon {
+						width: 20px;
+						height: 20px;
+						margin-right: 10px;
+						color: white;
+					}
+
+					.mobile-menu__item-offers-text {
+						color: white !important;
+						font-weight: 700 !important;
+						font-size: 18px;
+					}
+
+					.mobile-menu__close-button {
 						background: transparent;
+						border: none;
+						padding: 8px;
+						margin-left: 16px;
+						cursor: pointer;
+						color: white;
+						line-height: 0;
+						border-radius: 50%;
+						transition: background-color 0.2s ease;
 					}
 
-					.mobile-menu__panel-content::-webkit-scrollbar-thumb {
-						background: #d1d5db;
-						border-radius: 3px;
+					.mobile-menu__close-button:hover {
+						background-color: rgba(255, 255, 255, 0.1);
 					}
 
-					.mobile-menu__panel-content::-webkit-scrollbar-thumb:hover {
-						background: #9ca3af;
+					.mobile-menu__close-icon {
+						width: 24px;
+						height: 24px;
 					}
 				`}
 			</style>

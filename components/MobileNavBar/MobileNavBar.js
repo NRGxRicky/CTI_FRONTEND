@@ -197,7 +197,7 @@ const MobileNavBar = ({
 						max-width: 100%;
 						margin: 0;
 						position: fixed;
-						z-index: 25;
+						z-index: 10;
 						transition: top 0.3s ease;
 						width: 100%;
 						height: 60px;

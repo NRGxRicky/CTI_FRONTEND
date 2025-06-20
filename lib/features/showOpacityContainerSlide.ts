@@ -60,7 +60,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.cart = false;
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
-			state.headerBar = false;
+			state.headerBar = true;
 			state.inputSearch = true;
 		},
 		showLoginMenuState: (state) => {
@@ -73,7 +73,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.cart = false;
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
-			state.headerBar = false;
+			state.headerBar = true;
 			state.inputSearch = false;
 		},
 		showCart: (state) => {
@@ -86,7 +86,7 @@ export const showOpacityContainerSlide = createSlice({
 			state.cart = true;
 			state.PaymentsChange = false;
 			state.ProfileAddAddress = false;
-			state.headerBar = false;
+			state.headerBar = true;
 			state.inputSearch = false;
 		},
 		showPaymentsChange: (state) => {

@@ -139,7 +139,6 @@ const HeaderBar: React.FC = () => {
 				},
 				body: JSON.stringify({ query: query.trim().toLowerCase() }),
 			});
-
 		} catch (error) {
 			console.error('Error al trackear búsqueda:', error);
 		}
@@ -284,15 +283,16 @@ const HeaderBar: React.FC = () => {
 	return (
 		<div>
 			<div
-				className={`header-bar ${mobileView ? 'header-bar--mobile' : ''} ${
-					headerBar ? 'header-bar--show' : ''
-				}`}
+				className={`header-bar ${mobileView ? 'header-bar--mobile' : ''} `}
+				style={{
+					zIndex: headerBar ? 1000 : 100,
+				}}
 			>
 				<div className='header-bar__container'>
 					<div className='header-bar__primary header-bar--left row around-xs middle-xs center-xs'>
 						{/*  Logo — Option B responsive (fill) */}
 						<div className='header-bar__section col-xs-4 col-sm-4 col-md-2 col-lg-2 header-bar__logo'>
-							<NavMobileMenu />
+							{<NavMobileMenu />}
 							<a href='/'>
 								<div
 									style={{
@@ -340,7 +340,6 @@ const HeaderBar: React.FC = () => {
 											type='submit'
 											className='header-bar__button-search'
 											ref={searchButton}
-											
 										>
 											{/* svg lupa */}
 											<svg
@@ -485,7 +484,7 @@ const HeaderBar: React.FC = () => {
 
 			<div
 				className='header-bar__mobile'
-				style={{ top: searchVisibleValue ? '0' : '-54px' }}
+				style={{ top: searchVisibleValue ? '0' : '-56px', zIndex: searchVisibleValue ? 2000 : 0 }}
 			>
 				<div className='header-bar__box'>
 					<form onSubmit={(e) => handleSubmit(e)}>
@@ -574,10 +573,6 @@ const HeaderBar: React.FC = () => {
 					justify-content: center;
 					width: 30px;
 					height: 30px;
-				}
-
-				.header-bar--show {
-					z-index: 1000;
 				}
 
 				.header-bar__cart-icon {
@@ -682,8 +677,8 @@ const HeaderBar: React.FC = () => {
 				.header-bar--mobile {
 					top: 0;
 					width: 100%;
-					z-index: 200;
 					position: fixed;
+					
 				}
 
 				.header-bar--right {
@@ -745,15 +740,23 @@ const HeaderBar: React.FC = () => {
 				}
 
 				.header-bar__button-search {
-					border: 1px solid var(--primary-color);
-					background-color: var(--primary-color);
+					border: none;
+					background: linear-gradient(
+						45deg,
+						var(--primary-color),
+						color-mix(in srgb, var(--primary-color) 70%, white 30%)
+					);
 					height: 40px;
 					width: 50px;
 					color: #ffffff;
 					border-top-right-radius: 2px;
 					border-bottom-right-radius: 2px;
 					cursor: pointer;
-					transition: z-index 3s ease;
+					transition: filter 0.2s ease, z-index 3s ease;
+				}
+
+				.header-bar__button-search:hover {
+					filter: brightness(1.1);
 				}
 
 				.header-bar__section-icon {
@@ -795,7 +798,6 @@ const HeaderBar: React.FC = () => {
 					position: absolute;
 					width: 100%;
 					background-color: #fff;
-					z-index: 300;
 					transition: top 0.3s ease;
 				}
 
@@ -892,7 +894,6 @@ const HeaderBar: React.FC = () => {
 					.header-bar,
 					.search-box,
 					.header-bar__mobile {
-						z-index: 200;
 						position: fixed;
 						width: 100dvw;
 					}
