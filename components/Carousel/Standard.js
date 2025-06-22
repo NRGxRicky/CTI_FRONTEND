@@ -115,12 +115,12 @@ const Standard = () => {
 				{`
 					.carousel {
 						height: 40vw;
-						max-height: 550px;
+						max-height: 450px;
 					}
 
 					.carousel__slide {
 						max-width: 1350px;
-						max-height: 550px;
+						max-height: 450px;
 						height: 40vw;
 						background-repeat: no-repeat;
 						background-size: cover;

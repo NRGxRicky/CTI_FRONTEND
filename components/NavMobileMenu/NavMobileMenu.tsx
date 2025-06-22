@@ -4,6 +4,9 @@ import { useRouter } from 'next/router';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { useEnv } from '../../context/EnvContext';
 import Capitalize from '../../hooks/CapitalizeTitle';
+import { useAuth } from '../../hooks/auth';
+import { Preloader, TailSpin } from 'react-preloader-icon';
+import TruncateMarkup from 'react-truncate-markup';
 
 import {
 	hideAll,
@@ -16,6 +19,8 @@ interface Subcategory {
 	id: number;
 	name: string;
 	slug: string;
+	imagen?: string;
+	portada?: string;
 	subcategories?: Subcategory[];
 }
 
@@ -23,6 +28,8 @@ interface Category {
 	id: number;
 	name: string;
 	slug: string;
+	imagen?: string;
+	portada?: string;
 	subcategories?: Subcategory[];
 }
 
@@ -41,11 +48,13 @@ interface Panel {
 
 const NavMobileMenu = () => {
 	const [data, setData] = useState<CategoriesData>({ results: [], count: 0 });
+	const [popularCategories, setPopularCategories] = useState<Category[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
 	const [panels, setPanels] = useState<Panel[]>([]);
 	const [currentPanelIndex, setCurrentPanelIndex] = useState(0);
 	const isNavigatingBack = useRef(false);
+	const [currentView, setCurrentView] = useState('main');
 
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
 	const maxPageResults = useAppSelector(
@@ -53,6 +62,7 @@ const NavMobileMenu = () => {
 	);
 	const { contactEmail, instagramUrl, facebookUrl, tiktokUrl, phone } =
 		useEnv();
+	const { isAuthenticated, nombres, logout, isVerified } = useAuth();
 
 	const fetchData = useCallback(async () => {
 		const initializePanels = (categories: Category[]) => {
@@ -66,70 +76,66 @@ const NavMobileMenu = () => {
 			setCurrentPanelIndex(0);
 		};
 
+		setLoading(true);
+		setError(false);
+
 		try {
-			setLoading(true);
-			setError(false);
+			const [categoriesResponse, popularResponse] = await Promise.all([
+				fetch(`https://api.pccdnapi.com/categories/mobile-menu/`),
+				fetch(`https://api.pccdnapi.com/categories/bestcategories/?limit=10`),
+			]);
 
-			const response = await fetch(
-				`https://api.pccdnapi.com/categories/mobile-menu/`,
-				{
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				}
-			);
-
-			if (!response.ok) {
-				throw new Error(`Error ${response.status}: ${response.statusText}`);
-			}
-
-			const data: CategoriesData = await response.json();
-
-			if (data && Array.isArray(data.results)) {
-				setData(data);
-				setError(false);
-				initializePanels(data.results);
-			} else {
-				throw new Error('Estructura de datos incorrecta');
-			}
-		} catch (error) {
-			console.error('Error fetching categories:', error);
-			setError(true);
-
-			try {
-				const fallbackResponse = await fetch(
-					`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=index`,
-					{
-						headers: {
-							'Content-Type': 'application/json',
-						},
-					}
+			if (!categoriesResponse.ok) {
+				console.error(
+					'Error principal, intentando fallback:',
+					categoriesResponse.statusText
 				);
-
-				if (fallbackResponse.ok) {
-					const fallbackData = await fallbackResponse.json();
-					const transformedData: CategoriesData = {
-						results:
-							fallbackData.results?.map((category: any) => ({
-								...category,
-								subcategories: [],
-							})) || [],
-						count: fallbackData.results?.length || 0,
-					};
-					setData(transformedData);
-					setError(false);
-					initializePanels(transformedData.results);
+				const fallbackResponse = await fetch(
+					`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=index`
+				);
+				if (!fallbackResponse.ok)
+					throw new Error('Fallback endpoint also failed');
+				const fallbackData = await fallbackResponse.json();
+				const transformedData: CategoriesData = {
+					results:
+						fallbackData.results?.map((category: any) => ({
+							...category,
+							subcategories: [],
+						})) || [],
+					count: fallbackData.results?.length || 0,
+				};
+				setData(transformedData);
+				initializePanels(transformedData.results);
+			} else {
+				const data: CategoriesData = await categoriesResponse.json();
+				if (data && Array.isArray(data.results)) {
+					setData(data);
+					initializePanels(data.results);
+				} else {
+					throw new Error('Estructura de datos de categorías incorrecta');
 				}
-			} catch (fallbackError) {
-				console.error('Error with fallback endpoint:', fallbackError);
 			}
+
+			if (popularResponse.ok) {
+				const popularData = await popularResponse.json();
+				if (popularData && Array.isArray(popularData.results)) {
+					setPopularCategories(popularData.results.slice(0, 10));
+				}
+			} else {
+				console.error(
+					'No se pudieron cargar las categorías populares:',
+					popularResponse.statusText
+				);
+			}
+		} catch (err) {
+			console.error('Error fetching menu data:', err);
+			setError(true);
 		} finally {
 			setLoading(false);
 		}
 	}, []);
 
 	const navigateToPanel = (category: Category | Subcategory) => {
-		// Verificar si tiene subcategorías
 		const hasSubcategories =
 			category.subcategories && category.subcategories.length > 0;
 
@@ -142,10 +148,8 @@ const NavMobileMenu = () => {
 				level: panels[currentPanelIndex].level + 1,
 			};
 
-			// Añadir el nuevo panel y actualizar el índice
 			const newPanels = [...panels.slice(0, currentPanelIndex + 1), newPanel];
 			setPanels(newPanels);
-			// El índice se actualizará automáticamente en el useEffect
 		}
 	};
 
@@ -153,7 +157,6 @@ const NavMobileMenu = () => {
 		if (currentPanelIndex > 0) {
 			isNavigatingBack.current = true;
 			setCurrentPanelIndex(currentPanelIndex - 1);
-			// Limpiar paneles innecesarios al navegar hacia atrás
 			setPanels(panels.slice(0, currentPanelIndex));
 		}
 	};
@@ -170,10 +173,10 @@ const NavMobileMenu = () => {
 	const router = useRouter();
 
 	useEffect(() => {
-		if (menuMobileOpen && data.results.length === 0) {
+		if (menuMobileOpen && data.results.length === 0 && !loading) {
 			fetchData();
 		}
-	}, [menuMobileOpen, data.results.length, fetchData]);
+	}, [menuMobileOpen, data.results.length, fetchData, loading]);
 
 	useEffect(() => {
 		if (router.pathname.startsWith('/listado') && mobileView) {
@@ -184,14 +187,10 @@ const NavMobileMenu = () => {
 	}, [router.pathname, mobileView]);
 
 	useEffect(() => {
-		// Esta bandera evita que el efecto se dispare al navegar hacia atrás.
 		if (isNavigatingBack.current) {
 			isNavigatingBack.current = false;
 			return;
 		}
-
-		// Si el número de paneles ha aumentado, significa que hemos navegado hacia adelante.
-		// Actualizamos el índice para disparar la animación de deslizamiento.
 		if (panels.length > currentPanelIndex + 1) {
 			setCurrentPanelIndex(panels.length - 1);
 		}
@@ -203,7 +202,6 @@ const NavMobileMenu = () => {
 			if (i === 0) {
 				breadcrumbItems.push('Categorías');
 			} else {
-				// Truncar títulos muy largos para el breadcrumb
 				const title =
 					panels[i].title.length > 15
 						? panels[i].title.substring(0, 15) + '...'
@@ -232,6 +230,10 @@ const NavMobileMenu = () => {
 
 	const toggleMenu = () => {
 		if (!menuMobileOpen) {
+			if (data.results.length === 0 && !loading) {
+				fetchData();
+			}
+			setCurrentView('main');
 			dispatch(showNavMobileMenu());
 		} else {
 			dispatch(hideAll());
@@ -239,6 +241,15 @@ const NavMobileMenu = () => {
 				resetToMain();
 			}, 300);
 		}
+	};
+
+	const handleLogout = () => {
+		logout();
+		dispatch(hideAll());
+	};
+
+	const goBackToMainMenu = () => {
+		setCurrentView('main');
 	};
 
 	return (
@@ -260,181 +271,496 @@ const NavMobileMenu = () => {
 					opacity: menuMobileOpen ? 1 : 0,
 				}}
 			>
-				<div className='mobile-menu__panels-wrapper'>
-					{panels.map((panel, index) => (
-						<div
-							key={panel.id}
-							className='mobile-menu__panel'
-							style={{
-								transform: `translateX(${(index - currentPanelIndex) * 100}%)`,
-							}}
+				{/* --- Vista del Menú Principal --- */}
+				<div
+					className='mobile-menu__view'
+					style={{
+						transform:
+							currentView === 'main' ? 'translateX(0%)' : 'translateX(-100%)',
+					}}
+				>
+					<div className='main-menu__header'>
+						{isAuthenticated ? (
+							<Link href='/profile' legacyBehavior>
+								<a className='main-menu__user-info' onClick={toggleMenu}>
+									<svg
+										xmlns='http://www.w3.org/2000/svg'
+										viewBox='0 0 24 24'
+										fill='currentColor'
+									>
+										<path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z' />
+									</svg>
+									<span className='--capitalize'>Hola, {nombres}</span>
+								</a>
+							</Link>
+						) : (
+							<div className='main-menu__user-info'>
+								<svg
+									xmlns='http://www.w3.org/2000/svg'
+									viewBox='0 0 24 24'
+									fill='currentColor'
+								>
+									<path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z' />
+								</svg>
+								<span>Hola</span>
+							</div>
+						)}
+						<button
+							className='mobile-menu__close-button'
+							onClick={toggleMenu}
+							aria-label='Cerrar menú'
 						>
-							<div className='mobile-menu__panel-header'>
-								{index > 0 && (
+							<svg
+								className='mobile-menu__close-icon'
+								viewBox='0 0 24 24'
+								fill='currentColor'
+							>
+								<path d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z' />
+							</svg>
+						</button>
+					</div>
+					<div className='main-menu__content'>
+						{loading ? (
+							<div className='mobile-menu__loading'>
+								<div className='mobile-menu__spinner'></div>
+							</div>
+						) : (
+							<>
+								<div className='main-menu__offers-container'>
+									<Link
+										href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
+										legacyBehavior
+									>
+										<a
+											className='mobile-menu__item-link mobile-menu__item-offers btn-gradient'
+											onClick={toggleMenu}
+										>
+											<div className='mobile-menu__item-offers-content'>
+												<svg
+													className='mobile-menu__offers-icon'
+													xmlns='http://www.w3.org/2000/svg'
+													viewBox='0 0 24 24'
+													fill='currentColor'
+												>
+													<path d='M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.76-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z' />
+												</svg>
+												<span className='mobile-menu__item-text mobile-menu__item-offers-text'>
+													{Capitalize('Ofertas')}
+												</span>
+											</div>
+											<svg
+												className='mobile-menu__arrow-icon'
+												viewBox='0 0 24 24'
+												fill='currentColor'
+											>
+												<path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z' />
+											</svg>
+										</a>
+									</Link>
+								</div>
+
+								<ul className='main-menu__list main-menu__card'>
+									<h2 className='main-menu__section-title'>
+										Categorías Populares
+									</h2>
+									{popularCategories.map((cat) => (
+										<li key={cat.id} className='main-menu__list-item'>
+											<Link
+												href={`/listado/all/${cat.slug}?page_size=${maxPageResults}`}
+												legacyBehavior
+											>
+												<a
+													onClick={toggleMenu}
+													className='main-menu__category-link'
+												>
+													{cat.portada && (
+														<img
+															src={cat.portada}
+															alt={cat.name}
+															className='category-image'
+														/>
+													)}
+													<TruncateMarkup lines={1}>
+														<span className='main-menu__category-name'>
+															{Capitalize(cat.name)}
+														</span>
+													</TruncateMarkup>
+												</a>
+											</Link>
+										</li>
+									))}
+									<li className='main-menu__list-item'>
+										<button onClick={() => setCurrentView('categories')}>
+											<span>Todas las categorías</span>
+											<svg
+												className='main-menu__arrow-icon'
+												viewBox='0 0 24 24'
+												fill='currentColor'
+											>
+												<path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z' />
+											</svg>
+										</button>
+									</li>
+								</ul>
+
+								<ul className='main-menu__list main-menu__account-list'>
+									<h2 className='main-menu__section-title'>Cuenta</h2>
+									{isAuthenticated && (
+										<>
+											<li className='main-menu__list-item'>
+												<Link href='/profile' legacyBehavior>
+													<a onClick={toggleMenu}>
+														<svg
+															className='main-menu__account-icon'
+															xmlns='http://www.w3.org/2000/svg'
+															viewBox='0 0 24 24'
+															fill='currentColor'
+														>
+															<path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z' />
+														</svg>
+														<span>Mi Cuenta</span>
+													</a>
+												</Link>
+											</li>
+											<li className='main-menu__list-item'>
+												<Link href='/mis-compras' legacyBehavior>
+													<a onClick={toggleMenu}>
+														<svg
+															className='main-menu__account-icon'
+															xmlns='http://www.w3.org/2000/svg'
+															viewBox='0 0 24 24'
+															fill='currentColor'
+														>
+															<path d='M19.5 3.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5zM17 17H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z' />
+														</svg>
+														<span>Mis Compras</span>
+													</a>
+												</Link>
+											</li>
+											<li className='main-menu__list-item'>
+												<Link href='/mis-cotizaciones' legacyBehavior>
+													<a onClick={toggleMenu}>
+														<svg
+															className='main-menu__account-icon'
+															xmlns='http://www.w3.org/2000/svg'
+															viewBox='0 0 24 24'
+															fill='currentColor'
+														>
+															<path d='M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.91 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16zM16 17H5V7h11l3.55 5L16 17z' />
+														</svg>
+														<span>Mis Cotizaciones</span>
+													</a>
+												</Link>
+											</li>
+										</>
+									)}
+								</ul>
+
+								{!isAuthenticated && (
+									<div className='main-menu__footer'>
+										<Link href='/login' legacyBehavior>
+											<a
+												className='main-menu__logout-btn btn-gradient'
+												onClick={toggleMenu}
+											>
+												<span>Iniciar Sesión</span>
+											</a>
+										</Link>
+									</div>
+								)}
+
+								{isAuthenticated && (
+									<div className='main-menu__footer'>
+										<button
+											className='main-menu__logout-btn btn-gradient'
+											onClick={handleLogout}
+										>
+											<span>Cerrar Sesión</span>
+										</button>
+									</div>
+								)}
+							</>
+						)}
+					</div>
+				</div>
+
+				{/* --- Vista del Navegador de Categorías --- */}
+				<div
+					className='mobile-menu__view'
+					style={{
+						transform:
+							currentView === 'categories'
+								? 'translateX(0%)'
+								: 'translateX(100%)',
+					}}
+				>
+					<div className='mobile-menu__panels-wrapper'>
+						{panels.map((panel, index) => (
+							<div
+								key={panel.id}
+								className='mobile-menu__panel'
+								style={{
+									transform: `translateX(${
+										(index - currentPanelIndex) * 100
+									}%)`,
+								}}
+							>
+								<div className='mobile-menu__panel-header'>
 									<button
 										className='mobile-menu__back-button'
-										onClick={navigateBack}
+										onClick={index > 0 ? navigateBack : goBackToMainMenu}
 										aria-label='Volver'
 									>
 										<svg
 											className='mobile-menu__back-icon'
-											viewBox='0 0 24 24'
+											viewBox='0 0 24 22'
 											fill='currentColor'
 										>
 											<path d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z' />
 										</svg>
 									</button>
-								)}
-								<div className='mobile-menu__header-content'>
-									<h2 className='mobile-menu__panel-title'>
-										{Capitalize(panel.title)}
-									</h2>
-									{panel.level > 0 && (
-										<div className='mobile-menu__breadcrumb'>
-											{renderBreadcrumb()}
+									<div className='mobile-menu__header-content'>
+										<h2 className='mobile-menu__panel-title'>
+											{Capitalize(panel.title)}
+										</h2>
+										{panel.level > 0 && (
+											<div className='mobile-menu__breadcrumb'>
+												{renderBreadcrumb()}
+											</div>
+										)}
+									</div>
+									<button
+										className='mobile-menu__close-button'
+										onClick={toggleMenu}
+										aria-label='Cerrar menú'
+									>
+										<svg
+											className='mobile-menu__close-icon'
+											viewBox='0 0 24 24'
+											fill='currentColor'
+										>
+											<path d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z' />
+										</svg>
+									</button>
+								</div>
+
+								<div
+									className={`mobile-menu__panel-content ${
+										index === 0 ? 'main-panel-content' : 'sub-panel-content'
+									}`}
+								>
+									{loading && index === 0 && (
+										<div className='mobile-menu__loading'>
+											<div className='mobile-menu__spinner'></div>
 										</div>
 									)}
-								</div>
-								<button
-									className='mobile-menu__close-button'
-									onClick={toggleMenu}
-									aria-label='Cerrar menú'
-								>
-									<svg
-										className='mobile-menu__close-icon'
-										viewBox='0 0 24 24'
-										fill='currentColor'
-									>
-										<path d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z' />
-									</svg>
-								</button>
-							</div>
 
-							<div
-								className={`mobile-menu__panel-content ${
-									index === 0 ? 'main-panel-content' : 'sub-panel-content'
-								}`}
-							>
-								{loading && index === 0 && (
-									<div className='mobile-menu__loading'>
-										<div className='mobile-menu__spinner'></div>
-									</div>
-								)}
+									{error && index === 0 && !loading && (
+										<div className='mobile-menu__error'>
+											<span>Error al cargar categorías</span>
+											<button
+												onClick={fetchData}
+												className='mobile-menu__retry-btn'
+											>
+												Reintentar
+											</button>
+										</div>
+									)}
 
-								{error && index === 0 && !loading && (
-									<div className='mobile-menu__error'>
-										<span>Error al cargar categorías</span>
-										<button
-											onClick={fetchData}
-											className='mobile-menu__retry-btn'
-										>
-											Reintentar
-										</button>
-									</div>
-								)}
+									{!loading && !error && (
+										<div className='mobile-menu__grid'>
+											{panel.items.map((item) => {
+												const hasSubcategories =
+													item.subcategories && item.subcategories.length > 0;
+												const imageUrl =
+													item.portada ||
+													item.imagen ||
+													'/images/not-available.png';
 
-								{!loading && !error && (
-									<ul className='mobile-menu__panel-list divide-y divide-gray-200'>
-										{/* Botón de OFERTAS como primer elemento */}
-										{index === 0 && (
-											<li className='mobile-menu__panel-item'>
-												<Link
-													href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
-													legacyBehavior
-												>
-													<a
-														className='mobile-menu__item-link mobile-menu__item-offers'
-														onClick={toggleMenu}
-													>
-														<div className='mobile-menu__item-offers-content'>
-															<svg
-																className='mobile-menu__offers-icon'
-																xmlns='http://www.w3.org/2000/svg'
-																viewBox='0 0 24 24'
-																fill='currentColor'
-															>
-																<path d='M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.76-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z' />
-															</svg>
-															<span className='mobile-menu__item-text mobile-menu__item-offers-text'>
-																{Capitalize('Ofertas')}
-															</span>
-														</div>
-														<svg
-															className='mobile-menu__arrow-icon'
-															viewBox='0 0 24 24'
-															fill='currentColor'
-														>
-															<path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z' />
-														</svg>
-													</a>
-												</Link>
-											</li>
-										)}
-
-										{panel.items.map((item) => {
-											const hasSubcategories =
-												item.subcategories && item.subcategories.length > 0;
-
-											return (
-												<li key={item.id} className='mobile-menu__panel-item'>
-													{hasSubcategories ? (
-														<button
-															className='mobile-menu__item-button'
-															onClick={() => navigateToPanel(item)}
-														>
-															<span className='mobile-menu__item-text'>
+												const content = (
+													<>
+														<img
+															src={imageUrl}
+															alt={item.name}
+															className='mobile-menu__grid-image'
+														/>
+														<TruncateMarkup lines={2}>
+															<span className='mobile-menu__grid-text'>
 																{Capitalize(item.name)}
 															</span>
-															<svg
-																className='mobile-menu__arrow-icon'
-																viewBox='0 0 24 24'
-																fill='currentColor'
-															>
-																<path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z' />
-															</svg>
-														</button>
-													) : (
-														<Link
-															href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
-															legacyBehavior
-														>
-															<a
-																className='mobile-menu__item-link'
-																onClick={toggleMenu}
-															>
-																<span className='mobile-menu__item-text'>
-																	{Capitalize(item.name)}
-																</span>
-															</a>
-														</Link>
-													)}
-												</li>
-											);
-										})}
-									</ul>
-								)}
+														</TruncateMarkup>
+													</>
+												);
 
-								{index === 0 && !loading && !error && (
-									<div className='mobile-menu__panel-content-inner'></div>
-								)}
+												return (
+													<div key={item.id}>
+														{hasSubcategories ? (
+															<button
+																className='mobile-menu__grid-item'
+																onClick={() => navigateToPanel(item)}
+															>
+																{content}
+															</button>
+														) : (
+															<Link
+																href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
+																legacyBehavior
+															>
+																<a
+																	className='mobile-menu__grid-item'
+																	onClick={toggleMenu}
+																>
+																	{content}
+																</a>
+															</Link>
+														)}
+													</div>
+												);
+											})}
+										</div>
+									)}
+
+									{index === 0 && !loading && !error && (
+										<div className='mobile-menu__panel-content-inner'></div>
+									)}
+								</div>
 							</div>
-						</div>
-					))}
+						))}
+					</div>
 				</div>
 			</div>
 
 			<style jsx>
 				{`
 					.mobile-menu__container {
-						height: 100dvh;
+						height: 100vh;
 						top: 0;
 						background: #ffffff;
 						position: fixed;
+						z-index: 5000;
 						transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 						width: min(90vw, 380px);
 						box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 						overflow: hidden;
-						z-index: 1000;
+						display: flex;
+					}
+					.mobile-menu__view {
+						position: absolute;
+						top: 0;
+						left: 0;
+						width: 100%;
+						height: 100%;
+						transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+						display: flex;
+						flex-direction: column;
+						background-color: #f7f8fa;
+					}
+
+					.main-menu__header {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						padding: 10px 1rem;
+						background-color: #474747;
+						color: white;
+						flex-shrink: 0;
+					}
+					.main-menu__user-info {
+						display: flex;
+						align-items: center;
+						gap: 0.75rem;
+						font-size: 1.1rem;
+						font-weight: 600;
+						text-decoration: none;
+						color: white;
+					}
+					.main-menu__user-info svg {
+						width: 28px;
+						height: 28px;
+						background: rgba(255, 255, 255, 0.1);
+						border-radius: 50%;
+						padding: 4px;
+					}
+					.main-menu__content {
+						overflow-y: auto;
+						flex-grow: 1;
+						padding-top: 1rem;
+					}
+					.main-menu__list {
+						list-style: none;
+						padding: 0;
+						margin: 0;
+						/* Estilo de lista simple, sin tarjeta */
+					}
+					.main-menu__section-title {
+						font-size: 1.1rem;
+						font-weight: 700;
+						color: #1a202c;
+						padding: 1rem 1.25rem 0.75rem;
+						margin: 0;
+						background: transparent;
+					}
+					.main-menu__list-item button,
+					.main-menu__list-item a {
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+						gap: 1rem;
+						width: 100%;
+						padding: 0.5rem 1.25rem;
+						min-height: 56px;
+						font-size: 1rem;
+						background: transparent;
+						border: none;
+						cursor: pointer;
+						text-align: left;
+						text-decoration: none;
+						border-bottom: 1px solid #edf2f7;
+					}
+					.main-menu__list-item:first-child button,
+					.main-menu__list-item:first-child a {
+						border-top: 1px solid #edf2f7;
+					}
+					.main-menu__list-item span {
+						flex-grow: 1;
+					}
+					.main-menu__arrow-icon {
+						width: 16px;
+						height: 16px;
+						color: #474747;
+					}
+
+					.main-menu__footer {
+						padding: 1rem;
+						margin-top: auto;
+					}
+					.main-menu__logout-btn {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						gap: 0.75rem;
+						width: 100%;
+						padding: 0.8rem;
+						color: white;
+						border: none;
+						border-radius: 6px;
+						font-size: 1rem;
+						font-weight: 600;
+						cursor: pointer;
+						text-decoration: none;
+					}
+
+					.main-menu__logout-btn:hover {
+						color: white;
+					}
+
+					.main-menu__logout-btn svg {
+						width: 22px;
+						height: 22px;
+					}
+
+					.--capitalize {
+						text-transform: capitalize;
 					}
 
 					.mobile-menu__panels-wrapper {
@@ -458,7 +784,7 @@ const NavMobileMenu = () => {
 					.mobile-menu__panel-header {
 						display: flex;
 						align-items: center;
-						padding: 10px 24px;
+						padding: 10px 1rem;
 						background-color: #474747;
 						min-height: 60px;
 						color: white;
@@ -468,7 +794,7 @@ const NavMobileMenu = () => {
 					.mobile-menu__back-button {
 						background: rgba(255, 255, 255, 0.1);
 						border: none;
-						padding: 12px;
+						padding: 4px;
 						margin-right: 16px;
 						cursor: pointer;
 						color: white;
@@ -481,8 +807,8 @@ const NavMobileMenu = () => {
 					}
 
 					.mobile-menu__back-icon {
-						width: 28px;
-						height: 28px;
+						width: 24px;
+						height: 24px;
 					}
 
 					.mobile-menu__header-content {
@@ -547,6 +873,50 @@ const NavMobileMenu = () => {
 						background-color: #ffffff;
 					}
 
+					.mobile-menu__grid {
+						display: grid;
+						grid-template-columns: repeat(3, 1fr);
+						gap: 1rem;
+						padding: 1rem;
+					}
+
+					.mobile-menu__grid-item {
+						display: flex;
+						flex-direction: column;
+						align-items: center;
+						justify-content: flex-start;
+						text-decoration: none;
+						background-color: #ffffff;
+						border-radius: 6px;
+						padding: 0.5rem;
+						text-align: center;
+						width: 100%;
+						height: 100%;
+						border: none;
+						cursor: pointer;
+						font-family: inherit;
+					}
+
+					.mobile-menu__grid-item:hover {
+						background-color: #f7f8fa;
+					}
+
+					.mobile-menu__grid-image {
+						width: 100%;
+						height: 80px;
+						object-fit: contain;
+						mix-blend-mode: multiply;
+						border-radius: 4px;
+					}
+
+					.mobile-menu__grid-text {
+						margin-top: 0.75rem;
+						font-size: 12px;
+						font-weight: 500;
+						line-height: 1.3;
+						min-height: 31px; /* Fallback for 2 lines */
+					}
+
 					.mobile-menu__panel-list {
 						list-style: none;
 						margin: 0;
@@ -590,15 +960,14 @@ const NavMobileMenu = () => {
 					.mobile-menu__item-text {
 						font-size: 14px;
 						font-weight: 500;
-						color: #474747;
+					
 						flex: 1;
 						margin-right: 12px;
 					}
 
 					.mobile-menu__arrow-icon {
 						width: 16px;
-						height: 16px;
-						color: #666;
+						height: 16px;					
 						transition: color 0.2s ease;
 					}
 
@@ -611,7 +980,6 @@ const NavMobileMenu = () => {
 						padding: 24px;
 					}
 
-					/* Burger button styles */
 					.burger-button {
 						display: flex;
 						flex-direction: column;
@@ -628,7 +996,7 @@ const NavMobileMenu = () => {
 					.burger-line {
 						width: 20px;
 						height: 2px;
-						background-color: #374151;
+						background-color: #474747;
 						transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 						border-radius: 1px;
 					}
@@ -704,7 +1072,6 @@ const NavMobileMenu = () => {
 						background: #e6001e;
 					}
 
-					/* Responsive adjustments */
 					@media (max-width: 480px) {
 						.mobile-menu__container {
 							width: 100vw;
@@ -728,7 +1095,6 @@ const NavMobileMenu = () => {
 						}
 					}
 
-					/* Estilos para el botón de ofertas */
 					.mobile-menu__item-offers {
 						background: linear-gradient(
 							45deg,
@@ -790,12 +1156,76 @@ const NavMobileMenu = () => {
 					}
 
 					.mobile-menu__close-button:hover {
-						background-color: rgba(255, 255, 255, 0.1);
+						background-color: #474747;
 					}
 
 					.mobile-menu__close-icon {
 						width: 24px;
 						height: 24px;
+					}
+
+					.category-image {
+						width: 40px;
+						height: 40px;
+						object-fit: contain;
+						margin-right: 1rem;
+						border-radius: 4px;
+						mix-blend-mode: multiply;
+						flex-shrink: 0;
+					}
+
+					.main-menu__category-link,
+					.mobile-menu__item-content {
+						display: flex;
+						align-items: center;
+						flex-grow: 1;
+					}
+
+					.main-menu__offers-container {
+						padding: 0 1rem 1rem 1rem;
+					}
+
+					.main-menu__offers-container .mobile-menu__item-offers {
+						border-radius: 6px;
+					}
+
+					.main-menu__offers-container
+						.mobile-menu__item-offers
+						.mobile-menu__item-text {
+						color: white !important;
+					}
+
+					.main-menu__offers-container
+						.mobile-menu__item-offers
+						.mobile-menu__arrow-icon {
+						color: white !important;
+					}
+
+					.main-menu__card {
+						background: #ffffff;
+					}
+
+					.main-menu__account-list {
+						margin-top: 1rem;
+					}
+
+					.main-menu__account-section {
+						background: #ffffff;
+						margin-top: 1rem;
+					}
+
+					.main-menu__category-name {
+						flex-grow: 1;
+					}
+
+					.main-menu__account-list .main-menu__list-item a {
+						justify-content: flex-start;
+					}
+
+					.main-menu__account-icon {
+						width: 22px;
+						height: 22px;
+						flex-shrink: 0;
 					}
 				`}
 			</style>

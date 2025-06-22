@@ -8,7 +8,6 @@
 	-webkit-text-size-adjust: 100%;
 }
 
-
 body,
 html {
 	font-family: proxima-nova, sans-serif;
@@ -80,6 +79,22 @@ a {
 
 a:hover {
 	color: var(--primary-color);
+}
+
+.btn-gradient {
+	background: linear-gradient(
+		45deg,
+		var(--primary-color),
+		color-mix(in srgb, var(--primary-color) 70%, white 30%)
+	);
+	color: white;
+	border: none;
+	transition: filter 0.2s ease;
+}
+
+.btn-gradient:hover {
+	filter: brightness(1.1);
+	color: white;
 }
 
 .text--off {
@@ -1387,11 +1402,11 @@ select:invalid {
 	fill: #474747;
 }
 
-
 @media only screen and (max-width: 62em) {
 	input,
 	textarea,
-	select, input::placeholder {
+	select,
+	input::placeholder {
 		font-size: 16px !important;
 	}
 }
