@@ -326,86 +326,9 @@ const NavMobileMenu = () => {
 							</div>
 						) : (
 							<>
-								<div className='main-menu__offers-container'>
-									<Link
-										href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
-										legacyBehavior
-									>
-										<a
-											className='mobile-menu__item-link mobile-menu__item-offers btn-gradient'
-											onClick={toggleMenu}
-										>
-											<div className='mobile-menu__item-offers-content'>
-												<svg
-													className='mobile-menu__offers-icon'
-													xmlns='http://www.w3.org/2000/svg'
-													viewBox='0 0 24 24'
-													fill='currentColor'
-												>
-													<path d='M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.76-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z' />
-												</svg>
-												<span className='mobile-menu__item-text mobile-menu__item-offers-text'>
-													{Capitalize('Ofertas')}
-												</span>
-											</div>
-											<svg
-												className='mobile-menu__arrow-icon'
-												viewBox='0 0 24 24'
-												fill='currentColor'
-											>
-												<path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z' />
-											</svg>
-										</a>
-									</Link>
-								</div>
-
-								<ul className='main-menu__list main-menu__card'>
-									<h2 className='main-menu__section-title'>
-										Categorías Populares
-									</h2>
-									{popularCategories.map((cat) => (
-										<li key={cat.id} className='main-menu__list-item'>
-											<Link
-												href={`/listado/all/${cat.slug}?page_size=${maxPageResults}`}
-												legacyBehavior
-											>
-												<a
-													onClick={toggleMenu}
-													className='main-menu__category-link'
-												>
-													{cat.portada && (
-														<img
-															src={cat.portada}
-															alt={cat.name}
-															className='category-image'
-														/>
-													)}
-													<TruncateMarkup lines={1}>
-														<span className='main-menu__category-name'>
-															{Capitalize(cat.name)}
-														</span>
-													</TruncateMarkup>
-												</a>
-											</Link>
-										</li>
-									))}
-									<li className='main-menu__list-item'>
-										<button onClick={() => setCurrentView('categories')}>
-											<span>Todas las categorías</span>
-											<svg
-												className='main-menu__arrow-icon'
-												viewBox='0 0 24 24'
-												fill='currentColor'
-											>
-												<path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z' />
-											</svg>
-										</button>
-									</li>
-								</ul>
-
 								<ul className='main-menu__list main-menu__account-list'>
 									<h2 className='main-menu__section-title'>Cuenta</h2>
-									{isAuthenticated && (
+									{isAuthenticated ? (
 										<>
 											<li className='main-menu__list-item'>
 												<Link href='/profile' legacyBehavior>
@@ -453,21 +376,107 @@ const NavMobileMenu = () => {
 												</Link>
 											</li>
 										</>
+									) : (
+										<div className='main-menu__login-container'>
+											<Link href='/login' legacyBehavior>
+												<a
+													className='main-menu__logout-btn btn-gradient'
+													onClick={toggleMenu}
+												>
+													<span>Iniciar Sesión</span>
+												</a>
+											</Link>
+										</div>
 									)}
 								</ul>
 
-								{!isAuthenticated && (
-									<div className='main-menu__footer'>
-										<Link href='/login' legacyBehavior>
+								<ul className='main-menu__list main-menu__card'>
+									<h2 className='main-menu__section-title'>
+										Categorías Populares
+									</h2>
+									<li className='main-menu__list-item'>
+										<Link
+											href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
+											legacyBehavior
+										>
 											<a
-												className='main-menu__logout-btn btn-gradient'
 												onClick={toggleMenu}
+												className='main-menu__category-link'
 											>
-												<span>Iniciar Sesión</span>
+												<div className='category-image'>
+													<svg
+														className='mobile-menu__offers-icon'
+														xmlns='http://www.w3.org/2000/svg'
+														viewBox='0 0 24 24'
+													>
+														<defs>
+															<linearGradient
+																id='offers-icon-gradient'
+																x1='0%'
+																y1='0%'
+																x2='100%'
+																y2='100%'
+															>
+																<stop
+																	offset='0%'
+																	stopColor='var(--primary-color)'
+																/>
+																<stop
+																	offset='100%'
+																	stopColor='color-mix(in srgb, var(--primary-color) 70%, white 30%)'
+																/>
+															</linearGradient>
+														</defs>
+														<path
+															fill='url(#offers-icon-gradient)'
+															d='M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.76-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z'
+														/>
+													</svg>
+												</div>
+
+												<span className='main-menu__category-name offers-gradient'>
+													{Capitalize('Ofertas')}
+												</span>
 											</a>
 										</Link>
-									</div>
-								)}
+									</li>
+									{popularCategories.map((cat) => (
+										<li key={cat.id} className='main-menu__list-item'>
+											<Link
+												href={`/listado/all/${cat.slug}?page_size=${maxPageResults}`}
+												legacyBehavior
+											>
+												<a
+													onClick={toggleMenu}
+													className='main-menu__category-link'
+												>
+													{cat.portada && (
+														<img
+															src={cat.portada}
+															alt={cat.name}
+															className='category-image'
+														/>
+													)}
+													<span className='main-menu__category-name'>
+														{Capitalize(cat.name)}
+													</span>
+												</a>
+											</Link>
+										</li>
+									))}
+									<li className='main-menu__list-item'>
+										<button onClick={() => setCurrentView('categories')}>
+											<span>Todas las categorías</span>
+											<svg
+												className='main-menu__arrow-icon'
+												viewBox='0 0 24 24'
+												fill='currentColor'
+											>
+												<path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z' />
+											</svg>
+										</button>
+									</li>
+								</ul>
 
 								{isAuthenticated && (
 									<div className='main-menu__footer'>
@@ -584,11 +593,9 @@ const NavMobileMenu = () => {
 															alt={item.name}
 															className='mobile-menu__grid-image'
 														/>
-														<TruncateMarkup lines={2}>
-															<span className='mobile-menu__grid-text'>
-																{Capitalize(item.name)}
-															</span>
-														</TruncateMarkup>
+														<span className='mobile-menu__grid-text'>
+															{Capitalize(item.name)}
+														</span>
 													</>
 												);
 
@@ -731,7 +738,7 @@ const NavMobileMenu = () => {
 					}
 
 					.main-menu__footer {
-						padding: 1rem;
+						padding: 4rem 1rem 3rem 1rem;
 						margin-top: auto;
 					}
 					.main-menu__logout-btn {
@@ -960,14 +967,14 @@ const NavMobileMenu = () => {
 					.mobile-menu__item-text {
 						font-size: 14px;
 						font-weight: 500;
-					
+
 						flex: 1;
 						margin-right: 12px;
 					}
 
 					.mobile-menu__arrow-icon {
 						width: 16px;
-						height: 16px;					
+						height: 16px;
 						transition: color 0.2s ease;
 					}
 
@@ -1096,10 +1103,7 @@ const NavMobileMenu = () => {
 					}
 
 					.mobile-menu__item-offers {
-						background: linear-gradient(
-							45deg,
-							var(--primary-color),
-							color-mix(in srgb, var(--primary-color) 70%, white 30%)
+						
 						) !important;
 						border: none;
 						margin: 0;
@@ -1107,11 +1111,6 @@ const NavMobileMenu = () => {
 					}
 
 					.mobile-menu__item-offers:hover {
-						background: linear-gradient(
-							45deg,
-							var(--primary-color),
-							color-mix(in srgb, var(--primary-color) 70%, white 30%)
-						) !important;
 						transform: none;
 						box-shadow: none;
 						filter: brightness(1.1);
@@ -1134,13 +1133,10 @@ const NavMobileMenu = () => {
 						width: 20px;
 						height: 20px;
 						margin-right: 10px;
-						color: white;
 					}
 
 					.mobile-menu__item-offers-text {
-						color: white !important;
-						font-weight: 700 !important;
-						font-size: 18px;
+						font-weight: 700;
 					}
 
 					.mobile-menu__close-button {
@@ -1172,6 +1168,9 @@ const NavMobileMenu = () => {
 						border-radius: 4px;
 						mix-blend-mode: multiply;
 						flex-shrink: 0;
+						display: flex;
+						align-items: center;
+						justify-content: center;
 					}
 
 					.main-menu__category-link,
@@ -1183,10 +1182,6 @@ const NavMobileMenu = () => {
 
 					.main-menu__offers-container {
 						padding: 0 1rem 1rem 1rem;
-					}
-
-					.main-menu__offers-container .mobile-menu__item-offers {
-						border-radius: 6px;
 					}
 
 					.main-menu__offers-container
@@ -1203,6 +1198,7 @@ const NavMobileMenu = () => {
 
 					.main-menu__card {
 						background: #ffffff;
+						margin-top: 1rem;
 					}
 
 					.main-menu__account-list {
@@ -1226,6 +1222,74 @@ const NavMobileMenu = () => {
 						width: 22px;
 						height: 22px;
 						flex-shrink: 0;
+					}
+
+					.main-menu__offers-item {
+						padding: 0;
+						border-bottom: none;
+					}
+
+					.main-menu__offers-item > a {
+						border-radius: 6px;
+						border-bottom: none;
+						padding: 1rem 1.25rem;
+					}
+
+					.main-menu__login-container {
+						padding: 0.5rem 1.25rem 1rem;
+					}
+
+					.offers-gradient {
+						font-weight: 700;
+						background: linear-gradient(
+							45deg,
+							var(--primary-color),
+							color-mix(in srgb, var(--primary-color) 100%, white 100%)
+						);
+						-webkit-background-clip: text;
+						background-clip: text;
+						-webkit-text-fill-color: transparent;
+						color: transparent;
+					}
+
+					.mobile-menu__close-icon {
+						width: 24px;
+						height: 24px;
+					}
+
+					.mobile-menu__offers-icon {
+						width: 24px;
+						height: 24px;
+					}
+
+					.mobile-menu__item-offers-text {
+						font-weight: 700;
+					}
+
+					.offers-gradient {
+						mix-blend-mode: multiply;
+						flex-shrink: 0;
+						display: flex;
+						align-items: center;
+						font-size: 18px;
+					}
+
+					.main-menu__category-link,
+					.mobile-menu__item-content {
+						align-items: center;
+						flex-grow: 1;
+					}
+
+					.main-menu__offers-container
+						.mobile-menu__item-offers
+						.mobile-menu__item-text {
+						color: white !important;
+					}
+
+					.main-menu__offers-container
+						.mobile-menu__item-offers
+						.mobile-menu__arrow-icon {
+						color: white !important;
 					}
 				`}
 			</style>
