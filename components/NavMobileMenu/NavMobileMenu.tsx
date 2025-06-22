@@ -289,9 +289,11 @@ const NavMobileMenu = () => {
 										viewBox='0 0 24 24'
 										fill='currentColor'
 									>
-										<path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z' />
+										<path d='M12 5.523c1.936 0 3.5 1.565 3.5 3.5s-1.564 3.5-3.5 3.5-3.5-1.565-3.5-3.5 1.564-3.5 3.5-3.5zm0 9.477c-3.323 0-6 2.025-6 4.5v1h12v-1c0-2.475-2.678-4.5-6-4.5z' />
 									</svg>
-									<span className='--capitalize'>Hola, {nombres}</span>
+									<TruncateMarkup lines={1}>
+										<span className='--capitalize'>Hola, {nombres}</span>
+									</TruncateMarkup>
 								</a>
 							</Link>
 						) : (
@@ -301,7 +303,7 @@ const NavMobileMenu = () => {
 									viewBox='0 0 24 24'
 									fill='currentColor'
 								>
-									<path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z' />
+									<path d='M12 5.523c1.936 0 3.5 1.565 3.5 3.5s-1.564 3.5-3.5 3.5-3.5-1.565-3.5-3.5 1.564-3.5 3.5-3.5zm0 9.477c-3.323 0-6 2.025-6 4.5v1h12v-1c0-2.475-2.678-4.5-6-4.5z' />
 								</svg>
 								<span>Hola</span>
 							</div>
@@ -334,14 +336,16 @@ const NavMobileMenu = () => {
 											<li className='main-menu__list-item'>
 												<Link href='/profile' legacyBehavior>
 													<a onClick={toggleMenu}>
-														<svg
-															className='main-menu__account-icon'
-															xmlns='http://www.w3.org/2000/svg'
-															viewBox='0 0 24 24'
-															fill='currentColor'
-														>
-															<path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z' />
-														</svg>
+														<div className='category-image'>
+															<svg
+																className='main-menu__account-icon'
+																xmlns='http://www.w3.org/2000/svg'
+																viewBox='0 0 24 24'
+																fill='currentColor'
+															>
+																<path d='M12 5.523c1.936 0 3.5 1.565 3.5 3.5s-1.564 3.5-3.5 3.5-3.5-1.565-3.5-3.5 1.564-3.5 3.5-3.5zm0 9.477c-3.323 0-6 2.025-6 4.5v1h12v-1c0-2.475-2.678-4.5-6-4.5z' />
+															</svg>
+														</div>
 														<span>Mi Cuenta</span>
 													</a>
 												</Link>
@@ -349,14 +353,16 @@ const NavMobileMenu = () => {
 											<li className='main-menu__list-item'>
 												<Link href='/mis-compras' legacyBehavior>
 													<a onClick={toggleMenu}>
-														<svg
-															className='main-menu__account-icon'
-															xmlns='http://www.w3.org/2000/svg'
-															viewBox='0 0 24 24'
-															fill='currentColor'
-														>
-															<path d='M19.5 3.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5zM17 17H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z' />
-														</svg>
+														<div className='category-image'>
+															<svg
+																className='main-menu__account-icon'
+																xmlns='http://www.w3.org/2000/svg'
+																viewBox='0 0 24 24'
+																fill='currentColor'
+															>
+																<path d='M19.5 3.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5zM17 17H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z' />
+															</svg>
+														</div>
 														<span>Mis Compras</span>
 													</a>
 												</Link>
@@ -364,14 +370,16 @@ const NavMobileMenu = () => {
 											<li className='main-menu__list-item'>
 												<Link href='/mis-cotizaciones' legacyBehavior>
 													<a onClick={toggleMenu}>
-														<svg
-															className='main-menu__account-icon'
-															xmlns='http://www.w3.org/2000/svg'
-															viewBox='0 0 24 24'
-															fill='currentColor'
-														>
-															<path d='M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.91 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16zM16 17H5V7h11l3.55 5L16 17z' />
-														</svg>
+														<div className='category-image'>
+															<svg
+																className='main-menu__account-icon'
+																xmlns='http://www.w3.org/2000/svg'
+																viewBox='0 0 24 24'
+																fill='currentColor'
+															>
+																<path d='M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.91 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16zM16 17H5V7h11l3.55 5L16 17z' />
+															</svg>
+														</div>
 														<span>Mis Cotizaciones</span>
 													</a>
 												</Link>
@@ -406,7 +414,8 @@ const NavMobileMenu = () => {
 											>
 												<div
 													className='category-image'
-													style={{ display: 'flex',
+													style={{
+														display: 'flex',
 														alignItems: 'center',
 														justifyContent: 'center',
 													}}
@@ -467,6 +476,7 @@ const NavMobileMenu = () => {
 																style={{
 																	objectFit: 'contain',
 																	mixBlendMode: 'multiply',
+																	padding: '0.25rem',
 																}}
 															/>
 														</div>
@@ -494,18 +504,16 @@ const NavMobileMenu = () => {
 									</li>
 								</ul>
 
-							
-									<div className='main-menu__footer'>
-											{isAuthenticated && (
+								<div className='main-menu__footer'>
+									{isAuthenticated && (
 										<button
 											className='main-menu__logout-btn btn-gradient'
 											onClick={handleLogout}
 										>
 											<span>Cerrar Sesión</span>
-											</button>
-										)}
-									</div>
-								
+										</button>
+									)}
+								</div>
 							</>
 						)}
 					</div>
@@ -686,7 +694,7 @@ const NavMobileMenu = () => {
 						transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 						display: flex;
 						flex-direction: column;
-						background-color: #f7f8fa;
+					
 					}
 
 					.main-menu__header {
@@ -706,6 +714,7 @@ const NavMobileMenu = () => {
 						font-weight: 600;
 						text-decoration: none;
 						color: white;
+						overflow: hidden;
 					}
 					.main-menu__user-info svg {
 						width: 28px;
@@ -713,6 +722,7 @@ const NavMobileMenu = () => {
 						background: rgba(255, 255, 255, 0.1);
 						border-radius: 50%;
 						padding: 4px;
+						flex-shrink: 0;
 					}
 					.main-menu__content {
 						overflow-y: auto;
@@ -747,7 +757,7 @@ const NavMobileMenu = () => {
 						cursor: pointer;
 						text-align: left;
 						text-decoration: none;
-						border-bottom: 1px solid #edf2f7;
+					
 					}
 					.main-menu__list-item:hover {
 						background-color: #f7f8fa;
@@ -767,7 +777,7 @@ const NavMobileMenu = () => {
 					}
 
 					.main-menu__footer {
-						padding: 4rem 1rem 3rem 1rem;
+						padding: 2rem 1rem;
 						margin-top: auto;
 					}
 					.main-menu__logout-btn {
@@ -960,7 +970,7 @@ const NavMobileMenu = () => {
 					.mobile-menu__grid-text {
 						margin-top: 0.75rem;
 						font-size: 12px;
-						font-weight: 500;
+						font-weight: 600;
 						line-height: 1.3;
 						min-height: 31px; /* Fallback for 2 lines */
 					}
@@ -1169,7 +1179,7 @@ const NavMobileMenu = () => {
 					.mobile-menu__offers-icon {
 						width: 20px;
 						height: 20px;
-						margin-right: 10px;
+						
 					}
 
 					.mobile-menu__item-offers-text {
@@ -1202,8 +1212,12 @@ const NavMobileMenu = () => {
 						width: 40px;
 						height: 40px;
 						margin-right: 1rem;
-						border-radius: 4px;
+						border-radius: 10px;
 						flex-shrink: 0;
+						background-color: #f7f7f7;
+						display: flex;
+						align-items: center;
+						justify-content: center;
 					}
 
 					.main-menu__category-link,
@@ -1304,7 +1318,7 @@ const NavMobileMenu = () => {
 						flex-shrink: 0;
 						display: flex;
 						align-items: center;
-						font-size: 18px;
+						font-size: 16px;
 					}
 
 					.main-menu__category-link,
@@ -1323,6 +1337,10 @@ const NavMobileMenu = () => {
 						.mobile-menu__item-offers
 						.mobile-menu__arrow-icon {
 						color: white !important;
+					}
+
+					.main-menu__user-info > div {
+						min-width: 0;
 					}
 				`}
 			</style>
