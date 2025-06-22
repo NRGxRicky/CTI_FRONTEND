@@ -1107,6 +1107,7 @@ input[type='search']::-webkit-search-results-decoration {
 
 button {
 	font-family: proxima-nova, sans-serif;
+	color: #474747;
 }
 
 .button__nav,
