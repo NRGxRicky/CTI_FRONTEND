@@ -7,6 +7,7 @@ import Capitalize from '../../hooks/CapitalizeTitle';
 import { useAuth } from '../../hooks/auth';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import TruncateMarkup from 'react-truncate-markup';
+import Image from 'next/image';
 
 import {
 	hideAll,
@@ -403,7 +404,13 @@ const NavMobileMenu = () => {
 												onClick={toggleMenu}
 												className='main-menu__category-link'
 											>
-												<div className='category-image'>
+												<div
+													className='category-image'
+													style={{ display: 'flex',
+														alignItems: 'center',
+														justifyContent: 'center',
+													}}
+												>
 													<svg
 														className='mobile-menu__offers-icon'
 														xmlns='http://www.w3.org/2000/svg'
@@ -451,15 +458,24 @@ const NavMobileMenu = () => {
 													className='main-menu__category-link'
 												>
 													{cat.portada && (
-														<img
-															src={cat.portada}
-															alt={cat.name}
-															className='category-image'
-														/>
+														<div className='category-image'>
+															<Image
+																src={cat.portada}
+																alt={cat.name}
+																fill
+																sizes='40px'
+																style={{
+																	objectFit: 'contain',
+																	mixBlendMode: 'multiply',
+																}}
+															/>
+														</div>
 													)}
-													<span className='main-menu__category-name'>
-														{Capitalize(cat.name)}
-													</span>
+													<TruncateMarkup lines={1}>
+														<span className='main-menu__category-name'>
+															{Capitalize(cat.name)}
+														</span>
+													</TruncateMarkup>
 												</a>
 											</Link>
 										</li>
@@ -478,16 +494,18 @@ const NavMobileMenu = () => {
 									</li>
 								</ul>
 
-								{isAuthenticated && (
+							
 									<div className='main-menu__footer'>
+											{isAuthenticated && (
 										<button
 											className='main-menu__logout-btn btn-gradient'
 											onClick={handleLogout}
 										>
 											<span>Cerrar Sesión</span>
-										</button>
+											</button>
+										)}
 									</div>
-								)}
+								
 							</>
 						)}
 					</div>
@@ -588,11 +606,19 @@ const NavMobileMenu = () => {
 
 												const content = (
 													<>
-														<img
-															src={imageUrl}
-															alt={item.name}
-															className='mobile-menu__grid-image'
-														/>
+														<div className='mobile-menu__grid-image-container'>
+															<Image
+																src={imageUrl}
+																alt={item.name}
+																fill
+																sizes='(max-width: 480px) 30vw, 100px'
+																style={{
+																	objectFit: 'contain',
+																	mixBlendMode: 'multiply',
+																	padding: '1rem',
+																}}
+															/>
+														</div>
 														<span className='mobile-menu__grid-text'>
 															{Capitalize(item.name)}
 														</span>
@@ -646,7 +672,7 @@ const NavMobileMenu = () => {
 						position: fixed;
 						z-index: 5000;
 						transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-						width: min(90vw, 380px);
+						width: min(90dvw, 380px);
 						box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 						overflow: hidden;
 						display: flex;
@@ -691,7 +717,6 @@ const NavMobileMenu = () => {
 					.main-menu__content {
 						overflow-y: auto;
 						flex-grow: 1;
-						padding-top: 1rem;
 					}
 					.main-menu__list {
 						list-style: none;
@@ -724,6 +749,10 @@ const NavMobileMenu = () => {
 						text-decoration: none;
 						border-bottom: 1px solid #edf2f7;
 					}
+					.main-menu__list-item:hover {
+						background-color: #f7f8fa;
+					}
+
 					.main-menu__list-item:first-child button,
 					.main-menu__list-item:first-child a {
 						border-top: 1px solid #edf2f7;
@@ -895,7 +924,6 @@ const NavMobileMenu = () => {
 						text-decoration: none;
 						background-color: #ffffff;
 						border-radius: 6px;
-						padding: 0.5rem;
 						text-align: center;
 						width: 100%;
 						height: 100%;
@@ -904,16 +932,29 @@ const NavMobileMenu = () => {
 						font-family: inherit;
 					}
 
+					.mobile-menu__grid-image-container {
+						position: relative;
+						width: 100%;
+						height: 80px;
+						background-color: #f7f7f7;
+						border-radius: 10px;
+					}
+
+					.mobile-menu__grid-item:hover .mobile-menu__grid-image-container {
+						background-color: #e9e9e9;
+					}
+
 					.mobile-menu__grid-item:hover {
-						background-color: #f7f8fa;
+						color: var(--primary-color);
 					}
 
 					.mobile-menu__grid-image {
+						position: relative;
 						width: 100%;
-						height: 80px;
+						height: 100%;
 						object-fit: contain;
 						mix-blend-mode: multiply;
-						border-radius: 4px;
+						padding: 0.5rem;
 					}
 
 					.mobile-menu__grid-text {
@@ -1081,11 +1122,7 @@ const NavMobileMenu = () => {
 
 					@media (max-width: 480px) {
 						.mobile-menu__container {
-							width: 100vw;
-						}
-
-						.mobile-menu__panel-header {
-							padding: 14px 16px;
+							
 						}
 
 						.mobile-menu__item-button,
@@ -1161,16 +1198,12 @@ const NavMobileMenu = () => {
 					}
 
 					.category-image {
+						position: relative;
 						width: 40px;
 						height: 40px;
-						object-fit: contain;
 						margin-right: 1rem;
 						border-radius: 4px;
-						mix-blend-mode: multiply;
 						flex-shrink: 0;
-						display: flex;
-						align-items: center;
-						justify-content: center;
 					}
 
 					.main-menu__category-link,
