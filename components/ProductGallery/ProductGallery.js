@@ -122,15 +122,6 @@ const ProductGallery = ({
 				l: producto.imagen10l,
 			});
 
-		producto.imagen1m &&
-			dictImages.push({
-				title: producto.titulo,
-				xs: producto.imagen1xs,
-				s: producto.imagen1s,
-				m: producto.imagen1l,
-				l: producto.imagen1l,
-			});
-
 		dictImages.length < 1 &&
 			dictImages.push({
 				title: 'not-available',

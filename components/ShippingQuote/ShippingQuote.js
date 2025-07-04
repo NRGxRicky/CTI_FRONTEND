@@ -69,7 +69,7 @@ function ShippingQuote({ productId }) {
         {
           "carrier": "DHL",
           "service": "express",
-          "total_price": 139.0,
+          "total_price": 129.0,
           "days": "2-5",
           ...
           "delivery_estimate": {
