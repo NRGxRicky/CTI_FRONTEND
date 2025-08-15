@@ -112,7 +112,7 @@ const ProductItem = ({ item }) => {
 				<meta property='og:site_name' content={storeName} />
 
 				{/* URL canónica */}
-				<link rel='canonical' href={`${process.env.NEXT_PUBLIC_PAGE_URL}/${item.id}`} />
+				<link rel='canonical' href={`${process.env.NEXT_PUBLIC_PAGE_URL}/${item.slug}`} />
 			</Head>
 			<div className='container'>
 				{!mobileView && (
