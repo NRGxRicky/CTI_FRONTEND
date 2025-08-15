@@ -19,7 +19,7 @@ import Footer from '../components/Footer/Footer';
 import { useAppSelector } from '../lib/hooks';
 import { useEnv } from '../context/EnvContext';
 import { trackViewItem } from '../utils/analytics';
-import SocialShare from '../components/SocialShare/SocialShare';
+
 
 export const getServerSideProps = async (context) => {
 	const { productId } = context.query;
@@ -124,27 +124,14 @@ const ProductItem = ({ item }) => {
 						/>
 					</div>
 				)}
-				<div className='product__detail-container'>
-					<DetailProduct
-						item={item}
-						width={width}
-						height={height}
-						tempMobile={mobileView}
-						filter_available_store={headerLocationStock}
-						sellerDefaultName={sellerDefaultName}
-					/>
-
-					{/* Botón para compartir el producto - flotante encima de la imagen */}
-					<div className='product__social-share'>
-						<SocialShare
-							url={urlCurrent}
-							title={`${convertTitle} - ${storeName}`}
-							description={`Compra ${convertTitle} en ${storeName} - ${titlePostDescription}`}
-							image={item.imagen1s || '/images/not-available.png'}
-							product={item}
-						/>
-					</div>
-				</div>
+				<DetailProduct
+					item={item}
+					width={width}
+					height={height}
+					tempMobile={mobileView}
+					filter_available_store={headerLocationStock}
+					sellerDefaultName={sellerDefaultName}
+				/>
 				{item.compatibleProductos.filter((p) => p.stock_total > 1).length >
 					0 && (
 						<div className='product__recommended'>
@@ -258,23 +245,7 @@ const ProductItem = ({ item }) => {
 						line-height: 4;
 					}
 
-					.product__detail-container {
-						position: relative;
-					}
 
-					.product__social-share {
-						position: absolute;
-						top: 16px;
-						right: 16px;
-						z-index: 10;
-					}
-
-					@media (max-width: 768px) {
-						.product__social-share {
-							top: 12px;
-							right: 12px;
-						}
-					}
 
 					.product__recommended h2,
 					.product__recommended__bk__off h2 {

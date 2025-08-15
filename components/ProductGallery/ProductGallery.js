@@ -11,6 +11,7 @@ import FreeShipping from '../Icons/FreeShipping';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import ProductGalleryZoom from '../ProductGalleryZoom/ProductGalleryZoom';
 import ReactImageMagnify from 'react-image-magnify';
+import SocialShare from '../SocialShare/SocialShare';
 
 const ProductGallery = ({
 	responsiveElements = 1,
@@ -268,6 +269,17 @@ const ProductGallery = ({
 			}}
 			ref={floatContainer}
 		>
+			{/* Botón de compartir flotante */}
+			<div className='product__social-share'>
+				<SocialShare
+					url={typeof window !== 'undefined' ? window.location.href : ''}
+					title={producto.titulo || 'Producto'}
+					description={`Compra ${producto.titulo || 'este producto'} - Disponible ahora`}
+					image={producto.imagen1s || ''}
+					product={producto}
+				/>
+			</div>
+
 			<div className='product__gallery__thumbnails'>
 				<div className='product__gallery__embla__container'>
 					{stateDictImages.map(
@@ -373,13 +385,13 @@ const ProductGallery = ({
 										top:
 											imgCurrentRef?.current?.offsetWidth +
 												imgCurrentRef?.current?.offsetWidth / 2 >=
-											parentDimensionsWidth
+												parentDimensionsWidth
 												? imgCurrentRef?.current?.offsetHeight + 10
 												: 0,
 										left:
 											imgCurrentRef?.current?.offsetWidth +
 												imgCurrentRef?.current?.offsetWidth / 2 >=
-											parentDimensionsWidth
+												parentDimensionsWidth
 												? -10
 												: imgCurrentRef?.current?.offsetWidth,
 									},
@@ -426,6 +438,13 @@ const ProductGallery = ({
 						min-height: 250px;
 						padding: 20px;
 						position: relative;
+					}
+
+					.product__social-share {
+						position: absolute;
+						top: 16px;
+						right: 16px;
+						z-index: 15;
 					}
 					.product__gallery__thumbnails {
 						width: 50px;

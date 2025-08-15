@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import ProductGallery from '../ProductGallery/ProductGallery';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
@@ -12,7 +12,7 @@ import { useAuth } from '../../hooks/auth';
 import { showPaymentsChange } from '../../lib/features/showOpacityContainerSlide';
 import { useAppDispatch } from '../../lib/hooks';
 import KueskiPayWidget from '../KueskiPayWidget/KueskiPayWidget';
-import ShippingQuote from '../ShippingQuote/ShippingQuote';
+import SocialShare from '../SocialShare/SocialShare';
 
 const DetailProduct = ({
 	item,
@@ -160,8 +160,20 @@ const DetailProduct = ({
 						</div>
 
 						<ProductGalleryMobile producto={item} height={height} />
+						{/* Botón de compartir flotante */}
+						<div className='product__social-share'>
+							<SocialShare
+								url={typeof window !== 'undefined' ? window.location.href : ''}
+								title={item.titulo || 'Producto'}
+								description={`Compra ${item.titulo || 'este producto'} - Disponible ahora`}
+								image={item.imagen1s || ''}
+								product={item}
+							/>
+						</div>
 					</div>
 				)}
+
+
 			</div>
 
 			<div className='product__specs__resume'>
@@ -350,12 +362,12 @@ const DetailProduct = ({
 					} />
 
 					{/* APLAZO WIDGET */}
-					<div className='aplazo-widget' style={{marginTop: 10}}>
-					<aplazo-placement product-price={
-						item.precio_final_descuento > 0
-							? parseFloat(item.precio_final_descuento * 100)
-							: parseFloat(item.precio_final * 100)
-					}
+					<div className='aplazo-widget' style={{ marginTop: 10 }}>
+						<aplazo-placement product-price={
+							item.precio_final_descuento > 0
+								? parseFloat(item.precio_final_descuento * 100)
+								: parseFloat(item.precio_final * 100)
+						}
 						></aplazo-placement>
 					</div>
 
@@ -739,6 +751,13 @@ const DetailProduct = ({
 						flex-basis: 45%;
 					}
 
+					.product__social-share {
+						position: absolute;
+						top: 16px;
+						right: 16px;
+						z-index: 10;
+					}
+
 					.product__info {
 						flex-basis: 25%;
 						padding: 15px;
@@ -816,6 +835,11 @@ const DetailProduct = ({
 						.product__gallery,
 						.product__specs__resume {
 							flex-basis: 100%;
+						}
+
+						.product__social-share {
+							top: 12px;
+							right: 12px;
 						}
 
 						.product__specs__resume {
