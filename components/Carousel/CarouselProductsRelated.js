@@ -7,6 +7,7 @@ import NewProduct from '../Icons/NewProduct';
 import TruncateMarkup from 'react-truncate-markup';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
+import { trackViewItemList, trackSelectItem } from '../../utils/analytics';
 
 const CarouselProductsRelated = ({
 	responsiveElements = 1,
@@ -68,6 +69,30 @@ const CarouselProductsRelated = ({
 		}
 	}, [emblaApi]);
 
+	// Trackear vista del carrusel cuando se cargan los datos
+	useEffect(() => {
+		if (data && data.length > 0) {
+			trackViewItemList(data, 'Carrusel: Productos Relacionados');
+		}
+	}, [data]);
+
+	// Función para manejar click en producto del carrusel
+	const handleProductClick = (producto, index) => {
+		trackSelectItem(
+			{
+				id: producto.id,
+				title: producto.titulo,
+				nombre: producto.titulo,
+				categoria: producto.categoria,
+				marca: producto.marca,
+				precio_contado: producto.precio_contado,
+				price: producto.precio_contado
+			},
+			'Carrusel: Productos Relacionados',
+			index
+		);
+	};
+
 	useEffect(() => {
 		if (emblaApi) {
 			emblaApi.scrollTo(0, true);
@@ -121,10 +146,10 @@ const CarouselProductsRelated = ({
 										currentShow === 'Todos') &&
 									p.stock_total > 0
 							)
-							.map((producto) => (
+							.map((producto, index) => (
 								<div className='embla__slide' key={producto.id}>
 									<Link href={`/${producto.slug}`} legacyBehavior>
-										<a>
+										<a onClick={() => handleProductClick(producto, index)}>
 											<div className='card__carousel'>
 												<div className='card__carousel__content'>
 													{producto.precio_final_descuento > 0 && (
@@ -135,7 +160,7 @@ const CarouselProductsRelated = ({
 																	((producto.precio_final -
 																		producto.precio_final_descuento) *
 																		100) /
-																		producto.precio_final
+																	producto.precio_final
 																)}
 																%
 															</div>

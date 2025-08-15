@@ -11,6 +11,7 @@ import { Preloader, TailSpin } from 'react-preloader-icon';
 import Capitalize from '../../../hooks/CapitalizeTitle';
 import Router from 'next/router';
 import Head from 'next/head';
+import { trackPurchase } from '../../../utils/analytics';
 export const metadata = {
 	title: 'Resumen de la compra',
 };
@@ -49,6 +50,28 @@ const Index = () => {
 				if (response.ok) {
 					const data = await response.json();
 					setOrder(data);
+
+					// Trackear evento de compra en Google Analytics
+					if (data && data.orderItems) {
+						const orderData = {
+							transaction_id: data.id,
+							value: data.totalAmount,
+							tax: data.taxAmount || 0,
+							shipping: data.shippingCost || 0,
+							items: data.orderItems.map(item => ({
+								item_id: item.product?.id?.toString() || '',
+								item_name: item.product?.titulo || item.product?.nombre || '',
+								item_category: item.product?.categoria || '',
+								item_brand: item.product?.marca || '',
+								price: parseFloat(item.unitPrice || item.product?.precio_contado || 0),
+								quantity: parseInt(item.quantity) || 1,
+								currency: 'MXN'
+							})),
+							coupon: data.couponCode || ''
+						};
+
+						trackPurchase(orderData);
+					}
 				} else {
 					const errData = await response.json();
 					setError(errData.detail || 'Error al obtener la orden.');
@@ -144,6 +167,9 @@ const Index = () => {
 					name='description'
 					content={`Gracias por tu compra, aquí puedes ver los detalles de la orden #${orderId}.`}
 				/>
+
+				{/* URL canónica */}
+				<link rel='canonical' href={`${process.env.NEXT_PUBLIC_PAGE_URL}/compras/confirmacion/${orderId}`} />
 			</Head>
 			{/* Nuestra sección principal con la clase .confirmation-page */}
 			<div className='confirmation-page'>

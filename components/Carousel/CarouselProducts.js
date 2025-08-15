@@ -8,6 +8,7 @@ import TruncateMarkup from 'react-truncate-markup';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
 import { Preloader, TailSpin } from 'react-preloader-icon';
+import { trackViewItemList, trackSelectItem } from '../../utils/analytics';
 
 const CarouselProducts = ({
 	responsiveElements = 2,
@@ -34,15 +35,50 @@ const CarouselProducts = ({
 	const fetchData = async () => {
 		try {
 			setLoading(true);
-			const data = await fetch(
+			const response = await fetch(
 				`https://api.pccdnapi.com/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}`
 			);
-			setData(await data.json());
+			const newData = await response.json();
+			setData(newData);
+
+			// Trackear vista del carrusel cuando se cargan los productos
+			if (newData.results && newData.results.length > 0) {
+				const carouselName = getCarouselName();
+				trackViewItemList(newData.results, carouselName);
+			}
 		} catch (error) {
 			setError(error);
 		} finally {
 			setLoading(false);
 		}
+	};
+
+	// Función para determinar el nombre del carrusel basado en el tipo
+	const getCarouselName = () => {
+		if (typeQuery === '-visitas') return 'Carrusel: También te puede interesar';
+		if (typeQuery === '-ventas') return 'Carrusel: Otros clientes también compraron';
+		if (typeQuery === '-created') return 'Carrusel: Productos nuevos';
+		if (categoria && categoria !== 'all') return `Carrusel: Categoría ${categoria}`;
+		if (marca && marca !== 'all') return `Carrusel: Marca ${marca}`;
+		return 'Carrusel: Productos recomendados';
+	};
+
+	// Función para manejar click en producto del carrusel
+	const handleProductClick = (producto, index) => {
+		const carouselName = getCarouselName();
+		trackSelectItem(
+			{
+				id: producto.id,
+				title: producto.titulo,
+				nombre: producto.titulo,
+				categoria: producto.categoria,
+				marca: producto.marca,
+				precio_contado: producto.precio_contado,
+				price: producto.precio_contado
+			},
+			carouselName,
+			index
+		);
 	};
 
 	let styleClass =
@@ -139,10 +175,10 @@ const CarouselProducts = ({
 					<div className='embla__container'>
 						{data.results
 							.filter((i) => i.id !== exclude)
-							.map((producto) => (
+							.map((producto, index) => (
 								<div className='embla__slide' key={producto.id}>
 									<Link href={`/${producto.slug}`} legacyBehavior>
-										<a>
+										<a onClick={() => handleProductClick(producto, index)}>
 											<div className={'card__carousel'}>
 												<div className='card__carousel__content'>
 													{producto.precio_final_descuento > 0 && (
@@ -153,7 +189,7 @@ const CarouselProducts = ({
 																	((producto.precio_final -
 																		producto.precio_final_descuento) *
 																		100) /
-																		producto.precio_final
+																	producto.precio_final
 																)}
 																%
 															</div>

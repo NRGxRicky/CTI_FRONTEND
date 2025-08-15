@@ -5,7 +5,7 @@ import { useEnv } from '../../context/EnvContext';
 const GoogleAnalytics = () => {
 
 	const { googleAnalyticsId } = useEnv();
-  return (
+	return (
 		<div>
 			<Script
 				strategy='lazyOnload'
@@ -19,7 +19,16 @@ const GoogleAnalytics = () => {
                     gtag('js', new Date());
                     gtag('config', '${googleAnalyticsId}', {
                     page_path: window.location.pathname,
+                    send_page_view: true,
+                    enhanced_ecommerce: true,
+                    custom_map: {
+                        'custom_parameter_1': 'user_type',
+                        'custom_parameter_2': 'store_location'
+                    }
                     });
+                    
+                    // Hacer gtag disponible globalmente para el tracking
+                    window.gtag_id = '${googleAnalyticsId}';
                 `}
 			</Script>
 		</div>

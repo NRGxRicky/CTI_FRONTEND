@@ -10,18 +10,36 @@ import FreeShipping from '../Icons/FreeShipping';
 import NewProduct from '../Icons/NewProduct';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import WindowDimensions from '../../hooks/WindowDimensions';
+import { trackSelectItem } from '../../utils/analytics';
 
 const ListProducts = ({ results, filter_available_store }) => {
 	if (results === null) {
 		return null;
 	}
 
+	// Función para manejar el click en producto
+	const handleProductClick = (producto, index) => {
+		trackSelectItem(
+			{
+				id: producto.id,
+				title: producto.titulo,
+				nombre: producto.titulo,
+				categoria: producto.categoria,
+				marca: producto.marca,
+				precio_contado: producto.precio_contado,
+				price: producto.precio_contado
+			},
+			'Product List',
+			index
+		);
+	};
+
 	return (
 		<div className={'products-list__container'} id='products-list__container'>
-			{results.map((producto) => (
+			{results.map((producto, index) => (
 				<div className='products-list__item' key={producto.id}>
 					<Link href={`/${producto.slug}`} legacyBehavior>
-						<a>
+						<a onClick={() => handleProductClick(producto, index)}>
 							<div className='card'>
 								{producto.precio_final_descuento > 0 && (
 									<>
@@ -31,7 +49,7 @@ const ListProducts = ({ results, filter_available_store }) => {
 												((producto.precio_final -
 													producto.precio_final_descuento) *
 													100) /
-													producto.precio_final
+												producto.precio_final
 											)}
 											%
 										</div>

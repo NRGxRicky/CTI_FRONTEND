@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEnv } from '../../context/EnvContext';
+import { trackLogin } from '../../utils/analytics';
 
 const Login = () => {
 	const { login, isAuthenticated } = useAuth();
@@ -26,6 +27,9 @@ const Login = () => {
 		try {
 			const resp = await login(username, password);
 			if (resp.status === 200) {
+				// Trackear evento de login exitoso
+				trackLogin('email');
+
 				if (redirect) {
 					router.push(redirect); // Redirige a la ruta original
 				} else {
@@ -56,6 +60,9 @@ const Login = () => {
 					{`Iniciar Sesión | ${storeName}: ${titlePostDescription}`}
 				</title>
 				<meta name='description' content={`${metaDescription}`} />
+
+				{/* URL canónica */}
+				<link rel='canonical' href={`${process.env.NEXT_PUBLIC_PAGE_URL}/login`} />
 			</Head>
 			<div className='login-card'>
 				<h2>Iniciar Sesión</h2>

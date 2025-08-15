@@ -5,6 +5,7 @@ import Link from 'next/link';
 import TruncateMarkup from 'react-truncate-markup';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
+import { trackSearch as trackGoogleAnalyticsSearch } from '../../utils/analytics';
 
 // Hook personalizado para efecto de escritura tipo IA
 const useTypewriter = (text, speed = 50, enabled = true) => {
@@ -161,6 +162,7 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 		if (!query || query.length < 2) return;
 
 		try {
+			// Trackear en el backend
 			await fetch('https://api.pccdnapi.com/search/track/', {
 				method: 'POST',
 				headers: {
@@ -169,6 +171,8 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 				body: JSON.stringify({ query: query.trim().toLowerCase() })
 			});
 
+			// Trackear en Google Analytics
+			trackGoogleAnalyticsSearch(query.trim());
 		} catch (error) {
 			console.error('Error al trackear búsqueda:', error);
 		}

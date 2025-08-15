@@ -4,7 +4,7 @@ import Navbar from '../../components/Navbar/Navbar';
 import ListProducts from '../../components/ListProducts/ListProducts';
 import fetchData from '../../hooks/GetData';
 import ListProductsPagination from '../../components/ListProductsPagination/ListProductsPagination';
-import Router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import MobileNavBar from '../../components/MobileNavBar/MobileNavBar';
 import fetchFilterData from '../../hooks/GetFiltersData';
@@ -21,6 +21,7 @@ import { useEnv } from '../../context/EnvContext';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 
 import Capitalize from '../../hooks/CapitalizeTitle';
+
 
 export const getServerSideProps = async (context) => {
 	let order = '-visitas';
@@ -175,7 +176,7 @@ const Listado = ({
 	const [categoriesAvailables, setcategoriesAvailables] = useState([]);
 	const [attributesAvailables, setAttributesAvailables] = useState([]);
 	const router = useRouter();
-	const { height, width } = WindowDimensions();
+	const { height } = WindowDimensions();
 	const [mobileScroll, setMobileScroll] = useState(0);
 	const [convertTitle, setConvertTitle] = useState(q);
 	const dispatch = useAppDispatch();
@@ -187,7 +188,7 @@ const Listado = ({
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
 	);
-	const { storeName, metaDescription, titlePostDescription } = useEnv();
+	const { storeName, titlePostDescription } = useEnv();
 
 	useEffect(() => {
 		itemsPerPage === 0 && setItemsPerPage(maxPageResults);
@@ -301,7 +302,9 @@ const Listado = ({
 
 				setLoading(false);
 			}
-		} catch (error) {}
+		} catch (error) {
+			console.error('Error fetching data:', error);
+		}
 	};
 
 	const handleFiltersToApply = async () => {
@@ -460,21 +463,21 @@ const Listado = ({
 			let newNameCategory = String(categoria).split('index-').join('');
 			q
 				? setConvertTitle(
-						` | ${Capitalize(newNameCategory.split('-').join(' '))}`
-				  )
+					` | ${Capitalize(newNameCategory.split('-').join(' '))}`
+				)
 				: setConvertTitle(
-						`${Capitalize(String(newNameCategory).split('-').join(' '))}`
-				  );
+					`${Capitalize(String(newNameCategory).split('-').join(' '))}`
+				);
 		} else if (marca !== 'all') {
 			q
 				? setConvertTitle(
-						` | Tienda de Marca ${Capitalize(
-							String(marca).split('-').join(' ')
-						)}`
-				  )
+					` | Tienda de Marca ${Capitalize(
+						String(marca).split('-').join(' ')
+					)}`
+				)
 				: setConvertTitle(
-						`Tienda de Marca ${Capitalize(String(marca).split('-').join(' '))}`
-				  );
+					`Tienda de Marca ${Capitalize(String(marca).split('-').join(' '))}`
+				);
 		} else if (!q && filter_discount) {
 			setConvertTitle(`OFERTAS`);
 		} else {
@@ -594,6 +597,91 @@ const Listado = ({
 						<meta
 							name='description'
 							content={`${convertTitle} en ${storeName} - ${titlePostDescription}`}
+						/>
+
+						{/* Meta tags adicionales para SEO */}
+						<meta name="robots" content="index, follow" />
+						<meta name="googlebot" content="index, follow" />
+
+						{/* Canonical URL para evitar contenido duplicado */}
+						<link rel="canonical" href={`${process.env.NEXT_PUBLIC_PAGE_URL}${router.asPath.split('?')[0]}`} />
+
+						{/* Open Graph para redes sociales */}
+						<meta property="og:title" content={`${convertTitle} | ${storeName}`} />
+						<meta property="og:description" content={`Encuentra ${convertTitle} en ${storeName}. ${results.length} productos disponibles con envío gratis y mejores precios.`} />
+						<meta property="og:type" content="website" />
+						<meta property="og:url" content={`${process.env.NEXT_PUBLIC_PAGE_URL}${router.asPath}`} />
+						<meta property="og:site_name" content={storeName} />
+						<meta property="og:locale" content="es_MX" />
+						{results[0]?.imagen1s && (
+							<>
+								<meta property="og:image" content={results[0].imagen1s} />
+								<meta property="og:image:width" content="1200" />
+								<meta property="og:image:height" content="630" />
+								<meta property="og:image:alt" content={`${convertTitle} en ${storeName}`} />
+							</>
+						)}
+
+						{/* Twitter Cards */}
+						<meta name="twitter:card" content="summary_large_image" />
+						<meta name="twitter:title" content={`${convertTitle} | ${storeName}`} />
+						<meta name="twitter:description" content={`Encuentra ${convertTitle} en ${storeName}. ${results.length} productos disponibles.`} />
+						{results[0]?.imagen1s && <meta name="twitter:image" content={results[0].imagen1s} />}
+
+						{/* Paginación para SEO */}
+						{parseInt(pageActual) > 1 && (
+							<link rel="prev" href={`${router.asPath.split('?')[0]}?${new URLSearchParams({ ...router.query, page: (parseInt(pageActual) - 1).toString() }).toString()}`} />
+						)}
+						{results.length === itemsPerPage && (
+							<link rel="next" href={`${router.asPath.split('?')[0]}?${new URLSearchParams({ ...router.query, page: (parseInt(pageActual) + 1).toString() }).toString()}`} />
+						)}
+
+						{/* Datos estructurados para resultados de búsqueda */}
+						<script
+							type="application/ld+json"
+							dangerouslySetInnerHTML={{
+								__html: JSON.stringify({
+									"@context": "https://schema.org",
+									"@type": "SearchResultsPage",
+									"url": `${process.env.NEXT_PUBLIC_PAGE_URL}${router.asPath}`,
+									"name": `${convertTitle} | ${storeName}`,
+									"description": `Resultados de búsqueda para ${convertTitle} en ${storeName}`,
+									"provider": {
+										"@type": "Organization",
+										"name": storeName,
+										"url": process.env.NEXT_PUBLIC_PAGE_URL
+									},
+									"mainEntity": {
+										"@type": "ItemList",
+										"numberOfItems": results.length,
+										"itemListElement": results.slice(0, 10).map((product, index) => ({
+											"@type": "ListItem",
+											"position": index + 1,
+											"item": {
+												"@type": "Product",
+												"name": product.titulo,
+												"description": product.descripcion || `${product.titulo} disponible en ${storeName}`,
+												"image": product.imagen1s,
+												"url": `${process.env.NEXT_PUBLIC_PAGE_URL}/${product.id}`,
+												"offers": {
+													"@type": "Offer",
+													"price": product.precio_contado,
+													"priceCurrency": "MXN",
+													"availability": product.stock_total > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+													"seller": {
+														"@type": "Organization",
+														"name": storeName
+													}
+												},
+												"brand": {
+													"@type": "Brand",
+													"name": product.marca
+												}
+											}
+										}))
+									}
+								})
+							}}
 						/>
 					</Head>
 					{!mobileView ? (
@@ -739,12 +827,12 @@ const Listado = ({
 							</span>
 						</div>
 						{data.count > 0 ||
-						filter_available ||
-						locationStockOnly ||
-						filter_free_shipping ||
-						brands.length !== 0 ||
-						attributes.length !== 0 ||
-						categories.length !== 0 ? (
+							filter_available ||
+							locationStockOnly ||
+							filter_free_shipping ||
+							brands.length !== 0 ||
+							attributes.length !== 0 ||
+							categories.length !== 0 ? (
 							<div>
 								<div className='list-products__label'>
 									<span>
@@ -884,6 +972,8 @@ const Listado = ({
 					.mobile__clear-fix__filters {
 						height: 54px;
 					}
+
+
 				`}
 			</style>
 		</div>

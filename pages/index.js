@@ -21,6 +21,21 @@ const Home = () => {
 			<Head>
 				<title>{`${storeName}: ${titlePostDescription}`}</title>
 				<meta name='description' content={`${metaDescription}`} />
+
+				{/* Open Graph para página de inicio */}
+				<meta property='og:title' content={`${storeName}: ${titlePostDescription}`} />
+				<meta property='og:description' content={metaDescription} />
+				<meta property='og:type' content='website' />
+				<meta property='og:site_name' content={storeName} />
+				<meta property='og:locale' content='es_MX' />
+
+				{/* Twitter Cards para página de inicio */}
+				<meta name='twitter:card' content='summary_large_image' />
+				<meta name='twitter:title' content={`${storeName}: ${titlePostDescription}`} />
+				<meta name='twitter:description' content={metaDescription} />
+
+				{/* URL canónica */}
+				<link rel='canonical' href={process.env.NEXT_PUBLIC_PAGE_URL} />
 			</Head>
 			<Standard />
 			<div className='container'>
@@ -82,8 +97,8 @@ const Home = () => {
 
 				<BenefitCarousel />
 
-				
-				<GoogleRatings mobile={mobileView}/>
+
+				<GoogleRatings mobile={mobileView} />
 				<InfoPageFooter />
 			</div>
 			<Footer />

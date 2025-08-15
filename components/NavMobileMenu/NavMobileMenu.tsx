@@ -120,7 +120,11 @@ const NavMobileMenu = () => {
 			if (popularResponse.ok) {
 				const popularData = await popularResponse.json();
 				if (popularData && Array.isArray(popularData.results)) {
-					setPopularCategories(popularData.results.slice(0, 10));
+					setPopularCategories(
+						popularData.results
+							.filter((cat) => cat.slug !== 'index')
+							.slice(0, 10)
+					);
 				}
 			} else {
 				console.error(

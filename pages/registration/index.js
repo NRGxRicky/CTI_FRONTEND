@@ -7,6 +7,7 @@ import CheckCircleGreen from '../../components/Icons/CheckCircleGreen';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEnv } from '../../context/EnvContext';
+import { trackSignUp } from '../../utils/analytics';
 
 const Register = () => {
 	const [formData, setFormData] = useState({
@@ -101,6 +102,8 @@ const Register = () => {
 			);
 
 			if (response.ok) {
+				// Trackear evento de registro exitoso
+				trackSignUp('email');
 				setSuccess(true);
 			} else {
 				const data = await response.json();
@@ -149,6 +152,9 @@ const Register = () => {
 			<Head>
 				<title>{`Crear Cuenta | ${storeName}: ${titlePostDescription}`}</title>
 				<meta name='description' content={`${metaDescription}`} />
+
+				{/* URL canónica */}
+				<link rel='canonical' href={`${process.env.NEXT_PUBLIC_PAGE_URL}/registration`} />
 			</Head>
 			{success ? (
 				<div className='register-card'>

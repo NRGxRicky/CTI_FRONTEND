@@ -31,12 +31,15 @@ const index = () => {
 					{`Confirmar Pedido | ${storeName}: ${titlePostDescription}`}
 				</title>
 				<meta name='description' content={`${metaDescription}`} />
+
+				{/* URL canónica */}
+				<link rel='canonical' href={`${process.env.NEXT_PUBLIC_PAGE_URL}/carrito/confirmar`} />
 			</Head>
 			<StatusBarCart
 				steps={[
 					{ key: 'cart', label: 'Carrito', link: '/carrito' },
 					{ key: 'shipping', label: 'Envío', link: '/carrito/envio' },
-					{ key: 'payment', label: 'Pago', link: '/carrito/pago'},
+					{ key: 'payment', label: 'Pago', link: '/carrito/pago' },
 					{ key: 'confirm', label: 'Confirmación' },
 				]}
 				activeStep='confirm'

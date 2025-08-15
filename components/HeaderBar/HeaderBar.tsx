@@ -43,6 +43,7 @@ import CartSummaryMini from '../CartSummaryMini/CartSummaryMini';
 import useCart from '../../hooks/useCart';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import { useEnv } from '../../context/EnvContext';
+import { trackSearch as trackGoogleAnalyticsSearch } from '../../utils/analytics';
 
 const HeaderBar: React.FC = () => {
 	/**
@@ -132,6 +133,7 @@ const HeaderBar: React.FC = () => {
 		if (!query || query.length < 2) return;
 
 		try {
+			// Trackear en el backend
 			const response = await fetch('https://api.pccdnapi.com/search/track/', {
 				method: 'POST',
 				headers: {
@@ -139,6 +141,9 @@ const HeaderBar: React.FC = () => {
 				},
 				body: JSON.stringify({ query: query.trim().toLowerCase() }),
 			});
+
+			// Trackear en Google Analytics
+			trackGoogleAnalyticsSearch(query.trim());
 		} catch (error) {
 			console.error('Error al trackear búsqueda:', error);
 		}
@@ -484,7 +489,10 @@ const HeaderBar: React.FC = () => {
 
 			<div
 				className='header-bar__mobile'
-				style={{ top: searchVisibleValue ? '0' : '-56px', zIndex: searchVisibleValue ? 2000 : 0 }}
+				style={{
+					top: searchVisibleValue ? '0' : '-56px',
+					zIndex: searchVisibleValue ? 2000 : 0,
+				}}
 			>
 				<div className='header-bar__box'>
 					<form onSubmit={(e) => handleSubmit(e)}>
@@ -678,7 +686,6 @@ const HeaderBar: React.FC = () => {
 					top: 0;
 					width: 100%;
 					position: fixed;
-					
 				}
 
 				.header-bar--right {

@@ -7,6 +7,7 @@ import React, {
 import { useAuth } from '../hooks/auth';
 import { useRouter } from 'next/router';
 import GetShippingCost from '../hooks/GetShippingCost';
+import { trackAddToCart, trackRemoveFromCart } from '../utils/analytics';
 
 const CartContext = createContext();
 
@@ -262,6 +263,18 @@ export const CartProvider = ({ children }) => {
 					const newItem = await response.json();
 					setCart(newItem.cart_items);
 					setShipping(newItem.shipping_cost);
+
+					// Trackear evento de Google Analytics
+					const cartValue = newItem.cart_items.reduce((acc, item) => {
+						const price = !cartMsi
+							? parseFloat(item.product.precio_contado)
+							: parseFloat(item.product.precio_final_descuento) > 0
+							? parseFloat(item.product.precio_final_descuento)
+							: parseFloat(item.product.precio_final);
+						return acc + price * item.quantity;
+					}, 0);
+
+					trackAddToCart(product, quantity, cartValue);
 				}
 			} catch (error) {
 				console.error('Error adding to backend cart:', error);
@@ -285,12 +298,36 @@ export const CartProvider = ({ children }) => {
 						: item
 				);
 				localcheckBackend(prevCart);
+
+				// Trackear evento de Google Analytics para carrito local
+				const cartValue = prevCart.reduce((acc, item) => {
+					const price = !cartMsi
+						? parseFloat(item.product.precio_contado)
+						: parseFloat(item.product.precio_final_descuento) > 0
+						? parseFloat(item.product.precio_final_descuento)
+						: parseFloat(item.product.precio_final);
+					return acc + price * item.quantity;
+				}, 0);
+
+				trackAddToCart(product, quantity, cartValue);
 			} else {
 				const prevCart = [
 					...cart,
 					{ id: product.id, product, quantity, quote_id: quoteId },
 				];
 				localcheckBackend(prevCart);
+
+				// Trackear evento de Google Analytics para nuevo producto en carrito local
+				const cartValue = prevCart.reduce((acc, item) => {
+					const price = !cartMsi
+						? parseFloat(item.product.precio_contado)
+						: parseFloat(item.product.precio_final_descuento) > 0
+						? parseFloat(item.product.precio_final_descuento)
+						: parseFloat(item.product.precio_final);
+					return acc + price * item.quantity;
+				}, 0);
+
+				trackAddToCart(product, quantity, cartValue);
 			}
 		}
 		setLoading(false);
@@ -351,6 +388,28 @@ export const CartProvider = ({ children }) => {
 
 				if (response.ok) {
 					const backendCart = await response.json();
+
+					// Trackear evento de Google Analytics antes de actualizar el estado
+					const removedProduct = cart.find(
+						(item) => item.product.id === productId
+					);
+					if (removedProduct) {
+						const cartValue = backendCart.cart_items.reduce((acc, item) => {
+							const price = !cartMsi
+								? parseFloat(item.product.precio_contado)
+								: parseFloat(item.product.precio_final_descuento) > 0
+								? parseFloat(item.product.precio_final_descuento)
+								: parseFloat(item.product.precio_final);
+							return acc + price * item.quantity;
+						}, 0);
+
+						trackRemoveFromCart(
+							removedProduct.product,
+							removedProduct.quantity,
+							cartValue
+						);
+					}
+
 					setCart(backendCart.cart_items);
 					setShipping(backendCart.shipping_cost);
 				}
@@ -358,6 +417,26 @@ export const CartProvider = ({ children }) => {
 				console.error('Error removing item from cart:', error);
 			}
 		} else {
+			// Trackear evento de Google Analytics para carrito local antes de remover
+			const removedProduct = cart.find((item) => item.product.id === productId);
+			if (removedProduct) {
+				const newCart = cart.filter((item) => item.product.id !== productId);
+				const cartValue = newCart.reduce((acc, item) => {
+					const price = !cartMsi
+						? parseFloat(item.product.precio_contado)
+						: parseFloat(item.product.precio_final_descuento) > 0
+						? parseFloat(item.product.precio_final_descuento)
+						: parseFloat(item.product.precio_final);
+					return acc + price * item.quantity;
+				}, 0);
+
+				trackRemoveFromCart(
+					removedProduct.product,
+					removedProduct.quantity,
+					cartValue
+				);
+			}
+
 			setCart((prevCart) =>
 				prevCart.filter((item) => item.product.id !== productId)
 			);
