@@ -8,13 +8,14 @@ export const fbq = (...args) => {
 };
 
 // Función para formatear productos para Meta
+// Extrae los nombres de los objetos que envía ProductSerializer
 const formatProductForMeta = (product, quantity = 1, price = null) => {
   return {
     content_id: product.id?.toString() || '',
-    content_name: product.title || product.nombre || product.titulo || '',
-    content_category: product.categoria?.nombre || product.category || '',
-    brand: product.marca?.nombre || product.brand || '',
-    price: price || parseFloat(product.precio_contado || product.price || 0),
+    content_name: product.titulo || '',                  // ProductSerializer devuelve 'titulo'
+    content_category: product.categoria?.name || '',     // categoria.name del objeto
+    brand: product.marca?.nombre || '',                  // marca.nombre del objeto
+    price: price || parseFloat(product.precio_contado || 0),
     quantity: parseInt(quantity) || 1,
     currency: 'MXN'
   };
@@ -58,6 +59,23 @@ export const trackMetaViewContent = (product) => {
 // 2. Evento: Agregar al carrito (AddToCart)
 export const trackMetaAddToCart = (product, quantity = 1, cartValue = 0) => {
   const productData = formatProductForMeta(product, quantity);
+
+  // Debug logging para Meta Pixel
+  const debugLog = (...args) => {
+    if (process.env.NEXT_PUBLIC_DEBUG === 'true') {
+      console.log(...args);
+    }
+  };
+
+  debugLog('📘 Meta Pixel - Add to Cart Event:', {
+    product_id: product.id,
+    product_titulo: product.titulo,
+    extracted_categoria: product.categoria?.name,
+    extracted_marca: product.marca?.nombre,
+    formatted_for_meta: productData,
+    quantity,
+    cartValue
+  });
 
   fbq('track', 'AddToCart', {
     content_type: 'product',
@@ -128,6 +146,13 @@ export const trackMetaAddPaymentInfo = (cart, cartTotal, cartMsi = false) => {
 
 // 6. Evento: Compra completada (Purchase) - Evento más importante
 export const trackMetaPurchase = (orderData) => {
+  // Debug logging para Meta Pixel
+  const debugLog = (...args) => {
+    if (process.env.NEXT_PUBLIC_DEBUG === 'true') {
+      console.log(...args);
+    }
+  };
+
   const {
     transaction_id,
     value,
@@ -135,25 +160,24 @@ export const trackMetaPurchase = (orderData) => {
     cartMsi = false
   } = orderData;
 
-  // Formatear items si vienen del carrito
-  const formattedItems = items.map(item => {
-    if (item.product) {
-      // Es un item del carrito
-      let price;
-      if (item.unit_price && item.quote_id) {
-        price = parseFloat(item.unit_price);
-      } else {
-        price = !cartMsi
-          ? parseFloat(item.product.precio_contado)
-          : parseFloat(item.product.precio_final_descuento) > 0
-            ? parseFloat(item.product.precio_final_descuento)
-            : parseFloat(item.product.precio_final);
-      }
-      return formatProductForMeta(item.product, item.quantity, price);
-    } else {
-      // Ya está formateado
-      return item;
-    }
+  // Los items ya vienen formateados desde la página de confirmación
+  // No necesitamos formatearlos aquí como en el carrito
+  const formattedItems = items.map(item => ({
+    content_id: item.item_id || '',
+    content_name: item.item_name || '',
+    content_category: item.item_category || '',
+    brand: item.item_brand || '',
+    price: parseFloat(item.price || 0),
+    quantity: parseInt(item.quantity || 1),
+    currency: 'MXN'
+  }));
+
+  debugLog('📘 Meta Pixel - Purchase Event:', {
+    transaction_id,
+    value,
+    items_received: items,
+    formatted_items: formattedItems,
+    items_count: formattedItems.length
   });
 
   fbq('track', 'Purchase', {

@@ -1,36 +1,59 @@
+/* eslint-env browser */
+/* global process */
 // Utilidades para Google Analytics 4 - Enhanced Ecommerce Events
 
-// Función para enviar eventos a Google Analytics
+// ===== DEBUG HELPERS (declarados antes de usarlos) =====
+const isDebugMode = () => {
+  if (typeof window === 'undefined') return false;
+  return process.env.NEXT_PUBLIC_DEBUG === 'true';
+};
+
+const debugLog = (...args) => {
+  if (isDebugMode()) {
+    console.log(...args);
+  }
+};
+
+const debugError = (...args) => {
+  if (isDebugMode()) {
+    console.error(...args);
+  }
+};
+
+// ===== GTAG WRAPPER =====
+// Función para enviar eventos a Google Analytics (usa window.gtag)
 export const gtag = (...args) => {
-  if (typeof window !== 'undefined' && window.gtag) {
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
     window.gtag(...args);
   }
 };
 
+// ===== FORMATTERS =====
 // Función para formatear productos para GA4
 // Extrae los nombres de los objetos que envía ProductSerializer
 const formatProductForGA = (product, quantity = 1, price = null) => {
   return {
-    item_id: product.id?.toString() || '',
-    item_name: product.titulo || '',
-    item_category: product.categoria?.name || '',     // categoria.name del objeto que envía el backend
-    item_brand: product.marca?.nombre || '',          // marca.nombre del objeto que envía el backend
-    price: price || parseFloat(product.precio_contado || 0),
-    quantity: parseInt(quantity) || 1,
-    currency: 'MXN'
+    // Recomendado: usar SKU o GTIN como item_id; fallback a ID interno
+    item_id: product?.sku?.toString?.() || product?.id?.toString?.() || '',
+    item_name: product?.titulo || '',
+    item_category: product?.categoria?.name || '',   // categoria.name del backend
+    item_brand: product?.marca?.nombre || '',        // marca.nombre del backend
+    price: price ?? parseFloat(product?.precio_contado ?? 0),
+    quantity: Number.parseInt(quantity, 10) || 1
+    // currency no va a nivel item en GA4
   };
 };
 
-// Función para formatear carrito completo para GA4
+// Formatear carrito completo para GA4
 const formatCartForGA = (cart, cartMsi = false) => {
   return cart.map(item => {
     let price;
 
-    // Si el item tiene un unit_price y quote_id, usar ese precio (desde la cotización)
+    // Si el item tiene unit_price y quote_id, usar ese precio (desde la cotización)
     if (item.unit_price && item.quote_id) {
       price = parseFloat(item.unit_price);
     } else {
-      // Usar la lógica normal basada en el modo MSI
+      // Lógica basada en el modo MSI
       price = !cartMsi
         ? parseFloat(item.product.precio_contado)
         : parseFloat(item.product.precio_final_descuento) > 0
@@ -42,106 +65,8 @@ const formatCartForGA = (cart, cartMsi = false) => {
   });
 };
 
-// 1. Evento: Ver producto (view_item)
-export const trackViewItem = (product) => {
-  gtag('event', 'view_item', {
-    currency: 'MXN',
-    value: parseFloat(product.precio_contado || product.price || 0),
-    items: [formatProductForGA(product)]
-  });
-};
-
-// 2. Evento: Agregar al carrito (add_to_cart)
-export const trackAddToCart = (product, quantity = 1, cartValue = 0) => {
-  const formattedProduct = formatProductForGA(product, quantity);
-
-  debugLog('🛒 Google Analytics - Add to Cart Event:', {
-    product_id: product.id,
-    product_titulo: product.titulo,
-    extracted_categoria: product.categoria?.name,    // Extraído del objeto
-    extracted_marca: product.marca?.nombre,          // Extraído del objeto
-    product_precio_contado: product.precio_contado,
-    formatted_for_ga: formattedProduct,              // Datos finales para GA4
-    quantity,
-    cartValue
-  });
-
-  gtag('event', 'add_to_cart', {
-    currency: 'MXN',
-    value: cartValue,
-    items: [formattedProduct]
-  });
-};
-
-// 3. Evento: Remover del carrito (remove_from_cart)
-export const trackRemoveFromCart = (product, quantity = 1, cartValue = 0) => {
-  gtag('event', 'remove_from_cart', {
-    currency: 'MXN',
-    value: cartValue,
-    items: [formatProductForGA(product, quantity)]
-  });
-};
-
-// 4. Evento: Ver carrito (view_cart)
-export const trackViewCart = (cart, cartTotal, cartMsi = false) => {
-  if (!cart || cart.length === 0) return;
-
-  gtag('event', 'view_cart', {
-    currency: 'MXN',
-    value: cartTotal,
-    items: formatCartForGA(cart, cartMsi)
-  });
-};
-
-// 5. Evento: Iniciar checkout (begin_checkout)
-export const trackBeginCheckout = (cart, cartTotal, cartMsi = false) => {
-  if (!cart || cart.length === 0) return;
-
-  gtag('event', 'begin_checkout', {
-    currency: 'MXN',
-    value: cartTotal,
-    items: formatCartForGA(cart, cartMsi)
-  });
-};
-
-// 6. Evento: Información de envío (add_shipping_info)
-export const trackAddShippingInfo = (cart, cartTotal, shippingTier, cartMsi = false) => {
-  if (!cart || cart.length === 0) return;
-
-  gtag('event', 'add_shipping_info', {
-    currency: 'MXN',
-    value: cartTotal,
-    shipping_tier: shippingTier,
-    items: formatCartForGA(cart, cartMsi)
-  });
-};
-
-// 7. Evento: Información de pago (add_payment_info)
-export const trackAddPaymentInfo = (cart, cartTotal, paymentType, cartMsi = false) => {
-  if (!cart || cart.length === 0) return;
-
-  gtag('event', 'add_payment_info', {
-    currency: 'MXN',
-    value: cartTotal,
-    payment_type: paymentType,
-    items: formatCartForGA(cart, cartMsi)
-  });
-};
-
-// Helper para logging condicional basado en variable de debug
-const debugLog = (...args) => {
-  if (process.env.NEXT_PUBLIC_DEBUG === 'true') {
-    console.log(...args);
-  }
-};
-
-const debugError = (...args) => {
-  if (process.env.NEXT_PUBLIC_DEBUG === 'true') {
-    console.error(...args);
-  }
-};
-
-// Función helper para esperar a que Google Analytics esté disponible
+// ===== WAIT FOR GTAG =====
+// Esperar a que Google Analytics esté disponible
 const waitForGtag = (maxAttempts = 10, interval = 500) => {
   return new Promise((resolve, reject) => {
     let attempts = 0;
@@ -150,7 +75,7 @@ const waitForGtag = (maxAttempts = 10, interval = 500) => {
       attempts++;
       debugLog(`🔄 Google Analytics - Attempt ${attempts}/${maxAttempts} - checking gtag availability`);
 
-      if (typeof gtag === 'function' && window.dataLayer) {
+      if (typeof window !== 'undefined' && typeof window.gtag === 'function' && window.dataLayer) {
         debugLog('✅ Google Analytics - gtag is available!');
         resolve(true);
         return;
@@ -169,22 +94,107 @@ const waitForGtag = (maxAttempts = 10, interval = 500) => {
   });
 };
 
-// 8. Evento: Compra completada (purchase)
+// ===== ECOM EVENTS =====
+
+// 1. Ver producto (view_item)
+export const trackViewItem = (product) => {
+  gtag('event', 'view_item', {
+    currency: 'MXN',
+    value: parseFloat(product?.precio_contado ?? product?.price ?? 0),
+    items: [formatProductForGA(product)]
+  });
+};
+
+// 2. Agregar al carrito (add_to_cart)
+export const trackAddToCart = (product, quantity = 1, cartValue = 0) => {
+  const formattedProduct = formatProductForGA(product, quantity);
+
+  debugLog('🛒 Google Analytics - Add to Cart Event:', {
+    product_id: product?.id,
+    product_sku: product?.sku,
+    product_titulo: product?.titulo,
+    extracted_categoria: product?.categoria?.name,
+    extracted_marca: product?.marca?.nombre,
+    product_precio_contado: product?.precio_contado,
+    formatted_for_ga: formattedProduct,
+    quantity,
+    cartValue
+  });
+
+  gtag('event', 'add_to_cart', {
+    currency: 'MXN',
+    value: cartValue,
+    items: [formattedProduct]
+  });
+};
+
+// 3. Remover del carrito (remove_from_cart)
+export const trackRemoveFromCart = (product, quantity = 1, cartValue = 0) => {
+  gtag('event', 'remove_from_cart', {
+    currency: 'MXN',
+    value: cartValue,
+    items: [formatProductForGA(product, quantity)]
+  });
+};
+
+// 4. Ver carrito (view_cart)
+export const trackViewCart = (cart, cartTotal, cartMsi = false) => {
+  if (!cart || cart.length === 0) return;
+
+  gtag('event', 'view_cart', {
+    currency: 'MXN',
+    value: cartTotal,
+    items: formatCartForGA(cart, cartMsi)
+  });
+};
+
+// 5. Iniciar checkout (begin_checkout)
+export const trackBeginCheckout = (cart, cartTotal, cartMsi = false) => {
+  if (!cart || cart.length === 0) return;
+
+  gtag('event', 'begin_checkout', {
+    currency: 'MXN',
+    value: cartTotal,
+    items: formatCartForGA(cart, cartMsi)
+  });
+};
+
+// 6. Información de envío (add_shipping_info)
+export const trackAddShippingInfo = (cart, cartTotal, shippingTier, cartMsi = false) => {
+  if (!cart || cart.length === 0) return;
+
+  gtag('event', 'add_shipping_info', {
+    currency: 'MXN',
+    value: cartTotal,
+    shipping_tier: shippingTier, // 'pickup' | 'standard' | 'express' | etc.
+    items: formatCartForGA(cart, cartMsi)
+  });
+};
+
+// 7. Información de pago (add_payment_info)
+export const trackAddPaymentInfo = (cart, cartTotal, paymentType, cartMsi = false) => {
+  if (!cart || cart.length === 0) return;
+
+  gtag('event', 'add_payment_info', {
+    currency: 'MXN',
+    value: cartTotal,
+    payment_type: paymentType, // 'credit_card' | 'debit_card' | 'kueskipay' | etc.
+    items: formatCartForGA(cart, cartMsi)
+  });
+};
+
+// 8. Compra completada (purchase)
 export const trackPurchase = async (orderData) => {
   debugLog('🎯 Google Analytics - trackPurchase called with:', orderData);
 
-  // Verificar que gtag esté disponible
   debugLog('🔍 Google Analytics - gtag check:', {
-    typeof_gtag: typeof gtag,
-    gtag_function: typeof gtag === 'function',
-    window_gtag: typeof window.gtag,
-    global_gtag: typeof globalThis.gtag,
-    dataLayer_exists: !!window.dataLayer,
-    dataLayer_length: window.dataLayer ? window.dataLayer.length : 0
+    typeof_window_gtag: typeof window !== 'undefined' ? typeof window.gtag : 'no-window',
+    dataLayer_exists: typeof window !== 'undefined' ? !!window.dataLayer : false,
+    dataLayer_length: typeof window !== 'undefined' && window.dataLayer ? window.dataLayer.length : 0
   });
 
   // Si gtag no está disponible, esperar a que se cargue
-  if (typeof gtag !== 'function') {
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function') {
     debugLog('⏳ Google Analytics - gtag not available, waiting...');
     try {
       await waitForGtag();
@@ -194,31 +204,10 @@ export const trackPurchase = async (orderData) => {
     }
   }
 
-  // Verificar datos obligatorios
   if (!orderData) {
     debugError('❌ Google Analytics - No order data provided for purchase tracking');
     return;
   }
-
-  debugLog('✅ Google Analytics - Initial validations passed');
-
-  // Instrucciones para verificar en GA4
-  debugLog(`
-  📋 INSTRUCCIONES PARA VERIFICAR EN GOOGLE ANALYTICS 4:
-  
-  1️⃣ Evento Principal - PURCHASE:
-     • Ve a: Eventos > purchase
-     • O ve a: Monetización > Resumen de ecommerce
-     • Deberías ver: transaction_id, value, items
-  
-  2️⃣ Tiempo Real:
-     • Ve a: Informes > Tiempo real > Eventos
-     • Busca: "purchase" en los últimos minutos
-  
-  3️⃣ Debug View (Recomendado):
-     • Instala GA Debugger extension
-     • O activa Debug View en GA4
-  `);
 
   const {
     transaction_id,
@@ -227,7 +216,8 @@ export const trackPurchase = async (orderData) => {
     shipping = 0,
     items,
     coupon = '',
-    cartMsi = false
+    cartMsi = false,
+    affiliation = 'PCStore' // recomendado para reportes
   } = orderData;
 
   // Validaciones
@@ -236,7 +226,7 @@ export const trackPurchase = async (orderData) => {
     return;
   }
 
-  if (!value || isNaN(parseFloat(value))) {
+  if (value === undefined || value === null || isNaN(parseFloat(value))) {
     debugError('Google Analytics - Invalid value provided for purchase tracking:', value);
     return;
   }
@@ -246,10 +236,21 @@ export const trackPurchase = async (orderData) => {
     return;
   }
 
-  // Formatear items si vienen del carrito
+  // Formatear items dependiendo de su origen
   const formattedItems = items.map(item => {
+    // Si viene de order confirmation (ya formateado de analytics previo)
+    if (item.item_id) {
+      return {
+        item_id: item.item_id,
+        item_name: item.item_name,
+        item_category: item.item_category,
+        item_brand: item.item_brand,
+        price: parseFloat(item.price || 0),
+        quantity: parseInt(item.quantity) || 1
+      };
+    }
+    // Si viene del carrito (lógica existente)
     if (item.product) {
-      // Es un item del carrito
       let price;
       if (item.unit_price && item.quote_id) {
         price = parseFloat(item.unit_price);
@@ -261,10 +262,9 @@ export const trackPurchase = async (orderData) => {
             : parseFloat(item.product.precio_final);
       }
       return formatProductForGA(item.product, item.quantity, price);
-    } else {
-      // Ya está formateado
-      return item;
     }
+    // Ya viene formateado
+    return item;
   });
 
   const purchaseEventData = {
@@ -274,6 +274,7 @@ export const trackPurchase = async (orderData) => {
     shipping: parseFloat(shipping),
     currency: 'MXN',
     coupon,
+    affiliation,
     items: formattedItems
   };
 
@@ -281,95 +282,69 @@ export const trackPurchase = async (orderData) => {
   debugLog('📊 Google Analytics - Purchase Event Data:', {
     ...purchaseEventData,
     items_count: formattedItems.length,
-    gtag_available: typeof gtag === 'function',
-    ga_id: window.gtag_id || 'not_available'
+    ga_id: typeof window !== 'undefined' ? (window.gtag_id || 'not_available') : 'no-window'
   });
 
   // Enviar evento a Google Analytics
   try {
     debugLog('⏰ Google Analytics - Setting timeout for event dispatch');
-    // Asegurar que el evento se envíe con un pequeño delay para evitar problemas de timing
     setTimeout(() => {
       debugLog('🚀 Google Analytics - About to send purchase event');
-      debugLog('🔍 Google Analytics - Pre-send gtag check:', typeof gtag);
-
       try {
         gtag('event', 'purchase', purchaseEventData);
-        debugLog('🛒 Google Analytics - PURCHASE event sent successfully (this is the main ecommerce event)');
-        debugLog('📊 Data sent:', purchaseEventData);
-        debugLog('🔍 Check in GA4: Events > purchase OR Monetization > Ecommerce overview');
+        debugLog('🛒 Google Analytics - PURCHASE event sent successfully (main ecommerce event)');
       } catch (eventError) {
         debugError('❌ Google Analytics - Error in gtag purchase call:', eventError);
       }
 
-      // Conversión opcional (solo si tienes objetivos configurados en Google Ads)
-      const sendConversion = false; // Cambia a true si usas Google Ads
-      if (sendConversion && window.gtag_id) {
-        try {
-          const conversionData = {
-            send_to: window.gtag_id,
-            transaction_id: purchaseEventData.transaction_id,
-            value: purchaseEventData.value,
-            currency: 'MXN'
-          };
-          debugLog('🎯 Google Analytics - About to send conversion event for Google Ads:', conversionData);
-          gtag('event', 'conversion', conversionData);
-          debugLog('✅ Google Analytics - Conversion event sent for Google Ads tracking');
-        } catch (conversionError) {
-          debugError('❌ Google Analytics - Error in gtag conversion call:', conversionError);
-        }
-      } else {
-        debugLog('ℹ️ Google Analytics - Conversion event skipped (disabled or no ads tracking)');
-      }
+
     }, 100);
   } catch (error) {
     debugError('❌ Google Analytics - Error setting up purchase event:', error);
   }
 };
 
-// 9. Evento: Búsqueda (search)
+// 9. Búsqueda (search)
 export const trackSearch = (searchTerm, searchResults = null) => {
   const eventData = {
     search_term: searchTerm
   };
-
   if (searchResults !== null) {
     eventData.search_results = searchResults;
   }
-
   gtag('event', 'search', eventData);
 };
 
-// 10. Evento: Seleccionar item (select_item)
-export const trackSelectItem = (product, itemListName = 'Search Results', index = null) => {
+// 10. Seleccionar item (select_item)
+export const trackSelectItem = (product, itemListName = 'Search Results', index = null, itemListId = null) => {
   const eventData = {
     item_list_name: itemListName,
+    ...(itemListId ? { item_list_id: itemListId } : {}),
     items: [formatProductForGA(product)]
   };
-
   if (index !== null) {
     eventData.items[0].index = index;
   }
-
   gtag('event', 'select_item', eventData);
 };
 
-// 11. Evento: Ver lista de items (view_item_list)
-export const trackViewItemList = (products, itemListName = 'Product List') => {
+// 11. Ver lista de items (view_item_list)
+export const trackViewItemList = (products, itemListName = 'Product List', itemListId = null) => {
   if (!products || products.length === 0) return;
 
   const items = products.map((product, index) => ({
     ...formatProductForGA(product),
-    index: index
+    index
   }));
 
   gtag('event', 'view_item_list', {
     item_list_name: itemListName,
+    ...(itemListId ? { item_list_id: itemListId } : {}),
     items: items.slice(0, 100) // GA4 limita a 100 items
   });
 };
 
-// 12. Evento: Generar cotización (generate_lead)
+// 12. Generar cotización (generate_lead)
 export const trackGenerateLead = (value = 0, currency = 'MXN') => {
   gtag('event', 'generate_lead', {
     currency,
@@ -377,53 +352,52 @@ export const trackGenerateLead = (value = 0, currency = 'MXN') => {
   });
 };
 
-// 13. Evento: Registrarse (sign_up)
+// 13. Registrarse (sign_up)
 export const trackSignUp = (method = 'email') => {
   gtag('event', 'sign_up', {
     method
   });
 };
 
-// 14. Evento: Iniciar sesión (login)
+// 14. Iniciar sesión (login)
 export const trackLogin = (method = 'email') => {
   gtag('event', 'login', {
     method
   });
 };
 
-// 15. Evento: Compartir producto (share)
+// 15. Compartir producto (share)
 export const trackShare = (product, method = 'link') => {
   gtag('event', 'share', {
     method,
     content_type: 'product',
-    item_id: product.id?.toString() || ''
+    item_id: product?.sku?.toString?.() || product?.id?.toString?.() || ''
   });
 };
 
-// Funciones de utilidad adicionales
+// ===== USER & PAGE HELPERS =====
 
 // Configurar ID de usuario (para usuarios autenticados)
 export const setUserId = (userId) => {
-  gtag('config', window.gtag_id || 'GA_MEASUREMENT_ID', {
+  gtag('config', (typeof window !== 'undefined' && window.gtag_id) || 'GA_MEASUREMENT_ID', {
     user_id: userId
   });
 };
 
-// Configurar propiedades personalizadas del usuario
+// Configurar propiedades personalizadas del usuario (API correcta en GA4)
 export const setUserProperties = (properties) => {
-  gtag('event', 'set_user_properties', properties);
+  gtag('set', 'user_properties', properties);
 };
 
-// Configurar página actual (para SPA)
+// Track de página (SPA). Recomendado tener config inicial con { send_page_view: false }
 export const trackPageView = (page_path, page_title = null) => {
   const eventData = {
-    page_path
+    page_path,
+    page_location: typeof window !== 'undefined' ? window.location.href : undefined
   };
-
   if (page_title) {
     eventData.page_title = page_title;
   }
-
   gtag('event', 'page_view', eventData);
 };
 
