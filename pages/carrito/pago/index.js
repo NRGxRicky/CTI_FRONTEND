@@ -10,6 +10,7 @@ import StatusBarCart from '../../../components/StatusBarCart/StatusBarCart';
 import { useEnv } from '../../../context/EnvContext';
 import CartContext from '../../../context/CartContext';
 import { trackAddPaymentInfo } from '../../../utils/analytics';
+import { trackMetaAddPaymentInfo } from '../../../utils/metaAnalytics';
 
 const index = () => {
 	const { isAuthenticated, loading, accessToken, cartMsi } = useAuth();
@@ -28,10 +29,14 @@ const index = () => {
 		}
 	}, [loadingCart, cart]);
 
-	// Trackear evento add_payment_info cuando se accede a la página de pago
+	// Trackear eventos cuando se accede a la página de pago
 	useEffect(() => {
 		if (cart && cart.length > 0 && !loadingCart && paymentMethod) {
+			// Google Analytics
 			trackAddPaymentInfo(cart, total, paymentMethod, cartMsi);
+
+			// Meta Pixel
+			trackMetaAddPaymentInfo(cart, total, cartMsi);
 		}
 	}, [cart, total, paymentMethod, cartMsi, loadingCart]);
 

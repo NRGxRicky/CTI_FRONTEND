@@ -9,6 +9,7 @@ import Router from 'next/router';
 import { useAuth } from '../../hooks/auth';
 import CartContext from '../../context/CartContext';
 import { trackViewCart } from '../../utils/analytics';
+import { trackMetaAddToWishlist } from '../../utils/metaAnalytics';
 
 const index = () => {
 	const { storeName, metaDescription, titlePostDescription } = useEnv();
@@ -19,10 +20,14 @@ const index = () => {
 		Router.push(`/login?redirect=${encodeURIComponent(Router.asPath)}`);
 	}
 
-	// Trackear evento view_cart cuando se carga la página del carrito
+	// Trackear eventos cuando se carga la página del carrito
 	useEffect(() => {
 		if (cart && cart.length > 0) {
+			// Google Analytics
 			trackViewCart(cart, total, cartMsi);
+
+			// Meta Pixel (usamos AddToWishlist como equivalente a view_cart)
+			trackMetaAddToWishlist(cart, total, cartMsi);
 		}
 	}, [cart, total, cartMsi]);
 

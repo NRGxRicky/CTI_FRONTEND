@@ -46,5 +46,58 @@ export const getPaymentOption = (paymentId) =>
   paymentOptions.find(option => option.id === paymentId);
 
 // Función helper para filtrar opciones por tipo (msi o contado)
-export const getPaymentOptionsByType = (isMsi) =>
-  paymentOptions.filter(option => isMsi ? option.msi : option.contado); 
+export const getPaymentOptionsByType = (isMsi, includeSandbox = false) => {
+  let options = paymentOptions.filter(option => isMsi ? option.msi : option.contado);
+  
+  // Agregar opciones de sandbox si está habilitado
+  if (includeSandbox && typeof window !== 'undefined') {
+    const isSandboxMode = process.env.NODE_ENV === 'development' || 
+                          process.env.NEXT_PUBLIC_SANDBOX_MODE === 'true' ||
+                          new URLSearchParams(window.location.search).get('sandbox');
+    
+    if (isSandboxMode) {
+      const sandboxOptions = [
+        {
+          id: 'sandbox_card',
+          title: '💳 Tarjeta Sandbox',
+          subtitle: 'Simula pago con tarjeta (siempre exitoso)',
+          imgSrc: '/images/sandbox-card.png',
+          msi: true,
+          contado: true,
+          sandbox: true
+        },
+        {
+          id: 'sandbox_paypal',
+          title: '🅿️ PayPal Sandbox',
+          subtitle: 'Simula pago con PayPal (siempre exitoso)',
+          imgSrc: '/images/paypal-logo-footer.png',
+          msi: true,
+          contado: true,
+          sandbox: true
+        },
+        {
+          id: 'sandbox_transfer',
+          title: '🏦 Transferencia Sandbox',
+          subtitle: 'Simula transferencia bancaria (siempre exitosa)',
+          imgSrc: '/images/logos/deposit-3banks.png',
+          msi: true,
+          contado: true,
+          sandbox: true
+        },
+        {
+          id: 'sandbox_failure',
+          title: '❌ Pago Fallido (Test)',
+          subtitle: 'Simula fallo de pago para testing',
+          imgSrc: '/images/sandbox-error.png',
+          msi: true,
+          contado: true,
+          sandbox: true
+        }
+      ];
+      
+      options = [...options, ...sandboxOptions];
+    }
+  }
+  
+  return options;
+}; 

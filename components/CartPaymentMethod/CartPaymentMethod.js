@@ -11,6 +11,7 @@ import formasDePago from '../../hooks/formasDePago';
 import regimenesFiscales from '../../hooks/regimenesFiscales';
 import usosCFDI from '../../hooks/usosCFDI';
 import { getPaymentOptionsByType } from '../constants/paymentOptions';
+import { useSandbox } from '../../hooks/useSandbox';
 
 const CartPaymentMethod = () => {
 	const { taxInvoice, setTaxInvoice, paymentMethod, setPaymentMethod } = useCart();
@@ -26,6 +27,9 @@ const CartPaymentMethod = () => {
 	const [activeInvoiceId, setActiveInvoiceId] = useState(taxInvoice?.id || 0);
 	const [isProfileAddInvoiceVisible, setProfileAddInvoiceVisible] = useState(false);
 	const [billingActivated, setBillingActivated] = useState(false);
+	
+	// Sandbox mode hook
+	const { isSandboxMode, getSandboxBadge } = useSandbox();
 
 	/* === Helpers para mostrar las descripciones (usos, regímenes, formas de pago) === */
 	const getUsoCFDIDescription = (usoKey) => {
@@ -189,7 +193,14 @@ const CartPaymentMethod = () => {
 					</div>
 
 					<div className='cart-payment-method__payments-options'>
-						{getPaymentOptionsByType(cartMsi)
+						{/* Sandbox Mode Badge */}
+						{isSandboxMode && getSandboxBadge().show && (
+							<div className='sandbox-payment-badge'>
+								🏖️ {getSandboxBadge().text} - Métodos de pago adicionales disponibles
+							</div>
+						)}
+						
+						{getPaymentOptionsByType(cartMsi, isSandboxMode)
 
 							.map((option) => (
 								<div
@@ -569,6 +580,32 @@ const CartPaymentMethod = () => {
 				}
 				.new-rfc-button:hover {
 					background-color: #ffa01b;
+				}
+
+				/* Sandbox Payment Badge */
+				.sandbox-payment-badge {
+					background: linear-gradient(45deg, #ff6b35, #f7931e);
+					color: white;
+					padding: 10px 15px;
+					border-radius: 8px;
+					text-align: center;
+					font-weight: bold;
+					font-size: 14px;
+					margin-bottom: 20px;
+					box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
+					animation: pulse 2s infinite;
+				}
+
+				@keyframes pulse {
+					0% {
+						box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
+					}
+					50% {
+						box-shadow: 0 3px 15px rgba(255, 107, 53, 0.6);
+					}
+					100% {
+						box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
+					}
 				}
 
 				@media only screen and (max-width: 62em) {

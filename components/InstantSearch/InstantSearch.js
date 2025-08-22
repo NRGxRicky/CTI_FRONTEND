@@ -6,6 +6,7 @@ import TruncateMarkup from 'react-truncate-markup';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 import { trackSearch as trackGoogleAnalyticsSearch } from '../../utils/analytics';
+import { trackMetaSearch } from '../../utils/metaAnalytics';
 
 // Hook personalizado para efecto de escritura tipo IA
 const useTypewriter = (text, speed = 50, enabled = true) => {
@@ -171,8 +172,12 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 				body: JSON.stringify({ query: query.trim().toLowerCase() })
 			});
 
-			// Trackear en Google Analytics
+			// Trackear búsquedas en Analytics
+			// Google Analytics
 			trackGoogleAnalyticsSearch(query.trim());
+
+			// Meta Pixel
+			trackMetaSearch(query.trim());
 		} catch (error) {
 			console.error('Error al trackear búsqueda:', error);
 		}

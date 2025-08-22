@@ -11,6 +11,7 @@ import Capitalize from '../../hooks/CapitalizeTitle';
 import { useEnv } from '../../context/EnvContext';
 import KueskiPayWidget from '../KueskiPayWidget/KueskiPayWidget';
 import { getPaymentOptionsByType } from '../constants/paymentOptions';
+import { useSandbox } from '../../hooks/useSandbox';
 
 const SummaryDetails = ({ urlAction, step }) => {
 	const {
@@ -32,6 +33,18 @@ const SummaryDetails = ({ urlAction, step }) => {
 	const { storeId } = useEnv();
 	const [kueskiCallbackUrl, setKueskiCallbackUrl] = useState(null);
 	const [aplazoCheckoutUrl, setAplazoCheckoutUrl] = useState(null);
+
+	// Sandbox mode hook
+	const {
+		isSandboxMode,
+		sandboxConfig,
+		simulatePayment,
+		simulatePaymentFailure,
+		getSandboxPaymentMethods,
+		shouldSkipPaymentGateway,
+		log,
+		getSandboxBadge
+	} = useSandbox();
 
 	// Referencias para PayPal y Mercado Pago
 	const paypalRef = useRef(null);
@@ -211,6 +224,85 @@ const SummaryDetails = ({ urlAction, step }) => {
 		taxInvoice,
 		clearCart,
 	]);
+
+	//-------------------------------------------------------------------
+	// SANDBOX: Función para procesar pago de sandbox
+	//-------------------------------------------------------------------
+	const handleSandboxPayment = async () => {
+		log('Iniciando proceso de pago sandbox', { paymentMethod, cart, total });
+
+		try {
+			// Simular el proceso de pago
+			let paymentResult;
+
+			if (paymentMethod === 'sandbox_failure') {
+				paymentResult = await simulatePaymentFailure('card_declined');
+			} else {
+				paymentResult = await simulatePayment({
+					payment_method: paymentMethod,
+					amount: total,
+					cart: cart,
+					address: address,
+					taxInvoice: taxInvoice
+				});
+			}
+
+			log('Resultado del pago sandbox', paymentResult);
+
+			if (paymentResult.success) {
+				// Crear orden directamente sin pasarela de pago usando endpoint específico de sandbox
+				const orderData = {
+					sandboxPayment: paymentResult,
+					requireInvoice: !!taxInvoice,
+					payment_method: paymentMethod,
+					sandbox: true,
+					sandbox_key: process.env.NEXT_PUBLIC_SANDBOX_KEY,
+					total_amount: total
+				};
+
+				console.log('🏖️ SANDBOX: Enviando datos al backend:', {
+					url: 'https://api.pccdnapi.com/sandbox/orders/create/',
+					orderData,
+					accessToken: accessToken ? 'Present' : 'Missing',
+					paymentMethod,
+					total
+				});
+
+				const response = await fetch('https://api.pccdnapi.com/sandbox/orders/create/', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${accessToken}`,
+					},
+					body: JSON.stringify(orderData),
+				});
+
+				if (response.ok) {
+					const json = await response.json();
+					log('Orden creada exitosamente', json);
+					router.push(`/compras/confirmacion/?orderId=${json.orderId}`);
+					setTimeout(() => {
+						clearCart();
+					}, 3000);
+				} else {
+					const errData = await response.json();
+					console.error('Sandbox Error Details:', {
+						status: response.status,
+						statusText: response.statusText,
+						error: errData.error,
+						traceback: errData.traceback,
+						fullResponse: errData
+					});
+					alert('Error al crear la orden: ' + (errData.error || errData.detail || response.statusText));
+				}
+			} else {
+				alert(`Error de pago sandbox: ${paymentResult.errorMessage}`);
+			}
+		} catch (error) {
+			console.error('Error en pago sandbox:', error);
+			alert('Error al procesar el pago sandbox');
+		}
+	};
 
 	//-------------------------------------------------------------------
 	// USE EFFECT: Renderizado de Mercado Pago (Brick "wallet")
@@ -587,7 +679,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 						</div>
 						<div className='payments__option__body'>
 							{getPaymentOptionsByType(false)
-								
+
 								.map((option) => (
 									<div
 										key={option.id}
@@ -626,21 +718,39 @@ const SummaryDetails = ({ urlAction, step }) => {
 					</div>
 				)}
 
-				{/* Botón "Continuar" o "Comprar" */}
-				{urlAction && (
-					<Link href={`${urlAction}`} legacyBehavior>
-						<a>
-							<button
-								className='proceed-checkout'
-								disabled={
-									(!address && step === 'shipping') ||
-									(!paymentMethod && (step === 'payment' || step === 'confirm'))
-								}
-							>
-								{step === 'confirm' ? 'Comprar' : 'Continuar'}
-							</button>
-						</a>
-					</Link>
+				{/* Sandbox Mode Badge */}
+				{isSandboxMode && getSandboxBadge().show && (
+					<div className='sandbox-badge'>
+						🏖️ {getSandboxBadge().text}
+					</div>
+				)}
+
+				{/* Botón de Sandbox para saltar pasarela de pago */}
+				{isSandboxMode && step === 'confirm' && shouldSkipPaymentGateway(paymentMethod) ? (
+					<button
+						className='proceed-checkout sandbox-button'
+						onClick={handleSandboxPayment}
+						disabled={!address || !paymentMethod}
+					>
+						🏖️ Comprar (Sandbox Mode)
+					</button>
+				) : (
+					/* Botón "Continuar" o "Comprar" normal */
+					urlAction && (
+						<Link href={`${urlAction}`} legacyBehavior>
+							<a>
+								<button
+									className='proceed-checkout'
+									disabled={
+										(!address && step === 'shipping') ||
+										(!paymentMethod && (step === 'payment' || step === 'confirm'))
+									}
+								>
+									{step === 'confirm' ? 'Comprar' : 'Continuar'}
+								</button>
+							</a>
+						</Link>
+					)
 				)}
 
 				{/* PayPal container */}
@@ -908,6 +1018,60 @@ const SummaryDetails = ({ urlAction, step }) => {
             border-radius: 4px;
             margin-left: 10px;
             font-weight: 500;
+          }
+
+          /* Sandbox Mode Styles */
+          .sandbox-badge {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+            animation: pulse 2s infinite;
+          }
+
+          .proceed-checkout.sandbox-button {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: 2px solid #ff6b35;
+            position: relative;
+            overflow: hidden;
+          }
+
+          .proceed-checkout.sandbox-button:hover {
+            background: linear-gradient(45deg, #e55a2b, #e0841a);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+          }
+
+          .proceed-checkout.sandbox-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+          }
+
+          .proceed-checkout.sandbox-button:hover:before {
+            left: 100%;
+          }
+
+          @keyframes pulse {
+            0% {
+              box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+            }
+            50% {
+              box-shadow: 0 2px 12px rgba(255, 107, 53, 0.6);
+            }
+            100% {
+              box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+            }
           }
         `}
 			</style>

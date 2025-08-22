@@ -91,7 +91,18 @@ export const getSocialShareUrls = (url, title, description = '', image = '') => 
   };
 };
 
-// Función para abrir ventana de compartir y trackear
+// Función auxiliar para crear y hacer click en enlace (evita user gesture errors)
+const createAndClickLink = (url, target = '_blank') => {
+  const link = document.createElement('a');
+  link.href = url;
+  link.target = target;
+  link.rel = 'noopener noreferrer';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+// Función para abrir nueva pestaña de compartir y trackear
 export const openShareWindow = (platform, shareUrl, product = null) => {
   // Trackear el evento
   if (product) {
@@ -100,36 +111,29 @@ export const openShareWindow = (platform, shareUrl, product = null) => {
     trackSocialShare(platform, window.location.href, document.title);
   }
 
-  // Configuraciones de ventana para diferentes plataformas
-  const windowConfig = {
-    facebook: 'width=600,height=400',
-    twitter: 'width=600,height=400',
-    linkedin: 'width=600,height=400',
-    pinterest: 'width=750,height=320',
-    default: 'width=600,height=400'
-  };
-
-  const config = windowConfig[platform] || windowConfig.default;
-
-  // Abrir ventana de compartir
+  // Abrir ventana/pestaña de compartir
   if (platform === 'whatsapp' && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
     // En móvil, abrir WhatsApp directamente
-    window.location.href = shareUrl;
+    createAndClickLink(shareUrl);
   } else if (platform === 'email') {
-    // Para email, usar mailto
-    window.location.href = shareUrl;
+    // Para email, intentar abrir en la misma ventana para evitar user gesture error
+    try {
+      window.location.href = shareUrl;
+    } catch (error) {
+      // Si falla, usar método alternativo
+      createAndClickLink(shareUrl, '_self');
+    }
   } else if (platform === 'copy') {
     // Copiar al portapapeles
     navigator.clipboard.writeText(shareUrl).then(() => {
       // Opcional: mostrar notificación de copiado
-      console.log('URL copiada al portapapeles');
     });
   } else {
-    // Para otras redes, abrir ventana emergente
+    // Para redes sociales, abrir en nueva pestaña
     window.open(
       shareUrl,
-      'shareWindow',
-      `scrollbars=yes,resizable=yes,toolbar=no,location=yes,${config}`
+      '_blank',
+      'noopener,noreferrer'
     );
   }
 };

@@ -19,6 +19,7 @@ import Footer from '../components/Footer/Footer';
 import { useAppSelector } from '../lib/hooks';
 import { useEnv } from '../context/EnvContext';
 import { trackViewItem } from '../utils/analytics';
+import { trackMetaViewContent } from '../utils/metaAnalytics';
 
 
 export const getServerSideProps = async (context) => {
@@ -38,9 +39,10 @@ const ProductItem = ({ item }) => {
 	const { height, width } = WindowDimensions();
 	const router = useRouter();
 
-	// Enviar evento de Google Analytics cuando se visualiza el producto
+	// Enviar eventos de Google Analytics y Meta cuando se visualiza el producto
 	useEffect(() => {
 		if (item && item.id) {
+			// Google Analytics
 			trackViewItem({
 				id: item.id,
 				title: item.titulo,
@@ -49,6 +51,15 @@ const ProductItem = ({ item }) => {
 				marca: { nombre: item.marca },
 				precio_contado: item.precio_contado,
 				price: item.precio_contado
+			});
+
+			// Meta Pixel
+			trackMetaViewContent({
+				id: item.id,
+				titulo: item.titulo,
+				categoria: { nombre: item.categoria },
+				marca: { nombre: item.marca },
+				precio_contado: item.precio_contado
 			});
 		}
 	}, [item]);
@@ -216,7 +227,7 @@ const ProductItem = ({ item }) => {
 				</div>
 			</div>
 			<Footer />
-			<style>
+			<style jsx>
 				{`
 					.product__same-brand__recommended {
 						margin-top: 20px;

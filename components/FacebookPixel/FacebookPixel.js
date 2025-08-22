@@ -18,8 +18,11 @@ const FacebookPixel = () => {
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
             
-            fbq('init', ${process.env.NEXT_PUBLIC_FACEBOOK_PIXEL});
+            fbq('init', '${process.env.NEXT_PUBLIC_FACEBOOK_PIXEL}');
             fbq('track', 'PageView');
+            
+            // Hacer fbq disponible globalmente para el tracking
+            window.fbq_id = '${process.env.NEXT_PUBLIC_FACEBOOK_PIXEL}';
           `
         }}
       />
@@ -30,7 +33,7 @@ const FacebookPixel = () => {
           height="1"
           width="1"
           style={{ display: 'none' }}
-          src="https://www.facebook.com/tr?id=TU_PIXEL_ID_AQUI&ev=PageView&noscript=1"
+          src={`https://www.facebook.com/tr?id=${process.env.NEXT_PUBLIC_FACEBOOK_PIXEL}&ev=PageView&noscript=1`}
         />
       </noscript>
     </div>

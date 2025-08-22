@@ -12,6 +12,7 @@ import Capitalize from '../../../hooks/CapitalizeTitle';
 import Router from 'next/router';
 import Head from 'next/head';
 import { trackPurchase } from '../../../utils/analytics';
+import { trackMetaPurchase } from '../../../utils/metaAnalytics';
 export const metadata = {
 	title: 'Resumen de la compra',
 };
@@ -36,41 +37,89 @@ const Index = () => {
 
 		const fetchOrder = async () => {
 			try {
-				const response = await fetch(
-					`https://api.pccdnapi.com/orders/${orderId}/`,
-					{
-						method: 'GET',
-						headers: {
-							'Content-Type': 'application/json',
-							Authorization: `Bearer ${accessToken}`,
-						},
-					}
-				);
+				// Usar siempre el endpoint de producción (PccomputoOrdenDetailView)
+				const apiUrl = `https://api.pccdnapi.com/orders/${orderId}/`;
+
+				const response = await fetch(apiUrl, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${accessToken}`,
+					},
+				});
 
 				if (response.ok) {
 					const data = await response.json();
 					setOrder(data);
 
 					// Trackear evento de compra en Google Analytics
-					if (data && data.orderItems) {
-						const orderData = {
-							transaction_id: data.id,
-							value: data.totalAmount,
-							tax: data.taxAmount || 0,
-							shipping: data.shippingCost || 0,
-							items: data.orderItems.map(item => ({
-								item_id: item.product?.id?.toString() || '',
-								item_name: item.product?.titulo || item.product?.nombre || '',
-								item_category: item.product?.categoria || '',
-								item_brand: item.product?.marca || '',
-								price: parseFloat(item.unitPrice || item.product?.precio_contado || 0),
-								quantity: parseInt(item.quantity) || 1,
-								currency: 'MXN'
-							})),
-							coupon: data.couponCode || ''
+					if (data && data.items) {
+						// Debug logging controlado por NEXT_PUBLIC_DEBUG
+						const debugLog = (...args) => {
+							if (process.env.NEXT_PUBLIC_DEBUG === 'true') {
+								console.log(...args);
+							}
 						};
 
-						trackPurchase(orderData);
+						const debugError = (...args) => {
+							if (process.env.NEXT_PUBLIC_DEBUG === 'true') {
+								console.error(...args);
+							}
+						};
+
+						// Debug: Log de datos recibidos del servidor
+						debugLog('Order Confirmation - Data received from server:', {
+							id: data.id,
+							total: data.total,
+							shipping_cost: data.shipping_cost,
+							items: data.items,
+							items_count: data.items ? data.items.length : 0,
+							first_item: data.items && data.items.length > 0 ? data.items[0] : null
+						});
+
+						const orderData = {
+							transaction_id: data.id,
+							value: data.total,  // PccomputoOrdenSerializer usa 'total'
+							tax: 0,  // No hay campo tax en el serializer de producción
+							shipping: data.shipping_cost || 0,  // PccomputoOrdenSerializer usa 'shipping_cost'
+							items: data.items.map(item => ({
+								item_id: item.sku || item.id?.toString() || '',  // Usar SKU como ID
+								item_name: item.nombre_producto || '',  // PccomputoOrdenItemSerializer tiene 'nombre_producto'
+								item_category: '',  // No disponible en PccomputoOrdenItemSerializer
+								item_brand: '',     // No disponible en PccomputoOrdenItemSerializer  
+								price: parseFloat(item.precio_unitario || 0),  // PccomputoOrdenItemSerializer tiene 'precio_unitario'
+								quantity: parseInt(item.cantidad) || 1,  // PccomputoOrdenItemSerializer tiene 'cantidad'
+								currency: 'MXN'
+							})),
+							coupon: ''  // No hay campo coupon en el serializer de producción
+						};
+
+						// Debug: Log de datos preparados para Analytics
+						debugLog('Order Confirmation - Analytics order data prepared:', orderData);
+
+						// Debug adicional: Verificar estructura específica
+						debugLog('Order Confirmation - Analytics validation:', {
+							has_transaction_id: !!orderData.transaction_id,
+							transaction_id_value: orderData.transaction_id,
+							has_value: !!orderData.value && !isNaN(orderData.value),
+							value_amount: orderData.value,
+							has_items: !!orderData.items && Array.isArray(orderData.items),
+							items_count: orderData.items ? orderData.items.length : 0,
+							first_item: orderData.items && orderData.items.length > 0 ? orderData.items[0] : null,
+							gtag_available: typeof gtag !== 'undefined',
+							gtag_function: typeof gtag
+						});
+
+						// Google Analytics - con timeout para asegurar que gtag esté listo
+						setTimeout(() => {
+							debugLog('Order Confirmation - Calling trackPurchase with:', orderData);
+							trackPurchase(orderData);
+						}, 200);  // 200ms delay para asegurar que gtag esté disponible
+
+						// Meta Pixel
+						trackMetaPurchase(orderData);
+					} else {
+						debugError('Order Confirmation - No data or items available for tracking');
 					}
 				} else {
 					const errData = await response.json();

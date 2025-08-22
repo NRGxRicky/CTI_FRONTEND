@@ -8,6 +8,10 @@ import { useAuth } from '../hooks/auth';
 import { useRouter } from 'next/router';
 import GetShippingCost from '../hooks/GetShippingCost';
 import { trackAddToCart, trackRemoveFromCart } from '../utils/analytics';
+import {
+	trackMetaAddToCart,
+	trackMetaRemoveFromCart,
+} from '../utils/metaAnalytics';
 
 const CartContext = createContext();
 
@@ -274,7 +278,11 @@ export const CartProvider = ({ children }) => {
 						return acc + price * item.quantity;
 					}, 0);
 
+					// Google Analytics
 					trackAddToCart(product, quantity, cartValue);
+
+					// Meta Pixel
+					trackMetaAddToCart(product, quantity, cartValue);
 				}
 			} catch (error) {
 				console.error('Error adding to backend cart:', error);
@@ -309,7 +317,11 @@ export const CartProvider = ({ children }) => {
 					return acc + price * item.quantity;
 				}, 0);
 
+				// Google Analytics
 				trackAddToCart(product, quantity, cartValue);
+
+				// Meta Pixel
+				trackMetaAddToCart(product, quantity, cartValue);
 			} else {
 				const prevCart = [
 					...cart,
@@ -317,7 +329,7 @@ export const CartProvider = ({ children }) => {
 				];
 				localcheckBackend(prevCart);
 
-				// Trackear evento de Google Analytics para nuevo producto en carrito local
+				// Trackear eventos de Analytics para nuevo producto en carrito local
 				const cartValue = prevCart.reduce((acc, item) => {
 					const price = !cartMsi
 						? parseFloat(item.product.precio_contado)
@@ -327,7 +339,11 @@ export const CartProvider = ({ children }) => {
 					return acc + price * item.quantity;
 				}, 0);
 
+				// Google Analytics
 				trackAddToCart(product, quantity, cartValue);
+
+				// Meta Pixel
+				trackMetaAddToCart(product, quantity, cartValue);
 			}
 		}
 		setLoading(false);
@@ -403,7 +419,15 @@ export const CartProvider = ({ children }) => {
 							return acc + price * item.quantity;
 						}, 0);
 
+						// Google Analytics
 						trackRemoveFromCart(
+							removedProduct.product,
+							removedProduct.quantity,
+							cartValue
+						);
+
+						// Meta Pixel
+						trackMetaRemoveFromCart(
 							removedProduct.product,
 							removedProduct.quantity,
 							cartValue

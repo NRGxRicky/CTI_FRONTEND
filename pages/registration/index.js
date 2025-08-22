@@ -8,6 +8,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEnv } from '../../context/EnvContext';
 import { trackSignUp } from '../../utils/analytics';
+import { trackMetaCompleteRegistration } from '../../utils/metaAnalytics';
 
 const Register = () => {
 	const [formData, setFormData] = useState({
@@ -102,8 +103,13 @@ const Register = () => {
 			);
 
 			if (response.ok) {
-				// Trackear evento de registro exitoso
+				// Trackear eventos de registro exitoso
+				// Google Analytics
 				trackSignUp('email');
+
+				// Meta Pixel
+				trackMetaCompleteRegistration('email');
+
 				setSuccess(true);
 			} else {
 				const data = await response.json();

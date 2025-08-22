@@ -44,6 +44,7 @@ import useCart from '../../hooks/useCart';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import { useEnv } from '../../context/EnvContext';
 import { trackSearch as trackGoogleAnalyticsSearch } from '../../utils/analytics';
+import { trackMetaSearch } from '../../utils/metaAnalytics';
 
 const HeaderBar: React.FC = () => {
 	/**
@@ -142,8 +143,12 @@ const HeaderBar: React.FC = () => {
 				body: JSON.stringify({ query: query.trim().toLowerCase() }),
 			});
 
-			// Trackear en Google Analytics
+			// Trackear búsquedas en Analytics
+			// Google Analytics
 			trackGoogleAnalyticsSearch(query.trim());
+
+			// Meta Pixel
+			trackMetaSearch(query.trim());
 		} catch (error) {
 			console.error('Error al trackear búsqueda:', error);
 		}

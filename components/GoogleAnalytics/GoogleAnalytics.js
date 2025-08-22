@@ -4,16 +4,16 @@ import { useEnv } from '../../context/EnvContext';
 
 const GoogleAnalytics = () => {
 
-	const { googleAnalyticsId } = useEnv();
-	return (
-		<div>
-			<Script
-				strategy='lazyOnload'
-				src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
-			/>
+    const { googleAnalyticsId } = useEnv();
+    return (
+        <div>
+            <Script
+                strategy='lazyOnload'
+                src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+            />
 
-			<Script strategy='lazyOnload'>
-				{`
+            <Script strategy='lazyOnload'>
+                {`
                     window.dataLayer = window.dataLayer || [];
                     function gtag(){dataLayer.push(arguments);}
                     gtag('js', new Date());
@@ -30,9 +30,9 @@ const GoogleAnalytics = () => {
                     // Hacer gtag disponible globalmente para el tracking
                     window.gtag_id = '${googleAnalyticsId}';
                 `}
-			</Script>
-		</div>
-	);
+            </Script>
+        </div>
+    );
 };
 
 export default GoogleAnalytics;
