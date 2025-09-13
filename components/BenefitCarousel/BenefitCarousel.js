@@ -104,50 +104,36 @@ const BenefitCarousel = () => {
 						<div className='card'>
 							<svg
 								focusable='false'
-								viewBox='0 0 23 24'
+								viewBox='0 0 24 22'
 								role='presentation'
 								className='card-image'
 							>
 								<g
-									transform='translate(1 1)'
 									strokeWidth='1.5'
 									fill='none'
 									fillRule='evenodd'
+									strokeLinecap='round'
+									strokeLinejoin='round'
 								>
-									<path stroke='var(--primary-color)' d='M8 4h8v7'></path>
+									{/* Shield/Guarantee icon - properly sized */}
 									<path
+										d='M12 2L4 5.5v6.5c0 4.5 3.5 8.5 8 9.5 4.5-1 8-5 8-9.5V5.5L12 2z'
+										stroke='#474747'
+									></path>
+									<path
+										d='M8.5 11.5l2.5 2.5 4.5-4.5'
 										stroke='var(--primary-color)'
-										strokeLinecap='square'
-										d='M11 7L8 4l3-3'
+										strokeWidth='2'
 									></path>
-									<circle
-										stroke='#474747'
-										strokeLinecap='square'
-										cx='6'
-										cy='20'
-										r='2'
-									></circle>
-									<circle
-										stroke='#474747'
-										strokeLinecap='square'
-										cx='18'
-										cy='20'
-										r='2'
-									></circle>
-									<path
-										stroke='#474747'
-										strokeLinecap='square'
-										d='M21 5l-2 10H5L3 0H0'
-									></path>
+
 								</g>
 							</svg>
 							<div className='card-content'>
 								<h3 className='card-title'>
-									Devolución si no es lo que esperabas
+									Productos Nuevos con Garantía
 								</h3>
 								<p className='card-description'>
-									Si no estás satisfecho con tu compra, puedes solicitar una
-									devolución en un plazo de 30 días.
+									Todos nuestros productos son nuevos y están respaldados por la garantía oficial del fabricante.
 								</p>
 							</div>
 						</div>

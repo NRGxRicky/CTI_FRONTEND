@@ -312,7 +312,7 @@ const Footer: React.FC<FooterProps> = () => {
 					</div>
 				</div>
 				<aside className='footer__aside'>
-					© 2025 {storeName} - {legalName} - Hecho en Puebla, Puebla con{' '}
+					© 2025 {storeName} - {legalName} - Hecho en México con{' '}
 					{emojiFooter}
 				</aside>
 			</div>

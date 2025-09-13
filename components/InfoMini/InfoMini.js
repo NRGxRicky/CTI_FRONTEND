@@ -20,10 +20,13 @@ const InfoMini = () => {
 					</div>
 					<div className='info__mini__label'>
 						<div className='info__mini__label__title'>
-							Devuélvelo si no es lo que esperabas
+							Garantía de satisfacción
 						</div>
 						<div className='nfo__mini__label__text'>
-							Cuentas con 30 días para devolverlo.
+							Si no estás conforme, tienes 30 días para cambio o reembolso según nuestras{' '}
+							<a href="/politicas-de-devolucion" className="devoluciones-link">
+								políticas de devolución
+							</a>.
 						</div>
 					</div>
 				</div>
@@ -43,7 +46,7 @@ const InfoMini = () => {
 						<div className='info__mini__label__title'>Compra Protegida</div>
 						<div className='nfo__mini__label__text'>
 							Tu compra esta siempre protegida antes y después de que la recibes
-							con Paypal y MercadoPago.
+							con Paypal, KueskiPay, Aplazo y MercadoPago.
 						</div>
 					</div>
 				</div>
@@ -86,6 +89,18 @@ const InfoMini = () => {
 						font-weight: 600;
 						font-size: 14px;
 						line-height: 1.4;
+					}
+
+					.devoluciones-link {
+						color: var(--primary-color);
+						text-decoration: underline;
+						font-weight: 500;
+						transition: color 0.2s ease;
+					}
+
+					.devoluciones-link:hover {
+						color: #d6001a;
+						text-decoration: none;
 					}
 				`}
 			</style>
