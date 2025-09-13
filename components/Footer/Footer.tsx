@@ -452,6 +452,7 @@ const Footer: React.FC<FooterProps> = () => {
 						.footer__column__title {
 							margin: 0;
 							line-height: 2.5;
+							cursor: pointer;
 						}
 
 						.footer__column__element__payment {
