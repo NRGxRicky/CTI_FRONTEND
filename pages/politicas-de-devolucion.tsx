@@ -68,7 +68,7 @@ const PoliticasDeDevolucion = () => {
 										<a href='#condiciones'>3) Condiciones generales</a>
 									</li>
 									<li>
-										<a href='#excepciones'>4) Excepciones del rubro cómputo</a>
+										<a href='#excepciones'>4) Excepciones</a>
 									</li>
 									<li>
 										<a href='#costos'>5) Costos de envío</a>
@@ -162,7 +162,7 @@ const PoliticasDeDevolucion = () => {
 							</section>
 
 							<section id='excepciones'>
-								<h2>4) Excepciones específicas del rubro de cómputo</h2>
+								<h2>4) Excepciones</h2>
 								<p>
 									No aceptamos devolución por desistimiento (sí por DOA/garantía
 									según diagnóstico) en:
@@ -485,7 +485,7 @@ const PoliticasDeDevolucion = () => {
 				}
 				@media (max-width: 640px) {
 					.policy__content {
-						padding: 20px;
+						padding: 10px;
 						font-size: 1rem;
 					}
 					.policy__title h1 {
