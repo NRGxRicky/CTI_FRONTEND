@@ -4,7 +4,7 @@ export const paymentOptions = [
     title: 'PayPal',
     subtitle: 'Hasta 3 MSI con tarjetas de crédito participantes con PayPal.',
     imgSrc: '/images/paypal-logo-footer.png',
-    msi: true,
+    msi: false,
     contado: false,
   },
   {
