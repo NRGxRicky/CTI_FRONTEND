@@ -164,7 +164,7 @@ const ProfileAllAddress = ({
 					background: white;
 					padding: 20px;
 					border-radius: 5px;
-					max-width: 95dvw;
+					max-width: 1500px;
 					box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 				}
 				h2 {

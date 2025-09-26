@@ -684,7 +684,7 @@ const NavMobileMenu = () => {
 						position: fixed;
 						z-index: 5000;
 						transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-						width: min(95dvw, 380px);
+						width: min(90dvw, 380px);
 						box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 						overflow: hidden;
 						display: flex;

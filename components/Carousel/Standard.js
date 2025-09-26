@@ -63,7 +63,7 @@ const Standard = () => {
 						.carousel {
 							position: relative;
 							overflow: hidden;
-								max-width: 95dvw;
+								max-width: 1500px;
 								margin: 0 auto;
 							height: 40vw;
 							max-height: 550px;
@@ -134,7 +134,7 @@ const Standard = () => {
 						justify-content: center;
 						align-items: center;
 						padding: 0;
-						border-radius: 16px; /* bordes redondeados */
+						border-radius: 8px; /* bordes redondeados */
 					}
 				`}
 			</style>
