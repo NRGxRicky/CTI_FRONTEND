@@ -16,7 +16,7 @@ const FooterMini = () => {
 						line-height: 2;
 						text-align: center;
 						padding: 10px;
-						margin-bottom: 20px;
+						
 					}
 				`}
 			</style>

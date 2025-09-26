@@ -391,7 +391,7 @@ const Footer: React.FC<FooterProps> = () => {
 						line-height: 2;
 						text-align: center;
 						padding: 10px;
-						margin-bottom: 20px;
+						
 					}
 
 					.toggle-button {
@@ -400,7 +400,6 @@ const Footer: React.FC<FooterProps> = () => {
 						border: none;
 						cursor: pointer;
 						position: relative;
-						background-color: #fff;
 						display: none;
 					}
 
