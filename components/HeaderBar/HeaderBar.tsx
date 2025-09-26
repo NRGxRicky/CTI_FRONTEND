@@ -705,7 +705,7 @@ const HeaderBar: React.FC = () => {
 					position: relative;
 					min-height: 54px;
 					padding: 5px 0;
-					max-width: 95dvw;
+					max-width: 100dvw;
 					margin: 0 auto;
 					align-items: center;
 				}
