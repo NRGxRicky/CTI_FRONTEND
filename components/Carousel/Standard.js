@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import React from 'react';
 import { CarouselContainer, CarouselChild } from './Carousel';
 import { useEffect, useState } from 'react';
@@ -62,8 +63,8 @@ const Standard = () => {
 						.carousel {
 							position: relative;
 							overflow: hidden;
-							max-width: 1350px;
-							margin: 0 auto;
+								max-width: 95dvw;
+								margin: 0 auto;
 							height: 40vw;
 							max-height: 550px;
 						}
@@ -92,7 +93,7 @@ const Standard = () => {
 
 	return (
 		<div className='carousel'>
-			<CarouselContainer interval={10000}>
+			<CarouselContainer interval={10000} peekPercent={6} initialIndex={1} edgeOffsetTop={20}>
 				{data.results.map((banner) => (
 					<CarouselChild key={banner.id}>
 						<Link href={banner.enlace} legacyBehavior>
@@ -116,12 +117,15 @@ const Standard = () => {
 					.carousel {
 						height: 40vw;
 						max-height: 450px;
+						max-width: 100dvw;
+						margin: 0 auto;
 					}
 
 					.carousel__slide {
-						max-width: 1350px;
+						
 						max-height: 450px;
 						height: 40vw;
+						width: 100%;
 						background-repeat: no-repeat;
 						background-size: cover;
 						background-position: center;
@@ -130,6 +134,7 @@ const Standard = () => {
 						justify-content: center;
 						align-items: center;
 						padding: 0;
+						border-radius: 16px; /* bordes redondeados */
 					}
 				`}
 			</style>

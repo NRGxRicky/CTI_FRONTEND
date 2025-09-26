@@ -7,6 +7,7 @@ const HeaderMenu = () => {
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
+	const [windowWidth, setWindowWidth] = useState(0);
 
 	const maxPageResults = useAppSelector(
 		(state) => state.mobileSlide.maxPageResults
@@ -26,6 +27,24 @@ const HeaderMenu = () => {
 		}
 	};
 
+	// funcion para calcular el numero de items que se van a mostrar dinamico por porcentaje
+
+	const calculateItemsToShow = (width: number) => {
+		const percentage = width / 1920;
+		return Math.floor(percentage * 14);
+	};
+
+
+
+	// useEffect para calcular el numero de items que se van a mostrar en tiempo real (SSR-safe)
+	useEffect(() => {
+		if (typeof window === 'undefined') return;
+		const handleResize = () => setWindowWidth(window.innerWidth);
+		handleResize();
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
+	}, []);
+
 	useEffect(() => {
 		fetchData();
 	}, []);
@@ -41,7 +60,7 @@ const HeaderMenu = () => {
 
 					.filter((i) => i.slug !== 'index')
 					.filter((i) => i.portada)
-					.slice(0, 8)
+					.slice(0, calculateItemsToShow(windowWidth || 1920))
 					.map((item, index) => (
 						<li key={index}>
 							<Link

@@ -1,4 +1,6 @@
+/* eslint-disable react/no-unknown-property */
 import React, { useEffect, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import Image from 'next/image';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
@@ -8,8 +10,6 @@ import TruncateMarkup from 'react-truncate-markup';
 
 const BestCategories = ({ mobile = false }) => {
 	const [data, setData] = useState({ results: [] });
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(false);
 	const [prevButton, setPrevButton] = useState(true);
 	const [nextButton, setNextButton] = useState(true);
 	let styleClass =
@@ -65,15 +65,12 @@ const BestCategories = ({ mobile = false }) => {
 
 	const fetchData = async () => {
 		try {
-			setLoading(true);
 			const data = await fetch(
 				`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=index`
 			);
 			setData(await data.json());
-		} catch (error) {
-			setError(error);
-		} finally {
-			setLoading(false);
+		} catch (_e) {
+			// Silently ignore; UI can render empty state
 		}
 	};
 
@@ -283,6 +280,7 @@ const BestCategories = ({ mobile = false }) => {
 							display: flex;
 							align-items: center;
 							justify-content: center;
+						
 						}
 
 						.best-categories-carousel__container {
@@ -297,7 +295,7 @@ const BestCategories = ({ mobile = false }) => {
 						.best-categories-carousel__item {
 							flex: 0 0 120px;
 							min-width: 0;
-
+						
 							display: flex;
 							flex-direction: column;
 							justify-content: center;
@@ -307,8 +305,13 @@ const BestCategories = ({ mobile = false }) => {
 
 						.best-categories-carousel {
 							margin-top: 20px;
-							margin-bottom: 20px;
+							
 							min-height: 110px;
+						}
+						@media only screen and (max-width: 48em) {
+							.best-categories-carousel {
+								margin-top: 10px;
+							}
 						}
 					`}
 				</style>
@@ -318,3 +321,7 @@ const BestCategories = ({ mobile = false }) => {
 };
 
 export default BestCategories;
+
+BestCategories.propTypes = {
+	mobile: PropTypes.bool,
+};

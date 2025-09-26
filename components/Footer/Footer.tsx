@@ -319,7 +319,7 @@ const Footer: React.FC<FooterProps> = () => {
 			<style jsx>
 				{`
 					.footer {
-						background-color: #ffffff;
+						background-color: #f7f7f7;
 						margin-top: 20px !important;
 						border-top: 1px solid#eaeaea;
 					}
@@ -327,7 +327,7 @@ const Footer: React.FC<FooterProps> = () => {
 					.footer__container {
 						display: flex;
 						width: 100%;
-						justify-content: space-evenly;
+						justify-content: space-between;
 						flex-wrap: wrap;
 					}
 

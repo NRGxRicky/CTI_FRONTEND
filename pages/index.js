@@ -23,7 +23,10 @@ const Home = () => {
 				<meta name='description' content={`${metaDescription}`} />
 
 				{/* Open Graph para página de inicio */}
-				<meta property='og:title' content={`${storeName}: ${titlePostDescription}`} />
+				<meta
+					property='og:title'
+					content={`${storeName}: ${titlePostDescription}`}
+				/>
 				<meta property='og:description' content={metaDescription} />
 				<meta property='og:type' content='website' />
 				<meta property='og:site_name' content={storeName} />
@@ -31,15 +34,31 @@ const Home = () => {
 
 				{/* Twitter Cards para página de inicio */}
 				<meta name='twitter:card' content='summary_large_image' />
-				<meta name='twitter:title' content={`${storeName}: ${titlePostDescription}`} />
+				<meta
+					name='twitter:title'
+					content={`${storeName}: ${titlePostDescription}`}
+				/>
 				<meta name='twitter:description' content={metaDescription} />
 
 				{/* URL canónica */}
-				<link rel='canonical' href={process.env.NEXT_PUBLIC_PAGE_URL} />
+				<link
+					rel='canonical'
+					href={typeof window !== 'undefined' ? window.location.origin : ''}
+				/>
 			</Head>
-			<Standard />
+			<div className='hero'>
+				<div className='hero-spacer__container'>
+					<div className='hero-spacer'>
+						<Standard />
+					</div>
+				</div>
+				<div className='hero-gradient'>
+					<div className='container'>
+						<BestCategories mobile={mobileView} />
+					</div>
+				</div>
+			</div>
 			<div className='container'>
-				<BestCategories mobile={mobileView} />
 				<div className='section best'>
 					<div className='section-products'>
 						<div className='section-products__title section__offers'>
@@ -97,14 +116,22 @@ const Home = () => {
 
 				<BenefitCarousel />
 
-
 				<GoogleRatings mobile={mobileView} />
 				<InfoPageFooter />
 			</div>
 			<Footer />
 
-			<style jsx>
-				{`
+			<style jsx>{`
+				.hero {
+					display: flex;
+					flex-direction: column;
+					
+				}
+                    .hero-spacer {
+                        padding-top: 20px;
+                        margin-top: 0;
+                    }
+
 					.section-gamer .section-products__title {
 						background-color: var(--primary-color);
 						color: #fff;
@@ -141,7 +168,13 @@ const Home = () => {
 					h1 {
 						font-size: 18px;
 					}
+						.hero-spacer__container {
+													background: #f7f7f7;
+                    }
+						 .hero-gradient {
 
+                            background: linear-gradient(180deg, #f7f7f7  0%, #ffffff 30%);
+                        }
 					@media only screen and (max-width: 48em) {
 						.button__show_mobile {
 							opacity: 1 !important;
@@ -150,9 +183,14 @@ const Home = () => {
 						.section__offers {
 							border-radius: 0;
 						}
-					}
-				`}
-			</style>
+
+                        .hero-spacer {
+                            padding-top: 10px;
+                        }
+
+
+
+            `}</style>
 		</div>
 	);
 };

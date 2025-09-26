@@ -288,13 +288,19 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 				/* 3 tarjetas en escritorio, 1 en mobile */
 				.embla__slide {
 					position: relative;
-					flex: 0 0 33.333%; /* ~3 en desktop */
+					flex: 0 0 25%; /* ~4 en desktop */
 					padding: 0.5rem;
 					box-sizing: border-box;
 				}
 				@media (max-width: 768px) {
 					.embla__slide {
 						flex: 0 0 100%; /* 1 en mobile */
+					}
+				}
+
+				@media (max-width: 1024px) {
+					.embla__slide {
+						flex: 0 0 50%; /* ~2 en desktop */
 					}
 				}
 

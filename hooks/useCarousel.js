@@ -1,12 +1,12 @@
-import { useReducer, useEffect, useState } from 'react';
-import { useSwipeable, SwipeableHandlers } from 'react-swipeable';
+import { useReducer, useEffect } from 'react';
+import { useSwipeable } from 'react-swipeable';
 
 const transitionTime = 400;
 function threshold(target) {
 	const width = target.clientWidth;
 	return width / 3;
 }
-const limit = 1.2;
+// const limit = 1.2; // not used currently
 const elastic = `transform ${transitionTime}ms cubic-bezier(0.68, -0.55, 0.265, 1.55)`;
 const smooth = `transform ${transitionTime}ms ease`;
 
@@ -71,11 +71,23 @@ function swiped(e, dispatch, length, dir) {
 }
 
 export function useCarousel(length, interval, options = {}) {
-	const { slidesPresented = 1 } = options;
+	const { slidesPresented = 1, peekPercent = 0, initialActive = 0 } = options;
 	const shadowSlides = 2 * slidesPresented;
 	const n = Math.max(1, Math.min(slidesPresented, length));
-	const totalWidth = 100 / n;
-	const [state, dispatch] = useReducer(carouselReducer, initialCarouselState);
+	// When peekPercent > 0, each slide will not occupy the full viewport width
+	// We compute the visible width of a single slide in percentage of the viewport
+	const slideWidthPercent = Math.max(0, Math.min(100, 100 - 2 * (peekPercent || 0)));
+	// Backwards-compatible value used when peekPercent == 0
+	const totalWidth = peekPercent ? slideWidthPercent : 100 / n;
+	const normalizedInitialActive = Math.max(
+		0,
+		Math.min(initialActive, Math.max(0, length - 1))
+	);
+	const [state, dispatch] = useReducer(
+		carouselReducer,
+		initialCarouselState,
+		(s) => ({ ...s, active: normalizedInitialActive, desired: normalizedInitialActive })
+	);
 
 	const handlers = useSwipeable({
 		onSwiping(e) {
@@ -108,23 +120,36 @@ export function useCarousel(length, interval, options = {}) {
 	}, [state.desired]);
 
 	const style = {
-		transform: 'translateX(0)',
+		transform: 'translate3d(0,0,0)',
 		width: `${totalWidth * (length + shadowSlides)}%`,
-		left: `-${(state.active + slidesPresented) * totalWidth}%`,
+		willChange: 'transform',
 	};
+
+	// Calculate base left offset. If peekPercent > 0 we center the active slide
+	// so that both previous and next slides are partially visible.
+	if (peekPercent) {
+		const sideGap = (100 - slideWidthPercent) / 2; // percentage
+		style.left = `calc(-${(state.active + slidesPresented) * slideWidthPercent}% + ${sideGap}%)`;
+	} else {
+		style.left = `-${(state.active + slidesPresented) * totalWidth}%`;
+	}
 
 	if (state.desired !== state.active) {
 		const dist = Math.abs(state.active - state.desired);
 		const pref = Math.sign(state.offset || 0);
 		const dir =
 			(dist > length / 2 ? 1 : -1) * Math.sign(state.desired - state.active);
-		const shift =
-			(totalWidth * slidesPresented * (pref || dir)) / (length + shadowSlides);
+		// Shift by exact slide count relative to container width (percent of self)
+		const shift = (100 * slidesPresented * (pref || dir)) / (length + shadowSlides);
 		style.transition = smooth;
-		style.transform = `translateX(${shift}%)`;
+		style.transform = `translate3d(${shift}%,0,0)`;
 	} else if (!isNaN(state.offset)) {
 		if (state.offset !== 0) {
-			style.transform = `translateX(${state.offset}px)`;
+			// Convert pixel drag to percentage of container width (self width)
+			const container = typeof window !== 'undefined' ? document.querySelector('.carousel__container') : null;
+			const containerWidth = container ? container.clientWidth : 1;
+			const percent = (state.offset / containerWidth) * 100;
+			style.transform = `translate3d(${percent}%,0,0)`;
 		} else {
 			style.transition = elastic;
 		}

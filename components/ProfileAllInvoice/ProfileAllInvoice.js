@@ -160,7 +160,7 @@ const ProfileAllInvoice = ({
 					background: white;
 					padding: 20px;
 					border-radius: 5px;
-					max-width: 90dvw;
+					max-width: 95dvw;
 					box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 					outline: none;
 				}
