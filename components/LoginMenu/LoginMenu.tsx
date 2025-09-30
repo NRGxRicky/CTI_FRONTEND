@@ -246,6 +246,23 @@ const LoginMenu: React.FC = () => {
 			</div>
 			<style jsx>
 				{`
+					/* Anclar el contenedor externo justo debajo y alineado a la derecha del ícono */
+					.login-menu__ll {
+						position: absolute;
+						top: 100%;
+						right: 0;
+						width: auto;
+						display: block;
+						z-index: 1000;
+					}
+
+					.login-menu__ll2 {
+						max-width: none;
+						position: static;
+						width: auto;
+						background-color: transparent;
+					}
+
 					.login-menu__login-button {
 						width: 100%;
 						padding: 8px;
@@ -301,19 +318,6 @@ const LoginMenu: React.FC = () => {
 						color: var(--primary-color);
 						text-align: center;
 						line-height: 2;
-					}
-
-					.login-menu__ll {
-						width: 100%;
-						display: flex;
-						align-items: center;
-						justify-content: center;
-					}
-					.login-menu__ll2 {
-						max-width: 85rem;
-						position: relative;
-						width: 100%;
-						background-color: var(--primary-color);
 					}
 
 					.login-menu__body__item {
@@ -386,9 +390,8 @@ const LoginMenu: React.FC = () => {
 
 					.login-menu {
 						width: 250px;
-						position: absolute;
+						position: relative;
 						background-color: #ffffff;
-						left: calc(100% - 290px);
 						padding: 10px 15px;
 						z-index: 1000;
 						box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -411,9 +414,10 @@ const LoginMenu: React.FC = () => {
 					}
 
 					@media only screen and (max-width: 62em) {
-						.login-menu {
-							top: 59px;
+						.login-menu__ll {
 							position: fixed;
+							top: 59px;
+							right: 10px;
 						}
 					}
 				`}

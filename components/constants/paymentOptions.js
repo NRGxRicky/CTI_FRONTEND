@@ -1,4 +1,46 @@
-export const paymentOptions = [
+// Helpers para leer variables de entorno de forma segura en runtime del navegador
+const getEnv = (key, defaultValue = undefined) => {
+  // Usa globalThis para evitar referenciar directamente 'process' y caer en no-undef
+  const env = (typeof globalThis !== 'undefined' &&
+    globalThis.process &&
+    globalThis.process.env)
+    ? globalThis.process.env
+    : undefined;
+  return env && env[key] !== undefined ? env[key] : defaultValue;
+};
+
+const getEnvBoolean = (key, defaultValue = false) => {
+  const raw = getEnv(key, undefined);
+  if (raw === undefined) return defaultValue;
+  return String(raw).toLowerCase() === 'true';
+};
+
+const getEnvList = (key, defaultValue = []) => {
+  const raw = getEnv(key, undefined);
+  if (!raw) return defaultValue;
+  return String(raw)
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
+};
+
+// IDs habilitados (si no se define, se asume que todos están habilitados)
+const enabledPaymentIds = new Set(
+  getEnvList('NEXT_PUBLIC_PAYMENTS_ENABLED_IDS', [])
+);
+
+// Obtiene overrides por método
+const resolveFlags = (id, defaults) => {
+  const upperId = id.toUpperCase();
+  const msi = getEnvBoolean(`NEXT_PUBLIC_PAYMENT_${upperId}_MSI`, defaults.msi);
+  const contado = getEnvBoolean(
+    `NEXT_PUBLIC_PAYMENT_${upperId}_CONTADO`,
+    defaults.contado
+  );
+  return { msi, contado };
+};
+
+const basePaymentOptions = [
   {
     id: 'paypal',
     title: 'PayPal',
@@ -41,20 +83,36 @@ export const paymentOptions = [
   },
 ];
 
+// Aplica overrides desde .env.local y filtra por IDs habilitados
+export const paymentOptions = basePaymentOptions
+  .map(option => {
+    const flags = resolveFlags(option.id, { msi: option.msi, contado: option.contado });
+    return { ...option, ...flags };
+  })
+  .filter(option => {
+    // Si no se especificaron IDs, no filtramos; si se especificaron, dejamos solo los habilitados
+    return enabledPaymentIds.size === 0 || enabledPaymentIds.has(option.id);
+  })
+  // Oculta métodos completamente deshabilitados por env (sin MSI ni Contado)
+  .filter(option => option.msi || option.contado);
+
 // Función helper para encontrar una opción de pago por ID
 export const getPaymentOption = (paymentId) =>
   paymentOptions.find(option => option.id === paymentId);
 
 // Función helper para filtrar opciones por tipo (msi o contado)
 export const getPaymentOptionsByType = (isMsi, includeSandbox = false) => {
-  let options = paymentOptions.filter(option => isMsi ? option.msi : option.contado);
-  
+  let options = paymentOptions.filter(option => (isMsi ? option.msi : option.contado));
+
   // Agregar opciones de sandbox si está habilitado
-  if (includeSandbox && typeof window !== 'undefined') {
-    const isSandboxMode = process.env.NODE_ENV === 'development' || 
-                          process.env.NEXT_PUBLIC_SANDBOX_MODE === 'true' ||
-                          new URLSearchParams(window.location.search).get('sandbox');
-    
+  if (includeSandbox) {
+    const isDev = (typeof globalThis !== 'undefined' &&
+      globalThis.process &&
+      globalThis.process.env &&
+      globalThis.process.env.NODE_ENV === 'development');
+    const sandboxEnv = getEnvBoolean('NEXT_PUBLIC_SANDBOX_MODE', false);
+    const isSandboxMode = isDev || sandboxEnv;
+
     if (isSandboxMode) {
       const sandboxOptions = [
         {
@@ -94,10 +152,10 @@ export const getPaymentOptionsByType = (isMsi, includeSandbox = false) => {
           sandbox: true
         }
       ];
-      
+
       options = [...options, ...sandboxOptions];
     }
   }
-  
+
   return options;
 }; 

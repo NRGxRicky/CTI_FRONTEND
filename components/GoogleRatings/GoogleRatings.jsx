@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { useEnv } from '../../context/EnvContext';
+import PropTypes from 'prop-types';
 // Importa tus íconos de carga:
 import { Preloader, TailSpin } from 'react-preloader-icon';
 
@@ -13,11 +14,10 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [totalReviews, setTotalReviews] = useState(0);
-	const [averageRating, setAverageRating] = useState(0)
+	const [averageRating, setAverageRating] = useState(0);
 
 	//	---	ENV	---
 	const { storeId, googleProfileUrl } = useEnv();
-
 
 	// --- CONFIG Embla ---
 	const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -32,6 +32,89 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 	// Estados para flechas
 	const [prevBtnEnabled, setPrevBtnEnabled] = useState(true);
 	const [nextBtnEnabled, setNextBtnEnabled] = useState(true);
+
+	// Control de expandir/colapsar por tarjeta
+	const [expandedSet, setExpandedSet] = useState(new Set());
+	const toggleExpanded = useCallback((i) => {
+		setExpandedSet((prev) => {
+			const next = new Set(prev);
+			if (next.has(i)) next.delete(i);
+			else next.add(i);
+			return next;
+		});
+	}, []);
+
+	// Refs a los párrafos de texto para medir líneas
+	const textRefs = useRef({});
+	const setTextRef = useCallback((i, el) => {
+		if (!textRefs.current) textRefs.current = {};
+		if (el) textRefs.current[i] = el;
+	}, []);
+
+	// Índices que realmente exceden 5 líneas y requieren Leer más
+	const [canExpandSet, setCanExpandSet] = useState(new Set());
+	const recalcCanExpand = useCallback(() => {
+		if (typeof window === 'undefined') return;
+		const next = new Set();
+		Object.keys(textRefs.current).forEach((key) => {
+			const i = Number(key);
+			const el = textRefs.current[i];
+			if (!el) return;
+			const styles = window.getComputedStyle(el);
+			const lineHeight = parseFloat(styles.lineHeight || '0');
+			if (!lineHeight) return;
+			const totalLines = Math.round(el.scrollHeight / lineHeight);
+			if (totalLines > 5) next.add(i);
+		});
+		setCanExpandSet(next);
+	}, []);
+
+	// Altura base igual para todas las tarjetas en estado colapsado
+	const [baseMinHeight, setBaseMinHeight] = useState(null);
+	const [isMeasured, setIsMeasured] = useState(false);
+	const measureBaseHeight = useCallback(() => {
+		if (typeof window === 'undefined') return;
+		const nodes = document.querySelectorAll('.reviews-carousel .review-card');
+		let max = 0;
+		nodes.forEach((node) => {
+			const idxAttr = node.getAttribute('data-index');
+			if (idxAttr !== null && expandedSet.has(Number(idxAttr))) return;
+			const h = node.getBoundingClientRect().height;
+			if (h > max) max = h;
+		});
+		if (max > 0) {
+			const value = Math.ceil(max);
+			setBaseMinHeight(value);
+			return value;
+		}
+		return null;
+	}, [expandedSet]);
+
+	useEffect(() => {
+		if (!reviews.length) return;
+		// Medir solo cuando no hay tarjetas expandidas (estado inicial)
+		if (expandedSet.size === 0) {
+			requestAnimationFrame(() => {
+				const measured = measureBaseHeight();
+				recalcCanExpand();
+				if (measured && measured > 0) setIsMeasured(true);
+			});
+		}
+	}, [reviews, expandedSet, measureBaseHeight, recalcCanExpand]);
+
+	useEffect(() => {
+		if (!reviews.length) return;
+		const handler = () => {
+			if (expandedSet.size === 0) measureBaseHeight();
+			recalcCanExpand();
+		};
+		window.addEventListener('resize', handler);
+		window.addEventListener('orientationchange', handler);
+		return () => {
+			window.removeEventListener('resize', handler);
+			window.removeEventListener('orientationchange', handler);
+		};
+	}, [reviews, expandedSet, measureBaseHeight, recalcCanExpand]);
 
 	// --- LÓGICA PARA ACTIVAR/DESACTIVAR BOTONES ---
 	const onSelect = useCallback(() => {
@@ -52,9 +135,7 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 	useEffect(() => {
 		const fetchReviews = async () => {
 			try {
-				const res = await fetch(
-					`/api/${storeId}/google-reviews`
-				);
+				const res = await fetch(`/api/${storeId}/google-reviews`);
 				const data = await res.json();
 
 				if (data.status === 'OK' && data.result?.reviews) {
@@ -93,6 +174,7 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 						duration={900}
 					/>
 				</div>
+				{/* eslint-disable-next-line react/no-unknown-property */}
 				<style jsx>{`
 					.embla {
 						margin-top: 20px;
@@ -117,7 +199,7 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 	if (!reviews.length) return <div>No hay calificaciones disponibles.</div>;
 
 	return (
-		<div className='reviews-carousel'>
+		<div className={`reviews-carousel ${!isMeasured ? 'is-measuring' : ''}`}>
 			<div className='reviews-carousel__head'>
 				<div className='reviews-carousel__logo'>
 					<Image
@@ -152,7 +234,15 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 				<div className='embla__container'>
 					{reviews.map((review, index) => (
 						<div className='embla__slide' key={index}>
-							<div className='review-card'>
+							<div
+								className='review-card'
+								data-index={index}
+								style={
+									baseMinHeight
+										? { minHeight: `${baseMinHeight}px` }
+										: undefined
+								}
+							>
 								{/* Datos del usuario (foto y nombre) */}
 								<div className='review-card__user'>
 									<div className='review-card__avatar'>
@@ -180,8 +270,39 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 									{'☆'.repeat(5 - review.rating)}
 								</div>
 
-								{/* Texto */}
-								<p className='review-text'>{review.text}</p>
+								{/* Texto con Leer más */}
+								<div className='review-text-container'>
+									<div
+										className={`review-text-wrapper ${
+											expandedSet.has(index) ? 'expanded' : 'collapsed'
+										}`}
+									>
+										<p
+											ref={(el) => setTextRef(index, el)}
+											className='review-text'
+										>
+											{review.text}
+										</p>
+									</div>
+									<div className='review-actions'>
+										{canExpandSet.has(index) ? (
+											<button
+												type='button'
+												className='read-more text--off'
+												onClick={() => toggleExpanded(index)}
+											>
+												{expandedSet.has(index) ? 'Leer menos' : 'Leer más'}
+											</button>
+										) : (
+											<span
+												className='read-more-placeholder'
+												aria-hidden='true'
+											>
+												Leer más
+											</span>
+										)}
+									</div>
+								</div>
 							</div>
 						</div>
 					))}
@@ -231,6 +352,7 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 			</div>
 
 			{/* Estilos */}
+			{/* eslint-disable-next-line react/no-unknown-property */}
 			<style jsx>{`
 				.reviews-carousel__logo {
 					position: relative;
@@ -238,7 +360,6 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 					height: 48px;
 					margin: 0 15px;
 				}
-
 
 				.reviews-carousel__head {
 					display: flex;
@@ -281,8 +402,14 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 					position: relative;
 				}
 
+				/* Oculta el carrusel mientras medimos para evitar saltos iniciales */
+				.reviews-carousel.is-measuring .embla {
+					visibility: hidden;
+				}
+
 				.embla__container {
 					display: flex;
+					align-items: flex-start; /* evita que todas las slides igualen la altura máxima */
 				}
 
 				/* 3 tarjetas en escritorio, 1 en mobile */
@@ -292,15 +419,16 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 					padding: 0.5rem;
 					box-sizing: border-box;
 				}
-				@media (max-width: 768px) {
-					.embla__slide {
-						flex: 0 0 100%; /* 1 en mobile */
-					}
-				}
 
 				@media (max-width: 1024px) {
 					.embla__slide {
 						flex: 0 0 50%; /* ~2 en desktop */
+					}
+				}
+
+				@media (max-width: 768px) {
+					.embla__slide {
+						flex: 0 0 100%; /* 1 en mobile */
 					}
 				}
 
@@ -310,7 +438,7 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 					border-radius: 8px;
 					padding: 1rem;
 					box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-					height: 100%;
+					height: auto; /* permite crecimiento individual solo en la tarjeta expandida */
 					display: flex;
 					flex-direction: column;
 					gap: 0.5rem;
@@ -353,6 +481,72 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 					font-size: 0.95rem;
 					line-height: 1.3;
 					margin: 0;
+				}
+
+				/* Contenedor de texto y botón */
+				.review-text-container {
+					display: flex;
+					flex-direction: column;
+					gap: 0; /* evitamos sumar espacio extra al margen propio del botón */
+				}
+
+				/* Envoltura con transición para efecto de deslizamiento */
+				.review-text-wrapper {
+					overflow: hidden;
+					transition: max-height 400ms ease-in-out, opacity 400ms ease-in-out;
+					will-change: max-height, opacity;
+				}
+				.review-text-wrapper.collapsed {
+					max-height: calc(1.3em * 5); /* coincide con el clamp */
+					opacity: 0.92;
+				}
+				.review-text-wrapper.expanded {
+					max-height: 2000px; /* suficiente para la mayoría de textos */
+					opacity: 1;
+				}
+
+				/* Mantener la misma altura incluso cuando no hay botón real */
+				.review-actions {
+					min-height: 1.3em; /* una línea de alto para reservar espacio */
+				}
+
+				/* Colapsado: mismo alto para todas las tarjetas */
+				.review-text.collapsed {
+					display: -webkit-box;
+					-webkit-line-clamp: 5; /* número de líneas visibles */
+					-webkit-box-orient: vertical;
+					overflow: hidden;
+					max-height: calc(1.3em * 5);
+					min-height: calc(1.3em * 5);
+				}
+
+				/* Expandido: muestra todo */
+				.review-text.expanded {
+					display: block;
+					max-height: none;
+					min-height: 0;
+				}
+
+				.read-more {
+					align-self: flex-start;
+					background: transparent;
+					border: none;
+					padding: 0;
+					margin-top: 0.5em; /* menos separación para equilibrar alturas */
+					/* color heredado de .text--off para que coincida con el contador */
+					font-weight: 600;
+					cursor: pointer;
+				}
+
+				.read-more-placeholder {
+					visibility: hidden; /* ocupa espacio sin mostrarse */
+					display: inline-block;
+					margin-top: 0.5em;
+					font-weight: 600;
+				}
+				.read-more:hover {
+					color: var(--primary-color);
+					text-decoration: underline;
 				}
 
 				/* FLECHAS */
@@ -419,3 +613,7 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 };
 
 export default GoogleRatingsCarousel;
+
+GoogleRatingsCarousel.propTypes = {
+	mobile: PropTypes.bool,
+};

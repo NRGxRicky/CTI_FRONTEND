@@ -4,10 +4,10 @@ import { CarouselContainer, CarouselChild } from './Carousel';
 import { useEffect, useState } from 'react';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEnv } from '../../context/EnvContext';
 
 const Standard = () => {
-	const [windowsSize, setWindowsSize] = useState(0);
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
@@ -32,19 +32,6 @@ const Standard = () => {
 	useEffect(() => {
 		fetchData();
 	}, []);
-
-	useEffect(() => {
-		const updateWindowDimensions = () => {
-			const newWidth = window.innerWidth;
-			setWindowsSize(newWidth);
-		};
-
-		window.addEventListener('resize', updateWindowDimensions);
-		if (windowsSize === 0) {
-			updateWindowDimensions();
-		}
-		return () => window.removeEventListener('resize', updateWindowDimensions);
-	}, [windowsSize]);
 
 	if (loading) {
 		return (
@@ -94,19 +81,21 @@ const Standard = () => {
 	return (
 		<div className='carousel'>
 			<CarouselContainer interval={10000} peekPercent={6} initialIndex={1} edgeOffsetTop={20}>
-				{data.results.map((banner) => (
+				{data.results.map((banner, index) => (
 					<CarouselChild key={banner.id}>
 						<Link href={banner.enlace} legacyBehavior>
 							<a>
-								<div
-									className='carousel__slide'
-									style={{
-										backgroundImage:
-											windowsSize > 1024
-												? `url(${banner.imagen})`
-												: `url(${banner.imagen_mobil})`,
-									}}
-								/>
+								<div className='carousel__slide'>
+									<Image
+										src={banner.imagen}
+										alt={banner.titulo || 'Banner'}
+										fill
+										sizes="(min-width: 1024px) 1500px, 100vw"
+										quality={100}
+										priority={index === 0}
+										style={{ objectFit: 'cover' }}
+									/>
+								</div>
 							</a>
 						</Link>
 					</CarouselChild>
@@ -115,26 +104,23 @@ const Standard = () => {
 			<style jsx>
 				{`
 					.carousel {
-						height: 40vw;
-						max-height: 450px;
+						max-height: 550px;
 						max-width: 100dvw;
 						margin: 0 auto;
 					}
 
 					.carousel__slide {
-						
-						max-height: 450px;
-						height: 40vw;
+						position: relative;
+						aspect-ratio: 1920 / 640;
 						width: 100%;
-						background-repeat: no-repeat;
-						background-size: cover;
-						background-position: center;
+						max-height: 550px;
 						display: flex;
 						flex-direction: column;
 						justify-content: center;
 						align-items: center;
 						padding: 0;
 						border-radius: 8px; /* bordes redondeados */
+						overflow: hidden; /* asegura el recorte del borde con Image fill */
 					}
 				`}
 			</style>

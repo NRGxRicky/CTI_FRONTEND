@@ -508,6 +508,61 @@ const NavMobileMenu = () => {
 									</li>
 								</ul>
 
+								{/* --- Sección: Información (enlaces del footer) --- */}
+								<ul className='main-menu__list main-menu__card'>
+									<h2 className='main-menu__section-title'>Información</h2>
+									<li className='main-menu__list-item'>
+										<Link href='/politicas-de-devolucion' legacyBehavior>
+											<a
+												onClick={toggleMenu}
+												className='main-menu__category-link'
+											>
+												<span>Políticas de Devolución</span>
+											</a>
+										</Link>
+									</li>
+									<li className='main-menu__list-item'>
+										<Link href='/terminos-de-servicio' legacyBehavior>
+											<a
+												onClick={toggleMenu}
+												className='main-menu__category-link'
+											>
+												<span>Términos de Servicio</span>
+											</a>
+										</Link>
+									</li>
+									<li className='main-menu__list-item'>
+										<Link href='/aviso-de-privacidad' legacyBehavior>
+											<a
+												onClick={toggleMenu}
+												className='main-menu__category-link'
+											>
+												<span>Aviso de Privacidad</span>
+											</a>
+										</Link>
+									</li>
+									<li className='main-menu__list-item'>
+										<Link href='/politicas-de-envios' legacyBehavior>
+											<a
+												onClick={toggleMenu}
+												className='main-menu__category-link'
+											>
+												<span>Políticas de Envíos</span>
+											</a>
+										</Link>
+									</li>
+									<li className='main-menu__list-item'>
+										<Link href='/codigo-de-etica' legacyBehavior>
+											<a
+												onClick={toggleMenu}
+												className='main-menu__category-link'
+											>
+												<span>Código de Ética</span>
+											</a>
+										</Link>
+									</li>
+								</ul>
+
 								<div className='main-menu__footer'>
 									{isAuthenticated && (
 										<button
@@ -698,6 +753,7 @@ const NavMobileMenu = () => {
 						transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 						display: flex;
 						flex-direction: column;
+						
 					
 					}
 
@@ -738,11 +794,18 @@ const NavMobileMenu = () => {
 						margin: 0;
 						/* Estilo de lista simple, sin tarjeta */
 					}
+
+					/* Separadores entre secciones del menú principal */
+					.main-menu__content .main-menu__list + .main-menu__list {
+						border-top: 1px solid #edf2f7;
+						margin-top: 0.75rem;
+						padding-top: 0.75rem;
+					}
 					.main-menu__section-title {
 						font-size: 1.1rem;
 						font-weight: 700;
 						color: #1a202c;
-						padding: 1rem 1.25rem 0.75rem;
+						padding: 1rem 2rem 0.75rem;
 						margin: 0;
 						background: transparent;
 					}
@@ -753,7 +816,7 @@ const NavMobileMenu = () => {
 						justify-content: space-between;
 						gap: 1rem;
 						width: 100%;
-						padding: 0.5rem 1.25rem;
+						padding: 0.5rem 2rem;
 						min-height: 56px;
 						font-size: 1rem;
 						background: transparent;
@@ -1047,13 +1110,14 @@ const NavMobileMenu = () => {
 						flex-direction: column;
 						justify-content: space-between;
 						width: 30px;
-						height: 16px;
+                        height: 16px;
 						background: none;
 						border: none;
 						cursor: pointer;
 						align-items: center;
 						transition: all 0.3s ease;
 					}
+                    
 
 					.burger-line {
 						width: 20px;
@@ -1076,6 +1140,13 @@ const NavMobileMenu = () => {
 					.burger-button.active .burger-line:nth-child(3) {
 						transform: rotate(45deg) translate(-4px, -6px);
 						background-color: var(--primary-color);
+					}
+
+					/* Ocultar el botón burger interno en escritorio; el panel se abrirá desde HeaderMenu */
+					@media only screen and (min-width: 62em) {
+						.header__mobile-nav-toggle .burger-button {
+							display: none;
+						}
 					}
 
 					@keyframes spin {

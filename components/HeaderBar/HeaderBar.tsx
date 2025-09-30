@@ -45,6 +45,8 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import { useEnv } from '../../context/EnvContext';
 import { trackSearch as trackGoogleAnalyticsSearch } from '../../utils/analytics';
 import { trackMetaSearch } from '../../utils/metaAnalytics';
+import HeaderDelivery from '../HeaderDelivery/HeaderDelivery';
+import CaretDown from '../../components/Icons/CaretDown';
 
 const HeaderBar: React.FC = () => {
 	/**
@@ -54,6 +56,9 @@ const HeaderBar: React.FC = () => {
 	const desktopInput = useRef<HTMLInputElement | null>(null); // Desktop
 	const searchButton = useRef<HTMLButtonElement | null>(null);
 	const syncDone = useRef(false);
+	const suppressHoverUntil = useRef<number>(0);
+	const hoverLock = useRef<boolean>(false);
+	const closeHoverTimer = useRef<number | null>(null);
 
 	/**
 	 * Router & Search params (App Router)
@@ -79,7 +84,7 @@ const HeaderBar: React.FC = () => {
 	const queryInInput = useAppSelector(
 		(state) => state.searchInput.queryInInput
 	);
-	const { cart, total } = useCart();
+	const { cart, total, address } = useCart();
 	const recentSearches = useAppSelector(
 		(state) => state.searchInput.recentSearches
 	);
@@ -324,6 +329,9 @@ const HeaderBar: React.FC = () => {
 							</a>
 						</div>
 
+						{/* Delivery destination (desktop) */}
+						<HeaderDelivery />
+
 						{/* Search bar (desktop) */}
 						<div className='header-bar__search-bar'>
 							<div className='header-bar__box'>
@@ -380,7 +388,7 @@ const HeaderBar: React.FC = () => {
 								)}
 							</div>
 						</div>
-						<div className='header-bar__section header-bar__section__icons header-bar--right col-xs-6 col-sm-6 col-md-5 col-lg-4'>
+						<div className='header-bar__section header-bar__section__icons col-xs-6 col-sm-6 col-md-5 col-lg-4'>
 							<div
 								className='header-bar__section-icon header-bar__mobile__search-icon__mobile'
 								onClick={handleMobileSearch}
@@ -398,14 +406,41 @@ const HeaderBar: React.FC = () => {
 									</svg>
 								</div>
 							</div>
-							<div className='header-bar__section-icon'>
+							<div
+								className='header-bar__section-icon'
+								onMouseEnter={() => {
+									if (closeHoverTimer.current) {
+										clearTimeout(closeHoverTimer.current);
+										closeHoverTimer.current = null;
+									}
+								}}
+								onMouseLeave={() => {
+									if (closeHoverTimer.current) {
+										clearTimeout(closeHoverTimer.current);
+									}
+									closeHoverTimer.current = window.setTimeout(() => {
+										hoverLock.current = false;
+										dispatch(hideAll());
+										closeHoverTimer.current = null;
+									}, 120);
+								}}
+							>
 								<div
 									className='header-bar__profile-icon'
-									onClick={() =>
-										showLoginMenu
-											? dispatch(hideAll())
-											: dispatch(showLoginMenuState())
-									}
+									onMouseEnter={() => {
+										if (Date.now() < suppressHoverUntil.current) return;
+										if (hoverLock.current) return;
+										dispatch(showLoginMenuState());
+									}}
+									onClick={() => {
+										suppressHoverUntil.current = Date.now() + 400;
+										if (showLoginMenu) {
+											hoverLock.current = true;
+											dispatch(hideAll());
+										} else {
+											dispatch(showLoginMenuState());
+										}
+									}}
 								>
 									<svg
 										className='header-bar__icon icon__ligth'
@@ -430,7 +465,9 @@ const HeaderBar: React.FC = () => {
 									) : (
 										<span>{nombres}</span>
 									)}
+									<CaretDown isOpen={showLoginMenu} hideOnMobile />
 								</div>
+								{showLoginMenu && <LoginMenu />}
 							</div>
 							<div
 								className='header-bar__section-icon'
@@ -486,7 +523,6 @@ const HeaderBar: React.FC = () => {
 						</div>
 					</div>
 					{showSummaryCartmini && <CartSummaryMini />}
-					{showLoginMenu && <LoginMenu />}
 					{!mobileView && <HeaderMenu />}
 				</div>
 				<HeaderBarLocalStock />
@@ -772,6 +808,7 @@ const HeaderBar: React.FC = () => {
 				}
 
 				.header-bar__section-icon {
+					position: relative;
 					align-items: center;
 					color: #474747;
 					display: flex;
@@ -869,6 +906,11 @@ const HeaderBar: React.FC = () => {
 						flex: 0 0 auto;
 					}
 
+					/* Muestra la sección de destino en desktop */
+					.header-bar__delivery {
+						display: flex;
+					}
+
 					/* ⬅️ La barra ocupa lo que sobre, pero sin forzar 100 % */
 					.header-bar__search-bar {
 						display: flex;
@@ -908,6 +950,11 @@ const HeaderBar: React.FC = () => {
 					.header-bar__mobile {
 						position: fixed;
 						width: 100dvw;
+					}
+
+					/* Oculta sección de destino en móvil para no saturar */
+					.header-bar__delivery {
+						display: none;
 					}
 
 					.mobile__clear-fix {

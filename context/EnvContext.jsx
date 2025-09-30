@@ -27,6 +27,20 @@ export function EnvProvider({ children }) {
 		googlePlaceId: process.env.NEXT_PUBLIC_GOOGLE_PLACE_ID,
 		googleApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
 		googleProfileUrl: process.env.NEXT_PUBLIC_GOOGLE_PROFILE_URL,
+		// Pagos: banderas globales/por método
+		paymentsEnabledIds: process.env.NEXT_PUBLIC_PAYMENTS_ENABLED_IDS,
+		paymentsSandboxMode: process.env.NEXT_PUBLIC_SANDBOX_MODE,
+		paymentPaypalMsi: process.env.NEXT_PUBLIC_PAYMENT_PAYPAL_MSI,
+		paymentPaypalContado: process.env.NEXT_PUBLIC_PAYMENT_PAYPAL_CONTADO,
+		paymentMercadopagoMsi: process.env.NEXT_PUBLIC_PAYMENT_MERCADOPAGO_MSI,
+		paymentMercadopagoContado:
+			process.env.NEXT_PUBLIC_PAYMENT_MERCADOPAGO_CONTADO,
+		paymentKueskipayMsi: process.env.NEXT_PUBLIC_PAYMENT_KUESKIPAY_MSI,
+		paymentKueskipayContado: process.env.NEXT_PUBLIC_PAYMENT_KUESKIPAY_CONTADO,
+		paymentAplazoMsi: process.env.NEXT_PUBLIC_PAYMENT_APLAZO_MSI,
+		paymentAplazoContado: process.env.NEXT_PUBLIC_PAYMENT_APLAZO_CONTADO,
+		paymentDepositMsi: process.env.NEXT_PUBLIC_PAYMENT_DEPOSIT_MSI,
+		paymentDepositContado: process.env.NEXT_PUBLIC_PAYMENT_DEPOSIT_CONTADO,
 	};
 
 	return (
