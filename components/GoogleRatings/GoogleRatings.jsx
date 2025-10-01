@@ -493,11 +493,13 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 				/* Envoltura con transición para efecto de deslizamiento */
 				.review-text-wrapper {
 					overflow: hidden;
-					transition: max-height 400ms ease-in-out, opacity 400ms ease-in-out;
+					transition: max-height 600ms ease-in-out, opacity 600ms ease-in-out;
 					will-change: max-height, opacity;
 				}
 				.review-text-wrapper.collapsed {
-					max-height: calc(1.3em * 5); /* coincide con el clamp */
+					max-height: calc(
+						1.3em * 5 + 0.3em
+					); /* pequeño colchón para evitar corte de la última línea */
 					opacity: 0.92;
 				}
 				.review-text-wrapper.expanded {
