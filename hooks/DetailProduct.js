@@ -1,5 +1,8 @@
+import { getApiUrl } from './useApi';
+
 const FetchGetDetailProduct = async (slug) => {
-	return await fetch(`https://api.pccdnapi.com/${slug}`)
+	const apiUrl = getApiUrl();
+	return await fetch(`${apiUrl}/${slug}`)
 		.then((data) => data.json())
 		.then((res) => ({
 			item: res,

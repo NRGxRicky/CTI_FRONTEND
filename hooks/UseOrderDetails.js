@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from './auth';
+import { useApi } from '../hooks/useApi';
 
 export function UseOrderDetails(orderId) {
   const { accessToken } = useAuth();
+  const { buildUrl } = useApi();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,7 +14,7 @@ export function UseOrderDetails(orderId) {
     const fetchOrder = async () => {
       try {
         setLoading(true);
-        const url = `https://api.pccdnapi.com/orders/${orderId}/`;
+        const url = buildUrl(`/orders/${orderId}/`);
         const resp = await fetch(url, {
           headers: {
             Authorization: `Bearer ${accessToken}`,

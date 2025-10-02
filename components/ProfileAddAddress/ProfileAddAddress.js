@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAppDispatch } from '../../lib/hooks';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 import { useAuth } from '../../hooks/auth';
+import { useApi } from '../../hooks/useApi';
 
 const ProfileAddAddress = ({
 	domicilio = null,
@@ -9,6 +10,7 @@ const ProfileAddAddress = ({
 	onSubmit,
 	setLoadingData,
 }) => {
+	const { buildUrl } = useApi();
 	const { accessToken } = useAuth();
 	const dispatch = useAppDispatch();
 	const containerRef = useRef(null);
@@ -124,7 +126,7 @@ const ProfileAddAddress = ({
 		try {
 			setLoadingData(true);
 			const response = await fetch(
-				'https://api.pccdnapi.com/profile/domicilio/add-or-update/',
+				buildUrl('/profile/domicilio/add-or-update/'),
 				{
 					method: 'POST',
 					headers: {

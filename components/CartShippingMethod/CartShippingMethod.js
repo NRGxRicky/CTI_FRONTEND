@@ -10,8 +10,10 @@ import { showProfileAddAddress } from '../../lib/features/showOpacityContainerSl
 import ProfileAddAddress from '../ProfileAddAddress/ProfileAddAddress';
 import ProfileAllAddress from '../ProfileAllAddress/ProfileAllAddress';
 import { Preloader, TailSpin } from 'react-preloader-icon';
+import { useApi } from '../../hooks/useApi';
 
 const CartShippingMethod = () => {
+	const { buildUrl } = useApi();
 	const { shipping, address, setAddress } = useCart();
 	const [loadingData, setLoadingData] = useState(false);
 	const [profile, setProfile] = useState({
@@ -52,7 +54,7 @@ const CartShippingMethod = () => {
 		try {
 			setLoadingData(true);
 			const response = await fetch(
-				'https://api.pccdnapi.com/profile/domicilio/set-active/',
+				buildUrl('/profile/domicilio/set-active/'),
 				{
 					method: 'POST',
 					headers: {
@@ -106,7 +108,7 @@ const CartShippingMethod = () => {
 		try {
 			setLoadingData(true);
 			const response = await fetch(
-				`https://api.pccdnapi.com/profile/domicilio/delete/${domicilioId}/`,
+				buildUrl(`/profile/domicilio/delete/${domicilioId}/`),
 				{
 					method: 'DELETE',
 					headers: { Authorization: `Bearer ${accessToken}` },

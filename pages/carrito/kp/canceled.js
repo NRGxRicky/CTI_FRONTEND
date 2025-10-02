@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useAuth } from '../../../hooks/auth';
+import { useApi } from '../../../hooks/useApi';
 
 export default function KueskiCanceled() {
   const router = useRouter();
   const { orderId } = router.query;
   const { accessToken } = useAuth();
+  const { buildUrl } = useApi();
   const [processing, setProcessing] = useState(true);
   const [error, setError] = useState(null);
 
@@ -15,7 +17,7 @@ export default function KueskiCanceled() {
 
     async function cancelOrder() {
       try {
-        const res = await fetch('https://api.pccdnapi.com/payments/kp/canceled', {
+        const res = await fetch(buildUrl('/payments/kp/canceled'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

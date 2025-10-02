@@ -6,11 +6,11 @@ import React, {
 	ReactNode,
 	createContext,
 	Dispatch,
-	SetStateAction
+	SetStateAction,
 } from 'react';
 import { useCookies } from 'react-cookie';
 
-const API_URL = 'https://api.pccdnapi.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.pccdnapi.com';
 
 const makeUrl = (endpoint: string): string => `${API_URL}${endpoint}`;
 
@@ -49,7 +49,10 @@ const fetchDataUser = (token: string): Promise<Response> => {
 	});
 };
 
-const fetchUpdateDataUser = (token: string, cart_msi: boolean): Promise<Response> => {
+const fetchUpdateDataUser = (
+	token: string,
+	cart_msi: boolean
+): Promise<Response> => {
 	const url = makeUrl('/profile/user-details/');
 	return fetch(url, {
 		method: 'POST',
@@ -60,7 +63,6 @@ const fetchUpdateDataUser = (token: string, cart_msi: boolean): Promise<Response
 		body: JSON.stringify({
 			cart_msi: cart_msi,
 		}),
-		
 	});
 };
 
@@ -142,7 +144,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 				setUsername(dataUser.username);
 				setIsverified(dataUser.is_verified);
 				setNombres(dataUser.nombres);
-				setCartMsi(dataUser.cart_msi)
+				setCartMsi(dataUser.cart_msi);
 			}
 		} else {
 			setUsername('');
@@ -153,16 +155,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 	const updateDataUser = async (cartStatus: boolean) => {
 		if (isAuthenticated) {
-			const responseUpdateDataUser = await fetchUpdateDataUser(accessToken, cartStatus);
+			const responseUpdateDataUser = await fetchUpdateDataUser(
+				accessToken,
+				cartStatus
+			);
 			if (responseUpdateDataUser.ok) {
 				const dataUser = await responseUpdateDataUser.json();
 				setCartMsi(dataUser.cart_msi);
 			}
+		} else {
+			setCartMsi(cartStatus);
 		}
-		else {
-			setCartMsi(cartStatus)
-		}
-	}
+	};
 
 	const accessTokenIsValid = async (): Promise<boolean> => {
 		if (!cookies || !cookies.tk_refresh) {
@@ -332,7 +336,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		nombres,
 		cartMsi,
 		setCartMsi,
-		updateDataUser
+		updateDataUser,
 	};
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

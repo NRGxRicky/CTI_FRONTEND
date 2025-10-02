@@ -9,10 +9,12 @@ import { useAuth } from '../../hooks/auth';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import useDebounce from '../../hooks/useDebounce';
 import SummaryDetails from '../SummaryDetails/SummaryDetails';
+import { useApi } from '../../hooks/useApi';
 
 const CartSummary = () => {
 	const { cart, removeFromCart, addToCart, loading, hasQuoteItems } =
 		useCart();
+	const { apiUrl } = useApi();
 
 	const [isLoading, setIsLoading] = useState(false);
 	const { cartMsi, isAuthenticated } = useAuth();
@@ -193,11 +195,9 @@ const CartSummary = () => {
 													<Image
 														src={
 															item.product.imagen1s
-																? item.product.imagen1xs.includes(
-																	'https://api.pccdnapi.com'
-																)
+																? item.product.imagen1xs.startsWith('http')
 																	? item.product.imagen1xs
-																	: `https://api.pccdnapi.com${item.product.imagen1xs}`
+																	: `${apiUrl}${item.product.imagen1xs}`
 																: '/images/not-available.png'
 														}
 														alt={Capitalize(item.product.titulo)}

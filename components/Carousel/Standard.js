@@ -6,18 +6,20 @@ import { Preloader, TailSpin } from 'react-preloader-icon';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEnv } from '../../context/EnvContext';
+import { useApi } from '../../hooks/useApi';
 
 const Standard = () => {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
 	const { storeId } = useEnv();
+	const { buildUrl } = useApi();
 
 	const fetchData = async () => {
 		try {
 			setLoading(true);
 			const data = await fetch(
-				`https://api.pccdnapi.com/banners/index/standard?store_id=${storeId}`
+				buildUrl(`/banners/index/standard?store_id=${storeId}`)
 			);
 
 			const json_data = await data.json()
@@ -88,7 +90,7 @@ const Standard = () => {
 								<div className='carousel__slide'>
 									<Image
 										src={banner.imagen}
-										alt={banner.titulo || 'Banner'}
+										alt={banner.nombre || 'Banner'}
 										fill
 										sizes="(min-width: 1024px) 1500px, 100vw"
 										quality={100}

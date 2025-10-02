@@ -12,8 +12,10 @@ import { useEnv } from '../../context/EnvContext';
 import KueskiPayWidget from '../KueskiPayWidget/KueskiPayWidget';
 import { getPaymentOptionsByType } from '../constants/paymentOptions';
 import { useSandbox } from '../../hooks/useSandbox';
+import { useApi } from '../../hooks/useApi';
 
 const SummaryDetails = ({ urlAction, step }) => {
+	const { buildUrl } = useApi();
 	const {
 		cart,
 		subtotal,
@@ -45,6 +47,15 @@ const SummaryDetails = ({ urlAction, step }) => {
 		log,
 		getSandboxBadge
 	} = useSandbox();
+
+	// Debug: Verificar modo sandbox en useEffect
+	useEffect(() => {
+		console.log('🏖️ DEBUG Sandbox Mode:', {
+			isSandboxMode,
+			cartMsi,
+			paymentOptions: getPaymentOptionsByType(cartMsi, isSandboxMode)
+		});
+	}, [isSandboxMode, cartMsi]);
 
 	// Referencias para PayPal y Mercado Pago
 	const paypalRef = useRef(null);
@@ -178,7 +189,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 						};
 
 						try {
-							const response = await fetch('https://api.pccdnapi.com/orders/create/', {
+							const response = await fetch(buildUrl('/orders/create/'), {
 								method: 'POST',
 								headers: {
 									'Content-Type': 'application/json',
@@ -261,14 +272,14 @@ const SummaryDetails = ({ urlAction, step }) => {
 				};
 
 				console.log('🏖️ SANDBOX: Enviando datos al backend:', {
-					url: 'https://api.pccdnapi.com/sandbox/orders/create/',
+					url: buildUrl('/sandbox/orders/create/'),
 					orderData,
 					accessToken: accessToken ? 'Present' : 'Missing',
 					paymentMethod,
 					total
 				});
 
-				const response = await fetch('https://api.pccdnapi.com/sandbox/orders/create/', {
+				const response = await fetch(buildUrl('/sandbox/orders/create/'), {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -344,7 +355,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 					id: `${item.product.sku || index}`,
 					title: Capitalize(item.product.titulo?.substring(0, 255)) || 'Producto',
 					currency_id: 'MXN',
-					picture_url: `https://api.pccdnapi.com/${item.product.imagen1s}` || '',
+					picture_url: buildUrl(`/${item.product.imagen1s}`) || '',
 					quantity: item.quantity,
 					unit_price: unitPrice,
 				};
@@ -381,7 +392,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 			};
 
 			// D) Llama a tu endpoint en Django
-			const res = await fetch('https://api.pccdnapi.com/payments/mp/create_preference/', {
+			const res = await fetch(buildUrl('/payments/mp/create_preference/'), {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -507,7 +518,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 			};
 
 			// G) Llamar a tu endpoint en el backend que crea el pago con KueskiPay
-			const res = await fetch('https://api.pccdnapi.com/payments/kp/create_payment/', {
+			const res = await fetch(buildUrl('/payments/kp/create_payment/'), {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -553,7 +564,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 				// Lo que necesites para "products", "shipping_address", etc.
 			};
 
-			const res = await fetch('https://api.pccdnapi.com/payments/aplazo/create_payment/', {
+			const res = await fetch(buildUrl('/payments/aplazo/create_payment/'), {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -647,7 +658,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 							<span>Pagar a Pagos con:</span>
 						</div>
 						<div className='payments__option__body'>
-							{getPaymentOptionsByType(true)
+							{getPaymentOptionsByType(true, isSandboxMode)
 								.map((option) => (
 									<div
 										key={option.id}
@@ -678,7 +689,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 							<span>Pagar en una sola exhibición con:</span>
 						</div>
 						<div className='payments__option__body'>
-							{getPaymentOptionsByType(false)
+							{getPaymentOptionsByType(false, isSandboxMode)
 
 								.map((option) => (
 									<div

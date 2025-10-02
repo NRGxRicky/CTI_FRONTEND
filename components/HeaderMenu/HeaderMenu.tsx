@@ -3,12 +3,14 @@ import CaretDown from '../../components/Icons/CaretDown';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+import { useApi } from '../../hooks/useApi';
 import {
 	hideAll,
 	showNavMobileMenu,
 } from '../../lib/features/showOpacityContainerSlide';
 
 const HeaderMenu = () => {
+	const { buildUrl } = useApi();
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
@@ -26,7 +28,7 @@ const HeaderMenu = () => {
 		try {
 			setLoading(true);
 			const data = await fetch(
-				`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=index`
+				buildUrl(`/categories/bestcategories/?parentcategorie=index`)
 			);
 			setData(await data.json());
 		} catch (error) {

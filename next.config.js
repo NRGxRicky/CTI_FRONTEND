@@ -18,7 +18,43 @@ module.exports = {
 			},
 			{
 				protocol: 'https',
+				hostname: 'www.pccomputo.com',
+				pathname: '**',
+			},
+			{
+				protocol: 'https',
+				hostname: 'pccomputo.com',
+				pathname: '**',
+			},
+			{
+				protocol: 'https',
+				hostname: 'pcstore.mx',
+				pathname: '**',
+			},
+			{
+				protocol: 'https',
+				hostname: 'www.pcstore.mx',
+				pathname: '**',
+			},
+			{
+				protocol: 'https',
 				hostname: 'lh3.googleusercontent.com',
+				pathname: '**',
+			},
+			// Dominios para desarrollo local
+			{
+				protocol: 'http',
+				hostname: 'localhost',
+				pathname: '**',
+			},
+			{
+				protocol: 'http',
+				hostname: 'api.pccomputo.local',
+				pathname: '**',
+			},
+			{
+				protocol: 'http',
+				hostname: '127.0.0.1',
 				pathname: '**',
 			},
 		],

@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 import { trackSearch as trackGoogleAnalyticsSearch } from '../../utils/analytics';
 import { trackMetaSearch } from '../../utils/metaAnalytics';
+import { useApi } from '../../hooks/useApi';
 
 // Hook personalizado para efecto de escritura tipo IA
 const useTypewriter = (text, speed = 50, enabled = true) => {
@@ -157,6 +158,7 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 	const [isTransitioning, setIsTransitioning] = useState(false);
 	const { searchBar } = useAppSelector((state) => state.showOpacityContainerReducer);
 	const dispatch = useAppDispatch();
+	const { buildUrl, apiUrl } = useApi();
 
 	// Función para trackear búsquedas
 	const trackSearch = async (query) => {
@@ -164,7 +166,7 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 
 		try {
 			// Trackear en el backend
-			await fetch('https://api.pccdnapi.com/search/track/', {
+			await fetch(buildUrl('/search/track/'), {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -244,7 +246,7 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 		debounceTimeout = setTimeout(() => {
 			abortController = new AbortController();
 			fetch(
-				`https://api.pccdnapi.com/search/suggestions/?q=${encodeURIComponent(safeQuery)}`,
+				buildUrl(`/search/suggestions/?q=${encodeURIComponent(safeQuery)}`),
 				{ signal: abortController.signal }
 			)
 				.then((res) => res.json())
@@ -318,7 +320,7 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 						<a className="search-dropdown__featured" onClick={() => dispatch(hideAll())}>
 							{suggestions.products[0].image && (
 								<Image
-									src={`https://api.pccdnapi.com${suggestions.products[0].image}`}
+									src={`${suggestions.products[0].image}`}
 									alt={suggestions.products[0].original_title}
 									width={40}
 									height={40}

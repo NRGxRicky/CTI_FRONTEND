@@ -8,6 +8,7 @@ import useCart from '../../hooks/useCart';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import { useRouter } from 'next/router';
 import Capitalize from '../../hooks/CapitalizeTitle';
+import { useApi } from '../../hooks/useApi';
 
 export default function UserQuoteDetail({ quoteId }) {
 	const { quote, loading, error } = useQuoteDetails(quoteId);
@@ -22,6 +23,7 @@ export default function UserQuoteDetail({ quoteId }) {
 
 	// Función para formatear fechas
 	const formatDate = (dateString) => {
+	const { buildUrl } = useApi();
 		if (!dateString) return '';
 		const date = new Date(dateString);
 		return date.toLocaleDateString('es-MX');
@@ -38,7 +40,7 @@ export default function UserQuoteDetail({ quoteId }) {
 				setIsDeletingQuote(true);
 
 				const resp = await fetch(
-					`https://api.pccdnapi.com/quotes/delete/${quote.id}/`,
+					buildUrl(`/quotes/delete/${quote.id}/`),
 					{
 						method: 'DELETE',
 						headers: {

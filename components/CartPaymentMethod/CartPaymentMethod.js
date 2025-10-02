@@ -12,8 +12,10 @@ import regimenesFiscales from '../../hooks/regimenesFiscales';
 import usosCFDI from '../../hooks/usosCFDI';
 import { getPaymentOptionsByType } from '../constants/paymentOptions';
 import { useSandbox } from '../../hooks/useSandbox';
+import { useApi } from '../../hooks/useApi';
 
 const CartPaymentMethod = () => {
+	const { buildUrl } = useApi();
 	const { taxInvoice, setTaxInvoice, paymentMethod, setPaymentMethod } = useCart();
 	const [loadingData, setLoadingData] = useState(false);
 	const [profile, setProfile] = useState({
@@ -105,7 +107,7 @@ const CartPaymentMethod = () => {
 		try {
 			setLoadingData(true);
 			const response = await fetch(
-				'https://api.pccdnapi.com/profile/facturacion/set-active/',
+				buildUrl('/profile/facturacion/set-active/'),
 				{
 					method: 'POST',
 					headers: {
@@ -162,7 +164,7 @@ const CartPaymentMethod = () => {
 		try {
 			setLoadingData(true);
 			const response = await fetch(
-				`https://api.pccdnapi.com/profile/facturacion/delete/${rfcId}/`,
+				buildUrl(`/profile/facturacion/delete/${rfcId}/`),
 				{
 					method: 'DELETE',
 					headers: { Authorization: `Bearer ${accessToken}` },

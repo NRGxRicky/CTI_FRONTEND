@@ -47,6 +47,7 @@ import { trackSearch as trackGoogleAnalyticsSearch } from '../../utils/analytics
 import { trackMetaSearch } from '../../utils/metaAnalytics';
 import HeaderDelivery from '../HeaderDelivery/HeaderDelivery';
 import ProfileIcon from '../ProfileIcon/ProfileIcon';
+import { useApi } from '../../hooks/useApi';
 
 const HeaderBar: React.FC = () => {
 	/**
@@ -91,6 +92,7 @@ const HeaderBar: React.FC = () => {
 	 */
 	const dispatch = useAppDispatch();
 	const { storeName, logoUrl } = useEnv();
+	const { buildUrl } = useApi();
 	const [windowWidth, setWindowWidth] = useState(0);
 
 	/**
@@ -137,7 +139,7 @@ const HeaderBar: React.FC = () => {
 
 		try {
 			// Trackear en el backend
-			const response = await fetch('https://api.pccdnapi.com/search/track/', {
+			const response = await fetch(buildUrl('/search/track/'), {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

@@ -4,6 +4,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { useAppSelector } from '../../lib/hooks';
 import Link from 'next/link';
+import { useApi } from '../../hooks/useApi';
 
 const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 	const [data, setData] = useState({ results: [] });
@@ -11,6 +12,7 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 	const [error, setError] = useState(false);
 	const [prevButton, setPrevButton] = useState(true);
 	const [nextButton, setNextButton] = useState(true);
+	const { buildUrl } = useApi();
 	const [emblaRef, emblaApi] = useEmblaCarousel(
 		{
 			slidesToScroll: responsiveElements,
@@ -26,7 +28,7 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 	const fetchData = async () => {
 		try {
 			setLoading(true);
-			const data = await fetch(`https://api.pccdnapi.com/brands/bestbrands/`);
+			const data = await fetch(buildUrl('/brands/bestbrands/'));
 			setData(await data.json());
 		} catch (error) {
 			setError(error);

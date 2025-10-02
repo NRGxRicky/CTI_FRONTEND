@@ -1,11 +1,18 @@
 import { Router, withRouter } from 'next/router';
+import { getApiUrl } from './useApi';
 
-const API_URL = 'https://api.pccdnapi.com';
-const API_URLx = 'http://api.pccomputo.local:8000';
+/**
+ * Hook para hacer requests GET autenticados a la API
+ * @param {string} endpoint - Endpoint de la API (ej: '/profile/resume/')
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Response>} Response de fetch
+ */
+const fetchData = async (endpoint, token) => {
+	const apiUrl = getApiUrl();
+	// Asegurar que el endpoint comience con /
+	const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+	const urlComplete = `${apiUrl}${normalizedEndpoint}`;
 
-const makeUrl = async (endpoint) => API_URL + endpoint;
-const fetchData = async (url, token) => {
-	const urlComplete = await makeUrl(url);
 	return await fetch(urlComplete, {
 		method: 'GET',
 		headers: {

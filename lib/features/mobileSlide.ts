@@ -11,7 +11,7 @@ export const mobileSlide = createSlice({
 		setMobileView: (state, action) => {
 			state.mobileView = action.payload;
 
-			action.payload ? (state.maxPageResults = 6) : (state.maxPageResults = 40);
+			action.payload ? (state.maxPageResults = 8) : (state.maxPageResults = 40);
 		},
 		setMaxPageResults: (state, action) => {
 			state.maxPageResults = action.payload;

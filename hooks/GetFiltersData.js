@@ -1,3 +1,5 @@
+import { getApiUrl } from './useApi';
+
 const fetchFilterData = async (
 	q,
 	order,
@@ -12,7 +14,8 @@ const fetchFilterData = async (
 	marca,
 	categoria
 ) => {
-	let url = `https://api.pccdnapi.com/filters/listado/available?q=${q}&order=${order}&page=${page}&filter_available=${filter_available}&filter_available_store=${filter_available_store}&filter_free_shipping=${filter_free_shipping}&filter_discount=${filter_discount}&marca=${marca}&categoria=${categoria}`;
+	const apiUrl = getApiUrl();
+	let url = `${apiUrl}/filters/listado/available?q=${q}&order=${order}&page=${page}&filter_available=${filter_available}&filter_available_store=${filter_available_store}&filter_free_shipping=${filter_free_shipping}&filter_discount=${filter_discount}&marca=${marca}&categoria=${categoria}`;
 
 	brands.forEach((brand) => (url += `&brands=${brand}`));
 	categories.forEach((category) => {

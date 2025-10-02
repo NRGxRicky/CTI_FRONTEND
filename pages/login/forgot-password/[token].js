@@ -6,6 +6,7 @@ import EyeOpen from '../../../components/Icons/EyeOpen';
 import CheckCircleGreen from '../../../components/Icons/CheckCircleGreen';
 import Head from 'next/head';
 import { useEnv } from '../../../context/EnvContext';
+import { useApi } from '../../../hooks/useApi';
 
 export const getServerSideProps = async (context) => {
 	return {
@@ -16,6 +17,7 @@ export const getServerSideProps = async (context) => {
 };
 
 const Token = ({ tokenRecovery }) => {
+	const { buildUrl } = useApi();
 	const { loading, isAuthenticated } = useAuth();
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
@@ -62,7 +64,7 @@ const Token = ({ tokenRecovery }) => {
 			try {
 				// Hacer una solicitud a la API para verificar si el token ha expirado
 				const response = await fetch(
-					`https://api.pccdnapi.com/profile/password_reset/validate_token/`,
+					buildUrl(`/profile/password_reset/validate_token/`),
 					{
 						method: 'POST',
 						headers: {
@@ -106,7 +108,7 @@ const Token = ({ tokenRecovery }) => {
 
 		try {
 			const response = await fetch(
-				`https://api.pccdnapi.com/profile/password_reset/confirm/`,
+				buildUrl(`/profile/password_reset/confirm/`),
 				{
 					method: 'POST',
 					headers: {

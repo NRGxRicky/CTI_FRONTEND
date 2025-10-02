@@ -8,6 +8,7 @@ import TruncateMarkup from 'react-truncate-markup';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
 import { Preloader, TailSpin } from 'react-preloader-icon';
+import { useApi } from '../../hooks/useApi';
 
 const CarouselProductsV4 = ({
 	responsiveElements = 2,
@@ -24,6 +25,7 @@ const CarouselProductsV4 = ({
 	const [error, setError] = useState(false);
 	const [prevButton, setPrevButton] = useState(true);
 	const [nextButton, setNextButton] = useState(true);
+	const { buildUrl } = useApi();
 	const [emblaRef, emblaApi] = useEmblaCarousel({
 		slidesToScroll: responsiveElements,
 		loop: false,
@@ -35,7 +37,7 @@ const CarouselProductsV4 = ({
 		try {
 			setLoading(true);
 			const data = await fetch(
-				`https://api.pccdnapi.com/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}&filter_discount=true`
+				buildUrl(`/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}&filter_discount=true`)
 			);
 			setData(await data.json());
 		} catch (error) {
@@ -153,7 +155,7 @@ const CarouselProductsV4 = ({
 																	((producto.precio_final -
 																		producto.precio_final_descuento) *
 																		100) /
-																		producto.precio_final
+																	producto.precio_final
 																)}
 																%
 															</div>

@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useApi } from '../../hooks/useApi';
 
 const ProductRedirect = () => {
+	const { buildUrl } = useApi();
 	const router = useRouter();
 	const { handle } = router.query;
 
@@ -13,7 +15,7 @@ const ProductRedirect = () => {
 			const fetchProductSlug = async () => {
 				try {
 					const response = await fetch(
-						'https://api.pccdnapi.com/shopify/get-product-by-slug/',
+						buildUrl('/shopify/get-product-by-slug/'),
 						{
 							method: 'POST',
 							headers: {

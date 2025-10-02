@@ -9,6 +9,7 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { trackViewItemList, trackSelectItem } from '../../utils/analytics';
+import { useApi } from '../../hooks/useApi';
 
 const CarouselProducts = ({
 	responsiveElements = 2,
@@ -32,11 +33,13 @@ const CarouselProducts = ({
 		align: 'start',
 	});
 
+	const { buildUrl } = useApi();
+
 	const fetchData = async () => {
 		try {
 			setLoading(true);
 			const response = await fetch(
-				`https://api.pccdnapi.com/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}`
+				buildUrl(`/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}`)
 			);
 			const newData = await response.json();
 			setData(newData);

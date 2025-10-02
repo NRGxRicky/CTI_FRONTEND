@@ -8,7 +8,7 @@ import { useAuth } from '../../hooks/auth';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import TruncateMarkup from 'react-truncate-markup';
 import Image from 'next/image';
-
+import { useApi } from '../../hooks/useApi';
 import {
 	hideAll,
 	showNavMobileMenu,
@@ -48,6 +48,7 @@ interface Panel {
 }
 
 const NavMobileMenu = () => {
+	const { buildUrl } = useApi();
 	const [data, setData] = useState<CategoriesData>({ results: [], count: 0 });
 	const [popularCategories, setPopularCategories] = useState<Category[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -82,8 +83,8 @@ const NavMobileMenu = () => {
 
 		try {
 			const [categoriesResponse, popularResponse] = await Promise.all([
-				fetch(`https://api.pccdnapi.com/categories/mobile-menu/`),
-				fetch(`https://api.pccdnapi.com/categories/bestcategories/?limit=10`),
+				fetch(buildUrl(`/categories/mobile-menu/`)),
+				fetch(buildUrl(`/categories/bestcategories/?limit=10`)),
 			]);
 
 			if (!categoriesResponse.ok) {
@@ -92,7 +93,7 @@ const NavMobileMenu = () => {
 					categoriesResponse.statusText
 				);
 				const fallbackResponse = await fetch(
-					`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=index`
+					buildUrl(`/categories/bestcategories/?parentcategorie=index`)
 				);
 				if (!fallbackResponse.ok)
 					throw new Error('Fallback endpoint also failed');

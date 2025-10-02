@@ -7,11 +7,13 @@ import Capitalize from '../../hooks/CapitalizeTitle';
 import { useAppSelector } from '../../lib/hooks';
 import useEmblaCarousel from 'embla-carousel-react';
 import TruncateMarkup from 'react-truncate-markup';
+import { useApi } from '../../hooks/useApi';
 
 const BestCategories = ({ mobile = false }) => {
 	const [data, setData] = useState({ results: [] });
 	const [prevButton, setPrevButton] = useState(true);
 	const [nextButton, setNextButton] = useState(true);
+	const { buildUrl } = useApi();
 	let styleClass =
 		'carousel__button carousel__button-next carousel__button--color-ligth';
 
@@ -66,7 +68,7 @@ const BestCategories = ({ mobile = false }) => {
 	const fetchData = async () => {
 		try {
 			const data = await fetch(
-				`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=index`
+				buildUrl('/categories/bestcategories/?parentcategorie=index')
 			);
 			setData(await data.json());
 		} catch (_e) {

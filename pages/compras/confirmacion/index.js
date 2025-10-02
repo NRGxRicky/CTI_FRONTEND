@@ -13,11 +13,13 @@ import Router from 'next/router';
 import Head from 'next/head';
 import { trackPurchase } from '../../../utils/analytics';
 import { trackMetaPurchase } from '../../../utils/metaAnalytics';
+import { useApi } from '../../../hooks/useApi';
 export const metadata = {
 	title: 'Resumen de la compra',
 };
 
 const Index = () => {
+	const { buildUrl, apiUrl } = useApi();
 	const router = useRouter();
 	const { orderId } = router.query;
 	const { accessToken, username, loading, isAuthenticated } = useAuth();
@@ -38,9 +40,9 @@ const Index = () => {
 		const fetchOrder = async () => {
 			try {
 				// Usar siempre el endpoint de producción (PccomputoOrdenDetailView)
-				const apiUrl = `https://api.pccdnapi.com/orders/${orderId}/`;
+				const orderUrl = buildUrl(`/orders/${orderId}/`);
 
-				const response = await fetch(apiUrl, {
+				const response = await fetch(orderUrl, {
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json',

@@ -7,8 +7,10 @@ import fetchData from '../../hooks/GetDataAuth';
 import { useAuth } from '../../hooks/auth';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { Preloader, TailSpin } from 'react-preloader-icon';
+import { useApi } from '../../hooks/useApi';
 
 const ProfileAddressesSection = () => {
+	const { buildUrl } = useApi();
 	// Estado de carga y perfil (asegúrate de que el perfil incluya ambas propiedades)
 	const [loadingData, setLoadingData] = useState(true);
 	const [profile, setProfile] = useState({
@@ -59,7 +61,7 @@ const ProfileAddressesSection = () => {
 		try {
 			setLoadingData(true);
 			const response = await fetch(
-				'https://api.pccdnapi.com/profile/domicilio/set-active/',
+				buildUrl('/profile/domicilio/set-active/'),
 				{
 					method: 'POST',
 					headers: {
@@ -100,7 +102,7 @@ const ProfileAddressesSection = () => {
 		try {
 			setLoadingData(true);
 			const response = await fetch(
-				`https://api.pccdnapi.com/profile/domicilio/delete/${domicilioId}/`,
+				buildUrl(`/profile/domicilio/delete/${domicilioId}/`),
 				{
 					method: 'DELETE',
 					headers: {
@@ -127,7 +129,7 @@ const ProfileAddressesSection = () => {
 		try {
 			setLoadingData(true);
 			const response = await fetch(
-				'https://api.pccdnapi.com/profile/facturacion/set-active/',
+				buildUrl('/profile/facturacion/set-active/'),
 				{
 					method: 'POST',
 					headers: {
@@ -168,7 +170,7 @@ const ProfileAddressesSection = () => {
 		try {
 			setLoadingData(true);
 			const response = await fetch(
-				`https://api.pccdnapi.com/profile/facturacion/delete/${rfcId}/`,
+				buildUrl(`/profile/facturacion/delete/${rfcId}/`),
 				{
 					method: 'DELETE',
 					headers: { Authorization: `Bearer ${accessToken}` },

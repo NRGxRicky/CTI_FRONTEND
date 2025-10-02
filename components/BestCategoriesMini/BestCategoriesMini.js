@@ -4,12 +4,14 @@ import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import { useAppSelector } from '../../lib/hooks';
 import TruncateMarkup from 'react-truncate-markup';
+import { useApi } from '../../hooks/useApi';
 
 const BestCategoriesMini = ({
 	parentCategorie,
 	title,
 	filter_available_store,
 }) => {
+	const { buildUrl } = useApi();
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
@@ -22,7 +24,7 @@ const BestCategoriesMini = ({
 		try {
 			setLoading(true);
 			const data = await fetch(
-				`https://api.pccdnapi.com/categories/bestcategories/?parentcategorie=${parentCategorie}&filter_available_store=${filter_available_store}`
+				buildUrl(`/categories/bestcategories/?parentcategorie=${parentCategorie}&filter_available_store=${filter_available_store}`)
 			);
 			setData(await data.json());
 		} catch (error) {

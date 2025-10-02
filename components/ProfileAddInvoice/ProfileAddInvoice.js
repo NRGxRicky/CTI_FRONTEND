@@ -7,6 +7,7 @@ import { useAuth } from '../../hooks/auth';
 import formasDePago from '../../hooks/formasDePago';
 import regimenesFiscales from '../../hooks/regimenesFiscales';
 import usosCFDI from '../../hooks/usosCFDI';
+import { useApi } from '../../hooks/useApi';
 
 const ProfileAddInvoice = ({
 	rfcData = null, // Renombramos para mayor claridad.
@@ -14,6 +15,7 @@ const ProfileAddInvoice = ({
 	onSubmit,
 	setLoadingData,
 }) => {
+	const { buildUrl } = useApi();
 	const { accessToken } = useAuth();
 	const dispatch = useAppDispatch();
 	const containerRef = useRef(null);
@@ -119,7 +121,7 @@ const ProfileAddInvoice = ({
 		try {
 			setLoadingData(true);
 			const response = await fetch(
-				'https://api.pccdnapi.com/profile/facturacion/add-or-update/',
+				buildUrl('/profile/facturacion/add-or-update/'),
 				{
 					method: 'POST',
 					headers: {

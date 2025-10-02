@@ -1,3 +1,9 @@
+import { getApiUrl } from './useApi';
+
+/**
+ * Hook para obtener listado de productos con filtros
+ * Usado principalmente en la página de listado de productos
+ */
 const fetchData = async (
 	q,
 	order,
@@ -13,7 +19,8 @@ const fetchData = async (
 	categoria,
 	page_size
 ) => {
-	let url = `https://api.pccdnapi.com/listado?q=${q}&order=${order}&page=${page}&filter_available=${filter_available}&filter_available_store=${filter_available_store}&filter_free_shipping=${filter_free_shipping}&filter_discount=${filter_discount}&marca=${marca}&categoria=${categoria}&page_size=${page_size}`;
+	const apiUrl = getApiUrl();
+	let url = `${apiUrl}/listado?q=${q}&order=${order}&page=${page}&filter_available=${filter_available}&filter_available_store=${filter_available_store}&filter_free_shipping=${filter_free_shipping}&filter_discount=${filter_discount}&marca=${marca}&categoria=${categoria}&page_size=${page_size}`;
 
 	brands.forEach((brand) => (url += `&brands=${brand}`));
 	categories.forEach((category) => {

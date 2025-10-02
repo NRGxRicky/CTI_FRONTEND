@@ -5,6 +5,7 @@ import { useAuth } from '../../hooks/auth';
 import Image from 'next/image';
 import useCart from '../../hooks/useCart';
 import { getPaymentOptionsByType } from '../constants/paymentOptions';
+import { useSandbox } from '../../hooks/useSandbox';
 
 const PaymentsChange = () => {
 	const statePaymentsChange = useAppSelector(
@@ -14,6 +15,7 @@ const PaymentsChange = () => {
 	const { cartMsi, updateDataUser } = useAuth();
 	const [payment, setPayment] = useState(false);
 	const { setPaymentMethod, hasQuoteItems } = useCart();
+	const { isSandboxMode } = useSandbox();
 
 	const handleChangePayment = (paymentStatus: boolean) => {
 		if (hasQuoteItems) {
@@ -82,7 +84,7 @@ const PaymentsChange = () => {
 							<span>Pagar en una sola exhibición con:</span>
 						</div>
 						<div className='payments-change__option__body'>
-							{getPaymentOptionsByType(false).map((option) => (
+							{getPaymentOptionsByType(false, isSandboxMode).map((option) => (
 								<div key={option.id} className='payments-change__option__item'>
 									<div className='payments-change__option__item__image'>
 										<Image
@@ -113,7 +115,7 @@ const PaymentsChange = () => {
 							<span>Pagar a Pagos con:</span>
 						</div>
 						<div className='payments-change__option__body'>
-							{getPaymentOptionsByType(true).map((option) => (
+							{getPaymentOptionsByType(true, isSandboxMode).map((option) => (
 								<div key={option.id} className='payments-change__option__item'>
 									<div className='payments-change__option__item__image'>
 										<Image

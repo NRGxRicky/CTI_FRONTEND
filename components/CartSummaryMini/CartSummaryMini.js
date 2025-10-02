@@ -18,8 +18,10 @@ import {
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useAuth } from '../../hooks/auth';
 import Router from 'next/router';
+import { useApi } from '../../hooks/useApi';
 
 const CartSummaryMini = () => {
+	const { buildUrl, apiUrl } = useApi();
 	const {
 		cart,
 		removeFromCart,
@@ -55,7 +57,7 @@ const CartSummaryMini = () => {
 			setIsGenerating(true);     // inicia spinner
 
 			const response = await fetch(
-				'https://api.pccdnapi.com/cart/quotation-pdf',
+				buildUrl('/cart/quotation-pdf'),
 				{
 					method: 'GET',
 					headers: { Authorization: `Bearer ${accessToken}` },
@@ -219,9 +221,9 @@ const CartSummaryMini = () => {
 												<Image
 													src={
 														item.product.imagen1s
-															? item.product.imagen1xs.includes('https://api.pccdnapi.com')
+															? item.product.imagen1xs.startsWith('http')
 																? item.product.imagen1xs
-																: `https://api.pccdnapi.com${item.product.imagen1xs}`
+																: `${apiUrl}${item.product.imagen1xs}`
 															: '/images/not-available.png'
 													}
 													fill

@@ -8,6 +8,7 @@ import { useAuth } from '../hooks/auth';
 import { useRouter } from 'next/router';
 import GetShippingCost from '../hooks/GetShippingCost';
 import { trackAddToCart, trackRemoveFromCart } from '../utils/analytics';
+import { useApi } from '../hooks/useApi';
 import {
 	trackMetaAddToCart,
 	trackMetaRemoveFromCart,
@@ -16,6 +17,7 @@ import {
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
+	const { buildUrl } = useApi();
 	const { isAuthenticated, accessToken, cartMsi, updateDataUser } = useAuth();
 	const [cart, setCart] = useState([]);
 	const [subtotal, setSubtotal] = useState(0);
@@ -31,7 +33,7 @@ export const CartProvider = ({ children }) => {
 	const localcheckBackend = async (cartLocal = cart) => {
 		setLoading(true);
 		if (cartLocal.length > 0) {
-			const response = await fetch('https://api.pccdnapi.com/cart/', {
+			const response = await fetch(buildUrl('/cart/'), {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -61,12 +63,9 @@ export const CartProvider = ({ children }) => {
 			}
 
 			try {
-				let backendCartResponse = await fetch(
-					'https://api.pccdnapi.com/cart/',
-					{
-						headers: { Authorization: `Bearer ${accessToken}` },
-					}
-				);
+				let backendCartResponse = await fetch(buildUrl('/cart/'), {
+					headers: { Authorization: `Bearer ${accessToken}` },
+				});
 
 				if (!backendCartResponse.ok) {
 					console.error('Error fetching backend cart.');
@@ -85,20 +84,17 @@ export const CartProvider = ({ children }) => {
 					);
 
 					if (!existingItem) {
-						const addItemResponse = await fetch(
-							'https://api.pccdnapi.com/cart/',
-							{
-								method: 'POST',
-								headers: {
-									'Content-Type': 'application/json',
-									Authorization: `Bearer ${accessToken}`,
-								},
-								body: JSON.stringify({
-									product_id: localItem.product.id,
-									quantity: localItem.quantity,
-								}),
-							}
-						);
+						const addItemResponse = await fetch(buildUrl('/cart/'), {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								Authorization: `Bearer ${accessToken}`,
+							},
+							body: JSON.stringify({
+								product_id: localItem.product.id,
+								quantity: localItem.quantity,
+							}),
+						});
 
 						if (addItemResponse.ok) {
 							needsUpdate = true;
@@ -107,7 +103,7 @@ export const CartProvider = ({ children }) => {
 				}
 
 				if (needsUpdate) {
-					backendCartResponse = await fetch('https://api.pccdnapi.com/cart/', {
+					backendCartResponse = await fetch(buildUrl('/cart/'), {
 						headers: { Authorization: `Bearer ${accessToken}` },
 					});
 
@@ -145,7 +141,7 @@ export const CartProvider = ({ children }) => {
 			} else {
 				(async () => {
 					try {
-						const response = await fetch('https://api.pccdnapi.com/cart/', {
+						const response = await fetch(buildUrl('/cart/'), {
 							headers: { Authorization: `Bearer ${accessToken}` },
 						});
 
@@ -249,7 +245,7 @@ export const CartProvider = ({ children }) => {
 
 		if (isAuthenticated) {
 			try {
-				const response = await fetch('https://api.pccdnapi.com/cart/', {
+				const response = await fetch(buildUrl('/cart/'), {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -353,7 +349,7 @@ export const CartProvider = ({ children }) => {
 	const updateQuantity = async (productId, newQuantity) => {
 		if (isAuthenticated) {
 			try {
-				await fetch(`https://api.pccdnapi.com/cart/`, {
+				await fetch(buildUrl(`/cart/`), {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -392,15 +388,12 @@ export const CartProvider = ({ children }) => {
 		setLoading(true);
 		if (isAuthenticated) {
 			try {
-				const response = await fetch(
-					`https://api.pccdnapi.com/cart/${productId}/`,
-					{
-						method: 'DELETE',
-						headers: {
-							Authorization: `Bearer ${accessToken}`,
-						},
-					}
-				);
+				const response = await fetch(buildUrl(`/cart/${productId}/`), {
+					method: 'DELETE',
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+					},
+				});
 
 				if (response.ok) {
 					const backendCart = await response.json();
@@ -474,7 +467,7 @@ export const CartProvider = ({ children }) => {
 		setLoading(true);
 		setCart([]);
 		if (isAuthenticated) {
-			fetch('https://api.pccdnapi.com/cart/clear/', {
+			fetch(buildUrl('/cart/clear/'), {
 				method: 'POST',
 				headers: { Authorization: `Bearer ${accessToken}` },
 			});

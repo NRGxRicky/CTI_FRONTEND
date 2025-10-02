@@ -3,8 +3,10 @@ import { useAuth } from '../../../../hooks/auth';
 import Router from 'next/router';
 import Head from 'next/head';
 import { useEnv } from '../../../../context/EnvContext';
+import { useApi } from '../../../../hooks/useApi';
 
 const ResendVerificationEmail = () => {
+	const { buildUrl } = useApi();
 	const {
 		loading: authLoading,
 		isAuthenticated,
@@ -23,7 +25,7 @@ const ResendVerificationEmail = () => {
 
 		try {
 			const response = await fetch(
-				'https://api.pccdnapi.com/profile/resend-verification-email/',
+				buildUrl('/profile/resend-verification-email/'),
 				{
 					method: 'POST',
 					headers: {

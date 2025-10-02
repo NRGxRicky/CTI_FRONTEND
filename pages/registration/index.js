@@ -9,8 +9,10 @@ import { useRouter } from 'next/router';
 import { useEnv } from '../../context/EnvContext';
 import { trackSignUp } from '../../utils/analytics';
 import { trackMetaCompleteRegistration } from '../../utils/metaAnalytics';
+import { useApi } from '../../hooks/useApi';
 
 const Register = () => {
+	const { buildUrl } = useApi();
 	const [formData, setFormData] = useState({
 		name: '', // Campo para el nombre
 		email: '',
@@ -87,7 +89,7 @@ const Register = () => {
 
 		try {
 			const response = await fetch(
-				'https://api.pccdnapi.com/profile/register/',
+				buildUrl('/profile/register/'),
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },

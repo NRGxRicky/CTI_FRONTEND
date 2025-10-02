@@ -5,6 +5,7 @@ import Capitalize from '../../hooks/CapitalizeTitle';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
 import TruncateMarkup from 'react-truncate-markup';
+import { useApi } from '../../hooks/useApi';
 
 const BrandSimilarMini = ({
 	marca = 'all',
@@ -14,6 +15,7 @@ const BrandSimilarMini = ({
 	item,
 	filter_available_store,
 }) => {
+	const { buildUrl } = useApi();
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
@@ -22,7 +24,7 @@ const BrandSimilarMini = ({
 		try {
 			setLoading(true);
 			const data = await fetch(
-				`https://api.pccdnapi.com/section?type=${typeQuery}&marca=${marca.slug}&categoria=${categoria.slug}&q=${q}&filter_available_store=${filter_available_store}`
+				buildUrl(`/section?type=${typeQuery}&marca=${marca.slug}&categoria=${categoria.slug}&q=${q}&filter_available_store=${filter_available_store}`)
 			);
 			setData(await data.json());
 		} catch (error) {

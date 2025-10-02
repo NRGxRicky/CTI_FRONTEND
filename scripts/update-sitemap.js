@@ -9,7 +9,7 @@ async function updateSitemap() {
   try {
     // Obtén el storeId desde las variables de entorno o configúralo manualmente
     const storeId = process.env.NEXT_PUBLIC_STORE_ID;
-    const sitemapUrl = `https://api.pccdnapi.com/services/${storeId}/sitemap.xml`;
+    const sitemapUrl = buildUrl(`/services/${storeId}/sitemap.xml`);
 
     console.log(storeId)
 

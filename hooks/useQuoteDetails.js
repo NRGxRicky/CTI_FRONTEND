@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from './auth';
+import { useApi } from '../hooks/useApi';
 
 export function useQuoteDetails(quoteId) {
   const { accessToken } = useAuth();
+  const { buildUrl } = useApi();
   const [quote, setQuote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,7 +15,7 @@ export function useQuoteDetails(quoteId) {
     const fetchQuote = async () => {
       try {
         setLoading(true);
-        const url = `https://api.pccdnapi.com/quotes/${quoteId}/`;
+        const url = buildUrl(`/quotes/${quoteId}/`);
         const resp = await fetch(url, {
           headers: {
             Authorization: `Bearer ${accessToken}`,

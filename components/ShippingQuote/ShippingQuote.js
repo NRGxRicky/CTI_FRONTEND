@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useEnv } from '../../context/EnvContext';
 import { useAuth } from '../../hooks/auth';
+import { useApi } from '../../hooks/useApi';
 
 function ShippingQuote({ productId }) {
   const [loading, setLoading] = useState(true);
@@ -16,7 +17,7 @@ function ShippingQuote({ productId }) {
         setError(null);
 
         // Petición al endpoint de Django
-        const response = await fetch('https://api.pccdnapi.com/services/quote/', {
+        const response = await fetch(buildUrl('/services/quote/'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -96,6 +97,7 @@ function ShippingQuote({ productId }) {
 
   // Ejemplo: formatear fechas en español
   const formatDateEs = (isoDate) => {
+	const { buildUrl } = useApi();
     if (!isoDate) return '';
     const dateObj = new Date(isoDate);
     return dateObj.toLocaleDateString('es-MX', {

@@ -5,6 +5,10 @@ const EnvContext = createContext();
 export function EnvProvider({ children }) {
 	// Define las variables de entorno que quieras exponer
 	const envVariables = {
+		// URL de la API
+		apiUrl: process.env.NEXT_PUBLIC_API_URL || 'https://api.pccdnapi.com',
+
+		// Información de la tienda
 		storeName: process.env.NEXT_PUBLIC_STORE_NAME,
 		sellerDefaultName: process.env.NEXT_PUBLIC_SELLER_DEFAULT_NAME,
 		contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL,

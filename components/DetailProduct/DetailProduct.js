@@ -146,6 +146,9 @@ const DetailProduct = ({
 	useEffect(() => {
 		setCartQuantity(1);
 	}, [item]);
+
+	console.log(item);
+	
 	return (
 		<div className='product'>
 			<div className='product__gallery'>

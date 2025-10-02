@@ -4,8 +4,10 @@ import Link from 'next/link';
 import CheckCircleGreen from '../../../components/Icons/CheckCircleGreen';
 import Head from 'next/head';
 import { useEnv } from '../../../context/EnvContext';
+import { useApi } from '../../../hooks/useApi';
 
 const VerifyEmail = () => {
+	const { buildUrl } = useApi();
 	const [status, setStatus] = useState('loading'); // 'loading', 'success', 'error'
 	const router = useRouter();
 	const { token } = router.query;
@@ -20,7 +22,7 @@ const VerifyEmail = () => {
 	const verifyToken = async () => {
 		try {
 			const response = await fetch(
-				`https://api.pccdnapi.com/profile/verify-email/${token}/`,
+				buildUrl(`/profile/verify-email/${token}/`),
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },

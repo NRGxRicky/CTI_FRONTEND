@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useAuth } from '../../../hooks/auth';
+import { useApi } from '../../../hooks/useApi';
 
 export default function AplazoCanceled() {
   const router = useRouter();
   const { orderId } = router.query;
   const { accessToken } = useAuth();
+  const { buildUrl } = useApi();
   const [processing, setProcessing] = useState(true);
   const [error, setError] = useState(null);
 
@@ -15,7 +17,7 @@ export default function AplazoCanceled() {
 
     async function cancelOrder() {
       try {
-        const res = await fetch('https://api.pccdnapi.com/payments/aplazo/canceled', {
+        const res = await fetch(buildUrl('/payments/aplazo/canceled'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -27,7 +29,7 @@ export default function AplazoCanceled() {
         if (res.ok) {
           // Si se canceló (eliminó) la orden, redirige al usuario al carrito
           router.push('/carrito/');
-          
+
         } else {
           const errData = await res.json();
           setError(errData.error || 'Error al cancelar la orden');

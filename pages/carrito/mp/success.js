@@ -5,11 +5,13 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../../hooks/auth';
 import useCart from '../../../hooks/useCart';
 import { Preloader, TailSpin } from 'react-preloader-icon';
+import { useApi } from '../../../hooks/useApi';
 
 export default function MercadoPagoSuccess() {
 	const router = useRouter();
 	const { accessToken } = useAuth();
-  const { clearCart, taxInvoice, } = useCart();
+	const { buildUrl } = useApi();
+	const { clearCart, taxInvoice, } = useCart();
 	const [processing, setProcessing] = useState(true);
 	const [error, setError] = useState(null);
 
@@ -31,15 +33,15 @@ export default function MercadoPagoSuccess() {
 						preference_id,
 						status,
 						merchant_order_id,
-            collection_id,
+						collection_id,
 						// ...
 					},
-          requireInvoice: !!taxInvoice,
-          payment_method: 'mercadopago'
+					requireInvoice: !!taxInvoice,
+					payment_method: 'mercadopago'
 				};
 
 				const response = await fetch(
-					'https://api.pccdnapi.com/orders/create/',
+					buildUrl('/orders/create/'),
 					{
 						method: 'POST',
 						headers: {
@@ -61,7 +63,7 @@ export default function MercadoPagoSuccess() {
 					const errData = await response.json();
 					setError(
 						'Error al crear la orden: ' +
-							(errData.detail || response.statusText)
+						(errData.detail || response.statusText)
 					);
 				}
 			} catch (err) {

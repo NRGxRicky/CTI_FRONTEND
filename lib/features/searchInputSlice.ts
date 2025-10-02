@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { getApiUrl } from '../../hooks/useApi';
 
 interface SearchInputState {
 	queryInInput: string;
@@ -110,13 +111,12 @@ export const {
 	clearAllRecentSearches,
 } = searchInputSlice.actions;
 
-const RECENT_SEARCHES_URL = 'https://api.pccdnapi.com/search/recent/';
-
 // Obtener recientes del backend
 export const fetchRecentSearchesBackend = createAsyncThunk(
 	'searchInput/fetchRecentSearchesBackend',
 	async (accessToken: string, { dispatch }) => {
-		const res = await fetch(RECENT_SEARCHES_URL, {
+		const apiUrl = getApiUrl();
+		const res = await fetch(`${apiUrl}/search/recent/`, {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 				'Content-Type': 'application/json',
@@ -136,7 +136,8 @@ export const addRecentSearchBackend = createAsyncThunk(
 		{ query, accessToken }: { query: string; accessToken: string },
 		{ dispatch }
 	) => {
-		await fetch(RECENT_SEARCHES_URL, {
+		const apiUrl = getApiUrl();
+		await fetch(`${apiUrl}/search/recent/`, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
@@ -152,16 +153,14 @@ export const addRecentSearchBackend = createAsyncThunk(
 export const clearRecentSearchesBackend = createAsyncThunk(
 	'searchInput/clearRecentSearchesBackend',
 	async (accessToken: string, { dispatch }) => {
-		const response = await fetch(
-			'https://api.pccdnapi.com/search/recent/clear/',
-			{
-				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					'Content-Type': 'application/json',
-				},
-			}
-		);
+		const apiUrl = getApiUrl();
+		const response = await fetch(`${apiUrl}/search/recent/clear/`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+				'Content-Type': 'application/json',
+			},
+		});
 
 		if (response.ok) {
 			dispatch(clearAllRecentSearches());
@@ -179,17 +178,15 @@ export const removeRecentSearchBackend = createAsyncThunk(
 		{ query, accessToken }: { query: string; accessToken: string },
 		{ dispatch }
 	) => {
-		const response = await fetch(
-			'https://api.pccdnapi.com/search/recent/remove/',
-			{
-				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ query }),
-			}
-		);
+		const apiUrl = getApiUrl();
+		const response = await fetch(`${apiUrl}/search/recent/remove/`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ query }),
+		});
 
 		if (response.ok) {
 			dispatch(removeFromRecentSearches(query));

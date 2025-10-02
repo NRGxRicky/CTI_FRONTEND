@@ -1,21 +1,31 @@
 import { Router } from 'next/router';
+import { getApiUrl } from './useApi';
 
-const API_URL = 'https://api.pccdnapi.com';
-const API_URL_x = 'http://api.pccomputo.local:8000';
-
-const makeUrl = async (endpoint) => API_URL + endpoint;
-
+/**
+ * Hook para hacer requests POST/PUT/DELETE autenticados a la API
+ * @param {string} endpoint - Endpoint de la API (ej: '/profile/resume/')
+ * @param {string} token - Token de autenticación
+ * @param {Object} sendData - Datos a enviar en el body
+ * @param {string} method - Método HTTP (POST, PUT, DELETE)
+ * @param {boolean} auth - Si requiere autenticación
+ * @returns {Promise<[Response, Object]>} Tupla con response y data parseada
+ */
 const PostData = async (
-	url,
+	endpoint,
 	token,
 	sendData = {},
 	method = 'POST',
 	auth = true
 ) => {
-	const urlComplete = await makeUrl(url);
+	const apiUrl = getApiUrl();
+	// Asegurar que el endpoint comience con /
+	const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+	const urlComplete = `${apiUrl}${normalizedEndpoint}`;
+
 	const headers = {
 		'Content-Type': 'application/json',
 	};
+
 	if (auth) {
 		headers['Authorization'] = `Bearer ${token}`;
 	}

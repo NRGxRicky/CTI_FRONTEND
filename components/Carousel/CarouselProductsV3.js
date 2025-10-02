@@ -9,6 +9,7 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import FreeShipping from '../Icons/FreeShipping';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { trackViewItemList, trackSelectItem } from '../../utils/analytics';
+import { useApi } from '../../hooks/useApi';
 
 const CarouselProductsV3 = ({
 	responsiveElements = 2,
@@ -21,6 +22,7 @@ const CarouselProductsV3 = ({
 	exclude = null,
 	title,
 }) => {
+	const { buildUrl } = useApi();
 	const [data, setData] = useState({ results: [] });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
@@ -37,7 +39,7 @@ const CarouselProductsV3 = ({
 		try {
 			setLoading(true);
 			const response = await fetch(
-				`https://api.pccdnapi.com/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}&filter_available_store=${filter_available_store}`
+				buildUrl(`/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}&filter_available_store=${filter_available_store}`)
 			);
 			const newData = await response.json();
 			setData(newData);

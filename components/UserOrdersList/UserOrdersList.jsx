@@ -11,9 +11,11 @@ import ListProductsPagination from '../ListProductsPagination/ListProductsPagina
 import Link from 'next/link';
 import TruncateMarkup from 'react-truncate-markup';
 import { getPaymentOption } from '../constants/paymentOptions';
+import { useApi } from '../../hooks/useApi';
 
 function UserOrdersList() {
 	const { accessToken } = useAuth();
+	const { buildUrl } = useApi();
 	const router = useRouter();
 
 	// Flag para diferenciar móvil vs escritorio
@@ -52,7 +54,7 @@ function UserOrdersList() {
 	) => {
 		setLoading(true);
 		try {
-			const url = new URL('https://api.pccdnapi.com/orders/list/');
+			const url = new URL(buildUrl('/orders/list/'));
 			url.searchParams.append('page', page);
 			url.searchParams.append('search', search);
 			url.searchParams.append('date_range', range);
@@ -127,6 +129,7 @@ function UserOrdersList() {
 	// Búsqueda => click "Buscar" o Enter
 	// -----------------------------------------------------
 	const handleSearch = () => {
+		const { buildUrl } = useApi();
 		setPageActive(1);
 	};
 

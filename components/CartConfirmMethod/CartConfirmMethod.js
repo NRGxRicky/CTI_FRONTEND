@@ -13,6 +13,7 @@ import regimenesFiscales from '../../hooks/regimenesFiscales';
 import usosCFDI from '../../hooks/usosCFDI';
 import { useAuth } from '../../hooks/auth';
 import { getPaymentOption } from '../constants/paymentOptions';
+import { useApi } from '../../hooks/useApi';
 
 const CartConfirmMethod = () => {
 	const {
@@ -22,6 +23,7 @@ const CartConfirmMethod = () => {
 		paymentMethod,
 		// subtotal, shipping, total... (si los necesitas directamente aquí)
 	} = useCart();
+	const { apiUrl } = useApi();
 
 	const { cartMsi } = useAuth();
 
@@ -175,11 +177,9 @@ const CartConfirmMethod = () => {
 									<Image
 										src={
 											item.product.imagen1xs
-												? item.product.imagen1xs.includes(
-													'https://api.pccdnapi.com'
-												)
+												? item.product.imagen1xs.startsWith('http')
 													? item.product.imagen1xs
-													: `https://api.pccdnapi.com${item.product.imagen1xs}`
+													: `${apiUrl}${item.product.imagen1xs}`
 												: '/images/not-available.png'
 										}
 										alt={item.product.titulo}

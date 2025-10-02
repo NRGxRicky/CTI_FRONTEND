@@ -10,9 +10,11 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import ListProductsPagination from '../ListProductsPagination/ListProductsPagination';
 import Link from 'next/link';
 import useCart from '../../hooks/useCart';
+import { useApi } from '../../hooks/useApi';
 
 function UserQuotesList() {
 	const { accessToken, updateDataUser } = useAuth();
+	const { buildUrl } = useApi();
 	const router = useRouter();
 	// Obtener funciones del carrito
 	const { clearCart, addToCart } = useCart();
@@ -59,7 +61,7 @@ function UserQuotesList() {
 	) => {
 		setLoading(true);
 		try {
-			const url = new URL('https://api.pccdnapi.com/quotes/list/');
+			const url = new URL(buildUrl('/quotes/list/'));
 			url.searchParams.append('page', page);
 			url.searchParams.append('search', search);
 			url.searchParams.append('date_range', range);
@@ -159,6 +161,7 @@ function UserQuotesList() {
 	// Manejador de cambio en el input de búsqueda
 	// -----------------------------------------------------
 	const handleSearchInputChange = (e) => {
+		const { buildUrl } = useApi();
 		const newTerm = e.target.value;
 		setSearchTerm(newTerm);
 		debouncedSearch(newTerm);
@@ -242,15 +245,12 @@ function UserQuotesList() {
 			window.confirm('¿Estás seguro de que deseas eliminar esta cotización?')
 		) {
 			try {
-				const resp = await fetch(
-					`https://api.pccdnapi.com/quotes/delete/${quoteId}/`,
-					{
-						method: 'DELETE',
-						headers: {
-							Authorization: `Bearer ${accessToken}`,
-						},
-					}
-				);
+				const resp = await fetch(buildUrl(`/quotes/delete/${quoteId}/`), {
+					method: 'DELETE',
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+					},
+				});
 
 				if (resp.ok) {
 					// Eliminar la cotización del estado
