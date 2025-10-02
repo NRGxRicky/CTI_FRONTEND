@@ -46,7 +46,7 @@ import { useEnv } from '../../context/EnvContext';
 import { trackSearch as trackGoogleAnalyticsSearch } from '../../utils/analytics';
 import { trackMetaSearch } from '../../utils/metaAnalytics';
 import HeaderDelivery from '../HeaderDelivery/HeaderDelivery';
-import CaretDown from '../../components/Icons/CaretDown';
+import ProfileIcon from '../ProfileIcon/ProfileIcon';
 
 const HeaderBar: React.FC = () => {
 	/**
@@ -56,9 +56,6 @@ const HeaderBar: React.FC = () => {
 	const desktopInput = useRef<HTMLInputElement | null>(null); // Desktop
 	const searchButton = useRef<HTMLButtonElement | null>(null);
 	const syncDone = useRef(false);
-	const suppressHoverUntil = useRef<number>(0);
-	const hoverLock = useRef<boolean>(false);
-	const closeHoverTimer = useRef<number | null>(null);
 
 	/**
 	 * Router & Search params (App Router)
@@ -218,9 +215,6 @@ const HeaderBar: React.FC = () => {
 	// Derived UI state selectors
 	const searchVisibleValue = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.searchBar
-	);
-	const showLoginMenu = useAppSelector(
-		(state: any) => state.showOpacityContainerReducer.loginMenu
 	);
 	const showSummaryCartmini = useAppSelector(
 		(state: any) => state.showOpacityContainerReducer.cart
@@ -406,69 +400,7 @@ const HeaderBar: React.FC = () => {
 									</svg>
 								</div>
 							</div>
-							<div
-								className='header-bar__section-icon'
-								onMouseEnter={() => {
-									if (closeHoverTimer.current) {
-										clearTimeout(closeHoverTimer.current);
-										closeHoverTimer.current = null;
-									}
-								}}
-								onMouseLeave={() => {
-									if (closeHoverTimer.current) {
-										clearTimeout(closeHoverTimer.current);
-									}
-									closeHoverTimer.current = window.setTimeout(() => {
-										hoverLock.current = false;
-										dispatch(hideAll());
-										closeHoverTimer.current = null;
-									}, 120);
-								}}
-							>
-								<div
-									className='header-bar__profile-icon'
-									onMouseEnter={() => {
-										if (Date.now() < suppressHoverUntil.current) return;
-										if (hoverLock.current) return;
-										dispatch(showLoginMenuState());
-									}}
-									onClick={() => {
-										suppressHoverUntil.current = Date.now() + 400;
-										if (showLoginMenu) {
-											hoverLock.current = true;
-											dispatch(hideAll());
-										} else {
-											dispatch(showLoginMenuState());
-										}
-									}}
-								>
-									<svg
-										className='header-bar__icon icon__ligth'
-										fill='none'
-										width='25'
-										height='25'
-										stroke='#ffffff'
-										viewBox='0 0 25 25'
-										xmlns='http://www.w3.org/2000/svg'
-									>
-										<path
-											strokeLinecap='round'
-											strokeLinejoin='round'
-											strokeWidth={2}
-											d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
-										/>
-									</svg>
-									{!loading && nombres !== 'Iniciar sesión / Registrarse' ? (
-										<span className='--capitalize'>
-											{TruncateManual(nombres, 10)}
-										</span>
-									) : (
-										<span>{nombres}</span>
-									)}
-									<CaretDown isOpen={showLoginMenu} hideOnMobile />
-								</div>
-								{showLoginMenu && <LoginMenu />}
-							</div>
+							<ProfileIcon />
 							<div
 								className='header-bar__section-icon'
 								style={{

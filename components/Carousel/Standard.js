@@ -92,7 +92,7 @@ const Standard = () => {
 										fill
 										sizes="(min-width: 1024px) 1500px, 100vw"
 										quality={100}
-										priority={index === 0}
+										priority={index === 1}
 										style={{ objectFit: 'cover' }}
 									/>
 								</div>

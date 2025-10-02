@@ -143,6 +143,12 @@ const HeaderMenu = () => {
 						padding: 6px 12px;
 						cursor: pointer;
 						font-weight: 600;
+						min-height: 32px;
+						height: 32px;
+					}
+
+					.header-menu__burger-btn > * {
+						flex-shrink: 0;
 					}
 
 					.burger-button {
@@ -151,6 +157,8 @@ const HeaderMenu = () => {
 						justify-content: space-between;
 						width: 16px;
 						height: 12px;
+						min-height: 12px;
+						flex-shrink: 0;
 					}
 
 					.burger-line {

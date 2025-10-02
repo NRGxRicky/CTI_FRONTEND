@@ -249,71 +249,104 @@ const Footer: React.FC<FooterProps> = () => {
 					</div>
 					<div className='footer__column'>
 						<div className='footer__column__title'>ACEPTAMOS</div>
-						<div className='footer__column__element footer__column__element__payment'>
-							<Image
-								src='/images/visa-mastercard-logos.png'
-								fill
-								style={{ objectFit: 'contain' }}
-								alt={'Visa MasterCard'}
-								draggable='false'
-								sizes='auto'
-							/>
-						</div>
-						<div className='footer__column__element footer__column__element__payment'>
-							<Image
-								src='/images/paypal-logo-footer.png'
-								fill
-								style={{ objectFit: 'contain' }}
-								alt={'Paypal'}
-								draggable='false'
-								sizes='auto'
-							/>
-						</div>
-						<div className='footer__column__element footer__column__element__payment'>
-							<Image
-								src='/images/Logotipo_Kueski_pay.png'
-								fill
-								style={{ objectFit: 'contain' }}
-								alt={'KueskiPay'}
-								draggable='false'
-								sizes='auto'
-							/>
-						</div>
-						<div className='footer__column__element footer__column__element__payment'>
-							<Image
-								src='/images/logo-oxxo-spei.png'
-								fill
-								style={{ objectFit: 'contain' }}
-								alt={'Oxxo SPEI'}
-								draggable='false'
-								sizes='auto'
-							/>
-						</div>
-						<div className='footer__column__element footer__column__element__payment'>
-							<Image
-								src='/images/logo-mercado-pago.png'
-								fill
-								style={{ objectFit: 'contain' }}
-								alt={'Mercado Pago'}
-								draggable='false'
-								sizes='auto'
-							/>
-						</div>
-						<div className='footer__column__element footer__column__element__payment'>
-							<Image
-								src='/images/logo-aplazo_v2.png'
-								fill
-								style={{ objectFit: 'contain' }}
-								alt={'Aplazo'}
-								draggable='false'
-								sizes='auto'
-							/>
+						<div className='footer__payment__grid'>
+							<div className='footer__column__element footer__column__element__payment'>
+								<div className='payment-logo-container'>
+									<Image
+										src='/images/visa-mastercard-logos.png'
+										fill
+										style={{ objectFit: 'contain' }}
+										alt={'Visa MasterCard'}
+										draggable='false'
+										sizes='auto'
+									/>
+								</div>
+							</div>
+							<a
+								href='https://www.paypal.com/mx/home'
+								target='_blank'
+								rel='noopener noreferrer'
+								className='footer__column__element footer__column__element__payment'
+							>
+								<div className='payment-logo-container'>
+									<Image
+										src='/images/paypal-logo-footer.png'
+										fill
+										style={{ objectFit: 'contain' }}
+										alt={'Paypal'}
+										draggable='false'
+										sizes='auto'
+									/>
+								</div>
+							</a>
+							<a
+								href='https://kueskipay.com/'
+								target='_blank'
+								rel='noopener noreferrer'
+								className='footer__column__element footer__column__element__payment'
+							>
+								<div className='payment-logo-container'>
+									<Image
+										src='/images/Logotipo_Kueski_pay.png'
+										fill
+										style={{ objectFit: 'contain' }}
+										alt={'KueskiPay'}
+										draggable='false'
+										sizes='auto'
+									/>
+								</div>
+							</a>
+							<div className='footer__column__element footer__column__element__payment'>
+								<div className='payment-logo-container'>
+									<Image
+										src='/images/logo-oxxo-spei.png'
+										fill
+										style={{ objectFit: 'contain' }}
+										alt={'Oxxo SPEI'}
+										draggable='false'
+										sizes='auto'
+									/>
+								</div>
+							</div>
+							<a
+								href='https://www.mercadopago.com.mx/'
+								target='_blank'
+								rel='noopener noreferrer'
+								className='footer__column__element footer__column__element__payment'
+							>
+								<div className='payment-logo-container'>
+									<Image
+										src='/images/logo-mercado-pago.png'
+										fill
+										style={{ objectFit: 'contain' }}
+										alt={'Mercado Pago'}
+										draggable='false'
+										sizes='auto'
+									/>
+								</div>
+							</a>
+							<a
+								href='https://www.aplazo.mx/'
+								target='_blank'
+								rel='noopener noreferrer'
+								className='footer__column__element footer__column__element__payment'
+							>
+								<div className='payment-logo-container'>
+									<Image
+										src='/images/logo-aplazo_v2.png'
+										fill
+										style={{ objectFit: 'contain' }}
+										alt={'Aplazo'}
+										draggable='false'
+										sizes='auto'
+									/>
+								</div>
+							</a>
 						</div>
 					</div>
 				</div>
 				<aside className='footer__aside'>
-					© 2025 {storeName} - {legalName} - Hecho en México con{' '}
-					{emojiFooter}
+					© 2025 {storeName} - {legalName} - Hecho en México con {emojiFooter}
 				</aside>
 			</div>
 			<style jsx>
@@ -383,6 +416,26 @@ const Footer: React.FC<FooterProps> = () => {
 
 					.footer__column__element__payment {
 						height: 50px;
+						position: relative;
+						display: block;
+						text-decoration: none;
+						color: inherit;
+						cursor: pointer;
+					}
+
+					a.footer__column__element__payment:hover {
+						text-decoration: none;
+					}
+
+					.payment-logo-container {
+						position: relative;
+						width: 100%;
+						height: 100%;
+					}
+
+					.footer__payment__grid {
+						display: block;
+						width: 100%;
 					}
 
 					.footer__aside {
@@ -391,7 +444,6 @@ const Footer: React.FC<FooterProps> = () => {
 						line-height: 2;
 						text-align: center;
 						padding: 10px;
-						
 					}
 
 					.toggle-button {
@@ -455,8 +507,34 @@ const Footer: React.FC<FooterProps> = () => {
 						}
 
 						.footer__column__element__payment {
-							max-width: 100px;
+							width: calc(33.333% - 6px);
+							max-width: none;
+							height: 42px;
+							padding: 8px;
+							background-color: #ffffff;
+							border-radius: 6px;
+							border: 1px solid #e5e5e5;
+							box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+							transition: transform 0.2s ease, box-shadow 0.2s ease;
 						}
+
+						.footer__column__element__payment:hover {
+							transform: translateY(-2px);
+							box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+						}
+
+						.payment-logo-container {
+							padding: 6px;
+						}
+
+						.footer__payment__grid {
+							display: flex;
+							flex-wrap: wrap;
+							justify-content: space-between;
+							gap: 8px;
+							margin-top: 8px;
+						}
+
 						.toggle-button {
 							display: block;
 						}
