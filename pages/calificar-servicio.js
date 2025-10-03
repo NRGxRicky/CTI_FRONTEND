@@ -228,14 +228,16 @@ const CalificarServicio = () => {
         </Head>
         <div className='content-wrapper'>
           <div className='card'>
-            <div className='icon-container'>
-              <AlertIcon />
+            <div className='card-content'>
+              <div className='icon-container'>
+                <AlertIcon />
+              </div>
+              <h2>Oops, algo salió mal</h2>
+              <p>{error}</p>
+              <button onClick={() => router.push('/')} className='btn-primary'>
+                Volver al inicio
+              </button>
             </div>
-            <h2>Oops, algo salió mal</h2>
-            <p>{error}</p>
-            <button onClick={() => router.push('/')} className='btn-primary'>
-              Volver al inicio
-            </button>
           </div>
         </div>
         <Footer />
@@ -260,6 +262,9 @@ const CalificarServicio = () => {
 						width: 100%;
 						text-align: center;
 						box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+					}
+					.card-content {
+						padding: 40px 30px;
 					}
 					.icon-container {
 						display: flex;
@@ -304,17 +309,19 @@ const CalificarServicio = () => {
         </Head>
         <div className='content-wrapper'>
           <div className='card'>
-            <div className='icon-container'>
-              <CheckIcon />
+            <div className='card-content'>
+              <div className='icon-container'>
+                <CheckIcon />
+              </div>
+              <h2>¡Gracias por tu feedback!</h2>
+              <p>
+                Tu opinión es muy valiosa para nosotros y nos ayuda a mejorar
+                continuamente nuestro servicio.
+              </p>
+              <button onClick={() => router.push('/')} className='btn-primary'>
+                Volver al inicio
+              </button>
             </div>
-            <h2>¡Gracias por tu feedback!</h2>
-            <p>
-              Tu opinión es muy valiosa para nosotros y nos ayuda a mejorar
-              continuamente nuestro servicio.
-            </p>
-            <button onClick={() => router.push('/')} className='btn-primary'>
-              Volver al inicio
-            </button>
           </div>
         </div>
         <Footer />
@@ -339,6 +346,9 @@ const CalificarServicio = () => {
 						width: 100%;
 						text-align: center;
 						box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+					}
+					.card-content {
+						padding: 40px 30px;
 					}
 					.icon-container {
 						display: flex;
@@ -373,6 +383,9 @@ const CalificarServicio = () => {
 					@media only screen and (max-width: 60em) {
 						.card {
 							padding: 0;
+						}
+						.card-content {
+							padding: 30px 20px;
 						}
 						h2 {
 							font-size: 20px;
