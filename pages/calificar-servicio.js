@@ -92,7 +92,6 @@ const CalificarServicio = () => {
           setRedirectingToGoogle(false);
         }, 1000);
       } catch (err) {
-        console.error('Error al guardar calificación de 5 estrellas:', err);
         setTimeout(() => {
           window.open(info.google_reviews_url, '_blank', 'noopener,noreferrer');
           setEnviado(true);
@@ -135,7 +134,6 @@ const CalificarServicio = () => {
 
       return await response.json();
     } catch (err) {
-      console.error('Error al guardar calificación:', err);
       throw err;
     }
   };
