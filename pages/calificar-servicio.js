@@ -63,7 +63,7 @@ const CalificarServicio = () => {
       const data = await response.json();
       setInfo(data);
 
-      if (data.already_rated) {
+      if (data.already_rated_order) {
         setEnviado(true);
       }
 
@@ -75,8 +75,8 @@ const CalificarServicio = () => {
   };
 
   const handleRatingClick = async (value) => {
-    // Si cambia de cualquier valor a 5 estrellas, redirigir a Google
-    if (value === 5 && info?.google_reviews_url) {
+    // Si es 5 estrellas y NO ha redirigido a Google antes, redirigir
+    if (value === 5 && info?.google_reviews_url && !info?.has_redirected_to_google) {
       setRating(value);
       setRedirectingToGoogle(true); // Mostrar mensaje de redirección inmediatamente
 
@@ -99,7 +99,7 @@ const CalificarServicio = () => {
         }, 500);
       }
     } else {
-      // Para cualquier otra calificación, solo actualizar el estado
+      // Para cualquier otra calificación, o si ya redirigió a Google antes, solo actualizar el estado
       setRating(value);
       setRedirectingToGoogle(false);
     }
@@ -110,32 +110,28 @@ const CalificarServicio = () => {
     comentarioValue,
     redirectedToGoogle = false
   ) => {
-    try {
-      const headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      };
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    };
 
-      const response = await fetch(`${apiUrl}/rating/save/`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          orden_id: orden,
-          rating: ratingValue,
-          comentario: comentarioValue,
-          redirected_to_google: redirectedToGoogle,
-        }),
-      });
+    const response = await fetch(`${apiUrl}/rating/save/`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        orden_id: orden,
+        rating: ratingValue,
+        comentario: comentarioValue,
+        redirected_to_google: redirectedToGoogle,
+      }),
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al guardar calificación');
-      }
-
-      return await response.json();
-    } catch (err) {
-      throw err;
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Error al guardar calificación');
     }
+
+    return await response.json();
   };
 
   const handleSubmit = async (e) => {
