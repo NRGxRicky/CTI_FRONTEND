@@ -121,9 +121,17 @@ const NavMobileMenu = () => {
 			if (popularResponse.ok) {
 				const popularData = await popularResponse.json();
 				if (popularData && Array.isArray(popularData.results)) {
+					const seen = new Set();
 					setPopularCategories(
 						popularData.results
 							.filter((cat) => cat.slug !== 'index')
+							.filter((cat) => {
+								if (seen.has(cat.name.toLowerCase())) {
+									return false;
+								}
+								seen.add(cat.name.toLowerCase());
+								return true;
+							})
 							.slice(0, 10)
 					);
 				}
@@ -664,7 +672,16 @@ const NavMobileMenu = () => {
 
 									{!loading && !error && (
 										<div className='mobile-menu__grid'>
-											{panel.items.map((item) => {
+											{(() => {
+												const seen = new Set();
+												return panel.items.filter((item) => {
+													if (seen.has(item.name.toLowerCase())) {
+														return false;
+													}
+													seen.add(item.name.toLowerCase());
+													return true;
+												});
+											})().map((item) => {
 												const hasSubcategories =
 													item.subcategories && item.subcategories.length > 0;
 												const imageUrl =

@@ -101,51 +101,60 @@ const BestCategories = ({ mobile = false }) => {
 			<div className='best-categories-carousel'>
 				<div className='best-categories-carousel__viewport' ref={emblaRef}>
 					<div className='best-categories-carousel__container'>
-						{data.results
-							.filter((i) => i.slug !== 'index')
-							.filter((i) => i.portada)
-							.map((item, index) => (
-								<div className='best-categories-carousel__item' key={index}>
-									<div className='best-categories-carousel__image'>
-										<Link
-											href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
-											legacyBehavior
-										>
-											<a className='best-categories-carousel__a'>
-												<Image
-													src={
-														item.portada
-															? item.portada
-															: '/images/not-available.png'
-													}
-													fill
-													style={{
-														objectFit: 'contain',
-														mixBlendMode: 'multiply',
-														padding: 10,
-													}}
-													draggable='false'
-													sizes='auto'
-													alt={Capitalize(item.name)}
-												/>
-											</a>
-										</Link>
-									</div>
-
-									<div className='best-categories-carousel__title'>
-										<Link
-											href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
-											legacyBehavior
-										>
-											<a>
-												<TruncateMarkup lines={1}>
-													<span>{Capitalize(item.name)}</span>
-												</TruncateMarkup>
-											</a>
-										</Link>
-									</div>
+						{(() => {
+							const seen = new Set();
+							return data.results
+								.filter((i) => i.slug !== 'index')
+								.filter((i) => i.portada)
+								.filter((i) => {
+									if (seen.has(i.name.toLowerCase())) {
+										return false;
+									}
+									seen.add(i.name.toLowerCase());
+									return true;
+								});
+						})().map((item, index) => (
+							<div className='best-categories-carousel__item' key={index}>
+								<div className='best-categories-carousel__image'>
+									<Link
+										href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
+										legacyBehavior
+									>
+										<a className='best-categories-carousel__a'>
+											<Image
+												src={
+													item.portada
+														? item.portada
+														: '/images/not-available.png'
+												}
+												fill
+												style={{
+													objectFit: 'contain',
+													mixBlendMode: 'multiply',
+													padding: 10,
+												}}
+												draggable='false'
+												sizes='auto'
+												alt={Capitalize(item.name)}
+											/>
+										</a>
+									</Link>
 								</div>
-							))}
+
+								<div className='best-categories-carousel__title'>
+									<Link
+										href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
+										legacyBehavior
+									>
+										<a>
+											<TruncateMarkup lines={1}>
+												<span>{Capitalize(item.name)}</span>
+											</TruncateMarkup>
+										</a>
+									</Link>
+								</div>
+							</div>
+						))}
 					</div>
 					<div
 						onClick={scrollNext}

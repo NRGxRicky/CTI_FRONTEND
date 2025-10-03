@@ -88,21 +88,29 @@ const HeaderMenu = () => {
 						<CaretDown isOpen={menuMobileOpen} size={12} />
 					</button>
 				</li>
-				{data.results
-
-					.filter((i) => i.slug !== 'index')
-					.filter((i) => i.portada)
-					.slice(0, calculateItemsToShow(windowWidth || 1920))
-					.map((item, index) => (
-						<li key={index}>
-							<Link
-								href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
-								legacyBehavior
-							>
-								<a>{Capitalize(item.name)}</a>
-							</Link>
-						</li>
-					))}
+				{(() => {
+					const seen = new Set();
+					return data.results
+						.filter((i) => i.slug !== 'index')
+						.filter((i) => i.portada)
+						.filter((i) => {
+							if (seen.has(i.name.toLowerCase())) {
+								return false;
+							}
+							seen.add(i.name.toLowerCase());
+							return true;
+						})
+						.slice(0, calculateItemsToShow(windowWidth || 1920));
+				})().map((item, index) => (
+					<li key={index}>
+						<Link
+							href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
+							legacyBehavior
+						>
+							<a>{Capitalize(item.name)}</a>
+						</Link>
+					</li>
+				))}
 				<li>
 					<Link
 						href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
