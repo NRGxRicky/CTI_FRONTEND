@@ -309,7 +309,7 @@ const CalificarServicio = () => {
               <div className='icon-container'>
                 <CheckIcon />
               </div>
-              <h2>¡Gracias por tu feedback!</h2>
+              <h2>¡Gracias por tu opinión!</h2>
               <p>
                 Tu opinión es muy valiosa para nosotros y nos ayuda a mejorar
                 continuamente nuestro servicio.
@@ -479,7 +479,6 @@ const CalificarServicio = () => {
                       onChange={(e) => setComentario(e.target.value)}
                       placeholder='Por ejemplo: "El producto llegó bien pero el envío tardó más de lo esperado..."'
                       rows='6'
-                      required
                     />
                     <p className='help-text'>
                       Tu opinión es confidencial y nos ayuda a mejorar
