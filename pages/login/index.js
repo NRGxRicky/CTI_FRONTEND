@@ -19,6 +19,17 @@ const Login = () => {
 	const { redirect } = router.query;
 	const { storeName, metaDescription, titlePostDescription } = useEnv();
 
+	// Validar que el redirect sea una URL interna
+	const isValidRedirect = (url) => {
+		if (!url) return false;
+		try {
+			// Solo permitir rutas relativas que empiecen con /
+			return typeof url === 'string' && url.startsWith('/') && !url.startsWith('//');
+		} catch {
+			return false;
+		}
+	};
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError(false);
@@ -30,7 +41,7 @@ const Login = () => {
 				// Trackear evento de login exitoso
 				trackLogin('email');
 
-				if (redirect) {
+				if (redirect && isValidRedirect(redirect)) {
 					router.push(redirect); // Redirige a la ruta original
 				} else {
 					router.push('/'); // Ruta predeterminada si no hay "redirect"
@@ -46,7 +57,7 @@ const Login = () => {
 	};
 
 	if (isAuthenticated) {
-		if (redirect) {
+		if (redirect && isValidRedirect(redirect)) {
 			router.push(redirect); // Redirige a la ruta original
 		} else {
 			router.push('/'); // Ruta predeterminada si no hay "redirect"

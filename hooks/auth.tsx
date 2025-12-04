@@ -96,7 +96,7 @@ const AuthContext = createContext<AuthContextProps>({
 	isAuthenticated: false,
 	loading: true,
 	login: async () => new Response(),
-	logout: () => {},
+	logout: () => { },
 	getToken: async () => undefined,
 	accessToken: '',
 	isVerified: false,
@@ -104,7 +104,7 @@ const AuthContext = createContext<AuthContextProps>({
 	nombres: '',
 	cartMsi: false,
 	updateDataUser: async () => undefined,
-	setCartMsi: () => {},
+	setCartMsi: () => { },
 });
 
 interface AuthProviderProps {
@@ -272,8 +272,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			const tokenData = await resp.json();
 			handleNewToken(tokenData);
 
-			// Notifica a otras pestañas sobre el inicio de sesión
-			localStorage.setItem('login', Date.now().toString());
+			// Notifica a otras pestañas sobre el inicio de sesión usando BroadcastChannel
+			try {
+				const authChannel = new BroadcastChannel('auth-sync');
+				authChannel.postMessage({ type: 'login' });
+				authChannel.close();
+			} catch (error) {
+				// BroadcastChannel no disponible
+			}
 		} else {
 			setNotAuthenticated();
 		}
@@ -303,24 +309,45 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		localStorage.setItem('logout', Date.now().toString());
 	};
 
-	// Listener para sincronizar entre pestañas
+	// Listener para sincronizar entre pestañas usando BroadcastChannel
 	useEffect(() => {
-		const handleStorageChange = (event: StorageEvent) => {
-			if (event.key === 'logout') {
-				// Cerrar sesión en otras pestañas
-				setNotAuthenticated();
-			}
+		let authChannel: BroadcastChannel | null = null;
 
-			if (event.key === 'login') {
-				// Intentar revalidar sesión si otra pestaña inició sesión
-				initAuth();
-			}
-		};
+		try {
+			authChannel = new BroadcastChannel('auth-sync');
 
-		window.addEventListener('storage', handleStorageChange);
+			authChannel.onmessage = (event) => {
+				if (event.data.type === 'logout') {
+					setNotAuthenticated();
+				}
+				if (event.data.type === 'login') {
+					initAuth();
+				}
+			};
+		} catch (error) {
+			// BroadcastChannel no disponible, usar localStorage como fallback
+			console.warn('BroadcastChannel not available, using localStorage fallback');
+
+			const handleStorageChange = (event: StorageEvent) => {
+				if (event.key === 'auth-logout') {
+					setNotAuthenticated();
+				}
+				if (event.key === 'auth-login') {
+					initAuth();
+				}
+			};
+
+			window.addEventListener('storage', handleStorageChange);
+
+			return () => {
+				window.removeEventListener('storage', handleStorageChange);
+			};
+		}
 
 		return () => {
-			window.removeEventListener('storage', handleStorageChange);
+			if (authChannel) {
+				authChannel.close();
+			}
 		};
 	}, []);
 

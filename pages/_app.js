@@ -10,6 +10,7 @@ import GoogleAnalytics from '../components/GoogleAnalytics/GoogleAnalytics';
 import FacebookPixel from '../components/FacebookPixel/FacebookPixel';
 import NextTopLoader from 'nextjs-toploader';
 import { EnvProvider } from '../context/EnvContext';
+import { CookiesProvider } from 'react-cookie';
 
 function MyApp({ Component, pageProps }) {
 	useEffect(() => {
@@ -31,7 +32,7 @@ function MyApp({ Component, pageProps }) {
 	return (
 		<>
 			<EnvProvider>
-				<NextTopLoader color={process.env.NEXT_PUBLIC_PRIMARY_COLOR}  />
+				<NextTopLoader color={process.env.NEXT_PUBLIC_PRIMARY_COLOR} />
 				<GoogleAnalytics />
 				<FacebookPixel />
 				<Head>
@@ -40,13 +41,15 @@ function MyApp({ Component, pageProps }) {
 						content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover'
 					/>
 				</Head>
-				<AuthProvider>
-					<CartProvider>
-						<Layout>
-							<Component {...pageProps} />
-						</Layout>
-					</CartProvider>
-				</AuthProvider>
+				<CookiesProvider>
+					<AuthProvider>
+						<CartProvider>
+							<Layout>
+								<Component {...pageProps} />
+							</Layout>
+						</CartProvider>
+					</AuthProvider>
+				</CookiesProvider>
 			</EnvProvider>
 		</>
 	);

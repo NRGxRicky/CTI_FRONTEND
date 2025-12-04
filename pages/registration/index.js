@@ -34,6 +34,16 @@ const Register = () => {
 	const { storeName, metaDescription, titlePostDescription, storeId } =
 		useEnv();
 
+	// Validar que el redirect sea una URL interna
+	const isValidRedirect = (url) => {
+		if (!url) return false;
+		try {
+			return typeof url === 'string' && url.startsWith('/') && !url.startsWith('//');
+		} catch {
+			return false;
+		}
+	};
+
 	useEffect(() => {
 		const evaluatePasswordStrength = (password) => {
 			let strength = '';
@@ -128,7 +138,7 @@ const Register = () => {
 		try {
 			const resp = await login(formData.email, formData.password);
 			if (resp.status === 200) {
-				if (redirect) {
+				if (redirect && isValidRedirect(redirect)) {
 					router.push(redirect); // Redirige a la ruta original
 				} else {
 					router.push('/'); // Ruta predeterminada si no hay "redirect"
@@ -148,7 +158,7 @@ const Register = () => {
 	}
 
 	if (isAuthenticated) {
-		if (redirect) {
+		if (redirect && isValidRedirect(redirect)) {
 			router.push(redirect); // Redirige a la ruta original
 		} else {
 			router.push('/'); // Ruta predeterminada si no hay "redirect"

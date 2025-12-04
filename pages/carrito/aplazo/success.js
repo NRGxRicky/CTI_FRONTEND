@@ -10,6 +10,13 @@ export default function AplazoSuccess() {
   const { orderId } = router.query;
   const { isAuthenticated } = useAuth()
 
+  // Validar formato de orderId
+  const isValidOrderId = (id) => {
+    if (!id || typeof id !== 'string') return false;
+    // Solo permite alfanuméricos, guiones y underscores, máximo 100 caracteres
+    return /^[a-zA-Z0-9\-_]{1,100}$/.test(id);
+  };
+
   const [processing, setProcessing] = useState(true);
   const [error, setError] = useState(null);
 
@@ -17,15 +24,15 @@ export default function AplazoSuccess() {
     if (!router.isReady) return; // Espera a que los parámetros estén listos
 
     if (isAuthenticated) {
-      if (orderId) {
+      if (orderId && isValidOrderId(orderId)) {
         // Limpia el carrito y redirige a la página de confirmación
-        router.push(`/compras/confirmacion/?orderId=${orderId}`);
+        router.push(`/compras/confirmacion/?orderId=${encodeURIComponent(orderId)}`);
         setTimeout(() => {
           clearCart();
         }, 3000);
-    
+
       } else {
-        setError("No se recibió orderId");
+        setError(orderId ? "ID de orden inválido" : "No se recibió orderId");
       }
     }
     setProcessing(false);

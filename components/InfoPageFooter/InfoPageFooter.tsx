@@ -1,15 +1,23 @@
 import React from 'react';
 import { useEnv } from '../../context/EnvContext';
+import DOMPurify from 'isomorphic-dompurify';
 
 
 const InfoPageFooter = () => {
 	const { storeName, legalName, infoPageFooter } = useEnv();
 	const preprocessedContent = infoPageFooter.replace(/<p>/g, '<p class="footer-paragraph">');
-  return (
+
+	// Sanitize HTML to prevent XSS attacks
+	const sanitizedContent = DOMPurify.sanitize(preprocessedContent, {
+		ALLOWED_TAGS: ['p', 'b', 'strong', 'i', 'em', 'br'],
+		ALLOWED_ATTR: ['class']
+	});
+
+	return (
 		<div className='footer-info__container'>
 			<div
 				className='footer-info__container__text'
-				dangerouslySetInnerHTML={{ __html: preprocessedContent }}
+				dangerouslySetInnerHTML={{ __html: sanitizedContent }}
 			></div>
 
 			<style jsx>
