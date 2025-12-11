@@ -25,6 +25,10 @@ module.exports = {
 						value: 'camera=(), microphone=(), geolocation=()',
 					},
 					{
+						key: 'Access-Control-Allow-Origin',
+						value: '*',
+					},
+					{
 						key: 'Content-Security-Policy',
 						value: [
 							"default-src 'self'",
