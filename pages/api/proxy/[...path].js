@@ -1,29 +1,52 @@
 // API Proxy para evitar problemas de CORS
 export default async function handler(req, res) {
-    const { path = [] } = req.query;
+    const { path = [], ...queryParams } = req.query;
 
     // Construir la URL completa de la API
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.pccdnapi.com';
     const apiPath = Array.isArray(path) ? path.join('/') : path;
-    const fullUrl = `${apiUrl}/${apiPath}`;
+
+    // Agregar query parameters si existen
+    const searchParams = new URLSearchParams();
+    Object.keys(queryParams).forEach(key => {
+        searchParams.append(key, queryParams[key]);
+    });
+    const queryString = searchParams.toString();
+    const fullUrl = `${apiUrl}/${apiPath}${queryString ? `?${queryString}` : ''}`;
 
     try {
+        // Headers seguros para forward
+        const safeHeaders = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        };
+
         // Forward the request to the real API
         const apiResponse = await fetch(fullUrl, {
             method: req.method,
-            headers: {
-                'Content-Type': 'application/json',
-                ...req.headers,
-            },
-            ...(req.method !== 'GET' && req.method !== 'HEAD' && { body: JSON.stringify(req.body) }),
+            headers: safeHeaders,
+            ...(req.method !== 'GET' && req.method !== 'HEAD' && req.body && {
+                body: typeof req.body === 'string' ? req.body : JSON.stringify(req.body)
+            }),
         });
 
-        const data = await apiResponse.json();
-
-        // Return the API response
-        res.status(apiResponse.status).json(data);
+        // Verificar si la respuesta es JSON válida
+        const contentType = apiResponse.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            const data = await apiResponse.json();
+            res.status(apiResponse.status).json(data);
+        } else {
+            // Si no es JSON, enviar como texto
+            const text = await apiResponse.text();
+            res.status(apiResponse.status).send(text);
+        }
     } catch (error) {
         console.error('API Proxy Error:', error);
-        res.status(500).json({ error: 'Error al conectar con la API' });
+        console.error('URL:', fullUrl);
+        res.status(500).json({
+            error: 'Error al conectar con la API',
+            details: error.message
+        });
     }
 }
+
