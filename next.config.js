@@ -36,7 +36,7 @@ module.exports = {
 							"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.googleapis.com",
 							"img-src 'self' data: https: blob: http:",
 							"font-src 'self' data: https://fonts.gstatic.com https://*.gstatic.com",
-							"connect-src 'self' https://api.pccdnapi.com https://www.google-analytics.com https://api.mercadopago.com https://www.paypal.com https://graph.facebook.com https://*.google-analytics.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.mercadopago.com https://*.paypal.com https://*.doubleclick.net https://*.googletagmanager.com",
+							"connect-src 'self' https://api.pccdnapi.com https://pchtest.to-do.mx https://www.pchmayoreo.com https://www.google-analytics.com https://api.mercadopago.com https://www.paypal.com https://graph.facebook.com https://*.google-analytics.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.mercadopago.com https://*.paypal.com https://*.doubleclick.net https://*.googletagmanager.com",
 							"frame-src 'self' https://www.google.com https://maps.google.com https://www.paypal.com https://sdk.mercadopago.com https://*.google.com https://*.facebook.com",
 							"object-src 'none'",
 							"base-uri 'self'",
@@ -87,6 +87,11 @@ module.exports = {
 			{
 				protocol: 'https',
 				hostname: 'lh3.googleusercontent.com',
+				pathname: '**',
+			},
+			{
+				protocol: 'https',
+				hostname: 'www.pchmayoreo.com',
 				pathname: '**',
 			},
 			// Dominios para desarrollo local
