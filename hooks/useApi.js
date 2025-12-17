@@ -15,10 +15,16 @@ export function useApi() {
   const buildUrl = (endpoint) => {
     // Asegurarse de que el endpoint empiece con /
     const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    // Remover slash final de apiUrl si existe
-    const normalizedApiUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
 
-    return `${normalizedApiUrl}${normalizedEndpoint}`;
+    // En desarrollo (localhost), usar la API directamente
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      // Remover slash final de apiUrl si existe
+      const normalizedApiUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+      return `${normalizedApiUrl}${normalizedEndpoint}`;
+    }
+
+    // En producción, usar el proxy API para evitar CORS
+    return `/api/proxy${normalizedEndpoint}`;
   };
 
   return {
@@ -32,6 +38,12 @@ export function useApi() {
  * @returns {string} URL de la API
  */
 export function getApiUrl() {
-  return process.env.NEXT_PUBLIC_API_URL || 'https://api.pccdnapi.com';
+  // En desarrollo, usar la API directamente
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return process.env.NEXT_PUBLIC_API_URL || 'https://api.pccdnapi.com';
+  }
+
+  // En producción, usar el proxy API para evitar CORS
+  return '/api/proxy';
 }
 
