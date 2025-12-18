@@ -37,11 +37,11 @@ module.exports = {
 			key: 'Content-Security-Policy',
 			value: [
 				"default-src 'self'",
-				"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.kueskipay.com https://maps.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://sdk.mercadopago.com https://*.mercadolibre.com https://*.mlstatic.com https://www.paypal.com https://www.paypalobjects.com https://*.googleapis.com https://*.gstatic.com https://*.facebook.net https://*.facebook.com https://*.doubleclick.net https://*.googletagmanager.com",
+				"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.kueskipay.com https://cdn.gelazo.mx https://maps.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://sdk.mercadopago.com https://*.mercadolibre.com https://*.mlstatic.com https://www.paypal.com https://www.paypalobjects.com https://*.googleapis.com https://*.gstatic.com https://*.facebook.net https://*.facebook.com https://*.doubleclick.net https://*.googletagmanager.com",
 				"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.googleapis.com",
 				"img-src 'self' data: https: blob: http: https://*.mercadolibre.com https://*.mlstatic.com",
 				"font-src 'self' data: https://fonts.gstatic.com https://*.gstatic.com",
-				"connect-src 'self' https://api.pccdnapi.com https://www.google-analytics.com https://api.mercadopago.com https://*.mercadolibre.com https://*.mlstatic.com https://www.paypal.com https://graph.facebook.com https://*.google-analytics.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.mercadopago.com https://*.paypal.com https://*.doubleclick.net https://*.googletagmanager.com",
+				"connect-src 'self' https://api.pccdnapi.com https://api.kueskipay.com https://www.google-analytics.com https://api.mercadopago.com https://*.mercadolibre.com https://*.mlstatic.com https://www.paypal.com https://graph.facebook.com https://*.google-analytics.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.mercadopago.com https://*.paypal.com https://*.doubleclick.net https://*.googletagmanager.com",
 				"frame-src 'self' https://www.google.com https://maps.google.com https://www.paypal.com https://sdk.mercadopago.com https://*.mercadolibre.com https://*.google.com https://*.facebook.com",
 				"object-src 'none'",
 				"base-uri 'self'",
