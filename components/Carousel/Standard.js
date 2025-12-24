@@ -5,35 +5,36 @@ import { useEffect, useState } from 'react';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEnv } from '../../context/EnvContext';
-import { useApi } from '../../hooks/useApi';
+import { bannersData } from '../../data/bannersData';
 
 const Standard = () => {
-	const [data, setData] = useState(null);
-	const [loading, setLoading] = useState(true);
+	// 🎯 USANDO DATOS LOCALES EN LUGAR DE API
+	const [data, setData] = useState(bannersData);
+	const [loading, setLoading] = useState(false); // Ya no hay loading porque los datos están en local
 	const [error, setError] = useState(false);
-	const { storeId } = useEnv();
-	const { buildUrl } = useApi();
 
-	const fetchData = async () => {
-		try {
-			setLoading(true);
-			const data = await fetch(
-				buildUrl(`/banners/index/standard?store_id=${storeId}`)
-			);
+	// ⚠️ CÓDIGO DE API COMENTADO - Descomentar si quieres volver a usar la API
+	// const { storeId } = useEnv();
+	// const { buildUrl } = useApi();
 
-			const json_data = await data.json()
-			setData(json_data);
-		} catch (error) {
-			setError(error);
-		} finally {
-			setLoading(false);
-		}
-	};
+	// const fetchData = async () => {
+	// 	try {
+	// 		setLoading(true);
+	// 		const data = await fetch(
+	// 			buildUrl(`/banners/index/standard?store_id=${storeId}`)
+	// 		);
+	// 		const json_data = await data.json()
+	// 		setData(json_data);
+	// 	} catch (error) {
+	// 		setError(error);
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
 
-	useEffect(() => {
-		fetchData();
-	}, []);
+	// useEffect(() => {
+	// 	fetchData();
+	// }, []);
 
 	if (loading) {
 		return (
