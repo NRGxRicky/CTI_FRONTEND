@@ -1,0 +1,62 @@
+[
+  {
+    "status": "ALERT",
+    "severity": "WARNING",
+    "component": "Frontend",
+    "timestamp": "2026-01-25T20:43:00.792Z",
+    "test_name": "Homepage Load Time",
+    "error_message": "Homepage tardó 4646ms en cargar (umbral: 3000ms)",
+    "affected_url": "https://ctimx.io/",
+    "response_time_ms": 4646,
+    "screenshot_path": null,
+    "stack_trace": null,
+    "recommended_action": "Optimizar recursos estáticos y verificar CDN",
+    "runbook_url": "https://docs.internal/runbooks/frontend",
+    "environment": "production"
+  },
+  {
+    "status": "ALERT",
+    "severity": "WARNING",
+    "component": "Frontend",
+    "timestamp": "2026-01-25T21:06:39.256Z",
+    "test_name": "Homepage Load Time",
+    "error_message": "Homepage tardó 3431ms en cargar (umbral: 3000ms)",
+    "affected_url": "https://ctimx.io/",
+    "response_time_ms": 3431,
+    "screenshot_path": null,
+    "stack_trace": null,
+    "recommended_action": "Optimizar recursos estáticos y verificar CDN",
+    "runbook_url": "https://docs.internal/runbooks/frontend",
+    "environment": "production"
+  },
+  {
+    "status": "ALERT",
+    "severity": "WARNING",
+    "component": "API",
+    "timestamp": "2026-01-25T21:06:47.377Z",
+    "test_name": "API Status Code",
+    "error_message": "API devolvió status 403 en lugar de 200",
+    "affected_url": "/api/proxy/extcust/getprodlist",
+    "response_time_ms": 242,
+    "screenshot_path": null,
+    "stack_trace": null,
+    "recommended_action": "Verificar configuración de API y credenciales",
+    "runbook_url": "https://docs.internal/runbooks/api",
+    "environment": "production"
+  },
+  {
+    "status": "ALERT",
+    "severity": "WARNING",
+    "component": "API",
+    "timestamp": "2026-01-25T21:07:04.180Z",
+    "test_name": "API Status Code",
+    "error_message": "API devolvió status 403 en lugar de 200",
+    "affected_url": "/api/proxy/extcust/getprodlist",
+    "response_time_ms": 232,
+    "screenshot_path": null,
+    "stack_trace": null,
+    "recommended_action": "Verificar configuración de API y credenciales",
+    "runbook_url": "https://docs.internal/runbooks/api",
+    "environment": "production"
+  }
+]

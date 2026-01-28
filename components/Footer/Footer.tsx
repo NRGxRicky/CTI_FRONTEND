@@ -4,7 +4,7 @@ import Link from 'next/link';
 import GoogleRatings from '../GoogleRatings/GoogleRatings';
 import { useEnv } from '../../context/EnvContext';
 
-interface FooterProps {}
+interface FooterProps { }
 
 const Footer: React.FC<FooterProps> = () => {
 	const [column1, setColumn1] = useState(false);
@@ -346,7 +346,7 @@ const Footer: React.FC<FooterProps> = () => {
 					</div>
 				</div>
 				<aside className='footer__aside'>
-					© 2025 {storeName} - {legalName} - Hecho en México con {emojiFooter}
+					© 2025 {storeName}
 				</aside>
 			</div>
 			<style jsx>

@@ -28,7 +28,11 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 	const fetchData = async () => {
 		try {
 			setLoading(true);
-			const data = await fetch(buildUrl('/brands/bestbrands/'));
+			const data = await fetch(buildUrl('/brands/bestbrands/'), {
+				headers: {
+					'X-Store-ID': 'cti',
+				},
+			});
 			setData(await data.json());
 		} catch (error) {
 			setError(error);
@@ -110,7 +114,7 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 				</div>
 				<div className='brand____viewport' ref={emblaRef}>
 					<div className='brand____container'>
-						{data.results.map((brand) => (
+						{(data?.results || []).map((brand) => (
 							<div className='brand____slide' key={brand.id}>
 								<div className='brand__imagen'>
 									<Link

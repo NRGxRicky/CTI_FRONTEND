@@ -1,0 +1,21 @@
+# Ignorar reportes y resultados de pruebas
+reports/test-results/
+reports/html-report/
+reports/screenshots/*.png
+reports/latest-run.json
+reports/monitoring-summary.json
+
+# Mantener estructura de directorios
+!reports/.gitkeep
+!reports/alerts/.gitkeep
+!reports/screenshots/.gitkeep
+
+# Ignorar videos de Playwright
+test-results/
+playwright-report/
+
+# Mantener archivos de ejemplo
+!reports/alerts/example-alerts.json
+
+# Node modules del subdirectorio (si aplica)
+node_modules/

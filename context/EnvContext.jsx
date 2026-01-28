@@ -31,6 +31,10 @@ export function EnvProvider({ children }) {
 		googlePlaceId: process.env.NEXT_PUBLIC_GOOGLE_PLACE_ID,
 		googleApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
 		googleProfileUrl: process.env.NEXT_PUBLIC_GOOGLE_PROFILE_URL,
+		storeId: process.env.NEXT_PUBLIC_STORE_ID,
+		// API Authentication
+		apiCustomer: process.env.NEXT_PUBLIC_API_CUSTOMER,
+		apiKey: process.env.NEXT_PUBLIC_API_KEY,
 		// Pagos: banderas globales/por método
 		paymentsEnabledIds: process.env.NEXT_PUBLIC_PAYMENTS_ENABLED_IDS,
 		paymentsSandboxMode: process.env.NEXT_PUBLIC_SANDBOX_MODE,

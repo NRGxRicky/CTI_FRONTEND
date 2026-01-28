@@ -1,25 +1,52 @@
-import { getApiUrl } from './useApi';
-
 const FetchGetDetailProduct = async (slug) => {
-	// En el servidor (getServerSideProps), siempre usar la API directamente
-	// porque el proxy API no funciona en server-side
-	const isServer = typeof window === 'undefined';
-	const apiUrl = isServer
-		? (process.env.NEXT_PUBLIC_API_URL || 'https://api.pccdnapi.com')
-		: getApiUrl();
+	try {
+		// La nueva API no tiene endpoint de detalle individual
+		// Necesitamos buscar el producto en el listado completo por SKU
 
-	return await fetch(`${apiUrl}/${slug}`)
-		.then((data) => data.json())
-		.then((res) => ({
-			item: res,
-		}))
-		.catch((error) => {
-			console.error('Error fetching product:', error);
-			return {
-				item: null,
-			};
-		});
+		const isServer = typeof window === 'undefined';
+		const baseUrl = isServer
+			? 'http://localhost:3000'
+			: '';
+
+		// Obtener todos los productos del proxy
+		const response = await fetch(`${baseUrl}/api/proxy/section?type=-created&marca=all&categoria=index&q=`);
+
+		if (!response.ok) {
+			throw new Error(`API error: ${response.status}`);
+		}
+
+		const data = await response.json();
+
+		// Buscar el producto por SKU (el slug es el SKU)
+		const producto = data.results?.find(p => p.sku === slug);
+
+		if (!producto) {
+			console.log(`Product not found: ${slug}`);
+			return { item: null };
+		}
+
+		// Adaptar el producto al formato esperado por la página de detalle
+		const item = {
+			...producto,
+			id: producto.sku,
+			slug: producto.sku,
+			// Campos adicionales que podrían faltar
+			stock_total: producto.inventario?.reduce((sum, inv) => sum + (inv.cantidad || 0), 0) || 0,
+			compatibleProductos: [],
+			breadcrumblist: [],
+			parent__slug: producto.seccion?.toLowerCase() || 'index',
+			categoria: producto.linea || '',
+			specs: {},
+			specs_resume: {},  // Agregar specs_resume vacío para evitar error undefined
+			mediafiles: [],  // Agregar mediafiles vacío para evitar error undefined
+		};
+
+		return { item };
+
+	} catch (error) {
+		console.error('Error fetching product:', error);
+		return { item: null };
+	}
 };
 
 export default FetchGetDetailProduct;
-

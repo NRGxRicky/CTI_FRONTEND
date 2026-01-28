@@ -28,7 +28,12 @@ const HeaderMenu = () => {
 		try {
 			setLoading(true);
 			const data = await fetch(
-				buildUrl(`/categories/bestcategories/?parentcategorie=index`)
+				buildUrl(`/categories/bestcategories/?parentcategorie=index`),
+				{
+					headers: {
+						'X-Store-ID': 'cti',
+					},
+				}
 			);
 			setData(await data.json());
 		} catch (error) {
@@ -58,7 +63,7 @@ const HeaderMenu = () => {
 		fetchData();
 	}, []);
 
-	if (data.results.length === 0) {
+	if ((data?.results || []).length === 0) {
 		return <div></div>;
 	}
 
@@ -90,7 +95,7 @@ const HeaderMenu = () => {
 				</li>
 				{(() => {
 					const seen = new Set();
-					return data.results
+					return (data?.results || [])
 						.filter((i) => i.slug !== 'index')
 						.filter((i) => i.portada)
 						.filter((i) => {

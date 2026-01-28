@@ -148,7 +148,7 @@ const DetailProduct = ({
 	}, [item]);
 
 	console.log(item);
-	
+
 	return (
 		<div className='product'>
 			<div className='product__gallery'>
@@ -195,7 +195,7 @@ const DetailProduct = ({
 				<div className='product__specs__container'>
 					<h3>Características del producto</h3>
 					<ul>
-						{Object.entries(item.specs_resume).length > 0 && (
+						{item.specs_resume && Object.keys(item.specs_resume).length > 0 && (
 							<div className='specs__resume'>
 								{Object.entries(item.specs_resume)
 									.slice(0, 1)

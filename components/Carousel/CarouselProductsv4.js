@@ -37,7 +37,12 @@ const CarouselProductsV4 = ({
 		try {
 			setLoading(true);
 			const data = await fetch(
-				buildUrl(`/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}&filter_discount=true`)
+				buildUrl(`/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}&filter_discount=true`),
+				{
+					headers: {
+						'X-Store-ID': 'cti',
+					},
+				}
 			);
 			setData(await data.json());
 		} catch (error) {
@@ -139,7 +144,7 @@ const CarouselProductsV4 = ({
 			<div className='carousel'>
 				<div className='carousel__viewport' ref={emblaRef}>
 					<div className='carousel__container'>
-						{data.results
+						{(data?.results || [])
 							.filter((i) => i.id !== exclude)
 							.map((producto) => (
 								<div className='carousel__slide' key={producto.id}>

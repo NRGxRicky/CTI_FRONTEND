@@ -32,7 +32,15 @@ export const getServerSideProps = async (context) => {
 };
 
 const ProductItem = ({ item }) => {
-
+	// Si no hay item, mostrar mensaje de error
+	if (!item || !item.titulo) {
+		return (
+			<div style={{ padding: '40px', textAlign: 'center' }}>
+				<h1>Producto no encontrado</h1>
+				<p>Lo sentimos, el producto que buscas no está disponible.</p>
+			</div>
+		);
+	}
 
 	const convertTitle = Capitalize(item.titulo);
 

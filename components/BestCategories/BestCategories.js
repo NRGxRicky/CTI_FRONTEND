@@ -68,7 +68,12 @@ const BestCategories = ({ mobile = false }) => {
 	const fetchData = async () => {
 		try {
 			const data = await fetch(
-				buildUrl('/categories/bestcategories/?parentcategorie=index')
+				buildUrl('/categories/bestcategories/?parentcategorie=index'),
+				{
+					headers: {
+						'X-Store-ID': 'cti',
+					},
+				}
 			);
 			setData(await data.json());
 		} catch (_e) {
@@ -80,7 +85,7 @@ const BestCategories = ({ mobile = false }) => {
 		fetchData();
 	}, []);
 
-	if (data.results.length === 0) {
+	if ((data?.results || []).length === 0) {
 		return (
 			<div className='best-categories-carousel'>
 				<style jsx>
@@ -97,13 +102,13 @@ const BestCategories = ({ mobile = false }) => {
 	}
 
 	return (
-		data.results.length > 1 && (
+		(data?.results || []).length > 1 && (
 			<div className='best-categories-carousel'>
 				<div className='best-categories-carousel__viewport' ref={emblaRef}>
 					<div className='best-categories-carousel__container'>
 						{(() => {
 							const seen = new Set();
-							return data.results
+							return (data?.results || [])
 								.filter((i) => i.slug !== 'index')
 								.filter((i) => i.portada)
 								.filter((i) => {

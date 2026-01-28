@@ -38,7 +38,12 @@ const CarouselProductsV2 = ({
 		try {
 			setLoading(true);
 			const response = await fetch(
-				buildUrl(`/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}&filter_available_store=${filter_available_store}`)
+				buildUrl(`/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}&filter_available_store=${filter_available_store}`),
+				{
+					headers: {
+						'X-Store-ID': 'cti',
+					},
+				}
 			);
 			const newData = await response.json();
 			setData(newData);
@@ -137,7 +142,7 @@ const CarouselProductsV2 = ({
 		return <div></div>;
 	}
 
-	if (data.results.length >= 4) {
+	if ((data?.results || []).length >= 4) {
 		return (
 			<div className='list-products__section'>
 				{title}
@@ -145,7 +150,7 @@ const CarouselProductsV2 = ({
 					<div className='v2__embla'>
 						<div className='v2__embla__viewport' ref={emblaRef}>
 							<div className='v2__embla__container'>
-								{data.results
+								{(data?.results || [])
 									.filter((i) => i.id !== exclude)
 									.map((producto, index) => (
 										<div className='v2__embla__slide' key={producto.id}>

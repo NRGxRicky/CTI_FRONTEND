@@ -6,8 +6,7 @@ const FooterMini = () => {
 	const { storeName, legalName, emojiFooter } = useEnv();
 	return (
 		<aside className='footer__aside'>
-			© 2025 {storeName} - {legalName} - Hecho en México con{' '}
-			{emojiFooter}
+			© 2025 {storeName}
 			<style jsx>
 				{`
 					.footer__aside {

@@ -1,11 +1,11 @@
 import { useEnv } from '../context/EnvContext';
 
 /**
- * Hook personalizado para construir URLs de la API
- * @returns {Object} Objeto con la URL base y función para construir endpoints
+ * Hook personalizado para realizar fetch requests con headers configurados
+ * @returns {Object} Objeto con buildUrl y apiFetch
  */
 export function useApi() {
-  const { apiUrl } = useEnv();
+  const { apiUrl, storeId } = useEnv();
 
   /**
    * Construye una URL completa para un endpoint
@@ -16,20 +16,38 @@ export function useApi() {
     // Asegurarse de que el endpoint empiece con /
     const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
-    // En desarrollo (localhost), usar la API directamente
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-      // Remover slash final de apiUrl si existe
-      const normalizedApiUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
-      return `${normalizedApiUrl}${normalizedEndpoint}`;
-    }
-
-    // En producción, usar el proxy API para evitar CORS
+    // SIEMPRE usar el proxy API para evitar problemas de CORS
+    // El proxy maneja la autenticación con X-Store-ID header
     return `/api/proxy${normalizedEndpoint}`;
+  };
+
+  /**
+   * Wrapper de fetch que incluye headers necesarios
+   * @param {string} endpoint - El endpoint de la API
+   * @param {RequestInit} options - Opciones de fetch
+   * @returns {Promise<Response>} Response de fetch
+   */
+  const apiFetch = async (endpoint, options = {}) => {
+    const url = buildUrl(endpoint);
+
+    // Combinar headers por defecto con los proporcionados
+    const headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Store-ID': storeId || 'cti',
+      ...(options.headers || {}),
+    };
+
+    return fetch(url, {
+      ...options,
+      headers,
+    });
   };
 
   return {
     apiUrl,
     buildUrl,
+    apiFetch,
   };
 }
 
@@ -38,12 +56,6 @@ export function useApi() {
  * @returns {string} URL de la API
  */
 export function getApiUrl() {
-  // En desarrollo, usar la API directamente
-  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-    return process.env.NEXT_PUBLIC_API_URL || 'https://api.pccdnapi.com';
-  }
-
-  // En producción, usar el proxy API para evitar CORS
+  // Siempre usar el proxy API para evitar CORS
   return '/api/proxy';
 }
-

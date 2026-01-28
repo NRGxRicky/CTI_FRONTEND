@@ -33,7 +33,7 @@ const ProductSpecs = ({ item = { specs: [] } }) => {
 					))}
 				</div>
 			)}
-			{item.mediafiles.length > 0 && (
+			{item.mediafiles && item.mediafiles.length > 0 && (
 				<div className='product__media_files'>
 					<h2 className='product__media_files__title'>Más Información</h2>
 					<CarouselMediaFiles item={item} />

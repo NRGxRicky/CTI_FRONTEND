@@ -102,6 +102,11 @@ module.exports = {
 				hostname: 'lh3.googleusercontent.com',
 				pathname: '**',
 			},
+			{
+				protocol: 'https',
+				hostname: 'www.pchmayoreo.com',
+				pathname: '**',
+			},
 			// Dominios para desarrollo local
 			{
 				protocol: 'http',
@@ -119,6 +124,9 @@ module.exports = {
 				pathname: '**',
 			},
 		],
+		// Configurar qualities para Next.js 16
+		qualities: [75, 100],
+		formats: ['image/webp'],
 	},
 	eslint: {
 		// Warning: This allows production builds to successfully complete even if
