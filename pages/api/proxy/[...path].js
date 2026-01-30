@@ -39,7 +39,7 @@ export default async function handler(req, res) {
 
     // Credenciales de autenticación
     const customer = process.env.NEXT_PUBLIC_API_CUSTOMER || '81276';
-    const key = process.env.NEXT_PUBLIC_API_KEY || '0LIAN2nJRl0tdYtk';
+    const key = process.env.NEXT_PUBLIC_API_KEY || '0LlAN2nJRl0tdYtk';
 
     // Mapear endpoints antiguos a nuevos
     const endpointMapping = {

@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     }
 
     // Ruta a las imágenes (configurable por entorno)
-    const imagesPath = process.env.IMAGES_PATH || 'C:\\Users\\delfi\\Documents\\imagenespch\\gallerypch';
+    const imagesPath = process.env.IMAGES_PATH || '/app/images';
 
     console.log('🖼️  Image Request:', { sku, imagesPath });
 
