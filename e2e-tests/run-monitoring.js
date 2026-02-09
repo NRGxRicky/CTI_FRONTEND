@@ -194,27 +194,37 @@ class MonitoringOrchestrator {
 
         // Programar cada 30 minutos
         // Formato cron: */30 * * * * (cada 30 minutos)
-        cron.schedule('*/30 * * * *', () => {
-            this.runTests();
-        });
+        // TEMPORALMENTE DESACTIVADO - 2026-02-09
+// Razón: Actualizando tests para usar nuevos endpoints (catalog, getprodstock, getprodprice_warehouse)
+// TODO: Reactivar después de actualizar tests
+/*
+cron.schedule('*/30 * * * * ', async () => {
+        console.log('🔄 Starting scheduled monitoring...');
+        await this.runTests();
+    }, {
+    timezone: "America/Mexico_City"
+});
+*/
 
-        // Mantener el proceso vivo
-        process.on('SIGINT', () => {
-            console.log('\n\n👋 Deteniendo monitoreo...');
-            console.log(`Total de ejecuciones: ${this.runCount}`);
-            console.log('¡Hasta pronto!\n');
-            process.exit(0);
-        });
+console.log('⚠️  MONITOREO DESACTIVADO TEMPORALMENTE - Actualizando a nuevos endpoints');
+console.log('Para ejecutar tests manualmente: npm run monitor:once');
+// Mantener el proceso vivo
+process.on('SIGINT', () => {
+    console.log('\n\n👋 Deteniendo monitoreo...');
+    console.log(`Total de ejecuciones: ${this.runCount}`);
+    console.log('¡Hasta pronto!\n');
+    process.exit(0);
+});
     }
 
     /**
      * Ejecuta una sola vez (para testing)
      */
     async runOnce() {
-        console.log('🔄 Ejecutando monitoreo una sola vez...\n');
-        await this.runTests();
-        process.exit(0);
-    }
+    console.log('🔄 Ejecutando monitoreo una sola vez...\n');
+    await this.runTests();
+    process.exit(0);
+}
 }
 
 // ============================================
