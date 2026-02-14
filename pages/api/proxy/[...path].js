@@ -1,9 +1,10 @@
 // API Proxy para la nueva arquitectura de API PCH (3 endpoints separados)
 // Actualizado: 2026-02-03 - Migración de getprodlist a catalog + stock + precios
 
-// Cache simple en memoria (1 hora de duración como recomendó el backend)
+// Cache simple en memoria
+// Aumentado a 24 horas por tiempos de respuesta lentos en producción (3+ min)
 const cache = new Map();
-const CACHE_DURATION = 60 * 60 * 1000; // 1 hora en milisegundos
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
 
 function getCacheKey(path, queryParams) {
     return `${path}:${JSON.stringify(queryParams)}`;
@@ -59,6 +60,19 @@ async function callPCHApi(apiUrl, endpoint, customer, key) {
     return data;
 }
 
+// Configuración de timeout - PRODUCCIÓN requiere 3-5 minutos
+export const config = {
+    api: {
+        responseLimit: false,
+        bodyParser: {
+            sizeLimit: '10mb',
+        },
+        // Timeout aumentado para APIs lentas de producción PCH
+        externalResolver: true,
+    },
+    maxDuration: 300, // 5 minutos
+};
+
 export default async function handler(req, res) {
     const { path = [], ...queryParams } = req.query;
 
@@ -106,22 +120,37 @@ export default async function handler(req, res) {
         const stockMap = new Map();
         const priceMap = new Map();
 
-        // Mapear stock por SKU
+        // Mapear stock por SKU (PRODUCCIÓN: sumar de todos los almacenes)
+        // En producción, cada SKU tiene múltiples entradas (uno por almacén)
+        // Sumamos el total de todos los almacenes
         if (stockResponse?.data?.productos) {
             stockResponse.data.productos.forEach(item => {
                 if (item.sku) {
-                    stockMap.set(item.sku, item.stock || 0);
+                    const currentStock = stockMap.get(item.sku) || 0;
+                    const newStock = item.cantidad || item.stock || 0;
+                    stockMap.set(item.sku, currentStock + newStock);
                 }
             });
         }
 
-        // Mapear precios por SKU
+        // Mapear precios por SKU (PRODUCCIÓN: array de precios por almacén)
+        // En producción, cada producto tiene item.precios = [{precio, promo, id, almacen}, ...]
+        // Estrategia: usar el precio MÁS BAJO de todos los almacenes disponibles
         if (priceResponse?.data?.productos) {
             priceResponse.data.productos.forEach(item => {
-                if (item.sku) {
+                if (item.sku && item.precios && Array.isArray(item.precios) && item.precios.length > 0) {
+                    // Encontrar el precio más bajo
+                    const lowestPrice = item.precios.reduce((min, current) => {
+                        const currentPrice = current.precio || Infinity;
+                        const minPrice = min.precio || Infinity;
+                        return currentPrice < minPrice ? current : min;
+                    }, item.precios[0]);
+
                     priceMap.set(item.sku, {
-                        precio: item.precio || 0,
-                        promo: item.promo || false,
+                        precio: lowestPrice.precio || 0,
+                        promo: lowestPrice.promo || false,
+                        almacen: lowestPrice.almacen,
+                        id_almacen: lowestPrice.id
                     });
                 }
             });
@@ -179,6 +208,76 @@ export default async function handler(req, res) {
         };
 
         console.log(`✅ Combined data ready: ${adaptedData.results.length} products (limited from ${catalogProducts.length} total)`);
+
+        // ============================================
+        // CASO ESPECIAL: CATEGORIAS
+        // ============================================
+        if (apiPath.includes('categories') || apiPath.includes('bestcategories')) {
+            // Extraer categorías únicas del catálogo COMPLETO (no limitado)
+            const categoriesMap = new Map();
+
+            catalogProducts.forEach(product => {
+                const categoria = product.seccion || product.categoria;
+                const id_categoria = product.id_seccion || product.id_categoria;
+
+                if (categoria && !categoriesMap.has(categoria)) {
+                    categoriesMap.set(categoria, {
+                        id: id_categoria || categoria,
+                        name: categoria,  // Frontend espera "name", no "nombre"
+                        slug: categoria.toLowerCase().replace(/ /g, '-'),
+                        imagen_principal: `/api/images/${product.sku}`, // Usar primera imagen de producto en esa categoría
+                        portada: `/api/images/${product.sku}`, // Agregar portada también
+                    });
+                }
+            });
+
+            const categoriesData = {
+                results: Array.from(categoriesMap.values()),
+                count: categoriesMap.size,
+                total: categoriesMap.size,
+                status: 'success',
+                message: 'Categorías extraídas del catálogo'
+            };
+
+            console.log(`✅ Categories extracted: ${categoriesMap.size} categories`);
+            setCache(cacheKey, categoriesData);
+            return res.status(200).json(categoriesData);
+        }
+
+        // ============================================
+        // CASO ESPECIAL: MARCAS
+        // ============================================
+        if (apiPath.includes('brands') || apiPath.includes('bestbrands')) {
+            // Extraer marcas únicas del catálogo COMPLETO
+            const brandsMap = new Map();
+
+            catalogProducts.forEach(product => {
+                const marca = product.marca;
+                const id_marca = product.id_marca;
+
+                if (marca && !brandsMap.has(marca)) {
+                    brandsMap.set(marca, {
+                        id: id_marca || marca,
+                        name: marca,  // Frontend espera "name"
+                        slug: marca.toLowerCase().replace(/ /g, '-'),
+                        imagen_principal: `/api/images/${product.sku}`,
+                        portada: `/api/images/${product.sku}`,
+                    });
+                }
+            });
+
+            const brandsData = {
+                results: Array.from(brandsMap.values()),
+                count: brandsMap.size,
+                total: brandsMap.size,
+                status: 'success',
+                message: 'Marcas extraídas del catálogo'
+            };
+
+            console.log(`✅ Brands extracted: ${brandsMap.size} brands`);
+            setCache(cacheKey, brandsData);
+            return res.status(200).json(brandsData);
+        }
 
         // Guardar en caché
         setCache(cacheKey, adaptedData);

@@ -88,7 +88,7 @@ test.describe('Smoke Tests - Disponibilidad del Sistema', () => {
         const startTime = Date.now();
 
         try {
-            const response = await request.post(environment.buildUrl('/api/proxy/extcust/getprodlist'), {
+            const response = await request.post(environment.buildUrl('/api/proxy/section'), {
                 data: {
                     customer: process.env.NEXT_PUBLIC_API_CUSTOMER || '81276',
                     key: process.env.NEXT_PUBLIC_API_KEY || '0LlAN2nJRl0tdYtk',
@@ -107,7 +107,7 @@ test.describe('Smoke Tests - Disponibilidad del Sistema', () => {
                     component: 'API',
                     testName: 'API Status Code',
                     errorMessage: `API devolvió status ${response.status()} en lugar de 200`,
-                    affectedUrl: '/api/proxy/extcust/getprodlist',
+                    affectedUrl: '/api/proxy/section',
                     responseTime,
                     recommendedAction: 'Verificar configuración de API y credenciales',
                 }));
@@ -127,7 +127,7 @@ test.describe('Smoke Tests - Disponibilidad del Sistema', () => {
                     component: 'API',
                     testName: 'API Product List Response Time',
                     errorMessage: `API respondió en ${responseTime}ms (umbral: ${config.performanceThresholds.apiResponseTime}ms)`,
-                    affectedUrl: '/api/proxy/extcust/getprodlist',
+                    affectedUrl: '/api/proxy/section',
                     responseTime,
                     recommendedAction: 'Verificar rendimiento del backend y optimizar queries',
                 }));
@@ -141,7 +141,7 @@ test.describe('Smoke Tests - Disponibilidad del Sistema', () => {
                 component: 'API',
                 testName: 'API Connection Error',
                 errorMessage: `Error conectando con API: ${error.message}`,
-                affectedUrl: '/api/proxy/extcust/getprodlist',
+                affectedUrl: '/api/proxy/section',
                 responseTime: Date.now() - startTime,
                 recommendedAction: 'Verificar conectividad de red y configuración de API',
             }));
