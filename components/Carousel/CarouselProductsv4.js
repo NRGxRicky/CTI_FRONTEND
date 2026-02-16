@@ -134,8 +134,63 @@ const CarouselProductsV4 = ({
 
 	if (error) {
 		return (
-			<div className='carousel'>
-				<p>Error</p>
+			<div className='carousel-error'>
+				<div className='carousel-error__content'>
+					<p className='carousel-error__icon'>⚠️</p>
+					<p className='carousel-error__message'>
+						No se pudieron cargar las ofertas en este momento.
+					</p>
+					<button onClick={fetchData} className='carousel-error__retry'>
+						🔄 Intentar de nuevo
+					</button>
+				</div>
+				<style jsx>{`
+					.carousel-error {
+						width: 100%;
+						min-height: 200px;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						margin: 20px 0;
+					}
+
+					.carousel-error__content {
+						text-align: center;
+						padding: 30px;
+						background: #fff3cd;
+						border-radius: 8px;
+						border: 2px solid #ffc107;
+					}
+
+					.carousel-error__icon {
+						font-size: 48px;
+						margin: 0 0 10px 0;
+					}
+
+					.carousel-error__message {
+						font-size: 16px;
+						color: #856404;
+						margin: 10px 0;
+					}
+
+					.carousel-error__retry {
+						margin-top: 15px;
+						padding: 12px 24px;
+						background: var(--primary-color);
+						color: white;
+						border: none;
+						border-radius: 6px;
+						font-size: 14px;
+						font-weight: 600;
+						cursor: pointer;
+						transition: all 0.3s ease;
+					}
+
+					.carousel-error__retry:hover {
+						transform: translateY(-2px);
+						box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+					}
+				`}</style>
 			</div>
 		);
 	}

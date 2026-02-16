@@ -60,7 +60,7 @@ async function callPCHApi(apiUrl, endpoint, customer, key) {
     return data;
 }
 
-// Configuración de timeout - PRODUCCIÓN requiere 3-5 minutos
+// Configuración de timeout - PRODUCCIÓN requiere 3-5 minutos, aumentado a 10 min
 export const config = {
     api: {
         responseLimit: false,
@@ -70,7 +70,7 @@ export const config = {
         // Timeout aumentado para APIs lentas de producción PCH
         externalResolver: true,
     },
-    maxDuration: 300, // 5 minutos
+    maxDuration: 600, // 10 minutos (aumentado de 5 min por timeouts frecuentes)
 };
 
 export default async function handler(req, res) {
