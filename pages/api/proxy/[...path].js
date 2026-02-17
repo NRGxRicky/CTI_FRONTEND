@@ -123,15 +123,34 @@ export default async function handler(req, res) {
 
         // 1. Obtener catálogo (información básica de productos)
         // 2. Obtener stock de productos  
-        // 3. Obtener precios de productos
+        // 3. Obtener precios de productos (opcional - continuar sin precios si falla)
 
-        const [catalogResponse, stockResponse, priceResponse] = await Promise.all([
+        const results = await Promise.allSettled([
             callPCHApi(apiUrl, 'extcust/catalog', customer, key, queryParams),
             callPCHApi(apiUrl, 'extcust/getprodstock', customer, key, queryParams),
             callPCHApi(apiUrl, 'extcust/getprodprice_warehouse', customer, key, queryParams),
         ]);
 
-        console.log('📊 All 3 endpoints responded successfully');
+        // Extraer respuestas exitosas, null si falló
+        const catalogResponse = results[0].status === 'fulfilled' ? results[0].value : null;
+        const stockResponse = results[1].status === 'fulfilled' ? results[1].value : null;
+        const priceResponse = results[2].status === 'fulfilled' ? results[2].value : null;
+
+        // Log warnings para endpoints fallidos
+        if (!catalogResponse) console.warn('⚠️  Catalog endpoint failed');
+        if (!stockResponse) console.warn('⚠️  Stock endpoint failed');
+        if (!priceResponse) console.warn('⚠️  Price endpoint failed - continuing without prices');
+
+        // Si el catálogo falló, no podemos continuar
+        if (!catalogResponse) {
+            throw new Error('Catalog endpoint failed - cannot proceed without product data');
+        }
+
+        console.log('📊 Endpoints completed:', {
+            catalog: !!catalogResponse,
+            stock: !!stockResponse,
+            prices: !!priceResponse
+        });
 
         // ============================================
         // COMBINAR DATOS DE LOS 3 ENDPOINTS
