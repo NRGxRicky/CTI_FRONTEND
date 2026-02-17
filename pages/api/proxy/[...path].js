@@ -76,11 +76,11 @@ export const config = {
 export default async function handler(req, res) {
     const { path = [], ...queryParams } = req.query;
 
-    // Configuración
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://pchtest.to-do.mx';
+    // Configuración - Credenciales de Producción
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://pchm.to-do.mx';
     const apiPath = Array.isArray(path) ? path.join('/') : path;
-    const customer = process.env.NEXT_PUBLIC_API_CUSTOMER || '81276';
-    const key = process.env.NEXT_PUBLIC_API_KEY || '0LlAN2nJRl0tdYtk';
+    const customer = process.env.NEXT_PUBLIC_API_CUSTOMER || '18619';
+    const key = process.env.NEXT_PUBLIC_API_KEY || 'C25tg7145$uR';
 
     // Verificar caché primero
     const cacheKey = getCacheKey(apiPath, queryParams);
