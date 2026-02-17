@@ -93,7 +93,8 @@ export default async function handler(req, res) {
     const apiUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'https://pchm.to-do.mx';
     const apiPath = Array.isArray(path) ? path.join('/') : path;
     const customer = process.env.API_CUSTOMER || process.env.NEXT_PUBLIC_API_CUSTOMER || '18619';
-    const key = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || 'C25tg7145$uR';
+    // TEMP: Hardcodeado mientras arreglamos el escaping en Coolify
+    const key = 'C25tg7145$uR'; // process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || 'C25tg7145$uR';
 
     // DEBUG: Log credenciales reales usadas (temporal)
     console.log('🔐 Credentials being used:', {
