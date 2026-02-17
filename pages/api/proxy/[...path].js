@@ -83,6 +83,16 @@ export default async function handler(req, res) {
     const customer = process.env.API_CUSTOMER || process.env.NEXT_PUBLIC_API_CUSTOMER || '18619';
     const key = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || 'C25tg7145$uR';
 
+    // DEBUG: Log credenciales reales usadas (temporal)
+    console.log('🔐 Credentials being used:', {
+        apiUrl,
+        customer,
+        key: key.substring(0, 5) + '***',
+        hasAPI_URL: !!process.env.API_URL,
+        hasAPI_CUSTOMER: !!process.env.API_CUSTOMER,
+        hasAPI_KEY: !!process.env.API_KEY
+    });
+
     // Verificar caché primero
     const cacheKey = getCacheKey(apiPath, queryParams);
     const cachedResponse = getFromCache(cacheKey);
