@@ -31,12 +31,17 @@ ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_API_CUSTOMER
 ARG NEXT_PUBLIC_API_KEY
 
-# Convertir ARGs a ENV para runtime
+# Convertir ARGs a ENV para runtime (con y sin prefijo NEXT_PUBLIC_)
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+# Variables para client-side (browser)
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NEXT_PUBLIC_API_CUSTOMER=${NEXT_PUBLIC_API_CUSTOMER}
 ENV NEXT_PUBLIC_API_KEY=${NEXT_PUBLIC_API_KEY}
+# Variables para server-side (API routes)
+ENV API_URL=${NEXT_PUBLIC_API_URL}
+ENV API_CUSTOMER=${NEXT_PUBLIC_API_CUSTOMER}
+ENV API_KEY=${NEXT_PUBLIC_API_KEY}
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

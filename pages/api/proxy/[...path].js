@@ -76,11 +76,12 @@ export const config = {
 export default async function handler(req, res) {
     const { path = [], ...queryParams } = req.query;
 
-    // Configuración - Credenciales de Producción
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://pchm.to-do.mx';
+    // Configuración - Usar variables de servidor (sin prefijo NEXT_PUBLIC_)
+    // NEXT_PUBLIC_* solo están disponibles en client-side, no en API routes
+    const apiUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'https://pchm.to-do.mx';
     const apiPath = Array.isArray(path) ? path.join('/') : path;
-    const customer = process.env.NEXT_PUBLIC_API_CUSTOMER || '18619';
-    const key = process.env.NEXT_PUBLIC_API_KEY || 'C25tg7145$uR';
+    const customer = process.env.API_CUSTOMER || process.env.NEXT_PUBLIC_API_CUSTOMER || '18619';
+    const key = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || 'C25tg7145$uR';
 
     // Verificar caché primero
     const cacheKey = getCacheKey(apiPath, queryParams);
