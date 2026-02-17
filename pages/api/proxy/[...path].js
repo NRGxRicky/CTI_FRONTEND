@@ -33,14 +33,19 @@ function setCache(key, data) {
 }
 
 // Función helper para hacer llamadas a la API PCH
-async function callPCHApi(apiUrl, endpoint, customer, key) {
+async function callPCHApi(apiUrl, endpoint, customer, key, queryParams = {}) {
     const fullUrl = `${apiUrl}/${endpoint}/`;
     const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
     };
 
-    const requestBody = { customer, key };
+    // Incluir queryParams en el body para que la API pueda filtrar correctamente
+    const requestBody = {
+        customer,
+        key,
+        ...queryParams  // CRÍTICO: Agregar filtros (type, marca, categoria, q, etc.)
+    };
 
     console.log(`🔵 Calling ${endpoint}...`);
 
@@ -113,9 +118,9 @@ export default async function handler(req, res) {
         // 3. Obtener precios de productos
 
         const [catalogResponse, stockResponse, priceResponse] = await Promise.all([
-            callPCHApi(apiUrl, 'extcust/catalog', customer, key),
-            callPCHApi(apiUrl, 'extcust/getprodstock', customer, key),
-            callPCHApi(apiUrl, 'extcust/getprodprice_warehouse', customer, key),
+            callPCHApi(apiUrl, 'extcust/catalog', customer, key, queryParams),
+            callPCHApi(apiUrl, 'extcust/getprodstock', customer, key, queryParams),
+            callPCHApi(apiUrl, 'extcust/getprodprice_warehouse', customer, key, queryParams),
         ]);
 
         console.log('📊 All 3 endpoints responded successfully');
