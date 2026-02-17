@@ -48,6 +48,7 @@ async function callPCHApi(apiUrl, endpoint, customer, key, queryParams = {}) {
     };
 
     console.log(`🔵 Calling ${endpoint}...`);
+    console.log(`📤 Request body:`, JSON.stringify(requestBody));
 
     const response = await fetch(fullUrl, {
         method: 'POST',
