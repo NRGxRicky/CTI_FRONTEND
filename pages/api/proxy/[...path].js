@@ -61,7 +61,13 @@ async function callPCHApi(apiUrl, endpoint, customer, key, queryParams = {}) {
     }
 
     const data = await response.json();
-    console.log(`✅ ${endpoint} responded successfully`);
+
+    // Debug: Ver estructura de respuesta y cantidad de datos
+    const productCount = data?.data?.productos?.length || 0;
+    console.log(`✅ ${endpoint} responded successfully - ${productCount} items returned`);
+    if (productCount === 0) {
+        console.log(`⚠️  ${endpoint} returned 0 items. Response structure:`, JSON.stringify(data).substring(0, 200));
+    }
 
     return data;
 }
