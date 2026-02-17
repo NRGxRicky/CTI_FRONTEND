@@ -156,6 +156,8 @@ export default async function handler(req, res) {
         // COMBINAR DATOS DE LOS 3 ENDPOINTS
         // ============================================
 
+        console.log('🚨 DEBUG: Code version b8a7293 - Starting data combination');
+
         // Extraer productos del catálogo
         const catalogProducts = catalogResponse?.data?.productos || [];
 
