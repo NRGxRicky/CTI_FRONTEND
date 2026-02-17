@@ -166,6 +166,17 @@ export default async function handler(req, res) {
         // Mapear stock por SKU (PRODUCCIÓN: sumar de todos los almacenes)
         // En producción, cada SKU tiene múltiples entradas (uno por almacén)
         // Sumamos el total de todos los almacenes
+
+        // DEBUG: Ver estructura real del stock
+        console.log('🔍 Stock Response Structure:', {
+            hasData: !!stockResponse?.data,
+            hasProductos: !!stockResponse?.data?.productos,
+            productosType: Array.isArray(stockResponse?.data?.productos) ? 'array' : typeof stockResponse?.data?.productos,
+            productosLength: stockResponse?.data?.productos?.length,
+            keys: stockResponse?.data ? Object.keys(stockResponse.data) : [],
+            firstItem: stockResponse?.data?.productos?.[0]
+        });
+
         if (stockResponse?.data?.productos) {
             stockResponse.data.productos.forEach(item => {
                 if (item.sku) {
