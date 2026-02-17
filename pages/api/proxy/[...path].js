@@ -99,7 +99,7 @@ export default async function handler(req, res) {
     console.log('🔐 Credentials being used:', {
         apiUrl,
         customer,
-        key: key.substring(0, 5) + '***',
+        key: key, // TEMP: Mostrar key completa para debug
         hasAPI_URL: !!process.env.API_URL,
         hasAPI_CUSTOMER: !!process.env.API_CUSTOMER,
         hasAPI_KEY: !!process.env.API_KEY
