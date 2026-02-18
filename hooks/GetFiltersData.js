@@ -15,7 +15,7 @@ const fetchFilterData = async (
 	categoria
 ) => {
 	const apiUrl = getApiUrl();
-	let url = `${apiUrl}/filters/listado/available?q=${q}&order=${order}&page=${page}&filter_available=${filter_available}&filter_available_store=${filter_available_store}&filter_free_shipping=${filter_free_shipping}&filter_discount=${filter_discount}&marca=${marca}&categoria=${categoria}`;
+	let url = `${apiUrl}/filters/listado/available?q=${encodeURIComponent(q)}&order=${encodeURIComponent(order)}&page=${page}&filter_available=${filter_available}&filter_available_store=${filter_available_store}&filter_free_shipping=${filter_free_shipping}&filter_discount=${filter_discount}&marca=${encodeURIComponent(marca)}&categoria=${encodeURIComponent(categoria)}`;
 
 	brands.forEach((brand) => (url += `&brands=${brand}`));
 	categories.forEach((category) => {

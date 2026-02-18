@@ -20,7 +20,7 @@ const fetchData = async (
 	page_size
 ) => {
 	const apiUrl = getApiUrl();
-	let url = `${apiUrl}/listado?q=${q}&order=${order}&page=${page}&filter_available=${filter_available}&filter_available_store=${filter_available_store}&filter_free_shipping=${filter_free_shipping}&filter_discount=${filter_discount}&marca=${marca}&categoria=${categoria}&page_size=${page_size}`;
+	let url = `${apiUrl}/listado?q=${encodeURIComponent(q)}&order=${encodeURIComponent(order)}&page=${encodeURIComponent(page)}&filter_available=${filter_available}&filter_available_store=${filter_available_store}&filter_free_shipping=${filter_free_shipping}&filter_discount=${filter_discount}&marca=${encodeURIComponent(marca)}&categoria=${encodeURIComponent(categoria)}&page_size=${page_size}`;
 
 	brands.forEach((brand) => (url += `&brands=${brand}`));
 	categories.forEach((category) => {

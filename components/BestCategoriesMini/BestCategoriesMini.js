@@ -24,7 +24,7 @@ const BestCategoriesMini = ({
 		try {
 			setLoading(true);
 			const data = await fetch(
-				buildUrl(`/categories/bestcategories/?parentcategorie=${parentCategorie}&filter_available_store=${filter_available_store}`)
+				buildUrl(`/categories/bestcategories/?parentcategorie=${encodeURIComponent(parentCategorie)}&filter_available_store=${filter_available_store}`)
 			);
 			setData(await data.json());
 		} catch (error) {
