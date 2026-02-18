@@ -47,10 +47,10 @@ const fetchData = async (
 	return await fetch(url)
 		.then((data) => data.json())
 		.then((res) => ({
-			results: res.results,
-			count: res.count,
-			breadcrumblist: res.breadcrumblist,
-			brand: res.brand
+			results: res.results || [],
+			count: res.count || 0,
+			breadcrumblist: res.breadcrumblist || [],
+			brand: res.brand || { name: null, slug: null }
 		}))
 		.catch(() => ({
 			results: [],

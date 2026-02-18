@@ -42,14 +42,14 @@ const fetchFilterData = async (
 	return await fetch(url)
 		.then((data) => data.json())
 		.then((res) => ({
-			count: res.count,
-			available_store_count: res.available_store_count,
-			available_count: res.available_count,
-			free_shipping_count: res.free_shipping_count,
-			available_discount: res.available_discount,
-			brands: res.brands,
-			categories: res.categories,
-			attributes: res.attributes,
+			count: res.count || 0,
+			available_store_count: res.available_store_count || 0,
+			available_count: res.available_count || 0,
+			free_shipping_count: res.free_shipping_count || 0,
+			available_discount: res.available_discount || 0,
+			brands: res.brands || [],
+			categories: res.categories || [],
+			attributes: res.attributes || [],
 		}))
 		.catch(() => ({
 			count: 0,
