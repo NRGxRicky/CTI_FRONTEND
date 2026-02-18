@@ -274,7 +274,8 @@ export default async function handler(req, res) {
         // ============================================
         if (apiPath.includes('filters')) {
             // Extraer filtros del catálogo COMPLETO
-            const brandsMap = new Map();
+            const brandsObj = {};
+            const categoriesArr = [];
             const categoriesMap = new Map();
             let availableCount = 0;
 
@@ -282,20 +283,28 @@ export default async function handler(req, res) {
                 const stock = stockMap.get(product.sku) || 0;
                 if (stock > 0) availableCount++;
 
-                // Brands
+                // Brands - formato: { "BRAND_NAME": { id, count } }
                 const marca = product.marca;
                 if (marca) {
-                    const existing = brandsMap.get(marca) || { id: product.id_marca || marca, name: marca, slug: marca.toLowerCase().replace(/ /g, '-'), count: 0 };
-                    existing.count++;
-                    brandsMap.set(marca, existing);
+                    if (!brandsObj[marca]) {
+                        brandsObj[marca] = { id: product.id_marca || marca, count: 0 };
+                    }
+                    brandsObj[marca].count++;
                 }
 
                 // Categories
                 const categoria = product.seccion || product.categoria;
                 if (categoria) {
-                    const existing = categoriesMap.get(categoria) || { id: product.id_seccion || categoria, name: categoria, slug: categoria.toLowerCase().replace(/ /g, '-'), count: 0 };
-                    existing.count++;
-                    categoriesMap.set(categoria, existing);
+                    if (!categoriesMap.has(categoria)) {
+                        categoriesMap.set(categoria, {
+                            id: product.id_seccion || categoria,
+                            nombre: categoria,
+                            slug: categoria.toLowerCase().replace(/ /g, '-'),
+                            count: 0,
+                            childrens: {},
+                        });
+                    }
+                    categoriesMap.get(categoria).count++;
                 }
             });
 
@@ -305,12 +314,12 @@ export default async function handler(req, res) {
                 available_store_count: 0,
                 free_shipping_count: 0,
                 available_discount: 0,
-                brands: Array.from(brandsMap.values()),
+                brands: brandsObj,
                 categories: Array.from(categoriesMap.values()),
-                attributes: [],
+                attributes: {},
             };
 
-            console.log(`✅ Filters extracted: ${brandsMap.size} brands, ${categoriesMap.size} categories`);
+            console.log(`✅ Filters extracted: ${Object.keys(brandsObj).length} brands, ${categoriesMap.size} categories`);
             setCache(cacheKey, filtersData);
             return res.status(200).json(filtersData);
         }

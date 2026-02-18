@@ -172,9 +172,9 @@ const Listado = ({
 	const [itemsAvailablesFreeShipping, setItemsAvailablesFreeShipping] =
 		useState(0);
 	const [itemsAvailablesDiscount, setItemsAvailablesDiscount] = useState(0);
-	const [brandsAvailables, setBrandsAvailables] = useState([]);
+	const [brandsAvailables, setBrandsAvailables] = useState({});
 	const [categoriesAvailables, setcategoriesAvailables] = useState([]);
-	const [attributesAvailables, setAttributesAvailables] = useState([]);
+	const [attributesAvailables, setAttributesAvailables] = useState({});
 	const router = useRouter();
 	const { height } = WindowDimensions();
 	const [mobileScroll, setMobileScroll] = useState(0);

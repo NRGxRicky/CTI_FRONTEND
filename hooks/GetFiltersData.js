@@ -47,9 +47,9 @@ const fetchFilterData = async (
 			available_count: res.available_count || 0,
 			free_shipping_count: res.free_shipping_count || 0,
 			available_discount: res.available_discount || 0,
-			brands: res.brands || [],
+			brands: res.brands || {},
 			categories: res.categories || [],
-			attributes: res.attributes || [],
+			attributes: res.attributes || {},
 		}))
 		.catch(() => ({
 			count: 0,
@@ -57,9 +57,9 @@ const fetchFilterData = async (
 			available_store_count: 0,
 			free_shipping_count: 0,
 			available_discount: 0,
-			brands: [],
+			brands: {},
 			categories: [],
-			attributes: [],
+			attributes: {},
 		}));
 };
 
