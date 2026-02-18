@@ -179,15 +179,19 @@ export default async function handler(req, res) {
             firstItem: stockResponse?.data?.productos?.[0]
         });
 
-        if (stockResponse?.data?.productos) {
-            stockResponse.data.productos.forEach(item => {
-                if (item.sku) {
-                    const currentStock = stockMap.get(item.sku) || 0;
-                    const newStock = item.cantidad || item.stock || 0;
-                    stockMap.set(item.sku, currentStock + newStock);
-                }
-            });
-        }
+        // CRÍTICO: El stock viene como array de arrays [[{...}, {...}]]
+        // Necesitamos aplanar o acceder al primer elemento
+        const stockItems = stockResponse?.data?.productos?.flat() || [];
+
+        console.log(`📊 Stock items to process: ${stockItems.length}`);
+
+        stockItems.forEach(item => {
+            if (item.sku) {
+                const currentStock = stockMap.get(item.sku) || 0;
+                const newStock = item.cantidad || item.stock || 0;
+                stockMap.set(item.sku, currentStock + newStock);
+            }
+        });
 
         // Mapear precios por SKU (PRODUCCIÓN: array de precios por almacén)
         // En producción, cada producto tiene item.precios = [{precio, promo, id, almacen}, ...]
