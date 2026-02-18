@@ -76,9 +76,8 @@ async function ensureMasterData(apiUrl, customer, key) {
                 }
             });
 
-            // Build price map (precio más bajo por almacén)
+            // Build price map (precio más bajo por almacén - precios ya en MXN)
             const priceMap = new Map();
-            const usdToMxn = parseFloat(process.env.USD_TO_MXN_RATE) || 20.5;
             if (priceResponse?.data?.productos) {
                 priceResponse.data.productos.forEach(item => {
                     if (item.sku && item.precios && Array.isArray(item.precios) && item.precios.length > 0) {
@@ -197,8 +196,8 @@ function transformProduct(producto, stockMap, priceMap) {
     const sku = producto.sku;
     const stock = stockMap.get(sku) || 0;
     const priceData = priceMap.get(sku) || { precio: 0, promo: false };
-    const usdToMxn = parseFloat(process.env.USD_TO_MXN_RATE) || 20.5;
 
+    // Precios de PCH ya vienen en MXN, NO convertir
     return {
         ...producto,
         titulo: producto.descripcion || '',
@@ -206,9 +205,9 @@ function transformProduct(producto, stockMap, priceMap) {
         slug: producto.sku,
         stock: stock,
         stock_total: stock,
-        precio_contado: priceData.precio ? (priceData.precio * usdToMxn) : 0,
-        precio_final: priceData.precio ? (priceData.precio * usdToMxn) : 0,
-        precio_final_descuento: priceData.promo ? (priceData.precio * usdToMxn * 0.9) : 0,
+        precio_contado: priceData.precio || 0,
+        precio_final: priceData.precio || 0,
+        precio_final_descuento: priceData.promo ? (priceData.precio * 0.9) : 0,
         promo: priceData.promo,
         imagen1s: producto.sku ? `/api/images/${producto.sku}` : null,
     };
