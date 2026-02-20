@@ -31,8 +31,11 @@ const FetchGetDetailProduct = async (slug) => {
 			...producto,
 			id: producto.sku,
 			slug: producto.sku,
-			// Imagen del producto (mismo patrón que el proxy de listado)
+			// Imagen del producto — ProductGallery requiere imagen1m para mostrar la imagen
 			imagen1s: imageUrl,
+			imagen1m: imageUrl,   // ← REQUERIDO por ProductGallery
+			imagen1xs: imageUrl,
+			imagen1l: imageUrl,
 			imagen_principal: imageUrl,
 			portada: imageUrl,
 			// Campos adicionales que podrían faltar
@@ -43,7 +46,7 @@ const FetchGetDetailProduct = async (slug) => {
 			categoria: producto.linea || '',
 			specs: {},
 			specs_resume: {},  // Agregar specs_resume vacío para evitar error undefined
-			mediafiles: [],  // Agregar mediafiles vacío para evitar error undefined
+			mediafiles: [],    // Agregar mediafiles vacío para evitar error undefined
 		};
 
 		return { item };
