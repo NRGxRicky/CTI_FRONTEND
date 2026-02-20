@@ -1,6 +1,34 @@
 import fs from 'fs';
 import path from 'path';
 
+const extensions = ['.webp', '.jpg', '.jpeg', '.png'];
+
+// Helper: buscar candidatos que empiecen con un prefijo dado
+function findCandidates(allFiles, prefix) {
+    return allFiles.filter(file =>
+        file.startsWith(`${prefix}-`) || file.startsWith(`${prefix}.`)
+    );
+}
+
+// Helper: escoger el mejor candidato (priorizar el que tenga "-1.")
+function pickBest(candidates) {
+    if (candidates.length === 0) return null;
+    candidates.sort((a, b) => {
+        const aIsPrimary = a.includes('-1.');
+        const bIsPrimary = b.includes('-1.');
+        if (aIsPrimary && !bIsPrimary) return -1;
+        if (!aIsPrimary && bIsPrimary) return 1;
+        return a.length - b.length;
+    });
+    return candidates[0];
+}
+
+// Helper: obtener el SKU base quitando sufijos de variante como -Y, -A, -K, -M, -P, -T, -RE
+function getBaseSku(sku) {
+    // Quitar sufijo de 1-2 letras mayúsculas al final (ej: -Y, -A, -RE)
+    return sku.replace(/-[A-Z]{1,3}$/, '');
+}
+
 export default async function handler(req, res) {
     const { sku } = req.query;
 
@@ -8,101 +36,78 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'SKU is required' });
     }
 
-    // Ruta a las imágenes (configurable por entorno)
     const imagesPath = process.env.IMAGES_PATH || '/app/images';
+    const baseSku = getBaseSku(sku);
 
-    console.log('🖼️  Image Request:', { sku, imagesPath });
+    console.log('🖼️  Image Request:', { sku, baseSku, imagesPath });
 
-    // ---------------------------------------------------------
-    // DEBUG: Listar archivos para ver qué hay en la carpeta
-    // ---------------------------------------------------------
-    try {
-        if (fs.existsSync(imagesPath)) {
-            const filesInDir = fs.readdirSync(imagesPath);
-            console.log(`📂 Contenido de ${imagesPath} (${filesInDir.length} archivos):`, filesInDir.slice(0, 5)); // Mostrar solo los primeros 5
-        } else {
-            console.log(`❌ La carpeta ${imagesPath} NO EXISTE.`);
+    // Leer directorio una sola vez
+    let allFiles = [];
+    if (fs.existsSync(imagesPath)) {
+        try {
+            allFiles = fs.readdirSync(imagesPath);
+        } catch (err) {
+            console.error('❌ Error leyendo directorio:', err);
         }
-    } catch (err) {
-        console.error('❌ Error leyendo directorio:', err);
+    } else {
+        console.log(`❌ La carpeta ${imagesPath} NO EXISTE.`);
+        return res.status(404).json({ error: 'Images directory not found' });
     }
 
     // ---------------------------------------------------------
-    // ESTRATEGIA DE BÚSQUEDA DE IMÁGENES
+    // ESTRATEGIA DE BÚSQUEDA (intenta con SKU completo y base)
     // ---------------------------------------------------------
+    const skusToTry = sku === baseSku ? [sku] : [sku, baseSku];
 
-    // 1. Búsqueda Exacta (Prioridad Alta)
-    // Busca archivos como: SKU-1.jpg, SKU.jpg
-    for (const pattern of [`${sku}-1`, sku]) {
+    for (const skuAttempt of skusToTry) {
+        // 1. Búsqueda Exacta
         for (const ext of extensions) {
-            const exactPath = path.join(imagesPath, `${pattern}${ext}`);
+            const exactPath = path.join(imagesPath, `${skuAttempt}-1${ext}`);
             if (fs.existsSync(exactPath)) {
                 return serveImage(res, exactPath, ext);
             }
+            const exactPathBase = path.join(imagesPath, `${skuAttempt}${ext}`);
+            if (fs.existsSync(exactPathBase)) {
+                return serveImage(res, exactPathBase, ext);
+            }
+        }
+
+        // 2. Búsqueda Fuzzy: encontrar cualquier archivo que empiece con skuAttempt
+        const candidates = findCandidates(allFiles, skuAttempt);
+        const best = pickBest(candidates);
+        if (best) {
+            const matchPath = path.join(imagesPath, best);
+            const ext = path.extname(best).toLowerCase();
+            return serveImage(res, matchPath, ext);
         }
     }
 
-    // 2. Búsqueda "Fuzzy" en directorio plano (Prioridad Media)
-    // Busca archivos que EMPIECEN con el SKU, útil para variaciones como:
-    // 7503023637008-S-1.webp, 7503023637008-V-1.webp
-    if (fs.existsSync(imagesPath) && fs.lstatSync(imagesPath).isDirectory()) {
-        try {
-            const allFiles = fs.readdirSync(imagesPath);
-
-            // Filtrar archivos que empiezan con el SKU
-            const candidates = allFiles.filter(file =>
-                file.startsWith(`${sku}-`) || file.startsWith(`${sku}.`)
-            );
-
-            if (candidates.length > 0) {
-                // Ordenar candidatos para preferir "-1" o los más cortos
-                // Ejemplo: Preferir SKU-1.jpg sobre SKU-10.jpg
-                candidates.sort((a, b) => {
-                    const aIsPrimary = a.includes('-1.');
-                    const bIsPrimary = b.includes('-1.');
-                    if (aIsPrimary && !bIsPrimary) return -1;
-                    if (!aIsPrimary && bIsPrimary) return 1;
-                    return a.length - b.length; // Preferir nombres más cortos
-                });
-
-                const bestMatch = candidates[0];
-                const matchPath = path.join(imagesPath, bestMatch);
-                const ext = path.extname(bestMatch).toLowerCase();
-                return serveImage(res, matchPath, ext);
+    // 3. Búsqueda en Subcarpeta (estructura de carpetas)
+    for (const skuAttempt of skusToTry) {
+        const skuFolderPath = path.join(imagesPath, skuAttempt);
+        if (fs.existsSync(skuFolderPath) && fs.lstatSync(skuFolderPath).isDirectory()) {
+            try {
+                const files = fs.readdirSync(skuFolderPath);
+                const validImage = files.find(file =>
+                    extensions.includes(path.extname(file).toLowerCase())
+                );
+                if (validImage) {
+                    const imagePath = path.join(skuFolderPath, validImage);
+                    const ext = path.extname(validImage).toLowerCase();
+                    return serveImage(res, imagePath, ext);
+                }
+            } catch (err) {
+                console.error('Error reading SKU folder:', err);
             }
-        } catch (err) {
-            console.error('Error scanning images directory:', err);
-        }
-    }
-
-    // 3. Búsqueda en Subcarpeta (Prioridad Baja - Estructura PCH nueva)
-    // Busca en /images/SKU/cualquier_cosa.jpg
-    const skuFolderPath = path.join(imagesPath, sku);
-    if (fs.existsSync(skuFolderPath) && fs.lstatSync(skuFolderPath).isDirectory()) {
-        try {
-            const files = fs.readdirSync(skuFolderPath);
-            const validImage = files.find(file => {
-                const ext = path.extname(file).toLowerCase();
-                return ['.webp', '.jpg', '.jpeg', '.png'].includes(ext);
-            });
-
-            if (validImage) {
-                const imagePath = path.join(skuFolderPath, validImage);
-                const ext = path.extname(validImage).toLowerCase();
-                return serveImage(res, imagePath, ext);
-            }
-        } catch (err) {
-            console.error('Error reading SKU folder:', err);
         }
     }
 
     // ---------------------------------------------------------
     // FALLBACK
     // ---------------------------------------------------------
-    console.log('❌ Image not found for SKU:', sku);
+    console.log('❌ Image not found for SKU:', sku, '| baseSku:', baseSku);
 
     const placeholderPath = path.join(process.cwd(), 'public', 'images', 'not-available.png');
-
     if (fs.existsSync(placeholderPath)) {
         const placeholderBuffer = fs.readFileSync(placeholderPath);
         res.setHeader('Content-Type', 'image/png');
@@ -113,7 +118,6 @@ export default async function handler(req, res) {
     return res.status(404).json({ error: 'Image not found', sku });
 }
 
-// Helper para servir la imagen con los headers correctos
 function serveImage(res, filePath, ext) {
     try {
         const imageBuffer = fs.readFileSync(filePath);
@@ -123,10 +127,6 @@ function serveImage(res, filePath, ext) {
             '.jpeg': 'image/jpeg',
             '.png': 'image/png',
             '.webp': 'image/webp',
-            '.JPG': 'image/jpeg',
-            '.JPEG': 'image/jpeg',
-            '.PNG': 'image/png',
-            '.WEBP': 'image/webp',
         }[ext] || 'image/jpeg';
 
         console.log('✅ Serving:', filePath);
