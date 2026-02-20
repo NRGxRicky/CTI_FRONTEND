@@ -26,12 +26,17 @@ const FetchGetDetailProduct = async (slug) => {
 		}
 
 		// Adaptar el producto al formato esperado por la página de detalle
+		const imageUrl = producto.sku ? `/api/images/${producto.sku}` : null;
 		const item = {
 			...producto,
 			id: producto.sku,
 			slug: producto.sku,
+			// Imagen del producto (mismo patrón que el proxy de listado)
+			imagen1s: imageUrl,
+			imagen_principal: imageUrl,
+			portada: imageUrl,
 			// Campos adicionales que podrían faltar
-			stock_total: producto.inventario?.reduce((sum, inv) => sum + (inv.cantidad || 0), 0) || 0,
+			stock_total: producto.stock || producto.inventario?.reduce((sum, inv) => sum + (inv.cantidad || 0), 0) || 0,
 			compatibleProductos: [],
 			breadcrumblist: [],
 			parent__slug: producto.seccion?.toLowerCase() || 'index',
