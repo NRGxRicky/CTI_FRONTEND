@@ -67,34 +67,66 @@ async function ensureMasterData(apiUrl, customer, key) {
             const catalogProducts = catalogResponse?.data?.productos || [];
 
             // Build stock map (sumar todos los almacenes por SKU)
+            // y stockPueblaMap con el primer almacén (almacén principal / Puebla)
             const stockMap = new Map();
-            const stockItems = stockResponse?.data?.productos?.flat() || [];
-            stockItems.forEach(item => {
-                if (item.sku) {
-                    const current = stockMap.get(item.sku) || 0;
-                    stockMap.set(item.sku, current + (item.cantidad || item.stock || 0));
-                }
+            const stockPueblaMap = new Map();
+            const rawStockData = stockResponse?.data?.productos || [];
+
+            // rawStockData puede ser array de arrays (por almacén) o array plano
+            const stockByWarehouse = Array.isArray(rawStockData[0]) ? rawStockData : [rawStockData];
+
+            stockByWarehouse.forEach((warehouseItems, warehouseIndex) => {
+                warehouseItems.forEach(item => {
+                    if (item.sku) {
+                        const qty = item.cantidad || item.stock || 0;
+                        // Stock total: suma de todos los almacenes
+                        const current = stockMap.get(item.sku) || 0;
+                        stockMap.set(item.sku, current + qty);
+                        // Stock Puebla: primer almacén (índice 0 = almacén principal)
+                        if (warehouseIndex === 0) {
+                            stockPueblaMap.set(item.sku, qty);
+                        }
+                    }
+                });
             });
 
-            // Build price map (precio más bajo por almacén - precios ya en MXN)
+            // Tasa de cambio USD→MXN (configurable via env var USD_TO_MXN_RATE en .env.local)
+            const USD_TO_MXN = parseFloat(process.env.USD_TO_MXN_RATE || '20.5');
+
+            // Build price map
+            // IMPORTANTE: PCH devuelve precios en USD o MXN según campo `moneda`.
+            // Precio centinela 999999 = almacén sin precio disponible → ignorar.
+            const SENTINEL_PRICE = 999000; // precio >= 999000 significa "sin precio"
             const priceMap = new Map();
             if (priceResponse?.data?.productos) {
                 priceResponse.data.productos.forEach(item => {
-                    if (item.sku && item.precios && Array.isArray(item.precios) && item.precios.length > 0) {
-                        const lowest = item.precios.reduce((min, cur) =>
-                            (cur.precio || Infinity) < (min.precio || Infinity) ? cur : min
-                            , item.precios[0]);
-                        priceMap.set(item.sku, {
-                            precio: lowest.precio || 0,
-                            promo: lowest.promo || false,
-                        });
-                    }
+                    if (!item.sku || !Array.isArray(item.precios)) return;
+
+                    // Filtrar precios centinela primero
+                    const validPrices = item.precios.filter(p => (p.precio || 0) < SENTINEL_PRICE && (p.precio || 0) > 0);
+                    if (validPrices.length === 0) return; // Sin precios válidos → omitir
+
+                    // Tomar el precio más bajo entre los válidos
+                    const best = validPrices.reduce((min, cur) =>
+                        cur.precio < min.precio ? cur : min
+                        , validPrices[0]);
+
+                    // Convertir a MXN si el precio viene en USD
+                    const isUSD = (item.moneda || '').toUpperCase() === 'USD';
+                    const precioMXN = isUSD ? best.precio * USD_TO_MXN : best.precio;
+
+                    priceMap.set(item.sku, {
+                        precio: Math.round(precioMXN * 100) / 100, // redondear a 2 decimales
+                        promo: best.promo || false,
+                        moneda_original: item.moneda || 'MXN',
+                        precio_original: best.precio,
+                    });
                 });
             }
 
             console.log(`✅ Master data ready: ${catalogProducts.length} products, ${stockMap.size} stock, ${priceMap.size} prices`);
 
-            masterData = { catalogProducts, stockMap, priceMap };
+            masterData = { catalogProducts, stockMap, stockPueblaMap, priceMap };
             masterDataTimestamp = Date.now();
             return masterData;
         } catch (err) {
@@ -192,9 +224,10 @@ function filterByBrand(products, marca) {
 // TRANSFORMAR PRODUCTO PARA EL FRONTEND
 // ============================================
 
-function transformProduct(producto, stockMap, priceMap) {
+function transformProduct(producto, stockMap, stockPueblaMap, priceMap) {
     const sku = producto.sku;
     const stock = stockMap.get(sku) || 0;
+    const stockPuebla = stockPueblaMap.get(sku) || 0;
     const priceData = priceMap.get(sku) || { precio: 0, promo: false };
 
     // Precios de PCH ya vienen en MXN, NO convertir
@@ -205,6 +238,7 @@ function transformProduct(producto, stockMap, priceMap) {
         slug: producto.sku,
         stock: stock,
         stock_total: stock,
+        stock_puebla: stockPuebla,   // ← Stock del almacén principal (Puebla)
         precio_contado: priceData.precio || 0,
         precio_final: priceData.precio || 0,
         precio_final_descuento: priceData.promo ? (priceData.precio * 0.9) : 0,
@@ -245,29 +279,54 @@ export default async function handler(req, res) {
 
     console.log(`🚀 Request: ${apiPath}`, queryParams);
 
+    // Guard: si es búsqueda por SKU, validarlo antes de cargar master data.
+    // SKUs de PCH son alfanuméricos con guiones, puntos y letras al final (ej: "920-011902", "4711085941107-A").
+    // Rechazar inmediatamente archivos estáticos o rutas inválidas.
+    if (queryParams.sku) {
+        const skuRaw = queryParams.sku.trim();
+        const INVALID_SKU = /\.(ico|png|jpg|jpeg|gif|svg|webp|css|js|map|txt|xml|json|woff|woff2|ttf|eot)$/i;
+        if (INVALID_SKU.test(skuRaw) || skuRaw.length < 2 || skuRaw.length > 100) {
+            return res.status(400).json({ error: 'SKU inválido', sku: skuRaw });
+        }
+    }
+
     try {
         // 2. Obtener datos master (cache compartido, solo 1 fetch)
-        const { catalogProducts, stockMap, priceMap } = await ensureMasterData(apiUrl, customer, key);
+        const { catalogProducts, stockMap, stockPueblaMap, priceMap } = await ensureMasterData(apiUrl, customer, key);
 
         // 3. Aplicar filtros de categoría y marca
         const categoria = queryParams.categoria;
         const marca = queryParams.marca;
+        const filterAvailable = queryParams.filter_available === 'true';
+        const filterAvailableStore = queryParams.filter_available_store === 'true';
 
         let filteredProducts = catalogProducts;
         filteredProducts = filterByCategory(filteredProducts, categoria);
         filteredProducts = filterByBrand(filteredProducts, marca);
 
+        // Filtrar por disponibilidad si se solicita
+        if (filterAvailable) {
+            filteredProducts = filteredProducts.filter(p => (stockMap.get(p.sku) || 0) > 0);
+        }
+        // Filtrar por stock en tienda (Puebla)
+        if (filterAvailableStore) {
+            filteredProducts = filteredProducts.filter(p => (stockPueblaMap.get(p.sku) || 0) > 0);
+        }
+
         // ============================================
         // CASO: FILTROS (filters/listado/available)
         // ============================================
-        if (apiPath.includes('filters')) {
+        if (apiPath.includes('filters') && !queryParams.sku) {
             const brandsObj = {};
             const categoriesMap = new Map();
             let availableCount = 0;
+            let availableStoreCount = 0;
 
             filteredProducts.forEach(product => {
                 const stock = stockMap.get(product.sku) || 0;
+                const stockP = stockPueblaMap.get(product.sku) || 0;
                 if (stock > 0) availableCount++;
+                if (stockP > 0) availableStoreCount++;
 
                 // Brands como objeto { "BRAND_NAME": { id, count } }
                 const m = product.marca;
@@ -295,7 +354,8 @@ export default async function handler(req, res) {
             const filtersData = {
                 count: filteredProducts.length,
                 available_count: availableCount,
-                available_store_count: 0,
+                available_store_count: availableStoreCount,
+
                 free_shipping_count: 0,
                 available_discount: 0,
                 brands: brandsObj,
@@ -372,20 +432,107 @@ export default async function handler(req, res) {
         }
 
         // ============================================
+        // CASO: BUSQUEDA POR SKU (detalle de producto)
+        // ============================================
+        if (queryParams.sku) {
+            const skuSearch = queryParams.sku.trim();
+            const productoEncontrado = catalogProducts.find(p => p.sku === skuSearch);
+
+            if (!productoEncontrado) {
+                console.log(`⚠️ SKU not found: ${skuSearch}`);
+                return res.status(404).json({ error: 'Producto no encontrado', sku: skuSearch });
+            }
+
+            const productoTransformado = transformProduct(productoEncontrado, stockMap, stockPueblaMap, priceMap);
+            console.log(`✅ SKU ${skuSearch}: stock=${productoTransformado.stock_total}`);
+            setResponseCache(cacheKey, { result: productoTransformado });
+            return res.status(200).json({ result: productoTransformado });
+        }
+
+        // ============================================
         // CASO DEFAULT: LISTADO DE PRODUCTOS
         // ============================================
-        const MAX_PRODUCTS = 100;
-        const productos = filteredProducts.slice(0, MAX_PRODUCTS).map(p =>
-            transformProduct(p, stockMap, priceMap)
+
+        // Filtrar por marcas adicionales (array brands=[])
+        const brandsFilter = queryParams.brands
+            ? (Array.isArray(queryParams.brands) ? queryParams.brands : [queryParams.brands])
+            : [];
+        if (brandsFilter.length > 0) {
+            filteredProducts = filteredProducts.filter(p =>
+                brandsFilter.some(b => (p.marca || '').toLowerCase() === b.toLowerCase())
+            );
+        }
+
+        // Filtrar por categorías adicionales (array categories=[])
+        const categoriesFilter = queryParams.categories
+            ? (Array.isArray(queryParams.categories) ? queryParams.categories : [queryParams.categories])
+            : [];
+        if (categoriesFilter.length > 0) {
+            filteredProducts = filteredProducts.filter(p =>
+                categoriesFilter.some(c => {
+                    const cat = (p.seccion || p.categoria || '').toLowerCase();
+                    return cat === c.toLowerCase() || cat.includes(c.toLowerCase());
+                })
+            );
+        }
+
+        // Búsqueda por texto (q)
+        const q = queryParams.q ? queryParams.q.trim().toLowerCase() : '';
+        if (q) {
+            filteredProducts = filteredProducts.filter(p => {
+                const desc = (p.descripcion || '').toLowerCase();
+                const skuL = (p.sku || '').toLowerCase();
+                const marcaL = (p.marca || '').toLowerCase();
+                const linea = (p.linea || '').toLowerCase();
+                const skuFab = (p.skuFabricante || '').toLowerCase();
+                return desc.includes(q) || skuL.includes(q) || marcaL.includes(q) || linea.includes(q) || skuFab.includes(q);
+            });
+        }
+
+        // Ordenamiento
+        const order = queryParams.order || '-visitas';
+        const orderField = order.startsWith('-') ? order.slice(1) : order;
+        const orderDesc = order.startsWith('-');
+
+        const fieldMap = {
+            'visitas': 'visitas',
+            'ventas': 'ventas',
+            'precio': 'precio_contado',
+            'stock_total': 'stock_total',
+            'created': 'created',
+        };
+
+        const sortField = fieldMap[orderField];
+        if (sortField) {
+            filteredProducts = [...filteredProducts].sort((a, b) => {
+                const aVal = a[sortField] ?? 0;
+                const bVal = b[sortField] ?? 0;
+                return orderDesc ? (bVal - aVal) : (aVal - bVal);
+            });
+        }
+
+        // Paginación
+        const pageSize = parseInt(queryParams.page_size) || 200;
+        const page = parseInt(queryParams.page) || 1;
+        const startIdx = (page - 1) * pageSize;
+        const endIdx = startIdx + pageSize;
+
+        const pagedProducts = filteredProducts.slice(startIdx, endIdx);
+        const productos = pagedProducts.map(p =>
+            transformProduct(p, stockMap, stockPueblaMap, priceMap)
         );
 
         const result = {
             results: productos,
-            count: productos.length,
-            total: filteredProducts.length,
+            count: filteredProducts.length,
+            total: catalogProducts.length,
+            page: page,
+            page_size: pageSize,
+            pages: Math.ceil(filteredProducts.length / pageSize),
             status: 'success',
-            message: `${productos.length} productos (de ${filteredProducts.length} filtrados, ${catalogProducts.length} total)`,
+            message: `${productos.length} productos (pág ${page}, de ${filteredProducts.length} filtrados, ${catalogProducts.length} total)`,
         };
+
 
         console.log(`✅ Listado: ${result.count} products (filtered from ${filteredProducts.length}, total ${catalogProducts.length})`);
         setResponseCache(cacheKey, result);

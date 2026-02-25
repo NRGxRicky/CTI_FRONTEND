@@ -490,7 +490,7 @@ const CarouselProductsV2 = ({
 			</div>
 		);
 	} else {
-		<div></div>;
+		return null;
 	}
 };
 

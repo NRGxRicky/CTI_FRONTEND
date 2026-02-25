@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+﻿import React, { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import useEmblaCarousel from 'embla-carousel-react';
 import Link from 'next/link';
@@ -108,8 +108,9 @@ const CarouselProductsRelated = ({
 		data
 			.filter((p) => p.stock_total > 0)
 			.map((producto) => {
-				if (!temp_dict.includes(producto.categoria.name)) {
-					temp_dict.push(producto.categoria.name);
+				const cat = typeof producto.categoria === 'string' ? producto.categoria : (producto.categoria?.name || '');
+				if (cat && !temp_dict.includes(cat)) {
+					temp_dict.push(cat);
 				}
 			});
 		setSortData(temp_dict);
@@ -142,7 +143,7 @@ const CarouselProductsRelated = ({
 						{data
 							.filter(
 								(p) =>
-									(p.categoria.name === currentShow ||
+									((typeof p.categoria === 'string' ? p.categoria : (p.categoria?.name || '')) === currentShow ||
 										currentShow === 'Todos') &&
 									p.stock_total > 0
 							)

@@ -24,6 +24,24 @@ import { trackMetaViewContent } from '../utils/metaAnalytics';
 
 export const getServerSideProps = async (context) => {
 	const { productId } = context.query;
+
+	// Guard: rechazar rutas que no son productos para evitar llamadas innecesarias a la API PCH.
+	// Estos archivos los sirve Next.js directamente y nunca deben llegar aquí.
+	const NON_PRODUCT_PATTERNS = [
+		/\.(ico|png|jpg|jpeg|gif|svg|webp|css|js|map|txt|xml|json|woff|woff2|ttf|eot)$/i,
+		/^favicon/i,
+		/^robots/i,
+		/^sitemap/i,
+		/^manifest/i,
+		/^apple-touch/i,
+		/^_next/i,
+		/^api\//i,
+	];
+
+	if (!productId || NON_PRODUCT_PATTERNS.some(pattern => pattern.test(productId))) {
+		return { notFound: true };
+	}
+
 	const data = await FetchGetDetailProduct(productId);
 
 	return {

@@ -1,15 +1,16 @@
 const FetchGetDetailProduct = async (slug) => {
 	try {
-		// La nueva API no tiene endpoint de detalle individual
-		// Necesitamos buscar el producto en el listado completo por SKU
+		// Buscamos el producto directamente por SKU usando el endpoint optimizado del proxy.
+		// Este endpoint busca en el catálogo COMPLETO (sin límite) y devuelve el stock
+		// correcto calculado desde stockMap (extcust/getprodstock, suma de todos los almacenes).
 
 		const isServer = typeof window === 'undefined';
 		const baseUrl = isServer
 			? 'http://localhost:3000'
 			: '';
 
-		// Obtener todos los productos del proxy
-		const response = await fetch(`${baseUrl}/api/proxy/section?type=-created&marca=all&categoria=index&q=`);
+		// Endpoint de detalle por SKU — busca en todo el catálogo, no solo los primeros N
+		const response = await fetch(`${baseUrl}/api/proxy/section?sku=${encodeURIComponent(slug)}`);
 
 		if (!response.ok) {
 			throw new Error(`API error: ${response.status}`);
@@ -17,15 +18,16 @@ const FetchGetDetailProduct = async (slug) => {
 
 		const data = await response.json();
 
-		// Buscar el producto por SKU (el slug es el SKU)
-		const producto = data.results?.find(p => p.sku === slug);
+		// El endpoint retorna { result: producto } cuando se busca por SKU
+		const producto = data.result;
 
 		if (!producto) {
 			console.log(`Product not found: ${slug}`);
 			return { item: null };
 		}
 
-		// Adaptar el producto al formato esperado por la página de detalle
+		// El producto ya viene con stock_total, precio_contado, precio_final
+		// correctamente calculados por transformProduct() en el proxy.
 		const imageUrl = producto.sku ? `/api/images/${producto.sku}` : null;
 		const item = {
 			...producto,
@@ -38,8 +40,9 @@ const FetchGetDetailProduct = async (slug) => {
 			imagen1l: imageUrl,
 			imagen_principal: imageUrl,
 			portada: imageUrl,
-			// Campos adicionales que podrían faltar
-			stock_total: producto.stock || producto.inventario?.reduce((sum, inv) => sum + (inv.cantidad || 0), 0) || 0,
+			// stock_total ya viene correcto del proxy (suma de todos los almacenes)
+			// via transformProduct() → stockMap.get(sku)
+			stock_total: producto.stock_total ?? producto.stock ?? 0,
 			compatibleProductos: [],
 			breadcrumblist: [],
 			parent__slug: producto.seccion?.toLowerCase() || 'index',
