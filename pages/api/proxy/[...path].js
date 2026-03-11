@@ -450,6 +450,62 @@ export default async function handler(req, res) {
         }
 
         // ============================================
+        // CASO: CARRITO (cart) - usuarios no autenticados
+        // ============================================
+        if (apiPath === 'cart' || apiPath === 'cart/') {
+            let bodyCart = [];
+            try {
+                if (req.body && req.body.cart) {
+                    bodyCart = req.body.cart;
+                }
+            } catch (_) {}
+
+            // Calcular costo de envío base
+            const SHIPPING_FREE_THRESHOLD = 999999; // sin umbral por defecto
+            let shippingCost = 129;
+
+            // Para cada item del carrito local, buscar el producto en el catálogo
+            const cartItems = [];
+            for (const localItem of bodyCart) {
+                // El item local puede tener product.id, product.sku, o id directo
+                const productData = localItem.product || localItem;
+                const sku = productData.sku || productData.id || productData.slug;
+
+                if (!sku) continue;
+
+                // Buscar en catálogo por SKU
+                const found = catalogProducts.find(p => p.sku === String(sku));
+                if (!found) continue;
+
+                const transformed = transformProduct(found, stockMap, stockPueblaMap, priceMap);
+                const quantity = Math.min(
+                    parseInt(localItem.quantity) || 1,
+                    transformed.stock_total || 1
+                );
+
+                cartItems.push({
+                    id: localItem.id || transformed.sku,
+                    product: transformed,
+                    quantity,
+                    quote_id: localItem.quote_id || null,
+                    unit_price: localItem.unit_price || null,
+                });
+            }
+
+            const cartResult = {
+                cart_items: cartItems,
+                shipping_cost: shippingCost,
+                total: cartItems.reduce((acc, item) => {
+                    const price = parseFloat(item.product.precio_contado) || 0;
+                    return acc + price * item.quantity;
+                }, 0),
+            };
+
+            console.log(`✅ Cart: ${cartItems.length} items processed`);
+            return res.status(200).json(cartResult);
+        }
+
+        // ============================================
         // CASO DEFAULT: LISTADO DE PRODUCTOS
         // ============================================
 
