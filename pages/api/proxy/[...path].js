@@ -270,6 +270,55 @@ export default async function handler(req, res) {
     const customer = process.env.API_CUSTOMER || process.env.NEXT_PUBLIC_API_CUSTOMER || '18619';
     const key = 'C25tg7145$uR';
 
+    // ============================================
+    // CASO ESPECIAL: CARRITO — antes del cache,
+    // sin cachear (cada carrito es único por usuario)
+    // ============================================
+    if (apiPath === 'cart' || apiPath === 'cart/') {
+        try {
+            const { catalogProducts, stockMap, stockPueblaMap, priceMap } = await ensureMasterData(apiUrl, customer, key);
+
+            let bodyCart = [];
+            if (req.body && Array.isArray(req.body.cart)) {
+                bodyCart = req.body.cart;
+            }
+
+            const cartItems = [];
+            for (const localItem of bodyCart) {
+                const productData = localItem.product || localItem;
+                const sku = productData.sku || productData.id || productData.slug;
+                if (!sku) continue;
+
+                const found = catalogProducts.find(p => p.sku === String(sku));
+                if (!found) continue;
+
+                const transformed = transformProduct(found, stockMap, stockPueblaMap, priceMap);
+                const quantity = Math.min(
+                    parseInt(localItem.quantity) || 1,
+                    transformed.stock_total || 1
+                );
+
+                cartItems.push({
+                    id: localItem.id || transformed.sku,
+                    product: transformed,
+                    quantity,
+                    quote_id: localItem.quote_id || null,
+                    unit_price: localItem.unit_price || null,
+                });
+            }
+
+            console.log(`✅ Cart: ${cartItems.length} items processed`);
+            return res.status(200).json({
+                cart_items: cartItems,
+                shipping_cost: 129,
+                total: cartItems.reduce((acc, item) => acc + (parseFloat(item.product.precio_contado) || 0) * item.quantity, 0),
+            });
+        } catch (err) {
+            console.error('❌ Error en handler de cart:', err.message);
+            return res.status(200).json({ cart_items: [], shipping_cost: 129, total: 0 });
+        }
+    }
+
     // 1. Verificar cache de respuesta primero
     const cacheKey = `${apiPath}:${JSON.stringify(queryParams)}`;
     const cached = getResponseCache(cacheKey);
@@ -280,8 +329,6 @@ export default async function handler(req, res) {
     console.log(`🚀 Request: ${apiPath}`, queryParams);
 
     // Guard: si es búsqueda por SKU, validarlo antes de cargar master data.
-    // SKUs de PCH son alfanuméricos con guiones, puntos y letras al final (ej: "920-011902", "4711085941107-A").
-    // Rechazar inmediatamente archivos estáticos o rutas inválidas.
     if (queryParams.sku) {
         const skuRaw = queryParams.sku.trim();
         const INVALID_SKU = /\.(ico|png|jpg|jpeg|gif|svg|webp|css|js|map|txt|xml|json|woff|woff2|ttf|eot)$/i;
