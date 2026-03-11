@@ -32,23 +32,37 @@ export const CartProvider = ({ children }) => {
 	// Funcion revision carrito local con backend
 	const localcheckBackend = async (cartLocal = cart) => {
 		setLoading(true);
-		if (cartLocal.length > 0) {
-			const response = await fetch(buildUrl('/cart/'), {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					cart: cartLocal,
-				}),
-			});
-			if (response.ok) {
-				const backendCart = await response.json();
-				setCart(backendCart.cart_items);
-				setShipping(backendCart.shipping_cost);
+		try {
+			if (cartLocal.length > 0) {
+				const response = await fetch(buildUrl('/cart/'), {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						cart: cartLocal,
+					}),
+				});
+				if (response.ok) {
+					const backendCart = await response.json();
+					// Validar que el servidor devolvió el formato correcto
+					if (Array.isArray(backendCart.cart_items)) {
+						setCart(backendCart.cart_items);
+						setShipping(backendCart.shipping_cost ?? 129);
+					} else {
+						// Respuesta inesperada: mantener carrito local sin cambios
+						console.warn('Respuesta de /cart inesperada, manteniendo carrito local:', backendCart);
+						setCart(cartLocal);
+					}
+				}
 			}
+		} catch (err) {
+			console.error('Error en localcheckBackend:', err);
+			// Mantener el carrito local en caso de error de red
+			setCart(cartLocal);
+		} finally {
+			setLoading(false);
 		}
-		setLoading(false);
 	};
 
 	// Sincronizar carrito local con backend cuando el usuario se autentica
