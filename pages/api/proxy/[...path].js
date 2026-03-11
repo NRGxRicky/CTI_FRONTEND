@@ -244,6 +244,10 @@ function transformProduct(producto, stockMap, stockPueblaMap, priceMap) {
         precio_final_descuento: priceData.promo ? (priceData.precio * 0.9) : 0,
         promo: priceData.promo,
         imagen1s: producto.sku ? `/api/images/${producto.sku}` : null,
+        imagen1xs: producto.sku ? `/api/images/${producto.sku}` : null,
+        imagen2s: null,
+        imagen3s: null,
+        imagen4s: null,
     };
 }
 
