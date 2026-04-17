@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ===================================
+// MODELO INGRAM MICRO (CATÁLOGO ÚNICO)
+// ===================================
+
+model Product {
+  id           Int      @id @default(autoincrement())
+  
+  ingramSku    String   @unique // El SKU universal que usarás de Ingram
+  mpn          String?  // SKU del Fabricante
+  upc          String?  // Código de Barras
+  
+  title        String
+  description  String?  @db.Text
+  brand        String?
+  category     String?
+  imageUrl     String?
+
+  // Datos Financieros y Operativos (Directos de Ingram)
+  price        Float    @default(0.0) // Precio MXN directo de Ingram
+  stock        Int      @default(0)   // Stock global o de Bodega Central
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
