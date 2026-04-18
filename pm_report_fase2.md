@@ -34,6 +34,14 @@ La plataforma ha sido reconstruida y promovida a un sistema **100% Full-Stack**,
 ### E. Integración y Automatización DevOps (Nixpacks & Coolify CI/CD)
 *   **Reestructuración de Build Steps:** Modificación quirúrgica del `Dockerfile` base y `package.json` mediante Lifecycle Hooks (`postinstall`) garantizando que los contenedores Linux de nube armen en tiempo real los clientes de base de datos para la ingesta masiva de usuarios en entornos estrictos.
 
+### F. Resolución Analítica de Reglas de Negocio y Bugs Repentinos
+*   **Fuga de Sesión en Carrito de Compras (Cart Drop-off):**
+    *   **Identificación:** El proceso de "Añadir al Carrito" sufría una alteración crítica donde la interfaz gráfica borraba los artículos inmediatamente después de sumarlos. La causa raíz fue un efecto secundario provocado por el protocolo del antiguo servidor monolítico que engañaba al Front-End.
+    *   **Solución Técnica:** Se reprogramó un algoritmo de intercepción (*Proxy Resolver*) en la capa media de Next.js. El flujo de compra ahora valida y afirma en tiempo real el Payload de React. La aplicación retiene visual y lógicamente el carrito sin perder conversiones potenciales por fuga de sesión.
+*   **Tarificador Logístico Dinámico ("Recíbelo por $undefined"):**
+    *   **Identificación:** Tras la transición hacia Ingram Micro, las métricas de paquetería ajenas (`costo_envio`) desaparecieron de la búsqueda, provocando que el Frontend mostrara variables tipo "$undefined" y deteriorando la confianza en la Ficha de Producto B2B.
+    *   **Solución Técnica:** Se construyó un *Motor de Reglas de Negocio* acoplado al Edge Router de la página. Ahora, el sistema inyecta algorítmicamente un "flat rate" (Tarifa Plana) de $150.00 MXN al instante. Además, se configuró para aplicar matemáticamente un subsidio de **"Envío Gratis"** sí y solo sí el ticket en pantalla iguala o excede los $5,000 MXN.
+
 ---
 
 ## 3. IDENTIFICACIÓN Y RESOLUCIÓN DE BLOQUEOS (Blockers)
