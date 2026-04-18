@@ -1,100 +1,137 @@
 // scripts/sync-ingram.js
-// Robot Sincronizador de Ingram Micro -> PostgreSQL
+// 🤖 Robot Sincronizador de Ingram Micro PRODUCCIÓN -> PostgreSQL (Coolify)
 
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { PrismaClient } from '@prisma/client';
+import { createRequire } from 'module';
 import { IngramAdapter } from '../services/wholesalers/IngramAdapter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Cargar .env primero (DATABASE_URL), luego .env.local (Ingram keys)
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 
-const prisma = new PrismaClient();
+// Prisma v7 requiere adapter explícito
+const require = createRequire(import.meta.url);
+const pg = require('pg');
+const { PrismaPg } = require('@prisma/adapter-pg');
+const { PrismaClient } = require('@prisma/client');
+
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
+
+const PAGE_SIZE = 50; // Máximo permitido por Ingram
 
 async function runSync() {
-    console.log('🤖 Iniciando Robot Sincronizador CTI <-> Ingram Micro');
-    
+    console.log('🤖 ============================================');
+    console.log('   ROBOT SINCRONIZADOR CTI <-> INGRAM MICRO');
+    console.log('   Ambiente: PRODUCCIÓN');
+    console.log('============================================\n');
+
+    let totalProcessed = 0;
+    let totalSkipped = 0;
+    let page = 1;
+    let hasMore = true;
+
     try {
-        const token = await IngramAdapter.getAccessToken();
-        console.log(`🔐 Autenticación Exitosa (Token OK)`);
+        // Validar conexión a DB primero
+        await prisma.$connect();
+        console.log('✅ Conexión a Base de Datos PostgreSQL exitosa\n');
 
-        // Solicitaríamos la página 1 del catálogo (en producción iteraríamos hasta páginas vacías)
-        console.log(`📡 Descargando página 1 del catálogo de Ingram...`);
-        const catalogData = await IngramAdapter.fetchCatalog(1, 100);
+        // Obtener token una vez
+        await IngramAdapter.getAccessToken();
+        console.log('✅ Token de Producción de Ingram obtenido\n');
 
-        // Si catalogData tiene items, los guardamos en Prisma
-        const items = catalogData.catalog || catalogData.products || catalogData;
-        
-        if (!Array.isArray(items)) {
-            console.log('⚠️ Formato de catálogo inesperado o vacío.');
-            console.log(catalogData);
-            return;
-        }
+        while (hasMore) {
+            console.log(`📦 Descargando página ${page} (${PAGE_SIZE} productos por batch)...`);
 
-        console.log(`📥 Se descargaron ${items.length} productos. Guardando en Base de Datos PostgreSQL...`);
-
-        let inserted = 0;
-        let updated = 0;
-
-        for (const item of items) {
-            // Mapeo defensivo de Ingram a nuestro Prisma Model
-            // Nota: Este mapeo debe ajustarse a los campos exactos de Ingram v6 
-            // cuando la API comience a devolver datos exitosos.
-            const ingramSku = item.ingramPartNumber || item.ingramSku || item.sku;
-            if (!ingramSku) continue;
-
-            const productData = {
-                ingramSku: String(ingramSku),
-                mpn: item.vendorPartNumber || '',
-                title: item.description || item.title || 'Sin Título',
-                brand: item.vendorName || item.brand || 'Desconocida',
-                category: item.category || 'Varios',
-                price: parseFloat(item.customerPrice || item.price) || 0.0,
-                stock: parseInt(item.totalAvailability || item.stock, 10) || 0,
-            };
-
-            // Prisma UPSERT: Si existe lo actualiza (ideal para precios nuevos), si no, lo crea.
             try {
-                const result = await prisma.product.upsert({
-                    where: { ingramSku: productData.ingramSku },
-                    update: {
-                        price: productData.price,
-                        stock: productData.stock
-                    },
-                    create: { ...productData }
-                });
+                const catalogData = await IngramAdapter.fetchCatalog(page, PAGE_SIZE);
+                const items = catalogData.catalog || [];
 
-                if (result.createdAt.getTime() === result.updatedAt.getTime()) {
-                    inserted++;
-                } else {
-                    updated++;
+                if (items.length === 0) {
+                    console.log('📭 Página vacía. Fin del catálogo.');
+                    hasMore = false;
+                    break;
                 }
 
-            } catch (dbError) {
-                console.error(`❌ Error guardando SKU ${ingramSku}:`, dbError.message);
+                // Procesar cada producto de la página
+                for (const item of items) {
+                    const ingramSku = item.ingramPartNumber;
+                    if (!ingramSku) {
+                        totalSkipped++;
+                        continue;
+                    }
+
+                    const productData = {
+                        ingramSku: String(ingramSku),
+                        mpn: item.vendorPartNumber || null,
+                        upc: item.upcCode || null,
+                        title: item.description || 'Sin Titulo',
+                        brand: item.vendorName || null,
+                        category: item.category || null,
+                        price: 0.0,
+                        stock: 0,
+                    };
+
+                    try {
+                        await prisma.product.upsert({
+                            where: { ingramSku: productData.ingramSku },
+                            update: {
+                                mpn: productData.mpn,
+                                upc: productData.upc,
+                                title: productData.title,
+                                brand: productData.brand,
+                                category: productData.category,
+                            },
+                            create: productData,
+                        });
+                        totalProcessed++;
+                    } catch (dbError) {
+                        console.error(`  ⚠️ Error en SKU ${ingramSku}: ${dbError.message}`);
+                        totalSkipped++;
+                    }
+                }
+
+                console.log(`  ✅ Página ${page} procesada (${items.length} productos) | Total: ${totalProcessed}`);
+
+                if (items.length < PAGE_SIZE) {
+                    hasMore = false;
+                } else {
+                    page++;
+                }
+
+                // Pausa de 500ms entre páginas para no saturar a Ingram
+                await new Promise(r => setTimeout(r, 500));
+
+            } catch (pageError) {
+                console.error(`  ❌ Error en página ${page}: ${pageError.message}`);
+                if (pageError.message.includes('429')) {
+                    console.log('  ⏳ Rate limit. Esperando 10 segundos...');
+                    await new Promise(r => setTimeout(r, 10000));
+                } else {
+                    hasMore = false;
+                }
             }
         }
 
-        console.log(`✅ Sincronización Completada:`);
-        console.log(`   🔸 Creados: ${inserted}`);
-        console.log(`   🔹 Actualizados: ${updated}`);
+        console.log('\n🏁 ============================================');
+        console.log('   SINCRONIZACIÓN COMPLETADA');
+        console.log('============================================');
+        console.log(`   📥 Productos guardados/actualizados: ${totalProcessed}`);
+        console.log(`   ⏭️  Productos saltados: ${totalSkipped}`);
+        console.log(`   📄 Páginas procesadas: ${page}`);
+        console.log('============================================\n');
 
     } catch (error) {
-        if (error.message.includes('NoApiProductMatchFound')) {
-            console.error('\n======================================================');
-            console.error('⏳ APROBACIÓN PENDIENTE DE INGRAM MICRO (ESPERADO)');
-            console.error('El Robot se conectó exitosamente a Ingram, pero la cuenta');
-            console.error('aún no ha sido aprobada manualmente por tu ejecutivo.');
-            console.error('(Normalmente tarda hasta 48 horas como dijo la página).');
-            console.error('======================================================\n');
-        } else {
-            console.error('\n❌ ERROR CRÍTICO DURANTE LA SINCRONIZACIÓN:');
-            console.error(error.message);
-        }
+        console.error('\n❌ ERROR CRÍTICO:', error.message);
     } finally {
         await prisma.$disconnect();
+        await pool.end();
     }
 }
 

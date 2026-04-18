@@ -31,7 +31,7 @@ const PoliticaDePrivacidad = () => {
 		'@type': 'Organization',
 		name: storeName,
 		legalName,
-		url: pageUrl ? new URL(pageUrl).origin : '',
+		url: pageUrl && pageUrl.startsWith('http') ? new URL(pageUrl).origin : '',
 		contactPoint: [
 			{
 				'@type': 'ContactPoint',

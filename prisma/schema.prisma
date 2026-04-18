@@ -29,4 +29,102 @@ model Product {
   
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  // Relaciones Inversas
+  cartItems    Cart[]
+  orderItems   OrderItem[]
 }
+
+// ===================================
+// USUARIOS Y AUTENTICACIÓN
+// ===================================
+
+model User {
+  id             Int      @id @default(autoincrement())
+  email          String   @unique
+  password       String   // bcrypt hash
+  nombres        String?
+  apellidos      String?
+  telefono       String?
+  rfc            String?
+  
+  // Preferencias
+  cart_msi       Boolean  @default(false)
+  is_verified    Boolean  @default(true)
+
+  // Relaciones
+  orders         Order[]
+  cartItems      Cart[]
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ===================================
+// CARRITO DE COMPRAS
+// ===================================
+
+model Cart {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  quantity   Int      @default(1)
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, productId])
+}
+
+// ===================================
+// ÓRDENES Y PAGOS (CHECKOUT)
+// ===================================
+
+model Order {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  user           User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  
+  // Totales
+  subtotal       Float        @default(0.0)
+  shipping       Float        @default(150.0)
+  total          Float        @default(0.0)
+  
+  // Estado
+  status         OrderStatus  @default(PENDING)
+  paymentId      String?      // ID de MercadoPago, PayPal, etc.
+  paymentMethod  String?      // 'mercadopago', 'paypal', etc.
+  
+  // Datos Ingram
+  ingramOrderId  String?      // OrderNumber regresado por Ingram
+  
+  items          OrderItem[]
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  
+  quantity   Int      @default(1)
+  price      Float    // Precio congelado al momento de la compra
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  INGRAM_SYNCED
+  SHIPPED
+  CANCELLED
+}
+

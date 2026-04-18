@@ -190,7 +190,10 @@ const ProfileAddressesSection = () => {
 		}
 	};
 
-	const activeInvoice = profile.PccomputoUsuarioDatosFacturacion.find(
+	const safeDomicilios = Array.isArray(profile?.domicilios) ? profile.domicilios : [];
+	const safeBilling = Array.isArray(profile?.PccomputoUsuarioDatosFacturacion) ? profile.PccomputoUsuarioDatosFacturacion : [];
+
+	const activeInvoice = safeBilling.find(
 		(d) => d.active
 	);
 
@@ -227,7 +230,7 @@ const ProfileAddressesSection = () => {
 					</div>
 					{(expandAddresses || !mobileView) && (
 						<div className='section-content'>
-							{profile.domicilios.length === 0 && (
+							{safeDomicilios.length === 0 && (
 								<div className='warning-box'>
 									<div className='warning-content'>
 										<span className='warning-icon'>!</span>
@@ -250,9 +253,9 @@ const ProfileAddressesSection = () => {
 								/>
 							)}
 							<ProfileAllAddress
-								domicilios={profile.domicilios}
+								domicilios={safeDomicilios}
 								activeAddressId={
-									profile.domicilios.find((d) => d.active)?.id || 0
+									safeDomicilios.find((d) => d.active)?.id || 0
 								}
 								onSelectAddress={handleSelectAddress}
 								onEditAddress={handleEditAddress}
@@ -286,7 +289,7 @@ const ProfileAddressesSection = () => {
 					</div>
 					{(expandInvoices || !mobileView) && (
 						<div className='section-content'>
-							{profile.PccomputoUsuarioDatosFacturacion.length === 0 && (
+							{safeBilling.length === 0 && (
 								<div className='warning-box'>
 									<div className='warning-content'>
 										<span className='warning-icon'>!</span>
@@ -310,7 +313,7 @@ const ProfileAddressesSection = () => {
 								/>
 							)}
 							<ProfileAllInvoice
-								rfcs={profile.PccomputoUsuarioDatosFacturacion}
+								rfcs={safeBilling}
 								activeinvoiceId={activeInvoice ? activeInvoice.id : 0}
 								onSelectinvoice={handleSelectInvoice}
 								onEditinvoice={handleEditInvoice}

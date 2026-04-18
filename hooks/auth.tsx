@@ -10,9 +10,12 @@ import React, {
 } from 'react';
 import { useCookies } from 'react-cookie';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.pccdnapi.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
-const makeUrl = (endpoint: string): string => `${API_URL}${endpoint}`;
+const makeUrl = (endpoint: string): string => {
+	const normalized = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+	return `/api/proxy${normalized}`;
+};
 
 const fetchToken = async (
 	username: string,

@@ -42,8 +42,11 @@ function UserOrdersList() {
 	const [showModal, setShowModal] = useState(false);
 	const [modalOrder, setModalOrder] = useState(null);
 
-	// Mapear ID de método de pago a su info
-	const selectedPayment = (paymentMethod) => getPaymentOption(paymentMethod);
+	// Mapear ID de método de pago a su info con fallback de seguridad
+	const selectedPayment = (paymentMethod) => getPaymentOption(paymentMethod) || {
+		title: paymentMethod || 'Método Desconocido',
+		imgSrc: '/images/logos/deposit-3banks.png'
+	};
 
 	// ------------------------------------------
 	// fetchOrders => recibe isConcat (opcional)
@@ -54,7 +57,7 @@ function UserOrdersList() {
 	) => {
 		setLoading(true);
 		try {
-			const url = new URL(buildUrl('/orders/list/'));
+			const url = new URL(buildUrl('/orders/list/'), window.location.origin);
 			url.searchParams.append('page', page);
 			url.searchParams.append('search', search);
 			url.searchParams.append('date_range', range);

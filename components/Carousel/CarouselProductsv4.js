@@ -37,7 +37,7 @@ const CarouselProductsV4 = ({
 		try {
 			setLoading(true);
 			const data = await fetch(
-				buildUrl(`/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}&filter_discount=true`),
+				buildUrl(`/section?type=${typeQuery}&marca=${marca}&categoria=${categoria}&q=${q}`),
 				{
 					headers: {
 						'X-Store-ID': 'cti',

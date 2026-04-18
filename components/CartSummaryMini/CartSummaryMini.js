@@ -358,12 +358,13 @@ const CartSummaryMini = () => {
 						</button>
 
 						<Link href="/carrito" legacyBehavior>
-							<button
+							<a
 								className="view-cart-button"
 								onClick={() => dispatch(hideAll())}
+								style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
 							>
 								Comprar Carrito
-							</button>
+							</a>
 						</Link>
 					</div>
 				</>

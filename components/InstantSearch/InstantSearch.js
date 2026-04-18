@@ -195,7 +195,7 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 
 	// Sanitizar query y búsquedas recientes
 	const safeQuery = sanitizeString(query);
-	const safeRecentSearches = recentSearches.map(sanitizeString).filter(Boolean);
+	const safeRecentSearches = (Array.isArray(recentSearches) ? recentSearches : []).map(sanitizeString).filter(Boolean);
 
 	// Función para sanitizar datos del API - simplificada
 	const sanitizeApiData = (data) => {

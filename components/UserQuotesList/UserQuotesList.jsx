@@ -61,7 +61,7 @@ function UserQuotesList() {
 	) => {
 		setLoading(true);
 		try {
-			const url = new URL(buildUrl('/quotes/list/'));
+			const url = new URL(buildUrl('/quotes/list/'), window.location.origin);
 			url.searchParams.append('page', page);
 			url.searchParams.append('search', search);
 			url.searchParams.append('date_range', range);

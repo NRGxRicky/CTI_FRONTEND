@@ -81,6 +81,7 @@ export class IngramAdapter {
                 'Authorization': `Bearer ${token}`,
                 'IM-CustomerNumber': customerNumber,
                 'IM-CountryCode': 'MX',
+                'IM-CorrelationID': `CAT-${Date.now()}`,
                 'Accept': 'application/json'
             }
         });
@@ -188,6 +189,67 @@ export class IngramAdapter {
         if (!response.ok) {
             const errText = await response.text();
             throw new Error(`Order Submit Sandbox Failed (${response.status}): ${errText}`);
+        }
+
+        return await response.json();
+    }
+
+    /**
+     * CREACIÓN DE ORDEN AUTOMÁTICA
+     */
+    static async createIngramOrder(orderId, orderTotal, items, address, user) {
+        const token = await this.getAccessToken();
+        const customerNumber = process.env.INGRAM_CUSTOMER_NUMBER;
+        const apiUrl = process.env.INGRAM_API_URL || 'https://api.ingrammicro.com:443/sandbox';
+
+        const url = `${apiUrl}/resellers/v6/orders`;
+
+        // Adaptar items al formato de Ingram
+        const lines = items.map((item, index) => ({
+            customerLineNumber: (index + 1).toString(),
+            ingramPartNumber: item.product.ingramSku,
+            quantity: item.quantity
+        }));
+
+        const payload = {
+            "customerOrderNumber": `CTI-${orderId}`,
+            "notes": `Telefono:${address?.telefono || 'N/A'}`,
+            "shipToInfo": {
+                "contact": this.sanitizeText(`${user?.nombres || ''} ${user?.apellidos || ''}`),
+                "companyName": this.sanitizeText(`${user?.nombres || ''} ${user?.apellidos || ''}`),
+                "addressLine1": this.sanitizeText(`${address?.calle || ''} ${address?.numero || ''}`),
+                "city": this.sanitizeText(`${address?.ciudad || ''}`),
+                "state": "EM", // Fijo EM (Estado de Mexico) o mapeado
+                "postalCode": `${address?.codigo_postal || '00000'}`,
+                "countryCode": "MX",
+                "email": `${user?.email || 'ventas@cti.com'}`,
+                "phoneNumber": `${address?.telefono || '0000000000'}`
+            },
+            "lines": lines,
+            "additionalAttributes": [
+                {
+                    "attributeName": "allowOrderOnCustomerHold",
+                    "attributeValue": "false"
+                }
+            ]
+        };
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'IM-CustomerNumber': customerNumber,
+                'IM-CountryCode': 'MX',
+                'IM-CorrelationID': `CTI-ORD-${orderId}-${Date.now()}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`Ingram Order Failed: ${errText}`);
         }
 
         return await response.json();

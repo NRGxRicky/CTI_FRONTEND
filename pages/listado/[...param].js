@@ -66,7 +66,7 @@ export const getServerSideProps = async (context) => {
 				context.query.filter_available.toLowerCase() === 'true';
 		}
 	} else {
-		filter_available = true;
+		filter_available = false;
 	}
 
 	if (context.query.filter_available_store) {
