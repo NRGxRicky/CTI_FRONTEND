@@ -7,7 +7,7 @@ const ProductSpecs = ({ item = { specs: [] } }) => {
 			{item.descripcion && (
 				<div className='description'>
 					<h2 className='description__title'>Descripción</h2>
-					<span>{item.descripcion}</span>
+					<span dangerouslySetInnerHTML={{ __html: item.descripcion }} />
 				</div>
 			)}
 			{Object.entries(item.specs).length > 0 && (
