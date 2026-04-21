@@ -24,36 +24,56 @@ const prisma = new PrismaClient({ adapter });
 
 function formatToHTML(details) {
     if (!details) return null;
-    let html = '<div class="technical-specs mt-4">';
-    html += '<h3 class="font-bold text-lg mb-2 text-gray-800">Especificaciones Técnicas</h3>';
-    html += '<ul class="list-disc pl-5 space-y-1 text-gray-600 text-sm">';
     
-    if (details.vendorName) html += `<li><strong>Fabricante:</strong> ${details.vendorName}</li>`;
-    if (details.vendorPartNumber) html += `<li><strong>Número de Parte (MPN):</strong> ${details.vendorPartNumber}</li>`;
-    if (details.upc) html += `<li><strong>Código de Barras (UPC):</strong> ${details.upc}</li>`;
-    if (details.productCategory) html += `<li><strong>Categoría:</strong> ${details.productCategory} > ${details.productSubCategory || ''}</li>`;
+    // Contenedor principal estilo Tarjeta
+    let html = '<div class="technical-specs" style="padding: 20px; border: 1px solid #eaeaea; border-radius: 8px; margin-top: 15px; background-color: #ffffff;">';
+    // Título Principal
+    html += '<h3 style="font-size: 18px; font-weight: 600; color: #1a1a1a; margin-bottom: 15px;">Especificaciones esenciales</h3>';
+    
+    // Lista sin estilos heredados
+    html += '<ul style="list-style-type: none; padding-left: 0; margin: 0;">';
+    
+    // Variables para el diseño de cada fila
+    const liStyle = 'margin-bottom: 8px; font-size: 14.5px; color: #666; display: flex; align-items: flex-start;';
+    const caret = '<span style="color: #a0a0a0; margin-right: 10px; font-size: 16px; line-height: 1.2;">›</span>';
+
+    const addRow = (label, value) => {
+        if (!value) return '';
+        return `<li style="${liStyle}">${caret}<span>${label}: <strong style="color: #333; font-weight: 600;">${value}</strong></span></li>`;
+    };
+    
+    html += addRow('Fabricante', details.vendorName);
+    html += addRow('Número de Parte (MPN)', details.vendorPartNumber);
+    html += addRow('Código de Barras (UPC)', details.upc);
+    if (details.productCategory) {
+        html += addRow('Categoría', `${details.productCategory} > ${details.productSubCategory || ''}`);
+    }
     
     const w = details.additionalInformation?.width;
     const h = details.additionalInformation?.height;
     const l = details.additionalInformation?.length;
     
     if (w && h && l) {
-        html += `<li><strong>Dimensiones físicas:</strong> ${h} (Alto) x ${w} (Ancho) x ${l} (Largo)</li>`;
+        html += addRow('Dimensiones físicas', `${h} (Alto) x ${w} (Ancho) x ${l} (Largo)`);
     }
     
     const weightInfo = details.additionalInformation?.productWeight?.[0];
     if (weightInfo) {
-        html += `<li><strong>Peso bruto:</strong> ${weightInfo.weight} ${weightInfo.weightUnit}</li>`;
+        html += addRow('Peso bruto', `${weightInfo.weight} ${weightInfo.weightUnit}`);
     }
     
-    // Si viene la cadena de especificaciones amplias (casos raros)
+    // Si viene la cadena de especificaciones amplias
     if (details.technicalSpecifications && Array.isArray(details.technicalSpecifications)) {
         details.technicalSpecifications.forEach(spec => {
-             html += `<li><strong>${spec.headerName}:</strong> ${spec.headerValue}</li>`;
+             html += addRow(spec.headerName, spec.headerValue);
         });
     }
 
     html += '</ul>';
+    
+    // Link falso visual (simulando "Ver especificaciones completas")
+    // html += '<div style="margin-top: 20px; text-align: right;"><a href="#" style="color: #0066cc; font-weight: 500; font-size: 14px; text-decoration: none;">Ver especificaciones completas</a></div>';
+    
     html += '</div>';
     
     return html;
@@ -73,7 +93,7 @@ async function runDetailsSync() {
             where: {
                 description: null,
             },
-            take: 10, // LIMITE INICIAL: Solo 10 para hacer la prueba. Luego quitamos el límite.
+            // take: 1000, // Descomentar y ajustar si se desea ir por lotes
             select: { id: true, ingramSku: true, title: true }
         });
 
