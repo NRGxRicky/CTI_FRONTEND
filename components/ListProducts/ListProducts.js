@@ -56,19 +56,24 @@ const ListProducts = ({ results, filter_available_store }) => {
 									</>
 								)}
 								<div className='card__image'>
-									<Image
-										src={
-											producto.imagen1s
-												? producto.imagen1s
-												: '/images/not-available.png'
-										}
-										fill
-										style={{ objectFit: 'contain' }}
-										alt={Capitalize(producto.titulo)}
-										draggable='false'
-										sizes='auto'
-										priority={true}
-									/>
+									{producto.imagen1s ? (
+										<Image
+											src={producto.imagen1s}
+											fill
+											style={{ objectFit: 'contain' }}
+											alt={Capitalize(producto.titulo)}
+											draggable='false'
+											sizes='auto'
+											priority={true}
+										/>
+									) : (
+										<div style={{ width: '100%', height: '150px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc', borderRadius: '12px', border: '2px dashed #e2e8f0', padding: '15px' }}>
+											<span style={{ fontSize: '14px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', textAlign: 'center' }}>
+												{producto.marca?.nombre || producto.marca || 'GENÉRICO'}
+											</span>
+											<span style={{ fontSize: '10px', color: '#cbd5e1', marginTop: '6px', fontWeight: '600' }}>ESPECIFICACIONES</span>
+										</div>
+									)}
 									<NewProduct date={producto.created} />
 								</div>
 								<div className='card__content'>
