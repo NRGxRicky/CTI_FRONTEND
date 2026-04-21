@@ -132,6 +132,40 @@ export class IngramAdapter {
     }
 
     /**
+     * OBTENCIÓN DE DETALLES DEL CATÁLOGO (Imágenes y Descripciones Técnicas)
+     */
+    static async fetchProductDetails(ingramPartNumber) {
+        if (!ingramPartNumber) throw new Error("Se requiere un SKU de Ingram (ingramPartNumber)");
+
+        const token = await this.getAccessToken();
+        const customerNumber = process.env.INGRAM_CUSTOMER_NUMBER;
+        const apiUrl = process.env.INGRAM_API_URL || 'https://api.ingrammicro.com:443/sandbox';
+
+        // Endpoint v6 para obtener la profundidad de catálogo
+        // Parámetros clave para forzar la descarga de la hoja técnica y media
+        const url = `${apiUrl}/resellers/v6/catalog/details/${ingramPartNumber}?includeProductFeatures=true&includeTechnicalSpecifications=true`;
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'IM-CustomerNumber': customerNumber,
+                'IM-CountryCode': 'MX',
+                'IM-CorrelationID': `CAT-DETAILS-${ingramPartNumber}-${Date.now()}`,
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            // El SKU no existe o fue descontinuado, lanzar error manejable
+            const err = await response.text();
+            throw new Error(`Catalog Details Error (${response.status}): ${err}`);
+        }
+
+        return await response.json();
+    }
+
+    /**
      * CREACIÓN DE ORDEN SANDBOX (La Prueba Final)
      */
     static async createSandboxTestOrder() {
