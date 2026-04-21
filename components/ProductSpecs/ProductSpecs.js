@@ -60,6 +60,28 @@ const ProductSpecs = ({ item = { specs: [] } }) => {
 						line-height: 1.5;
 					}
 
+					.description h3 {
+						font-weight: 600;
+						font-size: 1.15rem;
+						margin-bottom: 15px;
+						margin-top: 10px;
+						color: #333;
+					}
+
+					.description ul {
+						padding-left: 30px;
+						margin-bottom: 15px;
+						list-style-position: outside;
+						list-style-type: disc;
+					}
+
+					.description li {
+						margin-bottom: 8px;
+						font-size: 0.95rem;
+						color: #555;
+						line-height: 1.6;
+					}
+
 					.specs__title,
 					.description__title {
 						line-height: 3;
