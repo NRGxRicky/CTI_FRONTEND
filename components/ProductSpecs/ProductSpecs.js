@@ -69,7 +69,7 @@ const ProductSpecs = ({ item = { specs: [] } }) => {
 					}
 
 					.description ul {
-						padding-left: 30px;
+						padding-left: 60px;
 						margin-bottom: 15px;
 						list-style-position: outside;
 						list-style-type: disc;
