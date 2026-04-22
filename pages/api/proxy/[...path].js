@@ -104,6 +104,44 @@ export default async function handler(req, res) {
 
 
         // ============================================
+        // CASO: SUGERENCIAS DE BUSQUEDA (InstantSearch)
+        // ============================================
+        if (apiPath.includes('suggestions')) {
+            const searchTerm = queryParams.q || '';
+            if (!searchTerm) return res.status(200).json({ products: [], queries: [], brands: [], categories: [] });
+
+            const dbProducts = await db.product.findMany({
+                where: {
+                    OR: [
+                        { title: { contains: searchTerm, mode: 'insensitive' } },
+                        { ingramSku: { contains: searchTerm, mode: 'insensitive' } },
+                        { mpn: { contains: searchTerm, mode: 'insensitive' } },
+                    ],
+                    price: { gt: 0 }
+                },
+                take: 8
+            });
+
+            const mapped = dbProducts.map(p => {
+                const frontend = mapProductToFrontend(p);
+                return {
+                    ...frontend,
+                    original_title: p.title,
+                    url: `/${frontend.slug}`,
+                    image: p.imageUrl || null // Usar URL de Icecat directamente
+                };
+            });
+
+            return res.status(200).json({
+                products: mapped,
+                queries: [searchTerm],
+                brands: [],
+                categories: [],
+                query_words: searchTerm.split(' ')
+            });
+        }
+
+        // ============================================
         // CASO: BUSQUEDA POR SKU (Detalle de producto)
         // Usado por: DetailProduct.js → /api/proxy/section?sku=XXX
         // ============================================

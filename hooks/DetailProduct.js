@@ -28,7 +28,8 @@ const FetchGetDetailProduct = async (slug) => {
 
 		// El producto ya viene con stock_total, precio_contado, precio_final
 		// correctamente calculados por transformProduct() en el proxy.
-		const imageUrl = producto.sku ? `/api/images/${producto.sku}` : null;
+		// Priorizar la URL de imagen de la base de datos (Icecat) sobre la local
+		const imageUrl = producto.imageUrl || (producto.sku ? `/api/images/${producto.sku}` : null);
 		const item = {
 			...producto,
 			id: producto.sku,
