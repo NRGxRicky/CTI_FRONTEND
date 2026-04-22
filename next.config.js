@@ -107,6 +107,11 @@ module.exports = {
 				hostname: 'www.pchmayoreo.com',
 				pathname: '**',
 			},
+			{
+				protocol: 'https',
+				hostname: 'images.icecat.biz',
+				pathname: '**',
+			},
 			// Dominios para desarrollo local
 			{
 				protocol: 'http',
