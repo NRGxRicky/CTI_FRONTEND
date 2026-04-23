@@ -80,6 +80,7 @@ function mapProductToFrontend(dbProduct) {
         compatibleProductos: [],
         breadcrumblist: [],
         parent__slug: slugify(catName),
+        imageUrl: dbProduct.imageUrl || null,
     };
 }
 
