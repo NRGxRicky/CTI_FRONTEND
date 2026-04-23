@@ -50,14 +50,17 @@ async function runImageSync() {
             
             try {
                 // Cross-matching con nuestro Adaptador
-                const fotoUrl = await IcecatAdapter.fetchProductImage(prod.upc, prod.mpn, prod.brand);
+                const { mainImage, gallery } = await IcecatAdapter.fetchProductImage(prod.upc, prod.mpn, prod.brand);
 
-                if (fotoUrl) {
+                if (mainImage) {
                      await prisma.product.update({
                         where: { id: prod.id },
-                        data: { imageUrl: fotoUrl }
+                        data: { 
+                            imageUrl: mainImage,
+                            gallery: gallery // Guardamos el array de URLs
+                        }
                     });
-                    console.log(`   ✅ ¡Match Fotográfico! URL: ${fotoUrl}`);
+                    console.log(`   ✅ ¡Match Fotográfico! (${gallery.length} fotos extras). URL: ${mainImage}`);
                     procesados++;
                 } else {
                     console.log(`   👻 Producto no hallado en el catálogo mundial (Icecat no lo tiene).`);

@@ -27,7 +27,7 @@ export class IcecatAdapter {
         } 
         // 3. Imposibilidad Técnica (SKU totalmente genérico sin rastros)
         else {
-            return null;
+            return { mainImage: null, gallery: [] };
         }
 
         try {
@@ -42,15 +42,25 @@ export class IcecatAdapter {
 
             const json = await response.json();
             
-            // Si el objeto de imagen existe, extraemos siempre el de más altísima calidad disponible.
-            if (json?.msg === 'OK' && json?.data?.Image) {
-                 return json.data.Image.HighPic || json.data.Image.Pic500x500 || json.data.Image.LowPic || null;
+            // Extraer imagen principal y galería completa
+            if (json?.msg === 'OK' && json?.data) {
+                const mainImage = json.data.Image?.HighPic || json.data.Image?.Pic500x500 || json.data.Image?.LowPic || null;
+                const gallery = [];
+                
+                if (json.data.Gallery && Array.isArray(json.data.Gallery)) {
+                    json.data.Gallery.forEach(img => {
+                        const url = img.Pic || img.LowPic;
+                        if (url) gallery.push(url);
+                    });
+                }
+
+                return { mainImage, gallery };
             }
 
-            return null;
+            return { mainImage: null, gallery: [] };
         } catch (err) {
             // Falla de Red silenciosa, devolver nulo para no crashear el orquestador maestro
-            return null;
+            return { mainImage: null, gallery: [] };
         }
     }
 }

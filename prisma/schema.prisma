@@ -22,6 +22,7 @@ model Product {
   brand        String?
   category     String?
   imageUrl     String?
+  gallery      Json?    // Array de URLs para la galería tipo Mercado Libre
 
   // Datos Financieros y Operativos (Directos de Ingram)
   price        Float    @default(0.0) // Precio MXN directo de Ingram

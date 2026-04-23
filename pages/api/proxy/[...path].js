@@ -46,7 +46,7 @@ function mapProductToFrontend(dbProduct) {
     const brandSlug = slugify(brandName);
     const catName = dbProduct.category || 'General';
     
-    return {
+    const result = {
         id: dbProduct.id,
         sku: dbProduct.ingramSku || '',
         titulo: dbProduct.title || 'Sin Título',
@@ -82,6 +82,19 @@ function mapProductToFrontend(dbProduct) {
         parent__slug: slugify(catName),
         imageUrl: dbProduct.imageUrl || null,
     };
+
+    // Mapear galería de imágenes (hasta 10)
+    if (dbProduct.gallery && Array.isArray(dbProduct.gallery)) {
+        dbProduct.gallery.slice(0, 9).forEach((imgUrl, index) => {
+            const num = index + 2; // Empezamos en imagen2
+            result[`imagen${num}s`] = imgUrl;
+            result[`imagen${num}m`] = imgUrl;
+            result[`imagen${num}xs`] = imgUrl;
+            result[`imagen${num}l`] = imgUrl;
+        });
+    }
+
+    return result;
 }
 
 export const config = {
