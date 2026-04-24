@@ -338,6 +338,7 @@ export default async function handler(req, res) {
         const isCarousel = apiPath.includes('section') && (sort === '-visitas' || sort === '-ventas' || sort === '-created');
         if (isCarousel) {
             where.stock = { gt: 0 };
+            where.imageUrl = { not: null };
         }
         const take = isCarousel ? 20 : pageSize;
 
