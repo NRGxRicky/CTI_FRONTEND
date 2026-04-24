@@ -367,25 +367,29 @@ export default async function handler(req, res) {
 
         // Construir ORDER BY (soporta params tipo PCH: -visitas, -ventas, -created)
         let orderBy = { createdAt: 'desc' };
-        if (sort === '-visitas' || sort === '-ventas') orderBy = { id: 'desc' }; // Random-ish por ahora
-        if (sort === '-created') orderBy = { createdAt: 'desc' };
+        let carouselSkip = 0; // Para diferenciar los carruseles del homepage
+
+        if (sort === '-visitas') { orderBy = { price: 'asc' }; } // Ofertas: los más baratos primero
+        if (sort === '-ventas') { orderBy = { stock: 'desc' }; carouselSkip = 20; } // Recomendados: los de mayor stock, saltando los primeros 20
+        if (sort === '-created') { orderBy = { createdAt: 'desc' }; carouselSkip = 40; } // Nuevos: los más recientes, saltando 40
         if (sort === 'price' || sort === 'precio') orderBy = { price: 'asc' };
         if (sort === '-price' || sort === '-precio') orderBy = { price: 'desc' };
         if (sort === 'title' || sort === 'titulo') orderBy = { title: 'asc' };
 
-        // Para carruseles de homepage, limitar a 20 productos y solo con stock
+        // Para carruseles de homepage, limitar a 20 productos y solo con stock y foto
         const isCarousel = apiPath.includes('section') && (sort === '-visitas' || sort === '-ventas' || sort === '-created');
         if (isCarousel) {
             where.stock = { gt: 0 };
             where.imageUrl = { not: null };
         }
         const take = isCarousel ? 20 : pageSize;
+        const skipAmount = isCarousel ? carouselSkip : (page - 1) * take;
 
         const [products, totalCount] = await Promise.all([
             db.product.findMany({
                 where,
                 orderBy,
-                skip: (page - 1) * take,
+                skip: skipAmount,
                 take,
             }),
             db.product.count({ where }),
