@@ -334,8 +334,11 @@ export default async function handler(req, res) {
         if (sort === '-price' || sort === '-precio') orderBy = { price: 'desc' };
         if (sort === 'title' || sort === 'titulo') orderBy = { title: 'asc' };
 
-        // Para carruseles de homepage, limitar a 20 productos
+        // Para carruseles de homepage, limitar a 20 productos y solo con stock
         const isCarousel = apiPath.includes('section') && (sort === '-visitas' || sort === '-ventas' || sort === '-created');
+        if (isCarousel) {
+            where.stock = { gt: 0 };
+        }
         const take = isCarousel ? 20 : pageSize;
 
         const [products, totalCount] = await Promise.all([
