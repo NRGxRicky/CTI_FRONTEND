@@ -269,6 +269,45 @@ export default async function handler(req, res) {
         // CASO: MARCAS
         // ============================================
         if (apiPath.includes('brands') || apiPath.includes('bestbrands')) {
+            // Mapa de logos oficiales (dominio principal de cada marca)
+            const brandLogos = {
+                'startech.com': 'https://logo.clearbit.com/startech.com',
+                'hp inc': 'https://logo.clearbit.com/hp.com',
+                'manhattan': 'https://logo.clearbit.com/manhattan-products.com',
+                'brobotix': 'https://logo.clearbit.com/brobotix.com',
+                'cisco': 'https://logo.clearbit.com/cisco.com',
+                'epson': 'https://logo.clearbit.com/epson.com',
+                'apple': 'https://logo.clearbit.com/apple.com',
+                'tp-link': 'https://logo.clearbit.com/tp-link.com',
+                'zebra tech.': 'https://logo.clearbit.com/zebra.com',
+                'zebra': 'https://logo.clearbit.com/zebra.com',
+                'perfect choice': 'https://logo.clearbit.com/perfectchoice.com.mx',
+                'logitech': 'https://logo.clearbit.com/logitech.com',
+                'xerox': 'https://logo.clearbit.com/xerox.com',
+                'intellinet': 'https://logo.clearbit.com/intellinet-network.com',
+                'dell': 'https://logo.clearbit.com/dell.com',
+                'brother': 'https://logo.clearbit.com/brother.com',
+                'tripp lite': 'https://logo.clearbit.com/tripplite.com',
+                'canon': 'https://logo.clearbit.com/canon.com',
+                'lenovo': 'https://logo.clearbit.com/lenovo.com',
+                'kensington': 'https://logo.clearbit.com/kensington.com',
+                'kingston': 'https://logo.clearbit.com/kingston.com',
+                'jabra': 'https://logo.clearbit.com/jabra.com',
+                'buffalo': 'https://logo.clearbit.com/buffalo.com',
+                'apc': 'https://logo.clearbit.com/apc.com',
+                'lexmark': 'https://logo.clearbit.com/lexmark.com',
+                'toshiba (pp)': 'https://logo.clearbit.com/toshiba.com',
+                'samsung': 'https://logo.clearbit.com/samsung.com',
+                'adata (pyp)': 'https://logo.clearbit.com/adata.com',
+                'naceb': 'https://logo.clearbit.com/naceb.com.mx',
+                'viewsonic': 'https://logo.clearbit.com/viewsonic.com',
+                'benq': 'https://logo.clearbit.com/benq.com',
+                'cyberpower': 'https://logo.clearbit.com/cyberpowersystems.com',
+                'microsoft': 'https://logo.clearbit.com/microsoft.com',
+                'xzeal gaming': null,
+                'balam rush': null,
+            };
+
             const brands = await db.product.groupBy({
                 by: ['brand'],
                 _count: { brand: true },
@@ -279,9 +318,9 @@ export default async function handler(req, res) {
             const results = brands.filter(b => b.brand).map(b => ({
                 name: b.brand,
                 slug: slugify(b.brand),
-                imagen: null,
+                imagen: brandLogos[b.brand.toLowerCase()] || null,
                 count: b._count.brand,
-            }));
+            })).filter(b => b.imagen); // Solo mostrar marcas que tengan logo
 
             return res.status(200).json({ results, count: results.length, total: results.length, status: 'success' });
         }

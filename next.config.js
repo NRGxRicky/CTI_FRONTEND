@@ -112,6 +112,11 @@ module.exports = {
 				hostname: 'images.icecat.biz',
 				pathname: '**',
 			},
+			{
+				protocol: 'https',
+				hostname: 'logo.clearbit.com',
+				pathname: '**',
+			},
 			// Dominios para desarrollo local
 			{
 				protocol: 'http',
