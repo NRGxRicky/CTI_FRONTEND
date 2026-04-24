@@ -320,7 +320,7 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 						<a className="search-dropdown__featured" onClick={() => dispatch(hideAll())}>
 							{suggestions.products[0].image && (
 								<Image
-									src={`${apiUrl}${suggestions.products[0].image}`}
+									src={suggestions.products[0].image.startsWith('http') ? suggestions.products[0].image : `${apiUrl}${suggestions.products[0].image}`}
 									alt={suggestions.products[0].original_title}
 									width={40}
 									height={40}
