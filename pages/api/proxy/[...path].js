@@ -32,8 +32,8 @@ function mapProductToFrontend(dbProduct) {
     const cost = dbProduct.price || 0;
     
     // Calcular el precio final de venta:
-    // 1. Margen de ganancia (por defecto 15% -> 1.15)
-    const margin = parseFloat(process.env.PROFIT_MARGIN || '1.15');
+    // 1. Margen de ganancia (12% -> 1.12)
+    const margin = parseFloat(process.env.PROFIT_MARGIN || '1.12');
     
     // 2. Impuesto IVA aplicable en México (16% -> 1.16)
     const iva = 1.16;
