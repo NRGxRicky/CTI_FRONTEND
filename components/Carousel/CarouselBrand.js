@@ -128,11 +128,10 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 													: '/images/not-available.png'
 											}
 											style={{
-												height: '100%',
-												width: '100%',
+												maxWidth: '90%',
+												maxHeight: '90%',
 												objectFit: 'contain',
-												mixBlendMode: 'multiply',
-												padding: '10px',
+												display: 'block'
 											}}
 											draggable='false'
 											alt={brand.nombre}
