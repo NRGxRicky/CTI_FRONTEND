@@ -269,43 +269,34 @@ export default async function handler(req, res) {
         // CASO: MARCAS
         // ============================================
         if (apiPath.includes('brands') || apiPath.includes('bestbrands')) {
-            // Mapa de logos oficiales (dominio principal de cada marca)
+            // Mapa de logos oficiales (Wikimedia Commons / CDNs oficiales)
             const brandLogos = {
-                'startech.com': 'https://logo.clearbit.com/startech.com',
-                'hp inc': 'https://logo.clearbit.com/hp.com',
-                'manhattan': 'https://logo.clearbit.com/manhattan-products.com',
-                'brobotix': 'https://logo.clearbit.com/brobotix.com',
-                'cisco': 'https://logo.clearbit.com/cisco.com',
-                'epson': 'https://logo.clearbit.com/epson.com',
-                'apple': 'https://logo.clearbit.com/apple.com',
-                'tp-link': 'https://logo.clearbit.com/tp-link.com',
-                'zebra tech.': 'https://logo.clearbit.com/zebra.com',
-                'zebra': 'https://logo.clearbit.com/zebra.com',
-                'perfect choice': 'https://logo.clearbit.com/perfectchoice.com.mx',
-                'logitech': 'https://logo.clearbit.com/logitech.com',
-                'xerox': 'https://logo.clearbit.com/xerox.com',
-                'intellinet': 'https://logo.clearbit.com/intellinet-network.com',
-                'dell': 'https://logo.clearbit.com/dell.com',
-                'brother': 'https://logo.clearbit.com/brother.com',
-                'tripp lite': 'https://logo.clearbit.com/tripplite.com',
-                'canon': 'https://logo.clearbit.com/canon.com',
-                'lenovo': 'https://logo.clearbit.com/lenovo.com',
-                'kensington': 'https://logo.clearbit.com/kensington.com',
-                'kingston': 'https://logo.clearbit.com/kingston.com',
-                'jabra': 'https://logo.clearbit.com/jabra.com',
-                'buffalo': 'https://logo.clearbit.com/buffalo.com',
-                'apc': 'https://logo.clearbit.com/apc.com',
-                'lexmark': 'https://logo.clearbit.com/lexmark.com',
-                'toshiba (pp)': 'https://logo.clearbit.com/toshiba.com',
-                'samsung': 'https://logo.clearbit.com/samsung.com',
-                'adata (pyp)': 'https://logo.clearbit.com/adata.com',
-                'naceb': 'https://logo.clearbit.com/naceb.com.mx',
-                'viewsonic': 'https://logo.clearbit.com/viewsonic.com',
-                'benq': 'https://logo.clearbit.com/benq.com',
-                'cyberpower': 'https://logo.clearbit.com/cyberpowersystems.com',
-                'microsoft': 'https://logo.clearbit.com/microsoft.com',
-                'xzeal gaming': null,
-                'balam rush': null,
+                'hp inc': 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/HP_logo_2012.svg/200px-HP_logo_2012.svg.png',
+                'cisco': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Cisco_logo_blue_2016.svg/200px-Cisco_logo_blue_2016.svg.png',
+                'epson': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Epson_logo.svg/200px-Epson_logo.svg.png',
+                'apple': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/150px-Apple_logo_black.svg.png',
+                'tp-link': 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/TP-Link_logo_2024.svg/200px-TP-Link_logo_2024.svg.png',
+                'zebra tech.': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Zebra_Technologies_logo.svg/200px-Zebra_Technologies_logo.svg.png',
+                'zebra': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Zebra_Technologies_logo.svg/200px-Zebra_Technologies_logo.svg.png',
+                'logitech': 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Logitech_logo.svg/200px-Logitech_logo.svg.png',
+                'xerox': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Xerox_Logo.svg/200px-Xerox_Logo.svg.png',
+                'dell': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Dell_Logo.svg/200px-Dell_Logo.svg.png',
+                'brother': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Brother_logo.svg/200px-Brother_logo.svg.png',
+                'tripp lite': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Tripp_Lite_logo.svg/200px-Tripp_Lite_logo.svg.png',
+                'canon': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Canon_wordmark.svg/200px-Canon_wordmark.svg.png',
+                'lenovo': 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Lenovo_logo_2015.svg/200px-Lenovo_logo_2015.svg.png',
+                'kensington': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Kensington_Logo_2021.svg/200px-Kensington_Logo_2021.svg.png',
+                'kingston': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Kingston_Technology_logo_2023.svg/200px-Kingston_Technology_logo_2023.svg.png',
+                'jabra': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Jabra_Logo.svg/200px-Jabra_Logo.svg.png',
+                'apc': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/APC_by_Schneider_Electric_Logo.svg/200px-APC_by_Schneider_Electric_Logo.svg.png',
+                'lexmark': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Lexmark_logo.svg/200px-Lexmark_logo.svg.png',
+                'samsung': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/200px-Samsung_Logo.svg.png',
+                'viewsonic': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/ViewSonic-Logo.svg/200px-ViewSonic-Logo.svg.png',
+                'benq': 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/BenQ_Logo.svg/200px-BenQ_Logo.svg.png',
+                'microsoft': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/200px-Microsoft_logo_%282012%29.svg.png',
+                'toshiba (pp)': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Toshiba_logo.svg/200px-Toshiba_logo.svg.png',
+                'startech.com': 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/StarTech.com_Logo.svg/200px-StarTech.com_Logo.svg.png',
+                'buffalo': 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Buffalo_Technology_logo.svg/200px-Buffalo_Technology_logo.svg.png',
             };
 
             const brands = await db.product.groupBy({
@@ -366,18 +357,20 @@ export default async function handler(req, res) {
         }
 
         // Construir ORDER BY (soporta params tipo PCH: -visitas, -ventas, -created)
+        // Construir ORDER BY
         let orderBy = { createdAt: 'desc' };
-        let carouselSkip = 0; // Para diferenciar los carruseles del homepage
+        let carouselSkip = 0; 
 
         if (sort === '-visitas') { orderBy = { price: 'asc' }; } // Ofertas: los más baratos primero
-        if (sort === '-ventas') { orderBy = { stock: 'desc' }; carouselSkip = 20; } // Recomendados: los de mayor stock, saltando los primeros 20
-        if (sort === '-created') { orderBy = { createdAt: 'desc' }; carouselSkip = 40; } // Nuevos: los más recientes, saltando 40
+        if (sort === '-ventas') { orderBy = { stock: 'desc' }; } // Recomendados: mayor stock
+        if (sort === '-created') { orderBy = { createdAt: 'desc' }; } // Nuevos: más recientes
+        if (sort === '-popular') { orderBy = { id: 'desc' }; } // Populares: destacados
         if (sort === 'price' || sort === 'precio') orderBy = { price: 'asc' };
         if (sort === '-price' || sort === '-precio') orderBy = { price: 'desc' };
         if (sort === 'title' || sort === 'titulo') orderBy = { title: 'asc' };
 
         // Para carruseles de homepage, limitar a 20 productos y solo con stock y foto
-        const isCarousel = apiPath.includes('section') && (sort === '-visitas' || sort === '-ventas' || sort === '-created');
+        const isCarousel = apiPath.includes('section') && (sort === '-visitas' || sort === '-ventas' || sort === '-created' || sort === '-popular');
         if (isCarousel) {
             where.stock = { gt: 0 };
             where.imageUrl = { not: null };

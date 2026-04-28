@@ -73,7 +73,7 @@ const Home = () => {
 						<div className='section-products__title'>
 							<h1>RECOMENDADOS</h1>
 						</div>
-						<CarouselProducts typeQuery={'-visitas'} mobile={mobileView} />
+						<CarouselProducts typeQuery={'-ventas'} mobile={mobileView} />
 					</div>
 				</div>
 
@@ -93,7 +93,7 @@ const Home = () => {
 						<div className='section-products__title'>
 							<h1>MÁS VENDIDOS</h1>
 						</div>
-						<CarouselProducts typeQuery={'-ventas'} mobile={mobileView} />
+						<CarouselProducts typeQuery={'-popular'} mobile={mobileView} />
 					</div>
 				</div>
 
