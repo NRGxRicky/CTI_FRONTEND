@@ -269,49 +269,49 @@ export default async function handler(req, res) {
         // CASO: MARCAS
         // ============================================
         if (apiPath.includes('brands') || apiPath.includes('bestbrands')) {
-            // Mapa de logos oficiales (Optimizado con fuentes de alta calidad)
-            const brandLogos = {
-                'startech.com': 'https://logo.clearbit.com/startech.com?size=200',
-                'hp inc': 'https://logo.clearbit.com/hp.com?size=200',
-                'manhattan': 'https://logo.clearbit.com/manhattan-products.com?size=200',
-                'brobotix': 'https://logo.clearbit.com/brobotix.com?size=200',
-                'cisco': 'https://cdn.worldvectorlogo.com/logos/cisco-2.svg',
-                'epson': 'https://cdn.worldvectorlogo.com/logos/epson.svg',
-                'apple': 'https://logo.clearbit.com/apple.com?size=200',
-                'tp-link': 'https://logo.clearbit.com/tp-link.com?size=200',
-                'zebra tech.': 'https://logo.clearbit.com/zebra.com?size=200',
-                'zebra': 'https://logo.clearbit.com/zebra.com?size=200',
-                'perfect choice': 'https://logo.clearbit.com/perfectchoice.com.mx?size=200',
-                'logitech': 'https://logo.clearbit.com/logitech.com?size=200',
-                'xerox': 'https://logo.clearbit.com/xerox.com?size=200',
-                'intellinet': 'https://logo.clearbit.com/intellinet-network.com?size=200',
-                'dell': 'https://logo.clearbit.com/dell.com?size=200',
-                'brother': 'https://logo.clearbit.com/brother.com?size=200',
-                'tripp lite': 'https://logo.clearbit.com/tripplite.com?size=200',
-                'canon': 'https://logo.clearbit.com/canon.com?size=200',
-                'lenovo': 'https://logo.clearbit.com/lenovo.com?size=200',
-                'kensington': 'https://logo.clearbit.com/kensington.com?size=200',
-                'kingston': 'https://logo.clearbit.com/kingston.com?size=200',
-                'jabra': 'https://logo.clearbit.com/jabra.com?size=200',
-                'buffalo': 'https://logo.clearbit.com/buffalo.com?size=200',
-                'apc': 'https://logo.clearbit.com/apc.com?size=200',
-                'lexmark': 'https://logo.clearbit.com/lexmark.com?size=200',
-                'toshiba (pp)': 'https://logo.clearbit.com/toshiba.com?size=200',
-                'samsung': 'https://logo.clearbit.com/samsung.com?size=200',
-                'adata (pyp)': 'https://logo.clearbit.com/adata.com?size=200',
-                'naceb': 'https://logo.clearbit.com/naceb.com.mx?size=200',
-                'viewsonic': 'https://logo.clearbit.com/viewsonic.com?size=200',
-                'benq': 'https://logo.clearbit.com/benq.com?size=200',
-                'cyberpower': 'https://logo.clearbit.com/cyberpowersystems.com?size=200',
-                'microsoft': 'https://logo.clearbit.com/microsoft.com?size=200',
-                'gigabyte': 'https://logo.clearbit.com/gigabyte.com?size=200',
-                'asus': 'https://logo.clearbit.com/asus.com?size=200',
-                'acer': 'https://logo.clearbit.com/acer.com?size=200',
-                'balam rush': 'https://logo.clearbit.com/balamrush.com?size=200',
-                'xzeal gaming': 'https://logo.clearbit.com/xzeal.mx?size=200',
-                'acteck': 'https://logo.clearbit.com/acteck.com?size=200',
-                'ghia': 'https://logo.clearbit.com/ghia.com.mx?size=200',
-                'vorago': 'https://logo.clearbit.com/voragolive.com?size=200',
+            // Mapa de logos y dominios asociados
+            const brandData = {
+                'startech.com': { logo: 'https://logo.clearbit.com/startech.com?size=200', domain: 'startech.com' },
+                'hp inc': { logo: 'https://logo.clearbit.com/hp.com?size=200', domain: 'hp.com' },
+                'manhattan': { logo: 'https://cdn.worldvectorlogo.com/logos/manhattan.svg', domain: 'manhattan-products.com' },
+                'brobotix': { logo: 'https://cdn.worldvectorlogo.com/logos/robot-14.svg', domain: 'brobotix.com' },
+                'cisco': { logo: 'https://cdn.worldvectorlogo.com/logos/cisco-2.svg', domain: 'cisco.com' },
+                'epson': { logo: 'https://cdn.worldvectorlogo.com/logos/epson.svg', domain: 'epson.com' },
+                'apple': { logo: 'https://cdn.worldvectorlogo.com/logos/apple-11.svg', domain: 'apple.com' },
+                'tp-link': { logo: 'https://cdn.worldvectorlogo.com/logos/tp-link-2.svg', domain: 'tp-link.com' },
+                'zebra tech.': { logo: 'https://logo.clearbit.com/zebra.com?size=200', domain: 'zebra.com' },
+                'zebra': { logo: 'https://logo.clearbit.com/zebra.com?size=200', domain: 'zebra.com' },
+                'perfect choice': { logo: 'https://logo.clearbit.com/perfectchoice.com.mx?size=200', domain: 'perfectchoice.com.mx' },
+                'logitech': { logo: 'https://cdn.worldvectorlogo.com/logos/logitech-2.svg', domain: 'logitech.com' },
+                'xerox': { logo: 'https://logo.clearbit.com/xerox.com?size=200', domain: 'xerox.com' },
+                'intellinet': { logo: 'https://logo.clearbit.com/intellinet-network.com?size=200', domain: 'intellinet-network.com' },
+                'dell': { logo: 'https://logo.clearbit.com/dell.com?size=200', domain: 'dell.com' },
+                'brother': { logo: 'https://logo.clearbit.com/brother.com?size=200', domain: 'brother.com' },
+                'tripp lite': { logo: 'https://logo.clearbit.com/tripplite.com?size=200', domain: 'tripplite.com' },
+                'canon': { logo: 'https://logo.clearbit.com/canon.com?size=200', domain: 'canon.com' },
+                'lenovo': { logo: 'https://logo.clearbit.com/lenovo.com?size=200', domain: 'lenovo.com' },
+                'kensington': { logo: 'https://logo.clearbit.com/kensington.com?size=200', domain: 'kensington.com' },
+                'kingston': { logo: 'https://logo.clearbit.com/kingston.com?size=200', domain: 'kingston.com' },
+                'jabra': { logo: 'https://logo.clearbit.com/jabra.com?size=200', domain: 'jabra.com' },
+                'buffalo': { logo: 'https://logo.clearbit.com/buffalo.com?size=200', domain: 'buffalo.com' },
+                'apc': { logo: 'https://logo.clearbit.com/apc.com?size=200', domain: 'apc.com' },
+                'lexmark': { logo: 'https://logo.clearbit.com/lexmark.com?size=200', domain: 'lexmark.com' },
+                'toshiba (pp)': { logo: 'https://logo.clearbit.com/toshiba.com?size=200', domain: 'toshiba.com' },
+                'samsung': { logo: 'https://logo.clearbit.com/samsung.com?size=200', domain: 'samsung.com' },
+                'adata (pyp)': { logo: 'https://logo.clearbit.com/adata.com?size=200', domain: 'adata.com' },
+                'naceb': { logo: 'https://logo.clearbit.com/naceb.com.mx?size=200', domain: 'naceb.com.mx' },
+                'viewsonic': { logo: 'https://logo.clearbit.com/viewsonic.com?size=200', domain: 'viewsonic.com' },
+                'benq': { logo: 'https://logo.clearbit.com/benq.com?size=200', domain: 'benq.com' },
+                'cyberpower': { logo: 'https://logo.clearbit.com/cyberpowersystems.com?size=200', domain: 'cyberpowersystems.com' },
+                'microsoft': { logo: 'https://logo.clearbit.com/microsoft.com?size=200', domain: 'microsoft.com' },
+                'gigabyte': { logo: 'https://logo.clearbit.com/gigabyte.com?size=200', domain: 'gigabyte.com' },
+                'asus': { logo: 'https://logo.clearbit.com/asus.com?size=200', domain: 'asus.com' },
+                'acer': { logo: 'https://logo.clearbit.com/acer.com?size=200', domain: 'acer.com' },
+                'balam rush': { logo: 'https://logo.clearbit.com/balamrush.com?size=200', domain: 'balamrush.com' },
+                'xzeal gaming': { logo: 'https://logo.clearbit.com/xzeal.mx?size=200', domain: 'xzeal.mx' },
+                'acteck': { logo: 'https://logo.clearbit.com/acteck.com?size=200', domain: 'acteck.com' },
+                'ghia': { logo: 'https://logo.clearbit.com/ghia.com.mx?size=200', domain: 'ghia.com.mx' },
+                'vorago': { logo: 'https://logo.clearbit.com/voragolive.com?size=200', domain: 'voragolive.com' },
             };
 
             const brands = await db.product.groupBy({
@@ -321,12 +321,16 @@ export default async function handler(req, res) {
                 take: 30,
             });
 
-            const results = brands.filter(b => b.brand).map(b => ({
-                name: b.brand,
-                slug: slugify(b.brand),
-                imagen: brandLogos[b.brand.toLowerCase()] || null,
-                count: b._count.brand,
-            })).filter(b => b.imagen); // Solo mostrar marcas que tengan logo
+            const results = brands.filter(b => b.brand).map(b => {
+                const info = brandData[b.brand.toLowerCase()] || {};
+                return {
+                    name: b.brand,
+                    slug: slugify(b.brand),
+                    imagen: info.logo || null,
+                    domain: info.domain || null,
+                    count: b._count.brand,
+                };
+            }).filter(b => b.imagen); // Solo mostrar marcas que tengan logo
 
             return res.status(200).json({ results, count: results.length, total: results.length, status: 'success' });
         }
