@@ -127,10 +127,18 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 													? brand.imagen
 													: '/images/not-available.png'
 											}
+											onError={(e) => {
+												// Si falla Clearbit, intentar con Google Favicon como respaldo
+												const domain = brand.imagen.split('/').pop().split('?')[0];
+												if (!e.target.src.includes('google.com')) {
+													e.target.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+												}
+											}}
 											style={{
-												maxWidth: '90%',
-												maxHeight: '90%',
+												maxWidth: '85%',
+												maxHeight: '85%',
 												objectFit: 'contain',
+												margin: 'auto',
 												display: 'block'
 											}}
 											draggable='false'
