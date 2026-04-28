@@ -121,21 +121,21 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 										href={`/listado/${brand.slug}/index/?page_size=${maxPageResults}`}
 										legacyBehavior
 									>
-										<Image
+										<img
 											src={
 												brand.imagen
 													? brand.imagen
 													: '/images/not-available.png'
 											}
-											fill
 											style={{
+												height: '100%',
+												width: '100%',
 												objectFit: 'contain',
 												mixBlendMode: 'multiply',
-												padding: 10,
+												padding: '10px',
 											}}
 											draggable='false'
 											alt={brand.nombre}
-											sizes='auto'
 										/>
 									</Link>
 								</div>
