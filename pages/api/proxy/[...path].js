@@ -269,25 +269,23 @@ export default async function handler(req, res) {
         // CASO: MARCAS
         // ============================================
         if (apiPath.includes('brands') || apiPath.includes('bestbrands')) {
-            // Mapa de logos y domini            const brandData = {
-                'startech.com': { logo: 'https://cdn.worldvectorlogo.com/logos/startech-com.svg', domain: 'startech.com' },
+            // Mapa de logos - SOLO URLs verificadas con HTTP 200
+            const brandData = {
+                'startech.com': { logo: 'https://cdn.worldvectorlogo.com/logos/startech.svg', domain: 'startech.com' },
                 'hp inc': { logo: 'https://cdn.worldvectorlogo.com/logos/hp-2.svg', domain: 'hp.com' },
                 'manhattan': { logo: 'https://cdn.worldvectorlogo.com/logos/manhattan.svg', domain: 'manhattan-products.com' },
-                'brobotix': { logo: 'https://brobotix.com/img/logo.png', domain: 'brobotix.com' },
                 'cisco': { logo: 'https://cdn.worldvectorlogo.com/logos/cisco-2.svg', domain: 'cisco.com' },
                 'epson': { logo: 'https://cdn.worldvectorlogo.com/logos/epson.svg', domain: 'epson.com' },
                 'apple': { logo: 'https://cdn.worldvectorlogo.com/logos/apple-11.svg', domain: 'apple.com' },
                 'tp-link': { logo: 'https://cdn.worldvectorlogo.com/logos/tp-link-2.svg', domain: 'tp-link.com' },
-                'zebra tech.': { logo: 'https://cdn.worldvectorlogo.com/logos/zebra-technologies.svg', domain: 'zebra.com' },
-                'zebra': { logo: 'https://cdn.worldvectorlogo.com/logos/zebra-technologies.svg', domain: 'zebra.com' },
-                'perfect choice': { logo: 'https://perfectchoice.com.mx/cdn/shop/files/Logo_PC_Hummingbird_320x.png', domain: 'perfectchoice.com.mx' },
+                'zebra tech.': { logo: 'https://cdn.worldvectorlogo.com/logos/zebra-1.svg', domain: 'zebra.com' },
+                'zebra': { logo: 'https://cdn.worldvectorlogo.com/logos/zebra-1.svg', domain: 'zebra.com' },
                 'logitech': { logo: 'https://cdn.worldvectorlogo.com/logos/logitech-2.svg', domain: 'logitech.com' },
                 'xerox': { logo: 'https://cdn.worldvectorlogo.com/logos/xerox-1.svg', domain: 'xerox.com' },
-                'intellinet': { logo: 'https://cdn.worldvectorlogo.com/logos/intellinet.svg', domain: 'intellinet-network.com' },
                 'dell': { logo: 'https://cdn.worldvectorlogo.com/logos/dell-2.svg', domain: 'dell.com' },
                 'brother': { logo: 'https://cdn.worldvectorlogo.com/logos/brother-logo.svg', domain: 'brother.com' },
                 'tripp lite': { logo: 'https://cdn.worldvectorlogo.com/logos/tripp-lite.svg', domain: 'tripplite.com' },
-                'canon': { logo: 'https://cdn.worldvectorlogo.com/logos/canon-1.svg', domain: 'canon.com' },
+                'canon': { logo: 'https://upload.wikimedia.org/wikipedia/commons/0/0a/Canon_wordmark.svg', domain: 'canon.com' },
                 'lenovo': { logo: 'https://cdn.worldvectorlogo.com/logos/lenovo-2.svg', domain: 'lenovo.com' },
                 'kensington': { logo: 'https://cdn.worldvectorlogo.com/logos/kensington.svg', domain: 'kensington.com' },
                 'kingston': { logo: 'https://cdn.worldvectorlogo.com/logos/kingston-technology.svg', domain: 'kingston.com' },
@@ -296,21 +294,14 @@ export default async function handler(req, res) {
                 'apc': { logo: 'https://cdn.worldvectorlogo.com/logos/apc.svg', domain: 'apc.com' },
                 'lexmark': { logo: 'https://cdn.worldvectorlogo.com/logos/lexmark.svg', domain: 'lexmark.com' },
                 'toshiba (pp)': { logo: 'https://cdn.worldvectorlogo.com/logos/toshiba-1.svg', domain: 'toshiba.com' },
-                'samsung': { logo: 'https://cdn.worldvectorlogo.com/logos/samsung-4.svg', domain: 'samsung.com' },
-                'adata (pyp)': { logo: 'https://cdn.worldvectorlogo.com/logos/adata.svg', domain: 'adata.com' },
-                'naceb': { logo: 'https://naceb.com.mx/cdn/shop/files/Naceb_Technology_Negro_360x.png', domain: 'naceb.com.mx' },
+                'samsung': { logo: 'https://cdn.worldvectorlogo.com/logos/samsung-8.svg', domain: 'samsung.com' },
+                'adata (pyp)': { logo: 'https://cdn.worldvectorlogo.com/logos/adata-1.svg', domain: 'adata.com' },
                 'viewsonic': { logo: 'https://cdn.worldvectorlogo.com/logos/viewsonic.svg', domain: 'viewsonic.com' },
                 'benq': { logo: 'https://cdn.worldvectorlogo.com/logos/benq.svg', domain: 'benq.com' },
-                'cyberpower': { logo: 'https://cdn.worldvectorlogo.com/logos/cyberpower.svg', domain: 'cyberpowersystems.com' },
                 'microsoft': { logo: 'https://cdn.worldvectorlogo.com/logos/microsoft-5.svg', domain: 'microsoft.com' },
                 'gigabyte': { logo: 'https://cdn.worldvectorlogo.com/logos/gigabyte-1.svg', domain: 'gigabyte.com' },
-                'asus': { logo: 'https://cdn.worldvectorlogo.com/logos/asus-logo.svg', domain: 'asus.com' },
+                'asus': { logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2e/ASUS_Logo.svg', domain: 'asus.com' },
                 'acer': { logo: 'https://cdn.worldvectorlogo.com/logos/acer-4.svg', domain: 'acer.com' },
-                'balam rush': { logo: 'https://balamrush.com/cdn/shop/files/LOGO_BALAM_RUSH_2023_Horizontal-01_1_250x.png', domain: 'balamrush.com' },
-                'xzeal gaming': { logo: 'https://xzeal.mx/cdn/shop/files/Xzeal_Logo_Color_300x.png', domain: 'xzeal.mx' },
-                'acteck': { logo: 'https://acteck.com/cdn/shop/files/acteck-logo_150x.png', domain: 'acteck.com' },
-                'ghia': { logo: 'https://ghia.com.mx/img/ghia-logo-1563212726.jpg', domain: 'ghia.com.mx' },
-                'vorago': { logo: 'https://voragolive.com/img/vorago-logo-1634323233.jpg', domain: 'voragolive.com' },
             };
 
             const brands = await db.product.groupBy({
