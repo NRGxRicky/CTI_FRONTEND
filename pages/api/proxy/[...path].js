@@ -269,14 +269,14 @@ export default async function handler(req, res) {
         // CASO: MARCAS
         // ============================================
         if (apiPath.includes('brands') || apiPath.includes('bestbrands')) {
-            // Mapa de logos oficiales (Clearbit para alta resolución, Google como fallback en el frontend)
+            // Mapa de logos oficiales (Optimizado con fuentes de alta calidad)
             const brandLogos = {
                 'startech.com': 'https://logo.clearbit.com/startech.com?size=200',
                 'hp inc': 'https://logo.clearbit.com/hp.com?size=200',
                 'manhattan': 'https://logo.clearbit.com/manhattan-products.com?size=200',
                 'brobotix': 'https://logo.clearbit.com/brobotix.com?size=200',
-                'cisco': 'https://logo.clearbit.com/cisco.com?size=200',
-                'epson': 'https://logo.clearbit.com/epson.com?size=200',
+                'cisco': 'https://cdn.worldvectorlogo.com/logos/cisco-2.svg',
+                'epson': 'https://cdn.worldvectorlogo.com/logos/epson.svg',
                 'apple': 'https://logo.clearbit.com/apple.com?size=200',
                 'tp-link': 'https://logo.clearbit.com/tp-link.com?size=200',
                 'zebra tech.': 'https://logo.clearbit.com/zebra.com?size=200',
@@ -307,6 +307,11 @@ export default async function handler(req, res) {
                 'gigabyte': 'https://logo.clearbit.com/gigabyte.com?size=200',
                 'asus': 'https://logo.clearbit.com/asus.com?size=200',
                 'acer': 'https://logo.clearbit.com/acer.com?size=200',
+                'balam rush': 'https://logo.clearbit.com/balamrush.com?size=200',
+                'xzeal gaming': 'https://logo.clearbit.com/xzeal.mx?size=200',
+                'acteck': 'https://logo.clearbit.com/acteck.com?size=200',
+                'ghia': 'https://logo.clearbit.com/ghia.com.mx?size=200',
+                'vorago': 'https://logo.clearbit.com/voragolive.com?size=200',
             };
 
             const brands = await db.product.groupBy({
