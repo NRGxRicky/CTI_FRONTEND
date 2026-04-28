@@ -117,6 +117,11 @@ module.exports = {
 				hostname: 'logo.clearbit.com',
 				pathname: '**',
 			},
+			{
+				protocol: 'https',
+				hostname: 'upload.wikimedia.org',
+				pathname: '**',
+			},
 			// Dominios para desarrollo local
 			{
 				protocol: 'http',
