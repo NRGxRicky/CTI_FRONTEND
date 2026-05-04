@@ -149,12 +149,39 @@ export default function Cotizador() {
       doc.setTextColor(50);
       doc.text(`Atn: ${clientName || 'Cliente'}`, 15, 42);
 
-      // Table
+      // Pre-load images as base64
+      const loadImage = (url) => {
+        return new Promise((resolve) => {
+          if (!url || url.includes('not-available')) { resolve(null); return; }
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              canvas.width = img.width;
+              canvas.height = img.height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0);
+              resolve(canvas.toDataURL('image/jpeg', 0.7));
+            } catch { resolve(null); }
+          };
+          img.onerror = () => resolve(null);
+          img.src = url;
+        });
+      };
+
+      const imageDataMap = {};
+      await Promise.all(items.map(async (item, idx) => {
+        imageDataMap[idx] = await loadImage(item.image);
+      }));
+
+      // Table data (with empty image placeholder column)
       const tableData = items.map((item, idx) => [
         idx + 1,
         item.quantity,
         item.sku,
-        item.title.substring(0, 70),
+        '',  // image placeholder
+        item.title.substring(0, 60),
         `$${CurrencyFormat(item.price)}`,
         DELIVERY_DAYS,
         `$${CurrencyFormat(item.price * item.quantity)}`,
@@ -162,28 +189,40 @@ export default function Cotizador() {
 
       doc.autoTable({
         startY: 48,
-        head: [['#', 'Cant.', 'Clave', 'Descripción', 'Precio', 'Entrega', 'Subtotal']],
+        head: [['#', 'Cant.', 'Clave', 'Img', 'Descripción', 'Precio', 'Entrega', 'Subtotal']],
         body: tableData,
         theme: 'grid',
         headStyles: {
           fillColor: [35, 73, 241],
           textColor: 255,
-          fontSize: 9,
+          fontSize: 8,
           fontStyle: 'bold',
           halign: 'center',
         },
-        bodyStyles: { fontSize: 8, textColor: [50, 50, 50] },
+        bodyStyles: { fontSize: 7, textColor: [50, 50, 50], minCellHeight: 16 },
         columnStyles: {
-          0: { halign: 'center', cellWidth: 10 },
-          1: { halign: 'center', cellWidth: 14 },
-          2: { cellWidth: 28 },
-          3: { cellWidth: 'auto' },
-          4: { halign: 'right', cellWidth: 22 },
-          5: { halign: 'center', cellWidth: 28 },
-          6: { halign: 'right', cellWidth: 24 },
+          0: { halign: 'center', cellWidth: 8 },
+          1: { halign: 'center', cellWidth: 12 },
+          2: { cellWidth: 22 },
+          3: { cellWidth: 16 },          // image column
+          4: { cellWidth: 'auto' },
+          5: { halign: 'right', cellWidth: 20 },
+          6: { halign: 'center', cellWidth: 24 },
+          7: { halign: 'right', cellWidth: 22 },
         },
         alternateRowStyles: { fillColor: [248, 249, 255] },
         margin: { left: 15, right: 15 },
+        didDrawCell: (data) => {
+          if (data.section === 'body' && data.column.index === 3) {
+            const imgData = imageDataMap[data.row.index];
+            if (imgData) {
+              const dim = 12;
+              const x = data.cell.x + (data.cell.width - dim) / 2;
+              const y = data.cell.y + (data.cell.height - dim) / 2;
+              try { doc.addImage(imgData, 'JPEG', x, y, dim, dim); } catch {}
+            }
+          }
+        },
       });
 
       let finalY = (doc.lastAutoTable?.finalY || 120) + 5;
