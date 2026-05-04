@@ -24,10 +24,10 @@ const AccountSummary = () => {
 				</Link>
 
 				{/* SECCIÓN: MIS COTIZACIONES */}
-				<Link href='/mis-cotizaciones' legacyBehavior>
+				<Link href='/cotizador' legacyBehavior>
 					<a className='account-summary__card'>
 						<div className='account-summary__card-header'>
-							<h3>Mis cotizaciones</h3>
+							<h3>Cotizador</h3>
 						</div>
 						<ul>
 							<li>Consulta tus cotizaciones</li>

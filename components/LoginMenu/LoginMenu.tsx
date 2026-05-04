@@ -181,13 +181,13 @@ const LoginMenu: React.FC = () => {
 											</a>
 										</Link>
 
-										<Link href={`/mis-cotizaciones/`} legacyBehavior>
+										<Link href={`/cotizador/`} legacyBehavior>
 											<a>
 												<div
 													className='login-menu__body__item'
 													onClick={() => dispacth(hideAll())}
 												>
-													<span>Mis cotizaciones</span>
+													<span>Cotizador</span>
 												</div>
 											</a>
 										</Link>

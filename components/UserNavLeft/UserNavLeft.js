@@ -66,9 +66,9 @@ const UserNavLeft = () => {
           </a>
         </Link>
 
-        <Link href={`/mis-cotizaciones/`} legacyBehavior>
-          <a className={router.pathname === '/mis-cotizaciones' ? 'text--off active' : 'text--off'}>
-            <span>Mis cotizaciones</span>
+        <Link href={`/cotizador/`} legacyBehavior>
+          <a className={router.pathname === '/cotizador' ? 'text--off active' : 'text--off'}>
+            <span>Cotizador</span>
           </a>
         </Link>
 

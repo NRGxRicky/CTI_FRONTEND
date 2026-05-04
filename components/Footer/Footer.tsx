@@ -143,9 +143,9 @@ const Footer: React.FC<FooterProps> = () => {
 							</div>
 
 							<div className='footer__column__element'>
-								<Link href={`/mis-cotizaciones/`} legacyBehavior>
+								<Link href={`/cotizador/`} legacyBehavior>
 									<a>
-										<span>Mis cotizaciones</span>
+										<span>Cotizador</span>
 									</a>
 								</Link>
 							</div>
