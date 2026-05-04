@@ -45,55 +45,10 @@ const CartSummaryMini = () => {
 
 	const { cartMsi, accessToken, isAuthenticated } = useAuth();
 
-	/* ───────────────────────────  PDF  ─────────────────────────── */
-	const handleCreateQuotation = async () => {
-		try {
-			if (!isAuthenticated) {
-				Router.push(`/login?redirect=${encodeURIComponent(Router.asPath)}`);
-				dispatch(hideAll());
-				return;
-			}
-
-			setIsGenerating(true);     // inicia spinner
-
-			const response = await fetch(
-				buildUrl('/cart/quotation-pdf'),
-				{
-					method: 'GET',
-					headers: { Authorization: `Bearer ${accessToken}` },
-				},
-			);
-
-
-			if (!response.ok) throw new Error('Error al generar PDF de cotización');
-
-			// Nombre de archivo desde Content‑Disposition
-			let filename = 'Cotizacion.pdf';
-			const dispo = response.headers.get('Content-Disposition');
-			if (dispo && dispo.includes('filename=')) {
-				const match = dispo.match(/filename[^;=\n]*=(['"]?)([^'";\n]+)\1/);
-				if (match && match[2]) filename = decodeURIComponent(match[2]);
-			}
-
-			// Descargar blob
-			const blob = await response.blob();
-			const url = window.URL.createObjectURL(blob);
-
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = filename;
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-			window.URL.revokeObjectURL(url);
-			Router.push('/mis-cotizaciones');
-			dispatch(hideAll())
-
-		} catch (err) {
-			console.error('Error al crear la cotización PDF:', err);
-		} finally {
-			setIsGenerating(false);    // termina spinner
-		}
+	/* ───────────────────────────  Cotizador  ─────────────────────────── */
+	const handleCreateQuotation = () => {
+		dispatch(hideAll());
+		Router.push('/cotizador');
 	};
 
 	/* ───────────────────────── Scroll helpers ───────────────────────── */
