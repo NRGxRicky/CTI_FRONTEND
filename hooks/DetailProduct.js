@@ -32,7 +32,8 @@ const FetchGetDetailProduct = async (slug) => {
 		const imageUrl = producto.imageUrl || (producto.sku ? `/api/images/${producto.sku}` : null);
 		const item = {
 			...producto,
-			id: producto.sku,
+			// Preservar el id numérico de la BD para el carrito (Number(sku) = NaN → rompe Prisma)
+			id: producto.id,
 			slug: producto.sku,
 			// Imagen del producto — ProductGallery requiere imagen1m para mostrar la imagen
 			imagen1s: imageUrl,
