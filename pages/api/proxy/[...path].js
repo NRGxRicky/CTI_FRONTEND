@@ -27,6 +27,38 @@ function slugify(text) {
         .substring(0, 80);
 }
 
+// Mapeo de categoría → icono de placeholder
+const CATEGORY_ICON_MAP = {
+    'Puntos de Venta y Códigos de Barra': '/images/categories/puntos-de-venta.png',
+    'Computadoras': '/images/categories/computadoras.png',
+    'Accesorios': '/images/categories/accesorios.png',
+    'Suministros': '/images/categories/suministros.png',
+    'Dispositivos de Entrada y Salida': '/images/categories/entrada-salida.png',
+    'Protección Eléctrica': '/images/categories/proteccion-electrica.png',
+    'Almacenamiento': '/images/categories/almacenamiento.png',
+    'Cables': '/images/categories/cables.png',
+    'Servicios y Garantías': '/images/categories/servicios.png',
+    'Dispositivos de Video': '/images/categories/video.png',
+    'Redes': '/images/categories/redes.png',
+    'Componentes': '/images/categories/componentes.png',
+    'Impresión': '/images/categories/impresion.png',
+    'Software': '/images/categories/software.png',
+    'Proyección': '/images/categories/video.png',
+    'Comunicaciones': '/images/categories/redes.png',
+    'Imagen Digital': '/images/categories/video.png',
+    'Hogar y Electrodomésticos': '/images/categories/generico.svg',
+    'Seguridad Física': '/images/categories/servicios.png',
+    'Smartwatch': '/images/categories/accesorios.png',
+    'Seguridad': '/images/categories/servicios.png',
+    'Audio y Video': '/images/categories/video.png',
+    'Gadgets': '/images/categories/accesorios.png',
+    'Gaming': '/images/categories/computadoras.png',
+};
+
+function getCategoryIcon(category) {
+    return CATEGORY_ICON_MAP[category] || '/images/categories/generico.svg';
+}
+
 // Convierte un producto de Prisma al formato que espera el frontend de CTI
 function mapProductToFrontend(dbProduct) {
     const cost = dbProduct.price || 0;
@@ -67,10 +99,10 @@ function mapProductToFrontend(dbProduct) {
         stock_total: dbProduct.stock || 0,
         stock_puebla: 0,
         costo_envio: priceMXN > 5000 ? 0 : 150,
-        imagen1s: dbProduct.imageUrl || '/images/not-available.png',
-        imagen1m: dbProduct.imageUrl || '/images/not-available.png',
-        imagen1xs: dbProduct.imageUrl || '/images/not-available.png',
-        imagen1l: dbProduct.imageUrl || '/images/not-available.png',
+        imagen1s: dbProduct.imageUrl || getCategoryIcon(catName),
+        imagen1m: dbProduct.imageUrl || getCategoryIcon(catName),
+        imagen1xs: dbProduct.imageUrl || getCategoryIcon(catName),
+        imagen1l: dbProduct.imageUrl || getCategoryIcon(catName),
         envio_gratis: priceMXN > 5000,
         created: dbProduct.createdAt ? dbProduct.createdAt.toISOString() : new Date().toISOString(),
         upc: dbProduct.upc || '',
@@ -80,7 +112,7 @@ function mapProductToFrontend(dbProduct) {
         compatibleProductos: [],
         breadcrumblist: [],
         parent__slug: slugify(catName),
-        imageUrl: dbProduct.imageUrl || null,
+        imageUrl: dbProduct.imageUrl || getCategoryIcon(catName),
     };
 
     // Mapear galería de imágenes (hasta 10)
@@ -142,7 +174,7 @@ export default async function handler(req, res) {
                     ...frontend,
                     original_title: p.title,
                     url: `/${frontend.slug}`,
-                    image: p.imageUrl || null // Usar URL de Icecat directamente
+                    image: p.imageUrl || getCategoryIcon(p.category) // Usar URL de Icecat o icono de categoría
                 };
             });
 
