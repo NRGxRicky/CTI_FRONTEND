@@ -9,11 +9,28 @@ const FetchGetDetailProduct = async (slug) => {
 			? 'http://localhost:3000'
 			: '';
 
-		// Endpoint de detalle por SKU — busca en todo el catálogo, no solo los primeros N
-		const response = await fetch(`${baseUrl}/api/proxy/section?sku=${encodeURIComponent(slug)}`);
+		let response;
+		let lastError;
+		const maxRetries = 3;
 
-		if (!response.ok) {
-			throw new Error(`API error: ${response.status}`);
+		for (let i = 0; i < maxRetries; i++) {
+			try {
+				// Endpoint de detalle por SKU — busca en todo el catálogo, no solo los primeros N
+				response = await fetch(`${baseUrl}/api/proxy/section?sku=${encodeURIComponent(slug)}`);
+				if (response.ok) {
+					break; // Si es exitoso, salimos del loop de reintentos
+				}
+			} catch (err) {
+				lastError = err;
+				if (i === maxRetries - 1) throw err; // Si es el último intento, lanzamos el error
+				console.warn(`⚠️ Timeout/Error en intento ${i + 1} para ${slug}. Reintentando en 1s...`);
+				// Esperamos 1 segundo antes del siguiente intento
+				await new Promise(res => setTimeout(res, 1000));
+			}
+		}
+
+		if (!response || !response.ok) {
+			throw new Error(`API error: ${response ? response.status : (lastError?.message || 'Timeout Error')}`);
 		}
 
 		const data = await response.json();
