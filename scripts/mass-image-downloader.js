@@ -8,38 +8,70 @@ const sharp = require('sharp');
 
 // ─── Configuración ───────────────────────────────────────────
 const BATCH_SIZE = parseInt(process.env.SCRAPER_BATCH || '50');
-const DELAY_MS = 2500;  // Pausa entre requests
+const DELAY_MS = 2500;  // Pausa gentil entre requests
 const MAX_IMAGES_PER_PRODUCT = 4;
 const BASE_IMAGES_DIR = path.join(process.cwd(), 'public', 'images', 'products');
 
-// Fuentes de búsqueda
-const IMAGE_SOURCES = [
+// ─── Búsqueda en Catálogo de Hardware (Icecat) ───────────────
+async function fetchIcecatImages(upc, mpn, brand) {
+    const username = 'openicecat-live';
+    const baseUrl = 'https://live.icecat.biz/api/';
+    let url = null;
+    
+    if (upc && upc.toString().length >= 8) {
+        url = `${baseUrl}?UserName=${username}&Language=es&GTIN=${encodeURIComponent(upc.toString())}`;
+    } else if (mpn && brand) {
+        url = `${baseUrl}?UserName=${username}&Language=es&Brand=${encodeURIComponent(brand.toString())}&PartCode=${encodeURIComponent(mpn.toString())}`;
+    } else {
+        return [];
+    }
+
+    try {
+        const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        if (!response.ok) return [];
+
+        const json = await response.json();
+        if (json?.msg === 'OK' && json?.data) {
+            const gallery = [];
+            if (json.data.Gallery && Array.isArray(json.data.Gallery)) {
+                json.data.Gallery.forEach(img => {
+                    const picUrl = img.Pic || img.HighPic || img.Pic500x500;
+                    if (picUrl) gallery.push(picUrl);
+                });
+            }
+            if (gallery.length === 0) {
+                const mainImage = json.data.Image?.HighPic || json.data.Image?.Pic500x500 || json.data.Image?.Pic;
+                if (mainImage) gallery.push(mainImage);
+            }
+            return [...new Set(gallery)].slice(0, MAX_IMAGES_PER_PRODUCT);
+        }
+        return [];
+    } catch (err) {
+        return [];
+    }
+}
+
+// ─── Búsqueda Web Scraper (Amazon / ML) ──────────────────────
+const SCRAPER_SOURCES = [
     {
         name: 'Amazon MX',
         buildUrl: (mpn) => `https://www.amazon.com.mx/s?k=${encodeURIComponent(mpn)}&i=electronics`,
         imagePattern: /https:\/\/m\.media-amazon\.com\/images\/I\/[A-Za-z0-9._-]+\.jpg/g,
     },
     {
-        name: 'Amazon US',
-        buildUrl: (mpn) => `https://www.amazon.com/s?k=${encodeURIComponent(mpn)}&i=electronics`,
-        imagePattern: /https:\/\/m\.media-amazon\.com\/images\/I\/[A-Za-z0-9._-]+\.jpg/g,
-    },
-    {
         name: 'MercadoLibre',
         buildUrl: (mpn) => `https://listado.mercadolibre.com.mx/${encodeURIComponent(mpn)}`,
         imagePattern: /https:\/\/http2\.mlstatic\.com\/D_[A-Za-z0-9_-]+\.jpg/g,
-    },
+    }
 ];
 
-// ─── Funciones Auxiliares ─────────────────────────────────────
 async function fetchPage(url) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
-    
     try {
         const resp = await fetch(url, {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept-Language': 'es-MX,es;q=0.9,en;q=0.8',
             },
             signal: controller.signal,
@@ -53,10 +85,18 @@ async function fetchPage(url) {
     }
 }
 
-function cleanUrls(urls) {
-    // Limpiar duplicados y quitar parámetros pequeños de Amazon/ML
-    const unique = [...new Set(urls)];
-    return unique.map(url => {
+function extractPatternImages(html, pattern) {
+    const matches = html.match(pattern);
+    if (!matches || matches.length === 0) return [];
+    
+    // Filtrar miniaturas y limpiar URLs
+    const goodImages = matches.filter(url => {
+        if (url.includes('_SS40_') || url.includes('_AC_US40_') || url.includes('_SX38_')) return false;
+        if (url.includes('_SR38') || url.includes('_SS36') || url.includes('sprite')) return false;
+        return true;
+    });
+    
+    const cleanUrls = goodImages.map(url => {
         if (url.includes('m.media-amazon.com')) {
             return url.replace(/\._[A-Z]+_[^.]*\./, '._AC_UF1000,1000_QL80_.');
         }
@@ -65,20 +105,8 @@ function cleanUrls(urls) {
         }
         return url;
     });
-}
 
-function extractPatternImages(html, pattern) {
-    const matches = html.match(pattern);
-    if (!matches || matches.length === 0) return [];
-    
-    // Filtrar miniaturas y basura
-    const goodImages = matches.filter(url => {
-        if (url.includes('_SS40_') || url.includes('_AC_US40_') || url.includes('_SX38_')) return false;
-        if (url.includes('_SR38') || url.includes('_SS36') || url.includes('sprite')) return false;
-        return true;
-    });
-    
-    return cleanUrls(goodImages).slice(0, MAX_IMAGES_PER_PRODUCT);
+    return [...new Set(cleanUrls)].slice(0, MAX_IMAGES_PER_PRODUCT);
 }
 
 // ─── Descarga y Procesamiento con Sharp ──────────────────────
@@ -90,13 +118,12 @@ async function downloadAndOptimizeImage(url, destPath) {
         const arrayBuffer = await response.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
         
-        // Optimizar con sharp: fondo blanco, redimensionar y a WebP
         await sharp(buffer)
             .resize(800, 800, {
                 fit: 'contain',
                 background: { r: 255, g: 255, b: 255, alpha: 1 }
             })
-            .flatten({ background: '#ffffff' }) // Quitar transparencias y poner fondo blanco
+            .flatten({ background: '#ffffff' })
             .webp({ quality: 80, effort: 6 })
             .toFile(destPath);
             
@@ -109,32 +136,39 @@ async function downloadAndOptimizeImage(url, destPath) {
 // ─── Lógica Principal por Producto ───────────────────────────
 async function processProduct(prod) {
     const sku = prod.ingramSku;
-    const mpn = prod.mpn || prod.title.substring(0, 30);
     
-    let foundUrls = [];
+    // 1. Intentar Icecat primero (Oficial y alta calidad)
+    let foundUrls = await fetchIcecatImages(prod.upc, prod.mpn, prod.brand);
+    let sourceName = 'Icecat';
     
-    // 1. Buscar URLs en las fuentes
-    for (const source of IMAGE_SOURCES) {
-        const html = await fetchPage(source.buildUrl(mpn));
-        if (!html) continue;
-        
-        const urls = extractPatternImages(html, source.imagePattern);
-        if (urls.length > 0) {
-            foundUrls = urls;
-            break; // Si encontramos en esta fuente, paramos la búsqueda
+    // 2. Si Icecat falla, intentar Web Scraping
+    if (foundUrls.length === 0) {
+        const searchTerm = prod.mpn || prod.title.substring(0, 30);
+        for (const source of SCRAPER_SOURCES) {
+            const html = await fetchPage(source.buildUrl(searchTerm));
+            if (!html) continue;
+            
+            const urls = extractPatternImages(html, source.imagePattern);
+            if (urls.length > 0) {
+                foundUrls = urls;
+                sourceName = source.name;
+                break;
+            }
+            await new Promise(r => setTimeout(r, 800)); // Pausa entre scrapings
         }
-        await new Promise(r => setTimeout(r, 800)); // Pausa amable
     }
     
-    if (foundUrls.length === 0) return { success: false, reason: 'No se encontraron imágenes en la web.' };
+    if (foundUrls.length === 0) {
+        return { success: false, reason: 'No se encontraron imágenes en Icecat ni Web Scraping.' };
+    }
     
-    // 2. Crear directorio del producto
+    // 3. Crear directorio del producto
     const productDir = path.join(BASE_IMAGES_DIR, sku);
     if (!fs.existsSync(productDir)) {
         fs.mkdirSync(productDir, { recursive: true });
     }
     
-    // 3. Descargar y Optimizar
+    // 4. Descargar y Optimizar
     let downloadedCount = 0;
     for (let i = 0; i < foundUrls.length; i++) {
         const webpName = `${i + 1}.webp`;
@@ -146,7 +180,7 @@ async function processProduct(prod) {
     
     if (downloadedCount === 0) return { success: false, reason: 'Error al descargar/procesar las imágenes.' };
     
-    return { success: true, count: downloadedCount, firstImageUrl: `products/${sku}/1.webp` };
+    return { success: true, count: downloadedCount, source: sourceName, firstImageUrl: `products/${sku}/1.webp` };
 }
 
 // ─── Robot Principal ─────────────────────────────────────────
@@ -160,16 +194,15 @@ async function runMassDownloader() {
 
     try {
         console.log('🤖 ============================================');
-        console.log('   ROBOT: Web Scraper + Editor WebP Automático');
+        console.log('   ROBOT V3.1: Icecat + WebScraper Fallback');
         console.log(`   Batch: ${BATCH_SIZE} productos`);
         console.log('============================================\n');
 
-        // Buscar productos fantasma (sin imagen)
         const ghosts = await prisma.product.findMany({
             where: { imageUrl: null },
-            orderBy: { stock: 'desc' },
+            orderBy: { updatedAt: 'asc' }, // Prioriza los más antiguos o no revisados
             take: BATCH_SIZE,
-            select: { id: true, ingramSku: true, title: true, mpn: true, brand: true }
+            select: { id: true, ingramSku: true, title: true, mpn: true, brand: true, upc: true }
         });
 
         console.log(`📦 ${ghosts.length} productos listos para procesar\n`);
@@ -187,16 +220,14 @@ async function runMassDownloader() {
                 const result = await processProduct(prod);
 
                 if (result.success) {
-                    // Actualizamos DB con la ruta local
                     await prisma.product.update({
                         where: { id: prod.id },
-                        data: { imageUrl: result.firstImageUrl }
+                        data: { imageUrl: result.firstImageUrl, updatedAt: new Date() }
                     });
-                    console.log(`   ✅ Guardadas ${result.count} imágenes locales WebP.`);
+                    console.log(`   ✅ [${result.source}] Guardadas ${result.count} imágenes locales WebP.`);
                     encontrados++;
                 } else {
                     console.log(`   👻 Falló: ${result.reason}`);
-                    // Opcional: Marcar updatedAt para no reprocesar de inmediato
                     await prisma.product.update({
                         where: { id: prod.id },
                         data: { updatedAt: new Date() }
@@ -207,7 +238,6 @@ async function runMassDownloader() {
                 console.error(`   ❌ Error en producto: ${err.message}`);
             }
 
-            // Pausa obligatoria para no saturar nuestro CPU ni banear IP
             await new Promise(r => setTimeout(r, DELAY_MS));
         }
 
