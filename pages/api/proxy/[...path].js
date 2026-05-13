@@ -10,7 +10,14 @@ import { PrismaClient } from '@prisma/client';
 let prisma;
 function getPrisma() {
     if (!prisma) {
-        const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+        const pool = new pg.Pool({
+            connectionString: process.env.DATABASE_URL,
+            max: 10,                    // Máximo 10 conexiones simultáneas
+            idleTimeoutMillis: 30000,    // Cerrar conexiones idle después de 30s
+            connectionTimeoutMillis: 10000, // Timeout de conexión: 10s
+            keepAlive: true,             // Mantener conexiones vivas
+            keepAliveInitialDelayMillis: 10000, // Keepalive cada 10s
+        });
         const adapter = new PrismaPg(pool);
         prisma = new PrismaClient({ adapter });
     }
