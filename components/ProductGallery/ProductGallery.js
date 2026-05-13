@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import Image from 'next/image';
+import SafeImage from '../SafeImage/SafeImage';
 import useEmblaCarousel from 'embla-carousel-react';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
@@ -303,7 +303,7 @@ const ProductGallery = ({
 										}
 									>
 										<div className='product__gallery__item__image'>
-											<Image
+											<SafeImage
 												src={item.xs ? item.xs : '/images/not-available.png'}
 												fill
 												style={{ objectFit: 'contain' }}
@@ -407,7 +407,7 @@ const ProductGallery = ({
 								}}
 							/>
 						) : (
-							<Image
+							<SafeImage
 								src={'/images/not-available.png'}
 								fill
 								style={{ objectFit: 'contain' }}

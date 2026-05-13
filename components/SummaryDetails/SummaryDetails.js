@@ -26,7 +26,8 @@ const SummaryDetails = ({ urlAction, step }) => {
 		setPaymentMethod,
 		taxInvoice,
 		clearCart,
-		hasQuoteItems
+		hasQuoteItems,
+		loading
 	} = useCart();
 
 	const dispatch = useAppDispatch();
@@ -617,21 +618,21 @@ const SummaryDetails = ({ urlAction, step }) => {
 				{/* Productos, envío y total */}
 				<div className='summary-row'>
 					<span>
-						{cart.reduce((acc, item) => acc + item.quantity, 0)} Producto(s):
+						{loading ? '...' : cart.reduce((acc, item) => acc + item.quantity, 0)} Producto(s):
 					</span>
-					<span>$ {CurrencyFormat(subtotal, 2, '.', ',')}</span>
+					<span>{loading ? '...' : `$ ${CurrencyFormat(subtotal, 2, '.', ',')}`}</span>
 
 				</div>
 				<div className='summary-row'>
 					<span>Envío:</span>
-					<span>$ {CurrencyFormat(shipping, 2, '.', ',')}</span>
+					<span>{loading ? '...' : `$ ${CurrencyFormat(shipping, 2, '.', ',')}`}</span>
 				</div>
 				<div className='summary-row total'>
 					<div className='summary-row__total'>
 						<span>Total:</span>
 						<span className='summary-row iva text--off'>(Incluye IVA)</span>
 					</div>
-					<span>$ {CurrencyFormat(total, 2, '.', ',')}</span>
+					<span>{loading ? '...' : `$ ${CurrencyFormat(total, 2, '.', ',')}`}</span>
 				</div>
 
 				{/* KUESKIPAY WIDGET */}

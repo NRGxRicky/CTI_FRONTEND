@@ -3,6 +3,7 @@ import Router, { useRouter } from 'next/router';
 import { BrowserView, MobileView } from 'react-device-detect';
 import Link from 'next/link';
 import Image from 'next/image';
+import SafeImage from '../SafeImage/SafeImage';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import TruncateMarkup from 'react-truncate-markup';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
@@ -57,7 +58,7 @@ const ListProducts = ({ results, filter_available_store }) => {
 								)}
 								<div className='card__image'>
 									{producto.imagen1s ? (
-										<Image
+										<SafeImage
 											src={producto.imagen1s}
 											fill
 											style={{ objectFit: 'contain' }}
@@ -89,7 +90,7 @@ const ListProducts = ({ results, filter_available_store }) => {
 													href={`/listado/${producto.marca.slug}/index`}
 													legacyBehavior
 												>
-													<Image
+													<SafeImage
 														src={`${producto.marca.imagen}`}
 														fill
 														style={{ objectFit: 'contain' }}
