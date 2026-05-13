@@ -21,7 +21,7 @@ export const CartProvider = ({ children }) => {
 	const { isAuthenticated, accessToken, cartMsi, updateDataUser } = useAuth();
 	const [cart, setCart] = useState([]);
 	const [subtotal, setSubtotal] = useState(0);
-	const [shipping, setShipping] = useState(129);
+	const [shipping, setShipping] = useState(150);
 	const [total, setTotal] = useState(0);
 	const router = useRouter();
 	const [loading, setLoading] = useState(true);
@@ -48,7 +48,7 @@ export const CartProvider = ({ children }) => {
 					// Validar que el servidor devolvió el formato correcto
 					if (Array.isArray(backendCart.cart_items)) {
 						setCart(backendCart.cart_items);
-						setShipping(backendCart.shipping_cost ?? 129);
+						setShipping(backendCart.shipping_cost ?? 150);
 					} else {
 						// Respuesta inesperada: mantener carrito local sin cambios
 						console.warn('Respuesta de /cart inesperada, manteniendo carrito local:', backendCart);

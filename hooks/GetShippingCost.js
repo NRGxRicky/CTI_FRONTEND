@@ -4,8 +4,8 @@ const calculateCostByWarehouse = (weightInKg) => {
 
 	// Usamos las mismas tarifas para todos los almacenes
 	const shippingRates = {
-		baseCost: 129.0,
-		tierCosts: [129.0, 133.0, 138.0, 143.0, 149.0, 154.0, 160.0, 165.0, 171.0, 177.0],
+		baseCost: 150.0,
+		tierCosts: [150.0, 154.0, 159.0, 164.0, 170.0, 175.0, 181.0, 186.0, 192.0, 198.0],
 		extraKgCost: 6.0
 	};
 
