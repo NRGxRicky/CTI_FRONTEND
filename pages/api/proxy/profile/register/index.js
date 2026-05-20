@@ -1,17 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
-import pg from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
-
-let prisma;
-function getPrisma() {
-    if (!prisma) {
-        const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-        const adapter = new PrismaPg(pool);
-        prisma = new PrismaClient({ adapter });
-    }
-    return prisma;
-}
+import prisma from '../../../../../lib/prisma';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -25,7 +13,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const db = getPrisma();
+        const db = prisma;
 
         // Check if user exists
         const existingUser = await db.user.findUnique({

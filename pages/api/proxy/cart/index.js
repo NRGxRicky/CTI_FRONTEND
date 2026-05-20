@@ -1,19 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
-import pg from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
+import prisma from '../../../../lib/prisma';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'CTI_TEMP_SECRET_KEY';
-
-let prisma;
-function getPrisma() {
-    if (!prisma) {
-        const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-        const adapter = new PrismaPg(pool);
-        prisma = new PrismaClient({ adapter });
-    }
-    return prisma;
-}
 
 // Convert db product to nested structure frontend expects
 function mapProductToFrontend(p) {
@@ -41,7 +29,7 @@ function mapProductToFrontend(p) {
 }
 
 export default async function handler(req, res) {
-    const db = getPrisma();
+    const db = prisma;
     let userId = null;
 
     // Intentar verificar token

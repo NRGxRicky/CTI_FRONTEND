@@ -1,20 +1,9 @@
 import jwt from 'jsonwebtoken';
-import { PrismaClient, OrderStatus } from '@prisma/client';
-import pg from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
-import IngramAdapter from '../../../../../../services/wholesalers/IngramAdapter';
+import { OrderStatus } from '@prisma/client';
+import prisma from '../../../../../../lib/prisma';
+import { IngramAdapter } from '../../../../../../services/wholesalers/IngramAdapter';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'CTI_TEMP_SECRET_KEY';
-
-let prisma;
-function getPrisma() {
-    if (!prisma) {
-        const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-        const adapter = new PrismaPg(pool);
-        prisma = new PrismaClient({ adapter });
-    }
-    return prisma;
-}
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -34,7 +23,7 @@ export default async function handler(req, res) {
         return res.status(401).json({ detail: 'Token is invalid or expired' });
     }
 
-    const db = getPrisma();
+    const db = prisma;
     const userId = decoded.user_id;
 
     try {

@@ -1,6 +1,48 @@
 // services/wholesalers/IngramAdapter.js
 // ADAPTADOR PARA INGRAM MICRO (OAuth 2.0 + v6 API)
 
+const MEXICO_STATES_MAP = {
+    'aguascalientes': 'AG',
+    'baja california': 'BC',
+    'baja california sur': 'BS',
+    'campeche': 'CM',
+    'chiapas': 'CS',
+    'chihuahua': 'CH',
+    'coahuila': 'CO',
+    'colima': 'CL',
+    'ciudad de mexico': 'DF',
+    'distrito federal': 'DF',
+    'durango': 'DG',
+    'estado de mexico': 'EM',
+    'guanajuato': 'GT',
+    'guerrero': 'GR',
+    'hidalgo': 'HG',
+    'jalisco': 'JC',
+    'michoacan': 'MN',
+    'morelos': 'MS',
+    'nayarit': 'NT',
+    'nuevo leon': 'NL',
+    'oaxaca': 'OC',
+    'puebla': 'PL',
+    'queretaro': 'QT',
+    'quintana roo': 'QR',
+    'san luis potosi': 'SP',
+    'sinaloa': 'SL',
+    'sonora': 'SR',
+    'tabasco': 'TC',
+    'tamaulipas': 'TS',
+    'tlaxcala': 'TL',
+    'veracruz': 'VZ',
+    'yucatan': 'YN',
+    'zacatecas': 'ZS'
+};
+
+const getStateCode = (stateName) => {
+    if (!stateName) return 'EM';
+    const clean = stateName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z\s]/g, '').trim();
+    return MEXICO_STATES_MAP[clean] || 'EM';
+};
+
 export class IngramAdapter {
     static accessToken = null;
     static tokenExpiry = null;
@@ -65,6 +107,66 @@ export class IngramAdapter {
             .replace(/[^a-zA-Z0-9\s-]/g, '') // Deja solo alfanuméricos, espacios y guiones
             .substring(0, 35) // Corta tajantemente a 35 caracteres máximo
             .trim();
+    }
+
+    /**
+     * Divide una dirección larga en 3 líneas de max 35 caracteres cada una,
+     * sanitizando el texto y cortando por palabras para evitar truncar datos clave.
+     */
+    static getAddressLines(address) {
+        if (!address) {
+            return {
+                addressLine1: 'Sin Direccion',
+                addressLine2: '',
+                addressLine3: ''
+            };
+        }
+
+        const calleYNum = `${address.calle || ''} ${address.numero || ''} ${address.numero_interior ? 'Int ' + address.numero_interior : ''}`.trim();
+        const colonia = address.colonia ? `Col ${address.colonia}` : '';
+        const referencias = address.referencias ? `Ref ${address.referencias}` : '';
+
+        const parts = [calleYNum, colonia, referencias].filter(Boolean);
+        const fullText = parts.join(', ');
+
+        const sanitized = fullText
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[.,'"ñÑ]/g, '')
+            .replace(/[^a-zA-Z0-9\s-]/g, '')
+            .trim();
+
+        const words = sanitized.split(/\s+/);
+        
+        let line1 = '';
+        let line2 = '';
+        let line3 = '';
+
+        for (const word of words) {
+            if (!word) continue;
+
+            if ((line1 + (line1 ? ' ' : '') + word).length <= 35) {
+                line1 += (line1 ? ' ' : '') + word;
+            }
+            else if ((line2 + (line2 ? ' ' : '') + word).length <= 35) {
+                line2 += (line2 ? ' ' : '') + word;
+            }
+            else if ((line3 + (line3 ? ' ' : '') + word).length <= 35) {
+                line3 += (line3 ? ' ' : '') + word;
+            }
+            else {
+                const spaceLeft = 35 - line3.length - 1;
+                if (spaceLeft > 0) {
+                    line3 += (line3 ? ' ' : '') + word.substring(0, spaceLeft);
+                }
+                break;
+            }
+        }
+
+        return {
+            addressLine1: line1.trim() || 'Direccion principal',
+            addressLine2: line2.trim(),
+            addressLine3: line3.trim()
+        };
     }
 
     /** Descarga de catálogo base (Search API) */
@@ -245,15 +347,19 @@ export class IngramAdapter {
             quantity: item.quantity
         }));
 
+        const addressLines = this.getAddressLines(address);
+
         const payload = {
             "customerOrderNumber": `CTI-${orderId}`,
             "notes": `Telefono:${address?.telefono || 'N/A'}`,
             "shipToInfo": {
                 "contact": this.sanitizeText(`${user?.nombres || ''} ${user?.apellidos || ''}`),
                 "companyName": this.sanitizeText(`${user?.nombres || ''} ${user?.apellidos || ''}`),
-                "addressLine1": this.sanitizeText(`${address?.calle || ''} ${address?.numero || ''}`),
+                "addressLine1": addressLines.addressLine1,
+                ...(addressLines.addressLine2 ? { "addressLine2": addressLines.addressLine2 } : {}),
+                ...(addressLines.addressLine3 ? { "addressLine3": addressLines.addressLine3 } : {}),
                 "city": this.sanitizeText(`${address?.ciudad || ''}`),
-                "state": "EM", // Fijo EM (Estado de Mexico) o mapeado
+                "state": getStateCode(address?.estado),
                 "postalCode": `${address?.codigo_postal || '00000'}`,
                 "countryCode": "MX",
                 "email": `${user?.email || 'ventas@cti.com'}`,

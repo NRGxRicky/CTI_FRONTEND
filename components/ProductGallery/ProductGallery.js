@@ -417,6 +417,11 @@ const ProductGallery = ({
 								onLoad={() => setLoaded(true)}
 							/>
 						)}
+						{current && !notImages && (
+							<div className='product__illustrative-watermark'>
+								Imagen ilustrativa
+							</div>
+						)}
 					</div>
 				</div>
 			</div>
@@ -512,6 +517,21 @@ const ProductGallery = ({
 						position: relative;
 						width: 100%;
 						height: 100%;
+					}
+
+					.product__illustrative-watermark {
+						position: absolute;
+						bottom: 15px;
+						right: 15px;
+						background: rgba(255, 255, 255, 0.75);
+						backdrop-filter: blur(4px);
+						padding: 4px 10px;
+						border-radius: 4px;
+						font-size: 0.75rem;
+						color: #666;
+						pointer-events: none;
+						z-index: 10;
+						border: 1px solid rgba(0,0,0,0.05);
 					}
 				`}
 			</style>

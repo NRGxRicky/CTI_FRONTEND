@@ -2,139 +2,9 @@
 // API Proxy conectada a PostgreSQL (Coolify) vía Prisma v7
 // Sirve los 9,594 productos de Ingram Micro directamente desde la BD local
 
-import pg from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '@prisma/client';
-
-// Singleton de conexión para no abrir pools en cada request
-let prisma;
-function getPrisma() {
-    if (!prisma) {
-        const pool = new pg.Pool({
-            connectionString: process.env.DATABASE_URL,
-            max: 10,                    // Máximo 10 conexiones simultáneas
-            idleTimeoutMillis: 30000,    // Cerrar conexiones idle después de 30s
-            connectionTimeoutMillis: 10000, // Timeout de conexión: 10s
-            keepAlive: true,             // Mantener conexiones vivas
-            keepAliveInitialDelayMillis: 10000, // Keepalive cada 10s
-        });
-        const adapter = new PrismaPg(pool);
-        prisma = new PrismaClient({ adapter });
-    }
-    return prisma;
-}
-
-// Genera un slug limpio a partir del título
-function slugify(text) {
-    return (text || 'producto')
-        .toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '')
-        .substring(0, 80);
-}
-
-// Mapeo de categoría → icono de placeholder
-const CATEGORY_ICON_MAP = {
-    'Puntos de Venta y Códigos de Barra': '/images/categories/puntos-de-venta.png',
-    'Computadoras': '/images/categories/computadoras.png',
-    'Accesorios': '/images/categories/accesorios.png',
-    'Suministros': '/images/categories/suministros.png',
-    'Dispositivos de Entrada y Salida': '/images/categories/entrada-salida.png',
-    'Protección Eléctrica': '/images/categories/proteccion-electrica.png',
-    'Almacenamiento': '/images/categories/almacenamiento.png',
-    'Cables': '/images/categories/cables.png',
-    'Servicios y Garantías': '/images/categories/servicios.png',
-    'Dispositivos de Video': '/images/categories/video.png',
-    'Redes': '/images/categories/redes.png',
-    'Componentes': '/images/categories/componentes.png',
-    'Impresión': '/images/categories/impresion.png',
-    'Software': '/images/categories/software.png',
-    'Proyección': '/images/categories/video.png',
-    'Comunicaciones': '/images/categories/redes.png',
-    'Imagen Digital': '/images/categories/video.png',
-    'Hogar y Electrodomésticos': '/images/categories/generico.svg',
-    'Seguridad Física': '/images/categories/servicios.png',
-    'Smartwatch': '/images/categories/accesorios.png',
-    'Seguridad': '/images/categories/servicios.png',
-    'Audio y Video': '/images/categories/video.png',
-    'Gadgets': '/images/categories/accesorios.png',
-    'Gaming': '/images/categories/computadoras.png',
-};
-
-function getCategoryIcon(category) {
-    return CATEGORY_ICON_MAP[category] || '/images/categories/generico.svg';
-}
-
-// Convierte un producto de Prisma al formato que espera el frontend de CTI
-function mapProductToFrontend(dbProduct) {
-    const cost = dbProduct.price || 0;
-    
-    // Calcular el precio final de venta:
-    // 1. Margen de ganancia (12% -> 1.12)
-    const margin = parseFloat(process.env.PROFIT_MARGIN || '1.12');
-    
-    // 2. Impuesto IVA aplicable en México (16% -> 1.16)
-    const iva = 1.16;
-    
-    // 3. Fórmula final (Costo Puro * Margen * IVA) redondedo a 2 decimales
-    const rawPrice = cost * margin * iva;
-    const priceMXN = Math.round(rawPrice * 100) / 100;
-    
-    const brandName = dbProduct.brand || 'Ingram';
-    const brandSlug = slugify(brandName);
-    const catName = dbProduct.category || 'General';
-    
-    const result = {
-        id: dbProduct.id,
-        sku: dbProduct.ingramSku || '',
-        titulo: dbProduct.title || 'Sin Título',
-        slug: `${slugify(dbProduct.title)}-${dbProduct.ingramSku}`,
-        modelo: dbProduct.mpn || dbProduct.ingramSku || '',
-        descripcion: dbProduct.description || dbProduct.title || '',
-        categoria: catName,
-        linea: catName,
-        seccion: catName,
-        marca: {
-            nombre: brandName,
-            slug: brandSlug,
-            imagen: null,
-        },
-        precio_contado: priceMXN,
-        precio_final: priceMXN,
-        precio_final_descuento: 0,
-        stock_total: dbProduct.stock || 0,
-        stock_puebla: 0,
-        costo_envio: priceMXN > 5000 ? 0 : 150,
-        imagen1s: dbProduct.imageUrl || getCategoryIcon(catName),
-        imagen1m: dbProduct.imageUrl || getCategoryIcon(catName),
-        imagen1xs: dbProduct.imageUrl || getCategoryIcon(catName),
-        imagen1l: dbProduct.imageUrl || getCategoryIcon(catName),
-        envio_gratis: priceMXN > 5000,
-        created: dbProduct.createdAt ? dbProduct.createdAt.toISOString() : new Date().toISOString(),
-        upc: dbProduct.upc || '',
-        specs: {},
-        specs_resume: {},
-        mediafiles: [],
-        compatibleProductos: [],
-        breadcrumblist: [],
-        parent__slug: slugify(catName),
-        imageUrl: dbProduct.imageUrl || getCategoryIcon(catName),
-    };
-
-    // Mapear galería de imágenes (hasta 10)
-    if (dbProduct.gallery && Array.isArray(dbProduct.gallery)) {
-        dbProduct.gallery.slice(0, 9).forEach((imgUrl, index) => {
-            const num = index + 2; // Empezamos en imagen2
-            result[`imagen${num}s`] = imgUrl;
-            result[`imagen${num}m`] = imgUrl;
-            result[`imagen${num}xs`] = imgUrl;
-            result[`imagen${num}l`] = imgUrl;
-        });
-    }
-
-    return result;
-}
+import jwt from 'jsonwebtoken';
+import prisma from '../../../lib/prisma';
+import { slugify, getCategoryIcon, mapProductToFrontend, getProductBySkuOrSlug } from '../../../services/productService';
 
 export const config = {
     api: {
@@ -148,12 +18,65 @@ export const config = {
 export default async function handler(req, res) {
     const { path = [], ...queryParams } = req.query;
     const apiPath = Array.isArray(path) ? path.join('/') : path;
-    const db = getPrisma();
+    const db = prisma;
 
     try {
         // ============================================
-        // CASO: CARRITO (sin cambios por ahora)
+        // CASO: CARRITO (Manejo de borrado por ID)
         // ============================================
+        if (apiPath.startsWith('cart') && req.method === 'DELETE') {
+            const pathParts = Array.isArray(path) ? path : apiPath.split('/');
+            const productIdStr = pathParts.find(p => p !== 'cart' && p !== '');
+            
+            if (!productIdStr) {
+                return res.status(400).json({ error: 'Falta el ID del producto' });
+            }
+
+            const productId = Number(productIdStr);
+            if (isNaN(productId)) {
+                return res.status(400).json({ error: 'ID de producto inválido' });
+            }
+
+            // Verificar autenticación
+            const authHeader = req.headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) {
+                return res.status(401).json({ error: 'No token provided' });
+            }
+
+            const token = authHeader.split(' ')[1];
+            let decoded;
+            try {
+                const JWT_SECRET = process.env.JWT_SECRET || 'CTI_TEMP_SECRET_KEY';
+                decoded = jwt.verify(token, JWT_SECRET);
+            } catch (e) {
+                return res.status(401).json({ error: 'Token is invalid or expired' });
+            }
+
+            const userId = decoded.user_id;
+
+            // Borrar el producto de la BD
+            await db.cart.deleteMany({
+                where: { userId, productId }
+            });
+
+            // Obtener el carrito actualizado
+            const cartItems = await db.cart.findMany({
+                where: { userId },
+                include: { product: true }
+            });
+
+            const formattedCart = cartItems.map(item => ({
+                id: item.id,
+                quantity: item.quantity,
+                product: mapProductToFrontend(item.product)
+            }));
+
+            return res.status(200).json({
+                cart_items: formattedCart,
+                shipping_cost: 150,
+                total: 0
+            });
+        }
 
 
         // ============================================
@@ -199,19 +122,7 @@ export default async function handler(req, res) {
         // Usado por: DetailProduct.js → /api/proxy/section?sku=XXX
         // ============================================
         if (queryParams.sku) {
-            // Buscar por slug (que contiene el SKU al final) o directamente por SKU/MPN
-            const skuClean = queryParams.sku.split('-').pop() || queryParams.sku;
-            
-            const product = await db.product.findFirst({
-                where: {
-                    OR: [
-                        { ingramSku: queryParams.sku },
-                        { ingramSku: skuClean },
-                        { mpn: queryParams.sku },
-                        { mpn: skuClean },
-                    ]
-                }
-            });
+            const product = await getProductBySkuOrSlug(db, queryParams.sku);
 
             if (!product) {
                 return res.status(404).json({ error: 'Producto no encontrado', sku: queryParams.sku });

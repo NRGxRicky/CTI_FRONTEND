@@ -1,74 +1,71 @@
 const FetchGetDetailProduct = async (slug) => {
 	try {
-		// Buscamos el producto directamente por SKU usando el endpoint optimizado del proxy.
-		// Este endpoint busca en el catálogo COMPLETO (sin límite) y devuelve el stock
-		// correcto calculado desde stockMap (extcust/getprodstock, suma de todos los almacenes).
-
 		const isServer = typeof window === 'undefined';
-		const baseUrl = isServer
-			? 'http://localhost:3000'
-			: '';
+		let producto;
 
-		let response;
-		let lastError;
-		const maxRetries = 3;
-
-		for (let i = 0; i < maxRetries; i++) {
-			try {
-				// Endpoint de detalle por SKU — busca en todo el catálogo, no solo los primeros N
-				response = await fetch(`${baseUrl}/api/proxy/section?sku=${encodeURIComponent(slug)}`);
-				if (response.ok) {
-					break; // Si es exitoso, salimos del loop de reintentos
-				}
-			} catch (err) {
-				lastError = err;
-				if (i === maxRetries - 1) throw err; // Si es el último intento, lanzamos el error
-				console.warn(`⚠️ Timeout/Error en intento ${i + 1} para ${slug}. Reintentando en 1s...`);
-				// Esperamos 1 segundo antes del siguiente intento
-				await new Promise(res => setTimeout(res, 1000));
+		if (isServer) {
+			// Acceso directo a base de datos en SSR sin llamadas loopback HTTP
+			const prisma = (await import('../lib/prisma')).default;
+			const { getProductBySkuOrSlug, mapProductToFrontend } = await import('../services/productService');
+			
+			const dbProduct = await getProductBySkuOrSlug(prisma, slug);
+			if (dbProduct) {
+				producto = mapProductToFrontend(dbProduct);
 			}
+		} else {
+			// Cliente/Browser fallback (si se llama desde el frontend)
+			let response;
+			let lastError;
+			const maxRetries = 3;
+
+			for (let i = 0; i < maxRetries; i++) {
+				try {
+					response = await fetch(`/api/proxy/section?sku=${encodeURIComponent(slug)}`);
+					if (response.ok) {
+						break;
+					}
+				} catch (err) {
+					lastError = err;
+					if (i === maxRetries - 1) throw err;
+					console.warn(`⚠️ Timeout/Error en intento ${i + 1} para ${slug}. Reintentando en 1s...`);
+					await new Promise(res => setTimeout(res, 1000));
+				}
+			}
+
+			if (!response || !response.ok) {
+				throw new Error(`API error: ${response ? response.status : (lastError?.message || 'Timeout Error')}`);
+			}
+
+			const data = await response.json();
+			producto = data.result;
 		}
-
-		if (!response || !response.ok) {
-			throw new Error(`API error: ${response ? response.status : (lastError?.message || 'Timeout Error')}`);
-		}
-
-		const data = await response.json();
-
-		// El endpoint retorna { result: producto } cuando se busca por SKU
-		const producto = data.result;
 
 		if (!producto) {
 			console.log(`Product not found: ${slug}`);
 			return { item: null };
 		}
 
-		// El producto ya viene con stock_total, precio_contado, precio_final
-		// correctamente calculados por transformProduct() en el proxy.
-		// Priorizar la URL de imagen de la base de datos (Icecat) sobre la local
 		const imageUrl = producto.imageUrl || (producto.sku ? `/api/images/${producto.sku}` : null);
+		
 		const item = {
 			...producto,
-			// Preservar el id numérico de la BD para el carrito (Number(sku) = NaN → rompe Prisma)
 			id: producto.id,
-			slug: producto.sku,
-			// Imagen del producto — ProductGallery requiere imagen1m para mostrar la imagen
+			// Preservar el slug completo para SEO en lugar de sobreescribirlo con el SKU
+			slug: producto.slug || producto.sku,
 			imagen1s: imageUrl,
-			imagen1m: imageUrl,   // ← REQUERIDO por ProductGallery
+			imagen1m: imageUrl,   
 			imagen1xs: imageUrl,
 			imagen1l: imageUrl,
 			imagen_principal: imageUrl,
 			portada: imageUrl,
-			// stock_total ya viene correcto del proxy (suma de todos los almacenes)
-			// via transformProduct() → stockMap.get(sku)
 			stock_total: producto.stock_total ?? producto.stock ?? 0,
 			compatibleProductos: [],
 			breadcrumblist: [],
 			parent__slug: producto.seccion?.toLowerCase() || 'index',
 			categoria: producto.linea || '',
 			specs: {},
-			specs_resume: {},  // Agregar specs_resume vacío para evitar error undefined
-			mediafiles: [],    // Agregar mediafiles vacío para evitar error undefined
+			specs_resume: {},  
+			mediafiles: [],    
 		};
 
 		return { item };

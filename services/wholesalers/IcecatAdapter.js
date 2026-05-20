@@ -38,7 +38,7 @@ export class IcecatAdapter {
                 }
             });
 
-            if (!response.ok) return null;
+            if (!response.ok) return { mainImage: null, gallery: [] };
 
             const json = await response.json();
             

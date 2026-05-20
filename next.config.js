@@ -138,6 +138,11 @@ module.exports = {
 				hostname: '127.0.0.1',
 				pathname: '**',
 			},
+			{
+				protocol: 'https',
+				hostname: 'web-i4t8q7g61bigs480tvfi9pxy.191.101.1.67.sslip.io',
+				pathname: '**',
+			},
 		],
 		// Configurar qualities para Next.js 16
 		qualities: [75, 100],
