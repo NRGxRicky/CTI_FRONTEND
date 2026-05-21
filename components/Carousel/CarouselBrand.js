@@ -100,6 +100,9 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 							position: relative;
 							width: 100%;
 							height: 160px;
+							padding-top: 10px;
+							padding-left: 15px;
+							margin-bottom: 30px;
 						}
 					`}
 				</style>

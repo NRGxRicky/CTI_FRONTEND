@@ -11,16 +11,16 @@ import InfoPageFooter from '../components/InfoPageFooter/InfoPageFooter';
 import Footer from '../components/Footer/Footer';
 
 const CarouselProducts = dynamic(() => import('../components/Carousel/CarouselProducts'), {
-	loading: () => <div className="carousel-loader-placeholder" style={{ height: '330px', marginTop: '20px' }}></div>
+	loading: () => <div className="carousel-loader-placeholder" style={{ height: '330px' }}></div>
 });
 const CarouselProductsV4 = dynamic(() => import('../components/Carousel/CarouselProductsv4'), {
-	loading: () => <div className="carousel-loader-placeholder" style={{ height: '330px', marginTop: '20px' }}></div>
+	loading: () => <div className="carousel-loader-placeholder" style={{ height: '330px' }}></div>
 });
 const CarouselBrand = dynamic(() => import('../components/Carousel/CarouselBrand'), {
-	loading: () => <div className="brand-loader-placeholder" style={{ height: '160px', marginTop: '10px' }}></div>
+	loading: () => <div className="brand-loader-placeholder" style={{ height: '200px' }}></div>
 });
 const GoogleRatings = dynamic(() => import('../components/GoogleRatings/GoogleRatings'), {
-	loading: () => <div className="ratings-loader-placeholder" style={{ height: '340px', marginTop: '20px' }}></div>
+	loading: () => <div className="ratings-loader-placeholder" style={{ height: '340px' }}></div>
 });
 
 const Home = () => {

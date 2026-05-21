@@ -9,7 +9,8 @@ import React, {
 } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import InstantSearch from '../InstantSearch/InstantSearch';
+import dynamic from 'next/dynamic';
+const InstantSearch = dynamic(() => import('../InstantSearch/InstantSearch'), { ssr: false });
 import LoginMenu from '../LoginMenu/LoginMenu';
 import { useAuth } from '../../hooks/auth';
 import TruncateManual from '../../hooks/TruncateManual';
@@ -94,6 +95,7 @@ const HeaderBar: React.FC = () => {
 	const { storeName, logoUrl } = useEnv();
 	const { buildUrl } = useApi();
 	const [windowWidth, setWindowWidth] = useState(0);
+	const [searchActivated, setSearchActivated] = useState(false);
 
 	/**
 	 * Sync query param → searchInput slice
@@ -167,6 +169,7 @@ const HeaderBar: React.FC = () => {
 	};
 
 	const handleInputFocus = (e: ChangeEvent<HTMLInputElement>) => {
+		setSearchActivated(true);
 		dispatch(setQueryInInputWithSearchBar(e.target.value));
 		dispatch(showOpacity());
 		dispatch(showSearchBar());
@@ -209,6 +212,7 @@ const HeaderBar: React.FC = () => {
 	};
 
 	const handleMobileSearch = () => {
+		setSearchActivated(true);
 		dispatch(showSearchBar());
 		dispatch(showOpacity());
 		textInput.current?.focus();
@@ -372,7 +376,7 @@ const HeaderBar: React.FC = () => {
 										</button>
 									</div>
 								</form>
-								{!loading && (
+								{!loading && searchActivated && (
 									<div className='search-box'>
 										<InstantSearch
 											query={queryInInput}
@@ -533,7 +537,7 @@ const HeaderBar: React.FC = () => {
 						</div>
 					</form>
 				</div>
-				{!loading && searchVisibleValue && (
+				{!loading && searchActivated && searchVisibleValue && (
 					<div className='col-sm-12 col-md-12 col-lg-12 search-box search-box__mobile'>
 						<InstantSearch
 							query={queryInInput}

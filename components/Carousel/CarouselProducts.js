@@ -150,7 +150,6 @@ const CarouselProducts = ({
 				<style jsx>
 					{`
 						.embla {
-							margin-top: 20px;
 							width: 100%;
 							height: 330px;
 							position: relative;

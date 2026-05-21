@@ -113,7 +113,6 @@ const CarouselProductsV4 = ({
 				<style jsx>
 					{`
 						.carousel {
-							margin-top: 20px;
 							width: 100%;
 							height: 330px;
 							position: relative;
