@@ -115,8 +115,8 @@ const ListProductsMobile = ({
 											style={{ objectFit: 'contain' }}
 											alt={Capitalize(producto.titulo)}
 											draggable='false'
-											sizes='auto'
-											priority={true}
+											sizes='45vw'
+											priority={results.indexOf(producto) < 2}
 										/>
 										<NewProduct date={producto.created} />
 									</div>

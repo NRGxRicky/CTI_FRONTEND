@@ -146,7 +146,8 @@ module.exports = {
 		],
 		// Configurar qualities para Next.js 16
 		qualities: [75, 100],
-		formats: ['image/webp'],
+		formats: ['image/avif', 'image/webp'],
+		deviceSizes: [640, 750, 828, 1080, 1200, 1920],
 	},
 	eslint: {
 		// Warning: This allows production builds to successfully complete even if

@@ -232,7 +232,7 @@ const CarouselProductsV4 = ({
 															style={{ objectFit: 'contain' }}
 															alt={Capitalize(producto.titulo)}
 															draggable='false'
-															sizes='auto'
+															sizes='(min-width: 1024px) 180px, 160px'
 														/>
 														<NewProduct date={producto.created} />
 													</div>

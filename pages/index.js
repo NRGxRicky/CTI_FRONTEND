@@ -1,16 +1,18 @@
 import React from 'react';
 import Standard from '../components/Carousel/Standard';
 import Head from 'next/head';
-import CarouselProducts from '../components/Carousel/CarouselProducts';
-import CarouselBrand from '../components/Carousel/CarouselBrand';
-import InfoPageFooter from '../components/InfoPageFooter/InfoPageFooter';
-import Footer from '../components/Footer/Footer';
+import dynamic from 'next/dynamic';
 import { useAppSelector } from '../lib/hooks';
 import BestCategories from '../components/BestCategories/BestCategories';
-import CarouselProductsV4 from '../components/Carousel/CarouselProductsv4';
-import BenefitCarousel from '../components/BenefitCarousel/BenefitCarousel';
 import { useEnv } from '../context/EnvContext';
-import GoogleRatings from '../components/GoogleRatings/GoogleRatings';
+
+const CarouselProducts = dynamic(() => import('../components/Carousel/CarouselProducts'), { ssr: false });
+const CarouselProductsV4 = dynamic(() => import('../components/Carousel/CarouselProductsv4'), { ssr: false });
+const CarouselBrand = dynamic(() => import('../components/Carousel/CarouselBrand'), { ssr: false });
+const BenefitCarousel = dynamic(() => import('../components/BenefitCarousel/BenefitCarousel'), { ssr: false });
+const GoogleRatings = dynamic(() => import('../components/GoogleRatings/GoogleRatings'), { ssr: false });
+const InfoPageFooter = dynamic(() => import('../components/InfoPageFooter/InfoPageFooter'), { ssr: false });
+const Footer = dynamic(() => import('../components/Footer/Footer'), { ssr: false });
 
 const Home = () => {
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
@@ -43,7 +45,7 @@ const Home = () => {
 				{/* URL canónica */}
 				<link
 					rel='canonical'
-					href={typeof window !== 'undefined' ? window.location.origin : ''}
+					href='https://ctisystems.com.mx'
 				/>
 			</Head>
 			<div className='hero'>

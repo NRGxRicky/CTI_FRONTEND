@@ -93,8 +93,8 @@ const Standard = () => {
 										src={banner.imagen}
 										alt={banner.nombre || 'Banner'}
 										fill
-										sizes="(min-width: 1024px) 1500px, 100vw"
-										quality={100}
+										sizes="(min-width: 1024px) 100vw, 100vw"
+										quality={75}
 										priority={index === 1}
 										style={{ objectFit: 'cover' }}
 									/>

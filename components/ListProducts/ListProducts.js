@@ -64,8 +64,8 @@ const ListProducts = ({ results, filter_available_store }) => {
 											style={{ objectFit: 'contain' }}
 											alt={Capitalize(producto.titulo)}
 											draggable='false'
-											sizes='auto'
-											priority={true}
+											sizes='(min-width: 1024px) 200px, 45vw'
+											priority={index < 4}
 										/>
 									) : (
 										<div style={{ width: '100%', height: '150px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc', borderRadius: '12px', border: '2px dashed #e2e8f0', padding: '15px' }}>
