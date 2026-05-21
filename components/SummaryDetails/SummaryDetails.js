@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Script from 'next/script';
 import { useRouter } from 'next/router';
 import { showPaymentsChange } from '../../lib/features/showOpacityContainerSlide';
 import { useAppDispatch } from '../../lib/hooks';
@@ -33,9 +34,11 @@ const SummaryDetails = ({ urlAction, step }) => {
 	const dispatch = useAppDispatch();
 	const { cartMsi, accessToken, username } = useAuth();
 	const router = useRouter();
-	const { storeId } = useEnv();
+	const { storeId, paypalClientId } = useEnv();
 	const [kueskiCallbackUrl, setKueskiCallbackUrl] = useState(null);
 	const [aplazoCheckoutUrl, setAplazoCheckoutUrl] = useState(null);
+	const [paypalLoaded, setPaypalLoaded] = useState(() => typeof window !== 'undefined' && !!window.paypal);
+	const [mercadopagoLoaded, setMercadopagoLoaded] = useState(() => typeof window !== 'undefined' && !!window.MercadoPago);
 
 	// Sandbox mode hook
 	const {
@@ -235,6 +238,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 		router,
 		taxInvoice,
 		clearCart,
+		paypalLoaded,
 	]);
 
 	//-------------------------------------------------------------------
@@ -329,7 +333,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 		) {
 			initMercadoPagoCheckout();
 		}
-	}, [paymentMethod, step]);
+	}, [paymentMethod, step, mercadopagoLoaded]);
 
 	// Función que crea la preferencia en tu server Django y luego inyecta MP Checkout
 	const initMercadoPagoCheckout = async () => {
@@ -590,6 +594,30 @@ const SummaryDetails = ({ urlAction, step }) => {
 
 	return (
 		<div className='summary-details'>
+			{/* Scripts de pago cargados de forma dinámica y diferida */}
+			{paymentMethod === 'paypal' && (
+				<Script
+					id='paypal-sdk'
+					src={`https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=MXN&locale=es_MX`}
+					strategy='afterInteractive'
+					onLoad={() => setPaypalLoaded(true)}
+				/>
+			)}
+			{paymentMethod === 'mercadopago' && (
+				<Script
+					id='mercadopago-sdk'
+					src="https://sdk.mercadopago.com/js/v2"
+					strategy='afterInteractive'
+					onLoad={() => setMercadopagoLoaded(true)}
+				/>
+			)}
+			{((!paymentMethod) || paymentMethod === 'aplazo') && (
+				<Script
+					id='aplazo-sdk'
+					src="https://cdn.aplazo.mx/aplazo-widgets.min.js"
+					strategy='afterInteractive'
+				/>
+			)}
 			<div className='summary-details__content'>
 				{/* Toggle modo carrito */}
 				<div className='cart__change-payment'>

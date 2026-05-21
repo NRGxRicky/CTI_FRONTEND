@@ -13,6 +13,7 @@ import { showPaymentsChange } from '../../lib/features/showOpacityContainerSlide
 import { useAppDispatch } from '../../lib/hooks';
 import KueskiPayWidget from '../KueskiPayWidget/KueskiPayWidget';
 import SocialShare from '../SocialShare/SocialShare';
+import Script from 'next/script';
 
 const DetailProduct = ({
 	item,
@@ -366,6 +367,11 @@ const DetailProduct = ({
 
 					{/* APLAZO WIDGET */}
 					<div className='aplazo-widget' style={{ marginTop: 10 }}>
+						<Script
+							id="aplazo-sdk"
+							src="https://cdn.aplazo.mx/aplazo-widgets.min.js"
+							strategy="afterInteractive"
+						/>
 						<aplazo-placement product-price={
 							item.precio_final_descuento > 0
 								? parseFloat(item.precio_final_descuento * 100)
