@@ -165,7 +165,7 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 					.embla {
 						margin-top: 20px;
 						width: 100%;
-						height: 350px;
+						height: 240px;
 						position: relative;
 					}
 					.carousel__loader {

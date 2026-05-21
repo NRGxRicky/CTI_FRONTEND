@@ -152,7 +152,7 @@ const CarouselProducts = ({
 						.embla {
 							margin-top: 20px;
 							width: 100%;
-							height: 350px;
+							height: 330px;
 							position: relative;
 						}
 
@@ -401,7 +401,7 @@ const CarouselProducts = ({
 						width: 100%;
 						max-height: 450px;
 						position: relative;
-						height: 300px;
+						height: 330px;
 					}
 
 					.embla__container {

@@ -93,13 +93,13 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 
 	if (loading) {
 		return (
-			<div className=''>
+			<div className='brand-loader'>
 				<style jsx>
 					{`
-						. {
+						.brand-loader {
 							position: relative;
 							width: 100%;
-							height: 200px;
+							height: 160px;
 						}
 					`}
 				</style>
@@ -227,6 +227,8 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 						padding-top: 10px;
 						padding-left: 15px;
 						margin-bottom: 30px;
+						height: 160px;
+					}
 
 					.brand____container {
 						display: flex;

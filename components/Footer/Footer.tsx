@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import GoogleRatings from '../GoogleRatings/GoogleRatings';
 import { useEnv } from '../../context/EnvContext';
 
 interface FooterProps { }

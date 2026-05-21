@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from 'react';
+import { useReducer, useEffect, useRef } from 'react';
 import { useSwipeable } from 'react-swipeable';
 
 const transitionTime = 400;
@@ -57,8 +57,8 @@ function carouselReducer(state, action) {
 	}
 }
 
-function swiped(e, dispatch, length, dir) {
-	const t = threshold(e.event.target);
+function swiped(e, dispatch, length, dir, containerWidth) {
+	const t = containerWidth / 3;
 	const d = dir * -e.deltaX;
 	if (d >= t) {
 		dispatch(dir <= 0 ? { type: 'prev', length } : { type: 'next', length });
@@ -83,6 +83,7 @@ export function useCarousel(length, interval, options = {}) {
 		0,
 		Math.min(initialActive, Math.max(0, length - 1))
 	);
+	const containerWidthRef = useRef(1);
 	const [state, dispatch] = useReducer(
 		carouselReducer,
 		initialCarouselState,
@@ -91,6 +92,12 @@ export function useCarousel(length, interval, options = {}) {
 
 	const handlers = useSwipeable({
 		onSwiping(e) {
+			if (typeof window !== 'undefined') {
+				const container = e.event.currentTarget || document.querySelector('.carousel__container');
+				if (container) {
+					containerWidthRef.current = container.clientWidth || 1;
+				}
+			}
 			e.velocity > 0.2 &&
 				dispatch({
 					type: 'drag',
@@ -98,10 +105,10 @@ export function useCarousel(length, interval, options = {}) {
 				});
 		},
 		onSwipedLeft(e) {
-			swiped(e, dispatch, length, 1);
+			swiped(e, dispatch, length, 1, containerWidthRef.current);
 		},
 		onSwipedRight(e) {
-			swiped(e, dispatch, length, -1);
+			swiped(e, dispatch, length, -1, containerWidthRef.current);
 		},
 		trackMouse: true,
 		trackTouch: true,
@@ -145,10 +152,8 @@ export function useCarousel(length, interval, options = {}) {
 		style.transform = `translate3d(${shift}%,0,0)`;
 	} else if (!isNaN(state.offset)) {
 		if (state.offset !== 0) {
-			// Convert pixel drag to percentage of container width (self width)
-			const container = typeof window !== 'undefined' ? document.querySelector('.carousel__container') : null;
-			const containerWidth = container ? container.clientWidth : 1;
-			const percent = (state.offset / containerWidth) * 100;
+			// Convert pixel drag to percentage of container width using cached ref to prevent forced reflow
+			const percent = (state.offset / containerWidthRef.current) * 100;
 			style.transform = `translate3d(${percent}%,0,0)`;
 		} else {
 			style.transition = elastic;

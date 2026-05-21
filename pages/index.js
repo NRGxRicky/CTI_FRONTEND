@@ -6,13 +6,22 @@ import { useAppSelector } from '../lib/hooks';
 import BestCategories from '../components/BestCategories/BestCategories';
 import { useEnv } from '../context/EnvContext';
 
-const CarouselProducts = dynamic(() => import('../components/Carousel/CarouselProducts'), { ssr: false });
-const CarouselProductsV4 = dynamic(() => import('../components/Carousel/CarouselProductsv4'), { ssr: false });
-const CarouselBrand = dynamic(() => import('../components/Carousel/CarouselBrand'), { ssr: false });
-const BenefitCarousel = dynamic(() => import('../components/BenefitCarousel/BenefitCarousel'), { ssr: false });
-const GoogleRatings = dynamic(() => import('../components/GoogleRatings/GoogleRatings'), { ssr: false });
-const InfoPageFooter = dynamic(() => import('../components/InfoPageFooter/InfoPageFooter'), { ssr: false });
-const Footer = dynamic(() => import('../components/Footer/Footer'), { ssr: false });
+import BenefitCarousel from '../components/BenefitCarousel/BenefitCarousel';
+import InfoPageFooter from '../components/InfoPageFooter/InfoPageFooter';
+import Footer from '../components/Footer/Footer';
+
+const CarouselProducts = dynamic(() => import('../components/Carousel/CarouselProducts'), {
+	loading: () => <div className="carousel-loader-placeholder" style={{ height: '330px', marginTop: '20px' }}></div>
+});
+const CarouselProductsV4 = dynamic(() => import('../components/Carousel/CarouselProductsv4'), {
+	loading: () => <div className="carousel-loader-placeholder" style={{ height: '330px', marginTop: '20px' }}></div>
+});
+const CarouselBrand = dynamic(() => import('../components/Carousel/CarouselBrand'), {
+	loading: () => <div className="brand-loader-placeholder" style={{ height: '160px', marginTop: '10px' }}></div>
+});
+const GoogleRatings = dynamic(() => import('../components/GoogleRatings/GoogleRatings'), {
+	loading: () => <div className="ratings-loader-placeholder" style={{ height: '240px', marginTop: '20px' }}></div>
+});
 
 const Home = () => {
 	const mobileView = useAppSelector((state) => state.mobileSlide.mobileView);
@@ -46,6 +55,16 @@ const Home = () => {
 				<link
 					rel='canonical'
 					href='https://ctisystems.com.mx'
+				/>
+
+				{/* Precarga de imagen LCP para móviles */}
+				<link
+					rel="preload"
+					fetchPriority="high"
+					as="image"
+					href="/_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=1920&q=75"
+					imageSrcSet="/_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=640&q=75 640w, /_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=750&q=75 750w, /_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=828&q=75 828w, /_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=1080&q=75 1080w, /_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=1200&q=75 1200w, /_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=1920&q=75 1920w"
+					imageSizes="100vw"
 				/>
 			</Head>
 			<div className='hero'>
