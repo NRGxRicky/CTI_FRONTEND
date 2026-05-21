@@ -154,4 +154,7 @@ module.exports = {
 		// your project has ESLint errors.
 		ignoreDuringBuilds: true,
 	},
+	outputFileTracingIncludes: {
+		'**/*': ['./node_modules/sharp/**/*', './node_modules/@img/**/*'],
+	},
 };
