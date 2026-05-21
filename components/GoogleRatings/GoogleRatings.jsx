@@ -150,22 +150,65 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 	// --- Preloader mientras se cargan las reseñas ---
 	if (loading) {
 		return (
-			<div className='embla'>
-				<div className='carousel__loader'>
-					<Preloader
-						use={TailSpin}
-						size={30}
-						strokeWidth={8}
-						strokeColor='var(--primary-color)' // ajusta tu color
-						duration={900}
-					/>
+			<div className='reviews-carousel reviews-carousel--loading'>
+				<div className='reviews-carousel__head'>
+					<div className='reviews-carousel__logo-placeholder' />
+					<div>
+						<div className='reviews-carousel__header-placeholder' />
+						<div className='review-overall-placeholder' />
+					</div>
+				</div>
+				<div className='embla'>
+					<div className='carousel__loader'>
+						<Preloader
+							use={TailSpin}
+							size={30}
+							strokeWidth={8}
+							strokeColor='var(--primary-color)'
+							duration={900}
+						/>
+					</div>
 				</div>
 				{/* eslint-disable-next-line react/no-unknown-property */}
 				<style jsx>{`
+					.reviews-carousel {
+						position: relative;
+						width: 100%;
+						margin: 0 auto;
+						padding: 1rem 0;
+						height: 340px;
+						box-sizing: border-box;
+					}
+					.reviews-carousel__head {
+						display: flex;
+						align-items: center;
+						height: 80px;
+					}
+					.reviews-carousel__logo-placeholder {
+						width: 48px;
+						height: 48px;
+						margin: 0 15px;
+						background: #f0f0f0;
+						border-radius: 50%;
+					}
+					.reviews-carousel__header-placeholder {
+						width: 180px;
+						height: 20px;
+						background: #f0f0f0;
+						border-radius: 4px;
+						margin: 5px 0;
+					}
+					.review-overall-placeholder {
+						width: 120px;
+						height: 16px;
+						background: #f0f0f0;
+						border-radius: 4px;
+						margin-top: 5px;
+					}
 					.embla {
 						margin-top: 20px;
 						width: 100%;
-						height: 240px;
+						height: 220px;
 						position: relative;
 					}
 					.carousel__loader {
@@ -360,6 +403,8 @@ const GoogleRatingsCarousel = ({ mobile = false }) => {
 					width: 100%;
 					margin: 0 auto;
 					padding: 1rem 0;
+					height: 340px;
+					box-sizing: border-box;
 				}
 
 				/* Promedio y contador */

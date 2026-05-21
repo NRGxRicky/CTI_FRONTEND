@@ -107,7 +107,7 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 		);
 	}
 	return (
-		<div>
+		<>
 			<div className='brand__carousel'>
 				<div className='brand__header'>
 					<h1>LAS MEJORES MARCAS</h1>
@@ -300,7 +300,7 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 					}
 				`}
 			</style>
-		</div>
+		</>
 	);
 };
 

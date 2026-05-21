@@ -20,7 +20,7 @@ const CarouselBrand = dynamic(() => import('../components/Carousel/CarouselBrand
 	loading: () => <div className="brand-loader-placeholder" style={{ height: '160px', marginTop: '10px' }}></div>
 });
 const GoogleRatings = dynamic(() => import('../components/GoogleRatings/GoogleRatings'), {
-	loading: () => <div className="ratings-loader-placeholder" style={{ height: '240px', marginTop: '20px' }}></div>
+	loading: () => <div className="ratings-loader-placeholder" style={{ height: '340px', marginTop: '20px' }}></div>
 });
 
 const Home = () => {

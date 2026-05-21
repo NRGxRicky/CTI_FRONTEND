@@ -195,7 +195,7 @@ const CarouselProductsV4 = ({
 		);
 	}
 	return (
-		<div>
+		<>
 			<div className='carousel'>
 				<div className='carousel__viewport' ref={emblaRef}>
 					<div className='carousel__container'>
@@ -514,7 +514,7 @@ const CarouselProductsV4 = ({
 					}
 				`}
 			</style>
-		</div>
+		</>
 	);
 };
 
