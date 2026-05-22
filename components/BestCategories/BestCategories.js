@@ -93,7 +93,14 @@ const BestCategories = ({ mobile = false }) => {
 						.best-categories-carousel {
 							margin-top: 20px;
 							margin-bottom: 20px;
-							min-height: 110px;
+							height: 134px;
+						}
+						@media only screen and (max-width: 48em) {
+							.best-categories-carousel {
+								margin-top: 10px;
+								margin-bottom: 10px;
+								height: 134px;
+							}
 						}
 					`}
 				</style>
@@ -321,12 +328,14 @@ const BestCategories = ({ mobile = false }) => {
 
 						.best-categories-carousel {
 							margin-top: 20px;
-							
-							min-height: 110px;
+							margin-bottom: 20px;
+							height: 134px;
 						}
 						@media only screen and (max-width: 48em) {
 							.best-categories-carousel {
 								margin-top: 10px;
+								margin-bottom: 10px;
+								height: 134px;
 							}
 						}
 					`}

@@ -15,19 +15,19 @@ export const bannersData = {
         {
             id: 1,
             nombre: 'Banner Personalizado 1',
-            imagen: '/banners/unnamed (1).webp',
+            imagen: '/banners/unnamed-1.webp',
             enlace: '/',
         },
         {
             id: 2,
             nombre: 'Banner Personalizado 2',
-            imagen: '/banners/unnamed (2).webp',
+            imagen: '/banners/unnamed-2.webp',
             enlace: '/',
         },
         {
             id: 3,
             nombre: 'Banner Personalizado 3',
-            imagen: '/banners/unnamed (3).webp',
+            imagen: '/banners/unnamed-3.webp',
             enlace: '/',
         },
         // 🎯 AGREGAR MÁS BANNERS AQUÍ

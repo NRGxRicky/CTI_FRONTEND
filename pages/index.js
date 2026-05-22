@@ -9,6 +9,7 @@ import { useEnv } from '../context/EnvContext';
 import BenefitCarousel from '../components/BenefitCarousel/BenefitCarousel';
 import InfoPageFooter from '../components/InfoPageFooter/InfoPageFooter';
 import Footer from '../components/Footer/Footer';
+import LazySection from '../components/LazySection/LazySection';
 
 const CarouselProducts = dynamic(() => import('../components/Carousel/CarouselProducts'), {
 	loading: () => <div className="carousel-loader-placeholder" style={{ height: '330px' }}></div>
@@ -62,8 +63,8 @@ const Home = () => {
 					rel="preload"
 					fetchPriority="high"
 					as="image"
-					href="/_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=1920&q=75"
-					imageSrcSet="/_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=640&q=75 640w, /_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=750&q=75 750w, /_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=828&q=75 828w, /_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=1080&q=75 1080w, /_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=1200&q=75 1200w, /_next/image?url=%2Fbanners%2Funnamed%20%282%29.webp&w=1920&q=75 1920w"
+					href="/_next/image?url=%2Fbanners%2Funnamed-2.webp&w=1920&q=75"
+					imageSrcSet="/_next/image?url=%2Fbanners%2Funnamed-2.webp&w=640&q=75 640w, /_next/image?url=%2Fbanners%2Funnamed-2.webp&w=750&q=75 750w, /_next/image?url=%2Fbanners%2Funnamed-2.webp&w=828&q=75 828w, /_next/image?url=%2Fbanners%2Funnamed-2.webp&w=1080&q=75 1080w, /_next/image?url=%2Fbanners%2Funnamed-2.webp&w=1200&q=75 1200w, /_next/image?url=%2Fbanners%2Funnamed-2.webp&w=1920&q=75 1920w"
 					imageSizes="100vw"
 				/>
 			</Head>
@@ -94,7 +95,9 @@ const Home = () => {
 						<div className='section-products__title'>
 							<h1>RECOMENDADOS</h1>
 						</div>
-						<CarouselProducts typeQuery={'-ventas'} mobile={mobileView} />
+						<LazySection placeholder={<div className="carousel-loader-placeholder" style={{ height: '330px' }}></div>}>
+							<CarouselProducts typeQuery={'-ventas'} mobile={mobileView} />
+						</LazySection>
 					</div>
 				</div>
 
@@ -103,18 +106,24 @@ const Home = () => {
 						<div className='section-products__title'>
 							<h1>NUEVOS</h1>
 						</div>
-						<CarouselProducts typeQuery={'-created'} mobile={mobileView} />
+						<LazySection placeholder={<div className="carousel-loader-placeholder" style={{ height: '330px' }}></div>}>
+							<CarouselProducts typeQuery={'-created'} mobile={mobileView} />
+						</LazySection>
 					</div>
 				</div>
 
-				<CarouselBrand mobile={mobileView} />
+				<LazySection placeholder={<div className="brand-loader-placeholder" style={{ height: '200px' }}></div>}>
+					<CarouselBrand mobile={mobileView} />
+				</LazySection>
 
 				<div className='section best'>
 					<div className='section-products'>
 						<div className='section-products__title'>
 							<h1>MÁS VENDIDOS</h1>
 						</div>
-						<CarouselProducts typeQuery={'-popular'} mobile={mobileView} />
+						<LazySection placeholder={<div className="carousel-loader-placeholder" style={{ height: '330px' }}></div>}>
+							<CarouselProducts typeQuery={'-popular'} mobile={mobileView} />
+						</LazySection>
 					</div>
 				</div>
 
@@ -127,18 +136,27 @@ const Home = () => {
 								Gamer.
 							</span>
 						</div>
-						<CarouselProducts
-							typeQuery={'-ventas'}
-							mobile={mobileView}
-							q={'gamer'}
-						/>
+						<LazySection placeholder={<div className="carousel-loader-placeholder" style={{ height: '330px' }}></div>}>
+							<CarouselProducts
+								typeQuery={'-ventas'}
+								mobile={mobileView}
+								q={'gamer'}
+							/>
+						</LazySection>
 					</div>
 				</div>
 
-				<BenefitCarousel />
+				<LazySection placeholder={<div style={{ height: '180px', marginTop: '20px' }}></div>}>
+					<BenefitCarousel />
+				</LazySection>
 
-				<GoogleRatings mobile={mobileView} />
-				<InfoPageFooter />
+				<LazySection placeholder={<div className="ratings-loader-placeholder" style={{ height: '340px' }}></div>}>
+					<GoogleRatings mobile={mobileView} />
+				</LazySection>
+
+				<LazySection placeholder={<div style={{ height: '200px' }}></div>}>
+					<InfoPageFooter />
+				</LazySection>
 			</div>
 			<Footer />
 
