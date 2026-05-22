@@ -96,6 +96,7 @@ const Standard = () => {
 										sizes="(min-width: 1024px) 100vw, 100vw"
 										quality={75}
 										priority={index === 1}
+										fetchPriority={index === 1 ? 'high' : 'auto'}
 										style={{ objectFit: 'cover' }}
 									/>
 								</div>

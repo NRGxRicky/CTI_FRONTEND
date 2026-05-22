@@ -358,6 +358,7 @@ const HeaderBar: React.FC = () => {
 											type='submit'
 											className='header-bar__button-search'
 											ref={searchButton}
+											aria-label='Buscar'
 										>
 											{/* svg lupa */}
 											<svg
@@ -519,7 +520,7 @@ const HeaderBar: React.FC = () => {
 							>
 								<div className='close --close-search'></div>
 							</div>
-							<button type='submit' className='header-bar__button-search'>
+							<button type='submit' className='header-bar__button-search' aria-label='Buscar'>
 								<svg
 									className='header-bar__icon'
 									width='25'

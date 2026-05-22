@@ -8,7 +8,7 @@ import LazySection from '../components/LazySection/LazySection';
 
 const BestCategories = dynamic(() => import('../components/BestCategories/BestCategories'), {
 	ssr: false,
-	loading: () => <div style={{ height: '134px', marginTop: '20px', marginBottom: '20px' }}></div>
+	loading: () => <div className="best-categories-placeholder"></div>
 });
 
 const BenefitCarousel = dynamic(() => import('../components/BenefitCarousel/BenefitCarousel'), {

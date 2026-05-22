@@ -98,7 +98,7 @@ a:hover {
 }
 
 .text--off {
-	color: rgb(114 114 114);
+	color: #616161;
 }
 
 .text--light {
@@ -106,10 +106,36 @@ a:hover {
 }
 
 .text--green {
-	color: #00b517;
+	color: #137333;
 }
 .text--red {
 	color: var(--primary-color);
+}
+
+.best-categories-placeholder {
+	height: 134px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+@media only screen and (max-width: 48em) {
+	.best-categories-placeholder {
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+}
+
+.carousel,
+.embla,
+.carousel-loader-placeholder {
+	height: 330px;
+}
+
+.brand-loader-placeholder {
+	height: 200px;
+}
+
+.ratings-loader-placeholder {
+	height: 340px;
 }
 
 .card:hover .card__title {

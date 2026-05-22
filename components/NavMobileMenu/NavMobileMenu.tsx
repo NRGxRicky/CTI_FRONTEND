@@ -343,7 +343,9 @@ const NavMobileMenu = () => {
 						) : (
 							<>
 								<ul className='main-menu__list main-menu__account-list'>
-									<h2 className='main-menu__section-title'>Cuenta</h2>
+									<li>
+										<h2 className='main-menu__section-title'>Cuenta</h2>
+									</li>
 									{isAuthenticated ? (
 										<>
 											<li className='main-menu__list-item'>
@@ -399,23 +401,27 @@ const NavMobileMenu = () => {
 											</li>
 										</>
 									) : (
-										<div className='main-menu__login-container'>
-											<Link href='/login' legacyBehavior>
-												<a
-													className='main-menu__logout-btn btn-gradient'
-													onClick={toggleMenu}
-												>
-													<span>Iniciar Sesión</span>
-												</a>
-											</Link>
-										</div>
+										<li>
+											<div className='main-menu__login-container'>
+												<Link href='/login' legacyBehavior>
+													<a
+														className='main-menu__logout-btn btn-gradient'
+														onClick={toggleMenu}
+													>
+														<span>Iniciar Sesión</span>
+													</a>
+												</Link>
+											</div>
+										</li>
 									)}
 								</ul>
 
 								<ul className='main-menu__list main-menu__card'>
-									<h2 className='main-menu__section-title'>
-										Categorías Populares
-									</h2>
+									<li>
+										<h2 className='main-menu__section-title'>
+											Categorías Populares
+										</h2>
+									</li>
 									<li className='main-menu__list-item'>
 										<Link
 											href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
@@ -519,7 +525,9 @@ const NavMobileMenu = () => {
 
 								{/* --- Sección: Información (enlaces del footer) --- */}
 								<ul className='main-menu__list main-menu__card'>
-									<h2 className='main-menu__section-title'>Información</h2>
+									<li>
+										<h2 className='main-menu__section-title'>Información</h2>
+									</li>
 									<li className='main-menu__list-item'>
 										<Link href='/politicas-de-devolucion' legacyBehavior>
 											<a
