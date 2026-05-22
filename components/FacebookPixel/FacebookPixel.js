@@ -1,7 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Script from 'next/script'
 
 const FacebookPixel = () => {
+  const [loadScript, setLoadScript] = useState(false);
+
+  useEffect(() => {
+    const handleInteraction = () => {
+      setLoadScript(true);
+      cleanup();
+    };
+
+    const cleanup = () => {
+      window.removeEventListener('scroll', handleInteraction);
+      window.removeEventListener('mousemove', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+    };
+
+    // Listen for user interactions
+    window.addEventListener('scroll', handleInteraction, { passive: true });
+    window.addEventListener('mousemove', handleInteraction, { passive: true });
+    window.addEventListener('touchstart', handleInteraction, { passive: true });
+    window.addEventListener('click', handleInteraction, { passive: true });
+
+    // Fallback timer
+    const timer = setTimeout(() => {
+      setLoadScript(true);
+      cleanup();
+    }, 4000);
+
+    return () => {
+      cleanup();
+      clearTimeout(timer);
+    };
+  }, []);
+
+  if (!loadScript) return null;
+
   return (
     <div>
       <Script
