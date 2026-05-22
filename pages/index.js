@@ -58,15 +58,7 @@ const Home = () => {
 					href='https://ctisystems.com.mx'
 				/>
 
-				{/* Precarga de imagen LCP para móviles */}
-				<link
-					rel="preload"
-					fetchPriority="high"
-					as="image"
-					href="/_next/image?url=%2Fbanners%2Funnamed-2.webp&w=1920&q=75"
-					imageSrcSet="/_next/image?url=%2Fbanners%2Funnamed-2.webp&w=640&q=75 640w, /_next/image?url=%2Fbanners%2Funnamed-2.webp&w=750&q=75 750w, /_next/image?url=%2Fbanners%2Funnamed-2.webp&w=828&q=75 828w, /_next/image?url=%2Fbanners%2Funnamed-2.webp&w=1080&q=75 1080w, /_next/image?url=%2Fbanners%2Funnamed-2.webp&w=1200&q=75 1200w, /_next/image?url=%2Fbanners%2Funnamed-2.webp&w=1920&q=75 1920w"
-					imageSizes="100vw"
-				/>
+
 			</Head>
 			<div className='hero'>
 				<div className='hero-spacer__container'>

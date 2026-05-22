@@ -86,7 +86,7 @@ const Standard = () => {
 			<CarouselContainer interval={10000} peekPercent={6} initialIndex={1} edgeOffsetTop={20}>
 				{data.results.map((banner, index) => (
 					<CarouselChild key={banner.id}>
-						<Link href={banner.enlace} legacyBehavior>
+						<Link href={banner.enlace} legacyBehavior passHref>
 							<a>
 								<div className='carousel__slide'>
 									<Image
@@ -107,6 +107,9 @@ const Standard = () => {
 			<style jsx>
 				{`
 					.carousel {
+						position: relative;
+						width: 100%;
+						aspect-ratio: 1920 / 563; /* Corresponds to 1920/640 aspect ratio with peekPercent=6 */
 						max-height: 550px;
 						max-width: 100dvw;
 						margin: 0 auto;

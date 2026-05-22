@@ -131,6 +131,7 @@ const BestCategories = ({ mobile = false }) => {
 									<Link
 										href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
 										legacyBehavior
+										passHref
 									>
 										<a className='best-categories-carousel__a'>
 											<Image
@@ -157,6 +158,7 @@ const BestCategories = ({ mobile = false }) => {
 									<Link
 										href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
 										legacyBehavior
+										passHref
 									>
 										<a>
 											<TruncateMarkup lines={1}>

@@ -104,7 +104,7 @@ export default async function handler(req, res) {
                     ...frontend,
                     original_title: p.title,
                     url: `/${frontend.slug}`,
-                    image: p.imageUrl || getCategoryIcon(p.category) // Usar URL de Icecat o icono de categoría
+                    image: frontend.imageUrl // Usar URL formateada (con S3 si aplica) o icono de categoría
                 };
             });
 

@@ -31,13 +31,15 @@ async function runImageSync() {
         await prisma.$connect();
         console.log('✅ Base de datos montada.\n');
         
-        // Aislar estrictamente a los productos "ciegos"
+        // Buscar productos que no tengan imagen principal
         const productsToUpdate = await prisma.product.findMany({
             where: {
                 imageUrl: null,
             },
-            take: 5, // LÍMITE DE PRUEBA INICIAL: Procesar solo 5 productos para demostrar que funciona
-            select: { id: true, ingramSku: true, title: true, upc: true, mpn: true, brand: true }
+            orderBy: {
+                updatedAt: 'asc', // Ordenar por los más antiguos para no repetir los fantasmas recién revisados
+            },
+            take: 2000, // Bloque masivo de 2000 productos
         });
 
         console.log(`📊 Extrayendo fotografías para ${productsToUpdate.length} productos en esta tanda.\n`);
@@ -57,17 +59,22 @@ async function runImageSync() {
                         where: { id: prod.id },
                         data: { 
                             imageUrl: mainImage,
-                            gallery: gallery // Guardamos el array de URLs
+                            gallery: gallery
                         }
                     });
-                    console.log(`   ✅ ¡Match Fotográfico! (${gallery.length} fotos extras). URL: ${mainImage}`);
+                    console.log(`   ✅ ¡Match! (${gallery.length} fotos). URL: ${mainImage.substring(0, 50)}...`);
                     procesados++;
                 } else {
-                    console.log(`   👻 Producto no hallado en el catálogo mundial (Icecat no lo tiene).`);
+                    console.log(`   👻 No hallado (UPC: ${prod.upc || 'N/A'}, MPN: ${prod.mpn || 'N/A'})`);
+                    // Touch al producto para actualizar su fecha de modificación y enviarlo al final de la cola
+                    await prisma.product.update({
+                        where: { id: prod.id },
+                        data: { updatedAt: new Date() }
+                    });
                     fantasmas++;
                 }
             } catch (err) {
-                 console.error(`   ❌ Error procesando foto: ${err.message}`);
+                 console.error(`   ❌ Error: ${err.message}`);
             }
 
             // Regla de Oro de las APIs Públicas: Nunca hagas peticiones simultáneas, detente 1.5s

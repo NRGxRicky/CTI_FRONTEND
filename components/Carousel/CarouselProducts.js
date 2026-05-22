@@ -239,7 +239,7 @@ const CarouselProducts = ({
 							.filter((i) => i.id !== exclude)
 							.map((producto, index) => (
 								<div className='embla__slide' key={producto.id}>
-									<Link href={`/${producto.slug}`} legacyBehavior>
+									<Link href={`/${producto.slug}`} legacyBehavior passHref>
 										<a onClick={() => handleProductClick(producto, index)}>
 											<div className={'card__carousel'}>
 												<div className='card__carousel__content'>

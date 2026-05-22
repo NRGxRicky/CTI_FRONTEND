@@ -25,6 +25,18 @@ export function getCategoryIcon(category) {
 	return CATEGORY_ICON_MAP[category] || '/images/categories/generico.svg';
 }
 
+// Formatea URLs de imágenes relativas (ej. products/XXX/1.webp) usando el dominio de S3
+export function formatImageUrl(url) {
+	if (!url) return null;
+	if (typeof url !== 'string') return url;
+	if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+		return url;
+	}
+	const s3PublicUrl = process.env.S3_PUBLIC_URL || 'https://web-i4t8q7g61bigs480tvfi9pxy.191.101.1.67.sslip.io';
+	const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+	return `${s3PublicUrl}/${cleanUrl}`;
+}
+
 // Convierte un producto de Prisma al formato que espera el frontend de CTI
 export function mapProductToFrontend(dbProduct) {
 	if (!dbProduct) return null;
@@ -46,6 +58,8 @@ export function mapProductToFrontend(dbProduct) {
 	const brandSlug = slugify(brandName);
 	const catName = dbProduct.category || 'General';
 	
+	const formattedImgUrl = formatImageUrl(dbProduct.imageUrl) || getCategoryIcon(catName);
+
 	const result = {
 		id: dbProduct.id,
 		sku: dbProduct.ingramSku || '',
@@ -67,10 +81,10 @@ export function mapProductToFrontend(dbProduct) {
 		stock_total: dbProduct.stock || 0,
 		stock_puebla: 0,
 		costo_envio: priceMXN > 5000 ? 0 : 150,
-		imagen1s: dbProduct.imageUrl || getCategoryIcon(catName),
-		imagen1m: dbProduct.imageUrl || getCategoryIcon(catName),
-		imagen1xs: dbProduct.imageUrl || getCategoryIcon(catName),
-		imagen1l: dbProduct.imageUrl || getCategoryIcon(catName),
+		imagen1s: formattedImgUrl,
+		imagen1m: formattedImgUrl,
+		imagen1xs: formattedImgUrl,
+		imagen1l: formattedImgUrl,
 		envio_gratis: priceMXN > 5000,
 		created: dbProduct.createdAt ? dbProduct.createdAt.toISOString() : new Date().toISOString(),
 		upc: dbProduct.upc || '',
@@ -80,17 +94,18 @@ export function mapProductToFrontend(dbProduct) {
 		compatibleProductos: [],
 		breadcrumblist: [],
 		parent__slug: slugify(catName),
-		imageUrl: dbProduct.imageUrl || getCategoryIcon(catName),
+		imageUrl: formattedImgUrl,
 	};
 
 	// Mapear galería de imágenes (hasta 10)
 	if (dbProduct.gallery && Array.isArray(dbProduct.gallery)) {
 		dbProduct.gallery.slice(0, 9).forEach((imgUrl, index) => {
 			const num = index + 2; // Empezamos en imagen2
-			result[`imagen${num}s`] = imgUrl;
-			result[`imagen${num}m`] = imgUrl;
-			result[`imagen${num}xs`] = imgUrl;
-			result[`imagen${num}l`] = imgUrl;
+			const formattedGalleryUrl = formatImageUrl(imgUrl);
+			result[`imagen${num}s`] = formattedGalleryUrl;
+			result[`imagen${num}m`] = formattedGalleryUrl;
+			result[`imagen${num}xs`] = formattedGalleryUrl;
+			result[`imagen${num}l`] = formattedGalleryUrl;
 		});
 	}
 

@@ -23,15 +23,8 @@ const FacebookPixel = () => {
     window.addEventListener('touchstart', handleInteraction, { passive: true });
     window.addEventListener('click', handleInteraction, { passive: true });
 
-    // Fallback timer
-    const timer = setTimeout(() => {
-      setLoadScript(true);
-      cleanup();
-    }, 9000);
-
     return () => {
       cleanup();
-      clearTimeout(timer);
     };
   }, []);
 

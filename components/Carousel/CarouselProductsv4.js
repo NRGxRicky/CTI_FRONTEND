@@ -202,7 +202,7 @@ const CarouselProductsV4 = ({
 							.filter((i) => i.id !== exclude)
 							.map((producto) => (
 								<div className='carousel__slide' key={producto.id}>
-									<Link href={`/${producto.slug}`} legacyBehavior>
+									<Link href={`/${producto.slug}`} legacyBehavior passHref>
 										<a>
 											<div className='card__carousel'>
 												<div className='card__carousel__content'>
