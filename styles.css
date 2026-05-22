@@ -124,10 +124,25 @@ a:hover {
 	}
 }
 
-.carousel,
+.section .carousel,
 .embla,
 .carousel-loader-placeholder {
 	height: 330px;
+}
+
+.carousel__viewport,
+.embla__viewport {
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+	position: relative;
+}
+
+.carousel__container,
+.embla__container {
+	display: flex;
+	width: 100%;
+	position: relative;
 }
 
 .brand-loader-placeholder {
@@ -135,6 +150,15 @@ a:hover {
 }
 
 .ratings-loader-placeholder {
+	height: 340px;
+}
+
+.brand__carousel,
+.brand-loader {
+	height: 160px;
+}
+
+.reviews-carousel {
 	height: 340px;
 }
 
