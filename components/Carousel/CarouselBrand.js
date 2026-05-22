@@ -164,6 +164,7 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 							type='button'
 							className='button__nav'
 							tabIndex='-1'
+							aria-label='Siguiente marca'
 						>
 							<svg
 								className='button_nav__icon'
@@ -188,6 +189,7 @@ const CarouselBrand = ({ responsiveElements = 3, mobile = false }) => {
 							type='button'
 							className='button__nav'
 							tabIndex='-1'
+							aria-label='Marca anterior'
 						>
 							<svg
 								className='button_nav__icon'

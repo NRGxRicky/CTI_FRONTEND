@@ -182,6 +182,7 @@ const BestCategories = ({ mobile = false }) => {
 							type='button'
 							className='button__nav'
 							tabIndex='-1'
+							aria-label='Siguiente categoría'
 						>
 							<svg
 								className='button_nav__icon'
@@ -206,6 +207,7 @@ const BestCategories = ({ mobile = false }) => {
 							type='button'
 							className='button__nav'
 							tabIndex='-1'
+							aria-label='Categoría anterior'
 						>
 							<svg
 								className='button_nav__icon'

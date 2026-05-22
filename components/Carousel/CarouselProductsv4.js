@@ -311,6 +311,7 @@ const CarouselProductsV4 = ({
 						type='button'
 						className='button__nav'
 						tabIndex='-1'
+						aria-label='Siguiente oferta'
 					>
 						<svg
 							className='button_nav__icon'
@@ -333,6 +334,7 @@ const CarouselProductsV4 = ({
 						type='button'
 						className='button__nav'
 						tabIndex='-1'
+						aria-label='Oferta anterior'
 					>
 						<svg
 							className='button_nav__icon'

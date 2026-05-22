@@ -42,6 +42,7 @@ const Footer: React.FC<FooterProps> = () => {
 							INFORMACIÓN
 							<button
 								className={!column1 ? 'toggle-button active' : 'toggle-button'}
+								aria-label='Alternar sección Información'
 							></button>
 						</div>
 						<div
@@ -83,6 +84,7 @@ const Footer: React.FC<FooterProps> = () => {
 							CONTACTAR
 							<button
 								className={!column2 ? 'toggle-button active' : 'toggle-button'}
+								aria-label='Alternar sección Contactar'
 							></button>
 						</div>
 						<div
@@ -119,6 +121,7 @@ const Footer: React.FC<FooterProps> = () => {
 							SERVICIO A CLIENTES
 							<button
 								className={!column3 ? 'toggle-button active' : 'toggle-button'}
+								aria-label='Alternar sección Servicio a Clientes'
 							></button>
 						</div>
 						<div
@@ -166,6 +169,7 @@ const Footer: React.FC<FooterProps> = () => {
 							SÍGUENOS
 							<button
 								className={!column4 ? 'toggle-button active' : 'toggle-button'}
+								aria-label='Alternar sección Síguenos'
 							></button>
 						</div>
 						<div

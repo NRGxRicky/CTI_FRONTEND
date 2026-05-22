@@ -86,6 +86,7 @@ export const CarouselContainer = ({
 						type='button'
 						className='button__nav'
 						tabIndex='-1'
+						aria-label='Siguiente banner'
 					>
 						<svg
 							className='button_nav__icon'
@@ -107,6 +108,7 @@ export const CarouselContainer = ({
 						type='button'
 						className='button__nav'
 						tabIndex='-1'
+						aria-label='Banner anterior'
 					>
 						<svg
 							className='button_nav__icon'

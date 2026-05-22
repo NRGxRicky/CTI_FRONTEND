@@ -3,13 +3,28 @@ import Standard from '../components/Carousel/Standard';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import { useAppSelector } from '../lib/hooks';
-import BestCategories from '../components/BestCategories/BestCategories';
 import { useEnv } from '../context/EnvContext';
-
-import BenefitCarousel from '../components/BenefitCarousel/BenefitCarousel';
-import InfoPageFooter from '../components/InfoPageFooter/InfoPageFooter';
-import Footer from '../components/Footer/Footer';
 import LazySection from '../components/LazySection/LazySection';
+
+const BestCategories = dynamic(() => import('../components/BestCategories/BestCategories'), {
+	ssr: false,
+	loading: () => <div style={{ height: '134px', marginTop: '20px', marginBottom: '20px' }}></div>
+});
+
+const BenefitCarousel = dynamic(() => import('../components/BenefitCarousel/BenefitCarousel'), {
+	ssr: false,
+	loading: () => <div style={{ height: '180px', marginTop: '20px' }}></div>
+});
+
+const InfoPageFooter = dynamic(() => import('../components/InfoPageFooter/InfoPageFooter'), {
+	ssr: false,
+	loading: () => <div style={{ height: '200px' }}></div>
+});
+
+const Footer = dynamic(() => import('../components/Footer/Footer'), {
+	ssr: true,
+	loading: () => <div style={{ minHeight: '300px' }} className="footer-placeholder"></div>
+});
 
 const CarouselProducts = dynamic(() => import('../components/Carousel/CarouselProducts'), {
 	loading: () => <div className="carousel-loader-placeholder" style={{ height: '330px' }}></div>
