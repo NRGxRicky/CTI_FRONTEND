@@ -29,7 +29,7 @@ const GoogleAnalytics = () => {
         const timer = setTimeout(() => {
             setLoadScript(true);
             cleanup();
-        }, 4000);
+        }, 9000);
 
         return () => {
             cleanup();
