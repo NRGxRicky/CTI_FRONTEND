@@ -39,6 +39,8 @@ const SummaryDetails = ({ urlAction, step }) => {
 	const [aplazoCheckoutUrl, setAplazoCheckoutUrl] = useState(null);
 	const [paypalLoaded, setPaypalLoaded] = useState(() => typeof window !== 'undefined' && !!window.paypal);
 	const [mercadopagoLoaded, setMercadopagoLoaded] = useState(() => typeof window !== 'undefined' && !!window.MercadoPago);
+	const [globalpaymentsLoaded, setGlobalpaymentsLoaded] = useState(false);
+	const [globalSessionLoading, setGlobalSessionLoading] = useState(false);
 
 	// Sandbox mode hook
 	const {
@@ -317,6 +319,52 @@ const SummaryDetails = ({ urlAction, step }) => {
 		} catch (error) {
 			console.error('Error en pago sandbox:', error);
 			alert('Error al procesar el pago sandbox');
+		}
+	};
+
+	const handleGlobalpaymentsCheckout = async () => {
+		log('Iniciando pago con Global Payments', { cart, total });
+		setGlobalSessionLoading(true);
+
+		try {
+			const res = await fetch(buildUrl('/payments/global/session/'), {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${accessToken}`,
+				}
+			});
+
+			if (!res.ok) {
+				const errData = await res.json();
+				throw new Error(errData.detail || 'Error al comunicarse con el servidor');
+			}
+
+			const data = await res.json();
+			// data: { sessionId, successIndicator, orderId, merchantId, amount }
+			log('Sesión de pago obtenida', data);
+
+			// Guardamos los datos en localStorage para su verificación en la página de callback
+			localStorage.setItem('gp_success_indicator', data.successIndicator);
+			localStorage.setItem('gp_order_id', data.orderId);
+			localStorage.setItem('gp_require_invoice', JSON.stringify(!!taxInvoice));
+			localStorage.setItem('gp_address', JSON.stringify(address));
+
+			if (typeof window !== 'undefined' && window.Checkout) {
+				window.Checkout.configure({
+					session: {
+						id: data.sessionId
+					}
+				});
+				window.Checkout.showLightbox();
+			} else {
+				alert('La pasarela de pagos no se pudo inicializar. Por favor, recarga la página.');
+			}
+		} catch (error) {
+			console.error('[Global Payments] Error de inicialización:', error);
+			alert('No se pudo inicializar la pasarela de pago: ' + error.message);
+		} finally {
+			setGlobalSessionLoading(false);
 		}
 	};
 
@@ -618,6 +666,14 @@ const SummaryDetails = ({ urlAction, step }) => {
 					strategy='afterInteractive'
 				/>
 			)}
+			{paymentMethod === 'globalpayments' && (
+				<Script
+					id='globalpayments-sdk'
+					src={`${process.env.NEXT_PUBLIC_GLOBAL_PAYMENTS_GATEWAY_URL || 'https://evopaymentsmexico.gateway.mastercard.com'}/checkout/version/61/checkout.js`}
+					strategy='afterInteractive'
+					onLoad={() => setGlobalpaymentsLoaded(true)}
+				/>
+			)}
 			<div className='summary-details__content'>
 				{/* Toggle modo carrito */}
 				<div className='cart__change-payment'>
@@ -840,6 +896,19 @@ const SummaryDetails = ({ urlAction, step }) => {
 								Generando link de pago con Aplazo...
 							</button>
 						)}
+					</div>
+				)}
+
+				{/* Global Payments container */}
+				{step === 'confirm' && paymentMethod === 'globalpayments' && (
+					<div className='globalpayments__container' style={{ marginTop: '15px' }}>
+						<button
+							className='proceed-checkout'
+							onClick={handleGlobalpaymentsCheckout}
+							disabled={globalSessionLoading}
+						>
+							{globalSessionLoading ? 'Cargando pasarela...' : 'Pagar con Tarjeta'}
+						</button>
 					</div>
 				)}
 			</div>

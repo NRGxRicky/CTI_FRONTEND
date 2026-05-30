@@ -6,6 +6,133 @@ import jwt from 'jsonwebtoken';
 import prisma from '../../../lib/prisma';
 import { slugify, getCategoryIcon, mapProductToFrontend, getProductBySkuOrSlug } from '../../../services/productService';
 
+const LAPTOP_SYNONYMS = ['laptop', 'laptops', 'notebook', 'notebooks', 'portatil', 'portatiles', 'portátiles'];
+const BRANDS_LIST = ['hp', 'dell', 'lenovo', 'asus', 'acer', 'apple', 'macbook', 'samsung', 'huawei', 'msi', 'gigabyte', 'toshiba'];
+const TECH_SPECS_LIST = ['i3', 'i5', 'i7', 'i9', 'ryzen', 'core', 'intel', 'amd', 'gb', 'ssd', 'tb', 'ram', 'touch', 'screen', 'inch', 'pulgadas', 'vostro', 'ideapad', 'thinkpad', 'latitude', 'inspiron', 'probook', 'elitebook', 'yoga', 'slim'];
+
+const ACCESSORY_KEYWORDS = [
+  'lock', 'candado', 'cable', 'base', 'soporte', 'funda', 'mochila', 'backpack', 
+  'privacy', 'filtro', 'pantalla', 'cargador', 'bateria', 'batería', 'power bank', 
+  'adaptador', 'hub', 'dock', 'mouse', 'teclado', 'audifonos', 'diadema', 
+  'headset', 'limpiador', 'kit', 'memoria', 'ram', 'upgrade', 'active care', 
+  'applecare', 'garantia', 'garantía', 'servicio', 'licencia', 'software'
+];
+
+function isLaptopComputerSearch(query) {
+  let cleaned = query.trim().toLowerCase();
+  cleaned = cleaned.replace(/\blap\s+tops?\b/g, 'laptop');
+  
+  const words = cleaned.split(/\s+/).filter(w => w.length > 0);
+  if (words.length === 0) return false;
+
+  let hasLaptopSynonym = false;
+  let allWordsMatch = true;
+
+  for (const word of words) {
+    const isSynonym = LAPTOP_SYNONYMS.includes(word);
+    const isBrand = BRANDS_LIST.includes(word);
+    const isSpec = TECH_SPECS_LIST.some(spec => word.includes(spec));
+
+    if (isSynonym) {
+      hasLaptopSynonym = true;
+    }
+
+    if (!isSynonym && !isBrand && !isSpec) {
+      allWordsMatch = false;
+      break;
+    }
+  }
+
+  return hasLaptopSynonym && allWordsMatch;
+}
+
+function buildSmartSearchFilter(searchQuery) {
+  if (!searchQuery) return {};
+
+  let normalizedQuery = searchQuery.trim().toLowerCase();
+  normalizedQuery = normalizedQuery.replace(/\blap\s+tops?\b/g, 'laptop');
+  
+  const isLaptop = isLaptopComputerSearch(searchQuery);
+
+  if (isLaptop) {
+    const baseLaptopFilter = {
+      category: { equals: 'Computadoras', mode: 'insensitive' },
+      OR: [
+        { title: { startsWith: 'NB ', mode: 'insensitive' } },
+        { title: { contains: ' NB ', mode: 'insensitive' } },
+        { title: { contains: 'notebook', mode: 'insensitive' } },
+        { title: { contains: 'macbook', mode: 'insensitive' } },
+        { title: { contains: 'laptop', mode: 'insensitive' } }
+      ]
+    };
+
+    const notConditions = ACCESSORY_KEYWORDS.map(kw => ({
+      title: { contains: kw, mode: 'insensitive' }
+    }));
+
+    const words = normalizedQuery.split(/\s+/).filter(w => w.length > 0);
+    const otherWords = words.filter(w => !LAPTOP_SYNONYMS.includes(w));
+
+    if (otherWords.length === 0) {
+      return {
+        AND: [
+          baseLaptopFilter,
+          { NOT: notConditions }
+        ]
+      };
+    }
+
+    const andConditions = [
+      baseLaptopFilter,
+      { NOT: notConditions }
+    ];
+    
+    for (const word of otherWords) {
+      andConditions.push({
+        OR: [
+          { title: { contains: word, mode: 'insensitive' } },
+          { brand: { contains: word, mode: 'insensitive' } },
+          { category: { contains: word, mode: 'insensitive' } }
+        ]
+      });
+    }
+
+    return { AND: andConditions };
+  }
+
+  const words = normalizedQuery.split(/\s+/).filter(w => w.length > 0);
+  if (words.length === 0) return {};
+
+  const andConditions = [];
+  for (const word of words) {
+    if (LAPTOP_SYNONYMS.includes(word)) {
+      andConditions.push({
+        OR: [
+          { title: { contains: 'laptop', mode: 'insensitive' } },
+          { title: { contains: 'notebook', mode: 'insensitive' } },
+          { title: { startsWith: 'NB ', mode: 'insensitive' } },
+          { title: { contains: ' NB ', mode: 'insensitive' } },
+          { title: { contains: 'macbook', mode: 'insensitive' } },
+          { category: { contains: 'laptop', mode: 'insensitive' } },
+          { category: { contains: 'notebook', mode: 'insensitive' } }
+        ]
+      });
+    } else {
+      andConditions.push({
+        OR: [
+          { title: { contains: word, mode: 'insensitive' } },
+          { brand: { contains: word, mode: 'insensitive' } },
+          { category: { contains: word, mode: 'insensitive' } },
+          { ingramSku: { contains: word, mode: 'insensitive' } },
+          { mpn: { contains: word, mode: 'insensitive' } }
+        ]
+      });
+    }
+  }
+
+  return { AND: andConditions };
+}
+
 export const config = {
     api: {
         responseLimit: false,
@@ -86,14 +213,11 @@ export default async function handler(req, res) {
             const searchTerm = queryParams.q || '';
             if (!searchTerm) return res.status(200).json({ products: [], queries: [], brands: [], categories: [] });
 
+            const searchFilter = buildSmartSearchFilter(searchTerm);
             const dbProducts = await db.product.findMany({
                 where: {
-                    OR: [
-                        { title: { contains: searchTerm, mode: 'insensitive' } },
-                        { ingramSku: { contains: searchTerm, mode: 'insensitive' } },
-                        { mpn: { contains: searchTerm, mode: 'insensitive' } },
-                    ],
-                    price: { gt: 0 }
+                    price: { gt: 0 },
+                    ...searchFilter
                 },
                 take: 8
             });
@@ -298,13 +422,8 @@ export default async function handler(req, res) {
         }
         
         if (search) {
-            where.OR = [
-                { title: { contains: search, mode: 'insensitive' } },
-                { brand: { contains: search, mode: 'insensitive' } },
-                { ingramSku: { contains: search, mode: 'insensitive' } },
-                { mpn: { contains: search, mode: 'insensitive' } },
-                { category: { contains: search, mode: 'insensitive' } },
-            ];
+            const searchFilter = buildSmartSearchFilter(search);
+            Object.assign(where, searchFilter);
         }
 
         if (brand && brand !== 'all') {

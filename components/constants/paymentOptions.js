@@ -58,6 +58,14 @@ const basePaymentOptions = [
     contado: true,
   },
   {
+    id: 'globalpayments',
+    title: 'Tarjeta de Crédito / Débito',
+    subtitle: 'Paga de forma segura con VISA, Mastercard o Carnet a través de Global Payments.',
+    imgSrc: '/images/visa-mastercard-logos.png',
+    msi: false,
+    contado: true,
+  },
+  {
     id: 'kueskipay',
     title: 'Kueski Pay',
     subtitle: 'Paga en hasta 12 quincenas con Kueski Pay, sin comisiones ocultas.',
