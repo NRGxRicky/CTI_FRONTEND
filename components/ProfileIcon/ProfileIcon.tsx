@@ -124,7 +124,7 @@ const ProfileIcon: React.FC = () => {
 				.header-bar__section-icon {
 					position: relative;
 					align-items: center;
-					color: #ffffff;
+					color: #474747;
 					display: flex;
 					align-items: center;
 					min-height: 42px;
@@ -135,7 +135,7 @@ const ProfileIcon: React.FC = () => {
 					cursor: pointer;
 				}
 				.header-bar__section-icon:hover {
-					border-color: rgba(255, 255, 255, 0.35);
+					border-color: rgba(0, 0, 0, 0.15);
 				}
 
 				.header-bar__profile-icon {
@@ -149,8 +149,8 @@ const ProfileIcon: React.FC = () => {
 				}
 
 				.icon__ligth {
-					fill: #ffffff;
-					stroke: #ffffff;
+					fill: #474747;
+					stroke: #474747;
 				}
 
 				.header-bar__profile-text-wrapper {
@@ -162,13 +162,22 @@ const ProfileIcon: React.FC = () => {
 
 				.header-bar__profile-sub {
 					font-size: 11px;
-					color: #cccccc;
+					color: #777777;
 				}
 
 				.header-bar__profile-main {
 					font-size: 12px;
 					font-weight: bold;
-					color: #ffffff;
+					color: #474747;
+				}
+
+				.header-bar__section-icon:hover .header-bar__icon,
+				.header-bar__section-icon:hover .header-bar__profile-sub,
+				.header-bar__section-icon:hover .header-bar__profile-main {
+					fill: var(--primary-color);
+					stroke: var(--primary-color);
+					color: var(--primary-color) !important;
+					cursor: pointer;
 				}
 
 				.profile-avatar-icon {

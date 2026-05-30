@@ -136,7 +136,8 @@ const HeaderMenu = () => {
 						display: none;
 						padding: 0 20px;
 						align-items: center;
-						background-color: #232f3e;
+						background-color: #f5f6f8;
+						border-bottom: 1px solid #eaeaea;
 					}
 
 					.header-menu__list {
@@ -159,8 +160,8 @@ const HeaderMenu = () => {
 						display: flex;
 						align-items: center;
 						gap: 6px;
-						background: transparent;
-						color: #ffffff;
+						background: #e9ecef;
+						color: #333333;
 						border-radius: 4px;
 						border: 1px solid transparent;
 						padding: 4px 8px;
@@ -168,11 +169,12 @@ const HeaderMenu = () => {
 						font-weight: bold;
 						min-height: 28px;
 						height: 28px;
-						transition: border-color 0.2s;
+						transition: background-color 0.2s, border-color 0.2s;
 					}
 
 					.header-menu__burger-btn:hover {
-						border-color: rgba(255, 255, 255, 0.35);
+						background: #dee2e6;
+						border-color: rgba(0, 0, 0, 0.1);
 					}
 
 					.header-menu__burger-btn > * {
@@ -192,7 +194,7 @@ const HeaderMenu = () => {
 					.burger-line {
 						width: 16px;
 						height: 2px;
-						background-color: #ffffff;
+						background-color: #333333;
 						transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 						border-radius: 1px;
 					}
@@ -211,25 +213,25 @@ const HeaderMenu = () => {
 					}
 
 					.header-menu__list a {
-						color: #ffffff;
+						color: #474747;
 						text-decoration: none;
 						font-size: 13px;
 						font-weight: 500;
 						border: 1px solid transparent;
 						border-radius: 4px;
 						padding: 4px 8px;
-						transition: border-color 0.2s;
+						transition: border-color 0.2s, color 0.2s;
 						cursor: pointer;
 						white-space: nowrap;
 					}
 
 					.header-menu__list a:hover {
-						border-color: rgba(255, 255, 255, 0.35);
-						color: #ffffff;
+						border-color: rgba(0, 0, 0, 0.15);
+						color: var(--primary-color);
 					}
 
 					.header-menu__list a.offers-link {
-						color: #febd69 !important;
+						color: var(--primary-color) !important;
 						font-weight: bold;
 					}
 

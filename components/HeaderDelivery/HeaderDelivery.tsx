@@ -96,7 +96,7 @@ const HeaderDelivery: React.FC<HeaderDeliveryProps> = ({ className = '' }) => {
 					gap: 6px;
 					align-items: center;
 					background: transparent;
-					color: #ffffff;
+					color: #474747;
 					border: 1px solid transparent;
 					cursor: pointer;
 					padding: 4px 6px;
@@ -105,7 +105,7 @@ const HeaderDelivery: React.FC<HeaderDeliveryProps> = ({ className = '' }) => {
 				}
 				.header-bar__delivery-btn:hover,
 				.header-bar__delivery-btn:focus-visible {
-					border-color: rgba(255, 255, 255, 0.35);
+					border-color: rgba(0, 0, 0, 0.15);
 				}
 				.header-bar__delivery-text {
 					display: flex;
@@ -122,23 +122,32 @@ const HeaderDelivery: React.FC<HeaderDeliveryProps> = ({ className = '' }) => {
 				}
 				.header-bar__delivery-label {
 					font-size: 11px;
-					color: #cccccc;
+					color: #777777;
 				}
 				.header-bar__delivery-value {
 					font-size: 12px;
 					font-weight: bold;
-					color: #ffffff;
+					color: #474747;
 				}
 				.header-bar__delivery-name {
 					font-size: 11px;
 					font-weight: bold;
-					color: #ffffff;
+					color: #474747;
 					text-transform: uppercase;
 				}
 				.icon__ligth {
-					fill: #ffffff;
-					stroke: #ffffff;
-					color: #ffffff;
+					fill: #474747;
+					stroke: #474747;
+					color: #474747;
+				}
+				.header-bar__delivery-btn:hover .header-bar__icon,
+				.header-bar__delivery-btn:focus-visible .header-bar__icon,
+				.header-bar__delivery-btn:hover .header-bar__delivery-label,
+				.header-bar__delivery-btn:hover .header-bar__delivery-value,
+				.header-bar__delivery-btn:hover .header-bar__delivery-name {
+					color: var(--primary-color) !important;
+					fill: var(--primary-color) !important;
+					stroke: var(--primary-color) !important;
 				}
 				@media only screen and (min-width: 62em) {
 					.header-bar__delivery {

@@ -438,7 +438,7 @@ const HeaderBar: React.FC = () => {
 								className='header-bar__section-icon'
 								style={{
 									zIndex: showSummaryCartmini ? 2000 : 0,
-									backgroundColor: '#fff',
+									backgroundColor: showSummaryCartmini ? '#fff' : 'transparent',
 								}}
 								onClick={() =>
 									showSummaryCartmini
@@ -629,7 +629,7 @@ const HeaderBar: React.FC = () => {
 					top: -12px;
 					background-color: #f08804;
 					border-radius: 15px;
-					border: 2px solid #131921;
+					border: 2px solid #ffffff;
 					color: #ffffff !important;
 					width: 1.3rem;
 					height: 1.3rem;
@@ -646,7 +646,7 @@ const HeaderBar: React.FC = () => {
 					position: absolute !important;
 				}
 				.header-bar__cart-total {
-					color: #ffffff;
+					color: #474747;
 					font-weight: bold;
 				}
 
@@ -688,10 +688,10 @@ const HeaderBar: React.FC = () => {
 				.header-bar {
 					margin: 0;
 					max-width: 100dvw;
-					background-color: #131921;
+					background-color: #ffffff;
 					position: relative;
 					padding: 2px 0;
-					border-bottom: none;
+					border-bottom: 1px solid #eaeaea;
 				}
 
 				.header-bar--mobile {
@@ -852,7 +852,7 @@ const HeaderBar: React.FC = () => {
 				.header-bar__section-icon {
 					position: relative;
 					align-items: center;
-					color: #ffffff;
+					color: #474747;
 					display: flex;
 					align-items: center;
 					min-height: 42px;
@@ -862,7 +862,7 @@ const HeaderBar: React.FC = () => {
 					transition: border-color 0.2s;
 				}
 				.header-bar__section-icon:hover {
-					border-color: rgba(255, 255, 255, 0.35);
+					border-color: rgba(0, 0, 0, 0.15);
 				}
 
 				.header-bar__icon {
@@ -870,18 +870,20 @@ const HeaderBar: React.FC = () => {
 				}
 
 				.icon__ligth {
-					fill: #ffffff;
-					stroke: #ffffff;
+					fill: #474747;
+					stroke: #474747;
 				}
 
 				.header-bar__section-icon span {
 					margin-left: 5px;
-					color: #ffffff;
+					color: #474747;
 				}
 
 				.header-bar__section-icon:hover .header-bar__icon,
 				.header-bar__section-icon:hover span {
-					color: #ffffff;
+					fill: var(--primary-color);
+					stroke: var(--primary-color);
+					color: var(--primary-color);
 					cursor: pointer;
 				}
 
