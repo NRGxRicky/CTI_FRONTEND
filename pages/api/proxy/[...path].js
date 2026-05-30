@@ -46,16 +46,17 @@ function isLaptopComputerSearch(query) {
   return hasLaptopSynonym && allWordsMatch;
 }
 
-function buildSmartSearchFilter(searchQuery) {
+function buildSmartSearchFilter(searchQuery, categoryParam = '') {
   if (!searchQuery) return {};
 
   let normalizedQuery = searchQuery.trim().toLowerCase();
   normalizedQuery = normalizedQuery.replace(/\blap\s+tops?\b/g, 'laptop');
   
+  let baseFilter = {};
   const isLaptop = isLaptopComputerSearch(searchQuery);
 
   if (isLaptop) {
-    const baseLaptopFilter = {
+    baseFilter = {
       category: { equals: 'Computadoras', mode: 'insensitive' },
       OR: [
         { title: { startsWith: 'NB ', mode: 'insensitive' } },
@@ -74,63 +75,81 @@ function buildSmartSearchFilter(searchQuery) {
     const otherWords = words.filter(w => !LAPTOP_SYNONYMS.includes(w));
 
     if (otherWords.length === 0) {
-      return {
+      baseFilter = {
         AND: [
-          baseLaptopFilter,
+          baseFilter,
           { NOT: notConditions }
         ]
       };
-    }
-
-    const andConditions = [
-      baseLaptopFilter,
-      { NOT: notConditions }
-    ];
-    
-    for (const word of otherWords) {
-      andConditions.push({
-        OR: [
-          { title: { contains: word, mode: 'insensitive' } },
-          { brand: { contains: word, mode: 'insensitive' } },
-          { category: { contains: word, mode: 'insensitive' } }
-        ]
-      });
-    }
-
-    return { AND: andConditions };
-  }
-
-  const words = normalizedQuery.split(/\s+/).filter(w => w.length > 0);
-  if (words.length === 0) return {};
-
-  const andConditions = [];
-  for (const word of words) {
-    if (LAPTOP_SYNONYMS.includes(word)) {
-      andConditions.push({
-        OR: [
-          { title: { contains: 'laptop', mode: 'insensitive' } },
-          { title: { contains: 'notebook', mode: 'insensitive' } },
-          { title: { startsWith: 'NB ', mode: 'insensitive' } },
-          { title: { contains: ' NB ', mode: 'insensitive' } },
-          { title: { contains: 'macbook', mode: 'insensitive' } },
-          { category: { contains: 'laptop', mode: 'insensitive' } },
-          { category: { contains: 'notebook', mode: 'insensitive' } }
-        ]
-      });
     } else {
-      andConditions.push({
-        OR: [
-          { title: { contains: word, mode: 'insensitive' } },
-          { brand: { contains: word, mode: 'insensitive' } },
-          { category: { contains: word, mode: 'insensitive' } },
-          { ingramSku: { contains: word, mode: 'insensitive' } },
-          { mpn: { contains: word, mode: 'insensitive' } }
-        ]
-      });
+      const andConditions = [
+        baseFilter,
+        { NOT: notConditions }
+      ];
+      
+      for (const word of otherWords) {
+        andConditions.push({
+          OR: [
+            { title: { contains: word, mode: 'insensitive' } },
+            { brand: { contains: word, mode: 'insensitive' } },
+            { category: { contains: word, mode: 'insensitive' } }
+          ]
+        });
+      }
+      baseFilter = { AND: andConditions };
+    }
+  } else {
+    const words = normalizedQuery.split(/\s+/).filter(w => w.length > 0);
+    if (words.length > 0) {
+      const andConditions = [];
+      for (const word of words) {
+        if (LAPTOP_SYNONYMS.includes(word)) {
+          andConditions.push({
+            OR: [
+              { title: { contains: 'laptop', mode: 'insensitive' } },
+              { title: { contains: 'notebook', mode: 'insensitive' } },
+              { title: { startsWith: 'NB ', mode: 'insensitive' } },
+              { title: { contains: ' NB ', mode: 'insensitive' } },
+              { title: { contains: 'macbook', mode: 'insensitive' } },
+              { category: { contains: 'laptop', mode: 'insensitive' } },
+              { category: { contains: 'notebook', mode: 'insensitive' } }
+            ]
+          });
+        } else {
+          andConditions.push({
+            OR: [
+              { title: { contains: word, mode: 'insensitive' } },
+              { brand: { contains: word, mode: 'insensitive' } },
+              { category: { contains: word, mode: 'insensitive' } },
+              { ingramSku: { contains: word, mode: 'insensitive' } },
+              { mpn: { contains: word, mode: 'insensitive' } }
+            ]
+          });
+        }
+      }
+      baseFilter = { AND: andConditions };
     }
   }
 
-  return { AND: andConditions };
+  // Apply selected category scope if provided and not "all" / "index"
+  if (categoryParam && categoryParam !== 'all' && categoryParam !== 'index') {
+    const categoryCondition = {
+      category: { contains: categoryParam, mode: 'insensitive' }
+    };
+    
+    if (baseFilter.AND) {
+      baseFilter.AND.push(categoryCondition);
+    } else {
+      baseFilter = {
+        AND: [
+          baseFilter,
+          categoryCondition
+        ]
+      };
+    }
+  }
+
+  return baseFilter;
 }
 
 export const config = {
@@ -211,9 +230,10 @@ export default async function handler(req, res) {
         // ============================================
         if (apiPath.includes('suggestions')) {
             const searchTerm = queryParams.q || '';
+            const categoryTerm = queryParams.category || '';
             if (!searchTerm) return res.status(200).json({ products: [], queries: [], brands: [], categories: [] });
 
-            const searchFilter = buildSmartSearchFilter(searchTerm);
+            const searchFilter = buildSmartSearchFilter(searchTerm, categoryTerm);
             const dbProducts = await db.product.findMany({
                 where: {
                     price: { gt: 0 },

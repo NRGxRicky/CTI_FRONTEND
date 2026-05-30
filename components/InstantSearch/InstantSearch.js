@@ -150,7 +150,7 @@ function highlightWords(text, words, color = '#333') {
 	);
 }
 
-const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }) => {
+const InstantSearch = ({ query, category = 'all', recentSearches, onSelect, onRemoveRecentSearch }) => {
 	const [suggestions, setSuggestions] = useState({ products: [], queries: [], brands: [], categories: [], query_words: [] });
 	const [showDropdown, setShowDropdown] = useState(true);
 	const [containerWidth, setContainerWidth] = useState(0);
@@ -246,7 +246,7 @@ const InstantSearch = ({ query, recentSearches, onSelect, onRemoveRecentSearch }
 		debounceTimeout = setTimeout(() => {
 			abortController = new AbortController();
 			fetch(
-				buildUrl(`/search/suggestions/?q=${encodeURIComponent(safeQuery)}`),
+				buildUrl(`/search/suggestions/?q=${encodeURIComponent(safeQuery)}&category=${encodeURIComponent(category)}`),
 				{ signal: abortController.signal }
 			)
 				.then((res) => res.json())

@@ -96,6 +96,8 @@ const HeaderBar: React.FC = () => {
 	const { buildUrl } = useApi();
 	const [windowWidth, setWindowWidth] = useState(0);
 	const [searchActivated, setSearchActivated] = useState(false);
+	const [selectedCategory, setSelectedCategory] = useState('all');
+	const [isFocused, setIsFocused] = useState(false);
 
 	/**
 	 * Sync query param → searchInput slice
@@ -202,7 +204,8 @@ const HeaderBar: React.FC = () => {
 			});
 		}
 
-		const url = `/listado/all/index?q=${encodeURIComponent(
+		const categoryParam = selectedCategory === 'all' ? 'index' : selectedCategory;
+		const url = `/listado/all/${categoryParam}?q=${encodeURIComponent(
 			queryInInput
 		)}&page_size=${maxPageResults}&page=1&filter_available=true`;
 		router.replace(url);
@@ -253,7 +256,8 @@ const HeaderBar: React.FC = () => {
 				}
 			);
 		}
-		const url = `/listado/all/index?q=${encodeURIComponent(
+		const categoryParam = selectedCategory === 'all' ? 'index' : selectedCategory;
+		const url = `/listado/all/${categoryParam}?q=${encodeURIComponent(
 			text
 		)}&page_size=${maxPageResults}&page=1&filter_available=true`;
 		router.replace(url);
@@ -337,23 +341,44 @@ const HeaderBar: React.FC = () => {
 							<div className='header-bar__box'>
 								<form onSubmit={handleSubmit}>
 									<div
-										className='header-bar__form-container'
+										className={`header-bar__form-container ${isFocused ? 'header-bar__form-container--focused' : ''}`}
 										style={{
 											zIndex: inputSearch ? 200 : 0,
 										}}
 									>
-										<input
-											ref={desktopInput}
-											onFocus={handleInputFocus}
-											onChange={(e) => handleInputChange(e.target.value)}
-											className='header-bar__input'
-											type='search'
-											name='q'
-											placeholder='Buscar...'
-											defaultValue={q}
-											autoComplete='off'
-											required
-										/>
+										<select
+											className='header-bar__category-select'
+											value={selectedCategory}
+											onChange={(e) => setSelectedCategory(e.target.value)}
+										>
+											<option value='all'>Todos</option>
+											<option value='computadoras'>Computadoras</option>
+											<option value='cables'>Cables</option>
+											<option value='accesorios'>Accesorios</option>
+											<option value='almacenamiento'>Almacenamiento</option>
+											<option value='redes'>Redes</option>
+											<option value='impresion'>Impresión</option>
+										</select>
+										<div className='header-bar__input-wrapper'>
+											<input
+												ref={desktopInput}
+												onFocus={(e) => {
+													handleInputFocus(e);
+													setIsFocused(true);
+												}}
+												onBlur={() => {
+													setTimeout(() => setIsFocused(false), 200);
+												}}
+												onChange={(e) => handleInputChange(e.target.value)}
+												className='header-bar__input'
+												type='search'
+												name='q'
+												placeholder='Buscar...'
+												defaultValue={q}
+												autoComplete='off'
+												required
+											/>
+										</div>
 										<button
 											type='submit'
 											className='header-bar__button-search'
@@ -381,6 +406,7 @@ const HeaderBar: React.FC = () => {
 									<div className='search-box'>
 										<InstantSearch
 											query={queryInInput}
+											category={selectedCategory}
 											recentSearches={recentSearches}
 											onSelect={handleSelectSuggestion}
 											onRemoveRecentSearch={handleRemoveRecentSearch}
@@ -542,6 +568,7 @@ const HeaderBar: React.FC = () => {
 					<div className='col-sm-12 col-md-12 col-lg-12 search-box search-box__mobile'>
 						<InstantSearch
 							query={queryInInput}
+							category={selectedCategory}
 							recentSearches={recentSearches}
 							onSelect={handleSelectSuggestion}
 							onRemoveRecentSearch={handleRemoveRecentSearch}
@@ -699,11 +726,53 @@ const HeaderBar: React.FC = () => {
 					width: auto;
 				}
 
-				.header-bar__form-container {
+				.header-bar__search-bar .header-bar__form-container {
 					display: flex;
-					flex: auto;
-					align-content: center;
-					justify-content: center;
+					flex: 1;
+					align-items: center;
+					background: #fff;
+					border: 1px solid #eaeaea;
+					border-radius: 6px;
+					overflow: hidden;
+					transition: border-color 0.2s, box-shadow 0.2s;
+					height: 40px;
+				}
+
+				.header-bar__search-bar .header-bar__form-container--focused {
+					border-color: #ff9900;
+					box-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
+				}
+
+				.header-bar__category-select {
+					background-color: #f3f3f3;
+					border: none;
+					border-right: 1px solid #eaeaea;
+					height: 100%;
+					padding: 0 10px;
+					font-size: 13px;
+					color: #555;
+					cursor: pointer;
+					outline: none;
+					max-width: 130px;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+					border-radius: 0;
+					appearance: none;
+					background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23555555' d='M0 0l5 6 5-6z'/></svg>");
+					background-repeat: no-repeat;
+					background-position: right 8px center;
+					padding-right: 22px;
+				}
+
+				.header-bar__category-select:hover {
+					background-color: #e3e3e3;
+				}
+
+				.header-bar__input-wrapper {
+					flex: 1;
+					height: 100%;
+					display: flex;
+					align-items: center;
 				}
 
 				.header-bar__input {
@@ -716,6 +785,18 @@ const HeaderBar: React.FC = () => {
 					font-weight: 300;
 					color: #474747;
 					transition: z-index 3s ease;
+				}
+
+				.header-bar__search-bar .header-bar__input {
+					width: 100%;
+					height: 100%;
+					padding: 10px;
+					border: none !important;
+					font-size: 1rem;
+					font-weight: 300;
+					color: #474747;
+					outline: none;
+					background: transparent;
 				}
 
 				.header-bar__input:focus {
@@ -740,6 +821,23 @@ const HeaderBar: React.FC = () => {
 					border-bottom-right-radius: 2px;
 					cursor: pointer;
 					transition: filter 0.2s ease, z-index 3s ease;
+				}
+
+				.header-bar__search-bar .header-bar__button-search {
+					border: none;
+					background: #febd69;
+					height: 100%;
+					width: 50px;
+					color: #111;
+					cursor: pointer;
+					transition: background 0.2s;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+				}
+
+				.header-bar__search-bar .header-bar__button-search:hover {
+					background: #f3a847;
 				}
 
 				.header-bar__button-search:hover {
