@@ -488,8 +488,8 @@ const HeaderBar: React.FC = () => {
 						</div>
 					</div>
 					{showSummaryCartmini && <CartSummaryMini />}
-					{!mobileView && <HeaderMenu />}
 				</div>
+				{!mobileView && <HeaderMenu />}
 				<HeaderBarLocalStock />
 			</div>
 
@@ -625,24 +625,29 @@ const HeaderBar: React.FC = () => {
 					max-height: 25px;
 				}
 				.header-bar__cart-counter {
-					left: 10px;
-					top: -10px;
-					background-color: var(--primary-color);
+					left: 14px;
+					top: -12px;
+					background-color: #f08804;
 					border-radius: 15px;
-					border: 2px solid #fff;
+					border: 2px solid #131921;
 					color: #ffffff !important;
-					width: 1.5rem;
-					height: 1.5rem;
+					width: 1.3rem;
+					height: 1.3rem;
 					display: flex !important;
 					align-items: center !important;
 					justify-content: center !important;
-					font-size: 0.7rem;
+					font-size: 0.75rem;
+					font-weight: bold;
 					line-height: 1.3rem;
 					z-index: 200;
 					display: block !important;
 					margin: 0 !important;
 					text-align: center !important;
 					position: absolute !important;
+				}
+				.header-bar__cart-total {
+					color: #ffffff;
+					font-weight: bold;
 				}
 
 				.header-bar__profile-icon {
@@ -683,10 +688,10 @@ const HeaderBar: React.FC = () => {
 				.header-bar {
 					margin: 0;
 					max-width: 100dvw;
-					background-color: #fff;
+					background-color: #131921;
 					position: relative;
 					padding: 2px 0;
-					border-bottom: 1px solid #eaeaea;
+					border-bottom: none;
 				}
 
 				.header-bar--mobile {
@@ -847,10 +852,17 @@ const HeaderBar: React.FC = () => {
 				.header-bar__section-icon {
 					position: relative;
 					align-items: center;
-					color: #474747;
+					color: #ffffff;
 					display: flex;
 					align-items: center;
 					min-height: 42px;
+					border: 1px solid transparent;
+					border-radius: 4px;
+					padding: 0 6px;
+					transition: border-color 0.2s;
+				}
+				.header-bar__section-icon:hover {
+					border-color: rgba(255, 255, 255, 0.35);
 				}
 
 				.header-bar__icon {
@@ -858,19 +870,18 @@ const HeaderBar: React.FC = () => {
 				}
 
 				.icon__ligth {
-					fill: #474747;
-					stroke: #474747;
+					fill: #ffffff;
+					stroke: #ffffff;
 				}
 
 				.header-bar__section-icon span {
 					margin-left: 5px;
+					color: #ffffff;
 				}
 
 				.header-bar__section-icon:hover .header-bar__icon,
 				.header-bar__section-icon:hover span {
-					fill: var(--primary-color);
-					stroke: var(--primary-color);
-					color: var(--primary-color);
+					color: #ffffff;
 					cursor: pointer;
 				}
 

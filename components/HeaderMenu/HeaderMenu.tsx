@@ -89,7 +89,7 @@ const HeaderMenu = () => {
 							<span className='burger-line'></span>
 							<span className='burger-line'></span>
 						</span>
-						<span>Categorías</span>
+						<span>Todo</span>
 						<CaretDown isOpen={menuMobileOpen} size={12} />
 					</button>
 				</li>
@@ -121,7 +121,7 @@ const HeaderMenu = () => {
 						href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
 						legacyBehavior
 					>
-						<a style={{ color: 'var(--primary-color)', fontWeight: '600' }}>
+						<a className='offers-link'>
 							🔥 OFERTAS
 						</a>
 					</Link>
@@ -132,34 +132,47 @@ const HeaderMenu = () => {
 				{`
 					.header-menu {
 						width: 100%;
-						min-height: 45px;
+						min-height: 38px;
 						display: none;
-						padding: 0 10px;
+						padding: 0 20px;
 						align-items: center;
+						background-color: #232f3e;
 					}
 
 					.header-menu__list {
 						display: flex;
 						list-style: none;
 						align-items: center;
-						justify-content: space-evenly;
-						flex-wrap: wrap;
+						justify-content: flex-start;
+						gap: 15px;
 						width: 100%;
+						padding: 0;
+						margin: 0;
+					}
+
+					.header-menu__list li {
+						display: flex;
+						align-items: center;
 					}
 
 					.header-menu__burger-btn {
 						display: flex;
 						align-items: center;
-						gap: 8px;
-						background: #474747;
+						gap: 6px;
+						background: transparent;
 						color: #ffffff;
-						border-radius: 6px;
-						border: none;
-						padding: 6px 12px;
+						border-radius: 4px;
+						border: 1px solid transparent;
+						padding: 4px 8px;
 						cursor: pointer;
-						font-weight: 600;
-						min-height: 32px;
-						height: 32px;
+						font-weight: bold;
+						min-height: 28px;
+						height: 28px;
+						transition: border-color 0.2s;
+					}
+
+					.header-menu__burger-btn:hover {
+						border-color: rgba(255, 255, 255, 0.35);
 					}
 
 					.header-menu__burger-btn > * {
@@ -198,7 +211,26 @@ const HeaderMenu = () => {
 					}
 
 					.header-menu__list a {
+						color: #ffffff;
+						text-decoration: none;
+						font-size: 13px;
+						font-weight: 500;
+						border: 1px solid transparent;
+						border-radius: 4px;
+						padding: 4px 8px;
+						transition: border-color 0.2s;
 						cursor: pointer;
+						white-space: nowrap;
+					}
+
+					.header-menu__list a:hover {
+						border-color: rgba(255, 255, 255, 0.35);
+						color: #ffffff;
+					}
+
+					.header-menu__list a.offers-link {
+						color: #febd69 !important;
+						font-weight: bold;
 					}
 
 					@media only screen and (min-width: 62em) {

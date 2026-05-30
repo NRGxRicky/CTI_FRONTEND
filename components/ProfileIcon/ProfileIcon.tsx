@@ -94,7 +94,7 @@ const ProfileIcon: React.FC = () => {
 				}}
 			>
 				<svg
-					className='header-bar__icon icon__ligth'
+					className='header-bar__icon icon__ligth profile-avatar-icon'
 					fill='none'
 					width='25'
 					height='25'
@@ -109,12 +109,14 @@ const ProfileIcon: React.FC = () => {
 						d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
 					/>
 				</svg>
-				{!loading && nombres !== 'Iniciar sesión / Registrarse' ? (
-					<span className='--capitalize'>{TruncateManual(nombres, 10)}</span>
-				) : (
-					<span>{nombres}</span>
-				)}
-				<CaretDown isOpen={showLoginMenu} hideOnMobile />
+				<div className='header-bar__profile-text-wrapper'>
+					<span className='header-bar__profile-sub'>
+						{!loading && nombres !== 'Iniciar sesión / Registrarse' ? `Hola, ${TruncateManual(nombres, 10)}` : 'Hola, identifícate'}
+					</span>
+					<span className='header-bar__profile-main'>
+						Cuenta y Listas ▾
+					</span>
+				</div>
 			</div>
 			{showLoginMenu && <LoginMenu />}
 
@@ -122,16 +124,24 @@ const ProfileIcon: React.FC = () => {
 				.header-bar__section-icon {
 					position: relative;
 					align-items: center;
-					color: #474747;
+					color: #ffffff;
 					display: flex;
 					align-items: center;
 					min-height: 42px;
+					border: 1px solid transparent;
+					border-radius: 4px;
+					padding: 0 6px;
+					transition: border-color 0.2s;
+					cursor: pointer;
+				}
+				.header-bar__section-icon:hover {
+					border-color: rgba(255, 255, 255, 0.35);
 				}
 
 				.header-bar__profile-icon {
 					display: flex;
 					align-items: center;
-					max-height: 25px;
+					max-height: 42px;
 				}
 
 				.header-bar__icon {
@@ -139,28 +149,40 @@ const ProfileIcon: React.FC = () => {
 				}
 
 				.icon__ligth {
-					fill: #474747;
-					stroke: #474747;
+					fill: #ffffff;
+					stroke: #ffffff;
 				}
 
-				.header-bar__section-icon span {
-					margin-left: 5px;
+				.header-bar__profile-text-wrapper {
+					display: flex;
+					flex-direction: column;
+					line-height: 1.15;
+					text-align: left;
 				}
 
-				.header-bar__section-icon:hover .header-bar__icon,
-				.header-bar__section-icon:hover span {
-					fill: var(--primary-color);
-					stroke: var(--primary-color);
-					color: var(--primary-color);
-					cursor: pointer;
+				.header-bar__profile-sub {
+					font-size: 11px;
+					color: #cccccc;
 				}
 
-				.--capitalize {
-					text-transform: capitalize;
+				.header-bar__profile-main {
+					font-size: 12px;
+					font-weight: bold;
+					color: #ffffff;
+				}
+
+				.profile-avatar-icon {
+					display: block;
+				}
+
+				@media only screen and (min-width: 62em) {
+					.profile-avatar-icon {
+						display: none;
+					}
 				}
 
 				@media only screen and (max-width: 62em) {
-					.header-bar__section-icon span {
+					.header-bar__profile-text-wrapper {
 						display: none;
 					}
 				}

@@ -93,16 +93,19 @@ const HeaderDelivery: React.FC<HeaderDeliveryProps> = ({ className = '' }) => {
 				}
 				.header-bar__delivery-btn {
 					display: flex;
-					gap: 8px;
+					gap: 6px;
 					align-items: center;
-					background: #ffffff;
-					color: #474747;
-					border: 1px solid #eaeaea;
+					background: transparent;
+					color: #ffffff;
+					border: 1px solid transparent;
 					cursor: pointer;
-					padding: 6px 10px;
-					border-radius: 6px;
-					transition: background 0.2s ease, color 0.2s ease,
-						border-color 0.2s ease;
+					padding: 4px 6px;
+					border-radius: 4px;
+					transition: border-color 0.2s ease;
+				}
+				.header-bar__delivery-btn:hover,
+				.header-bar__delivery-btn:focus-visible {
+					border-color: rgba(255, 255, 255, 0.35);
 				}
 				.header-bar__delivery-text {
 					display: flex;
@@ -113,40 +116,29 @@ const HeaderDelivery: React.FC<HeaderDeliveryProps> = ({ className = '' }) => {
 				}
 				.header-bar__delivery-row {
 					display: flex;
-					gap: 6px;
+					gap: 4px;
 					align-items: baseline;
 					min-width: 0;
 				}
 				.header-bar__delivery-label {
 					font-size: 11px;
-					color: #777;
+					color: #cccccc;
 				}
 				.header-bar__delivery-value {
 					font-size: 12px;
-					font-weight: 600;
-					color: #474747;
+					font-weight: bold;
+					color: #ffffff;
 				}
 				.header-bar__delivery-name {
-					font-size: 12px;
-					font-weight: 600;
-					color: #474747;
+					font-size: 11px;
+					font-weight: bold;
+					color: #ffffff;
 					text-transform: uppercase;
 				}
-				/* Hover: invertir colores */
-				.header-bar__delivery-btn:hover,
-				.header-bar__delivery-btn:focus-visible {
-					background: var(--primary-color);
-					color: #ffffff;
-					border-color: var(--primary-color);
-				}
-				.header-bar__delivery-btn:hover .header-bar__icon,
-				.header-bar__delivery-btn:focus-visible .header-bar__icon,
-				.header-bar__delivery-btn:hover .header-bar__delivery-label,
-				.header-bar__delivery-btn:hover .header-bar__delivery-value,
-				.header-bar__delivery-btn:hover .header-bar__delivery-name {
-					color: #ffffff;
+				.icon__ligth {
 					fill: #ffffff;
 					stroke: #ffffff;
+					color: #ffffff;
 				}
 				@media only screen and (min-width: 62em) {
 					.header-bar__delivery {
