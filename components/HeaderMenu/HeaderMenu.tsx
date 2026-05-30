@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import CaretDown from '../../components/Icons/CaretDown';
 import Link from 'next/link';
-import Capitalize from '../../hooks/CapitalizeTitle';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
-import { useApi } from '../../hooks/useApi';
 import {
 	hideAll,
 	showNavMobileMenu,
 } from '../../lib/features/showOpacityContainerSlide';
 
+const CURATED_CATEGORIES = [
+	{ name: 'Cómputo', slug: 'computadoras' },
+	{ name: 'Cables', slug: 'cables' },
+	{ name: 'Componentes', slug: 'componentes' },
+	{ name: 'Almacenamiento', slug: 'almacenamiento' },
+	{ name: 'Redes', slug: 'redes' },
+	{ name: 'Puntos de Venta', slug: 'puntos-de-venta' },
+	{ name: 'Energía', slug: 'proteccion-electrica' },
+	{ name: 'Accesorios', slug: 'accesorios' },
+	{ name: 'Impresión', slug: 'impresion' },
+];
+
 const HeaderMenu = () => {
-	const { buildUrl } = useApi();
-	const [data, setData] = useState({ results: [] });
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(false);
 	const [windowWidth, setWindowWidth] = useState(0);
 
 	const maxPageResults = useAppSelector(
@@ -24,30 +30,10 @@ const HeaderMenu = () => {
 		(state: any) => state.showOpacityContainerReducer.navMobileMenu
 	);
 
-	const fetchData = async () => {
-		try {
-			setLoading(true);
-			const data = await fetch(
-				buildUrl(`/categories/bestcategories/?parentcategorie=index`),
-				{
-					headers: {
-						'X-Store-ID': 'cti',
-					},
-				}
-			);
-			setData(await data.json());
-		} catch (error) {
-			setError(error);
-		} finally {
-			setLoading(false);
-		}
-	};
-
 	// funcion para calcular el numero de items que se van a mostrar dinamico por porcentaje
-
 	const calculateItemsToShow = (width: number) => {
 		const percentage = width / 1920;
-		return Math.floor(percentage * 14);
+		return Math.min(CURATED_CATEGORIES.length, Math.floor(percentage * 14));
 	};
 
 	// useEffect para calcular el numero de items que se van a mostrar en tiempo real (SSR-safe)
@@ -58,14 +44,6 @@ const HeaderMenu = () => {
 		window.addEventListener('resize', handleResize);
 		return () => window.removeEventListener('resize', handleResize);
 	}, []);
-
-	useEffect(() => {
-		fetchData();
-	}, []);
-
-	if ((data?.results || []).length === 0) {
-		return <div></div>;
-	}
 
 	return (
 		<div className='header-menu'>
@@ -93,29 +71,18 @@ const HeaderMenu = () => {
 						<CaretDown isOpen={menuMobileOpen} size={12} />
 					</button>
 				</li>
-				{(() => {
-					const seen = new Set();
-					return (data?.results || [])
-						.filter((i) => i.slug !== 'index')
-						.filter((i) => i.portada)
-						.filter((i) => {
-							if (seen.has(i.name.toLowerCase())) {
-								return false;
-							}
-							seen.add(i.name.toLowerCase());
-							return true;
-						})
-						.slice(0, calculateItemsToShow(windowWidth || 1920));
-				})().map((item, index) => (
-					<li key={index}>
-						<Link
-							href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
-							legacyBehavior
-						>
-							<a>{Capitalize(item.name)}</a>
-						</Link>
-					</li>
-				))}
+				{CURATED_CATEGORIES.slice(0, calculateItemsToShow(windowWidth || 1920)).map(
+					(item, index) => (
+						<li key={index}>
+							<Link
+								href={`/listado/all/${item.slug}?page_size=${maxPageResults}`}
+								legacyBehavior
+							>
+								<a>{item.name}</a>
+							</Link>
+						</li>
+					)
+				)}
 				<li>
 					<Link
 						href={`/listado/all/index?q=&filter_available=true&filter_available_store=false&filter_free_shipping=false&page=1&order=-ventas&filter_discount=true&page_size=${maxPageResults}`}
