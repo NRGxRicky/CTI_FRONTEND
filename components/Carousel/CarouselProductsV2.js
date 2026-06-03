@@ -183,7 +183,7 @@ const CarouselProductsV2 = ({
 																	style={{ objectFit: 'contain' }}
 																	alt={Capitalize(producto.titulo)}
 																	draggable='false'
-																	sizes='auto'
+																	sizes='(max-width: 768px) 50vw, 300px'
 																	loading='lazy'
 																/>
 																<NewProduct date={producto.created} />

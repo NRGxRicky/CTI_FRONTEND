@@ -758,7 +758,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 												style={{ objectFit: 'contain', padding: 5 }}
 												alt={option.id}
 												draggable='false'
-												sizes='auto'
+												sizes='50px'
 											/>
 										</div>
 										<div className='payments__option__item__label'>
@@ -790,7 +790,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 												style={{ objectFit: 'contain', padding: 5 }}
 												alt={option.id}
 												draggable='false'
-												sizes='auto'
+												sizes='50px'
 											/>
 										</div>
 										<div className='payments__option__item__label'>

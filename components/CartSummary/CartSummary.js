@@ -204,7 +204,7 @@ const CartSummary = () => {
 														fill
 														style={{ objectFit: 'contain' }}
 														draggable='false'
-														sizes='auto'
+														sizes='80px'
 														priority={true}
 													/>
 												</div>

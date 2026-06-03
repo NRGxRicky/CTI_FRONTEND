@@ -69,7 +69,7 @@ const BestCategoriesMini = ({
 													fill
 													style={{ objectFit: 'contain' }}
 													draggable='false'
-													sizes='auto'
+													sizes='100px'
 													alt={Capitalize(categorie.name)}
 												/>
 											</div>

@@ -240,7 +240,7 @@ export default function UserOrderDetail({ orderId }) {
 																		)}
 																		fill
 																		style={{ objectFit: 'contain' }}
-																		sizes='auto'
+																		sizes='80px'
 																	/>
 																</div>
 																<div className='product-row__info'>
@@ -289,7 +289,7 @@ export default function UserOrderDetail({ orderId }) {
 															alt={Capitalize(item.nombre_producto)}
 															fill
 															style={{ objectFit: 'contain' }}
-															sizes='auto'
+															sizes='80px'
 														/>
 													</div>
 													<div className='product-row__info'>
@@ -484,7 +484,7 @@ export default function UserOrderDetail({ orderId }) {
 											alt={paymentMethodData.title}
 											fill
 											style={{ objectFit: 'contain' }}
-											sizes='auto'
+											sizes='70px'
 										/>
 									</div>
 								</div>

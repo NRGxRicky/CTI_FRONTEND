@@ -549,7 +549,7 @@ function UserOrdersList() {
 														)}
 														fill
 														style={{ objectFit: 'contain' }}
-														sizes='auto'
+														sizes='50px'
 													/>
 												</div>
 											</div>
@@ -635,7 +635,7 @@ function UserOrdersList() {
 																										style={{
 																											objectFit: 'contain',
 																										}}
-																										sizes='auto'
+																										sizes='70px'
 																									/>
 																								</div>
 																							</div>
@@ -687,7 +687,7 @@ function UserOrdersList() {
 																					alt={Capitalize(item.nombre_producto)}
 																					fill
 																					style={{ objectFit: 'contain' }}
-																					sizes='auto'
+																					sizes='70px'
 																				/>
 																			</div>
 																		</div>
@@ -780,7 +780,7 @@ function UserOrdersList() {
 																											style={{
 																												objectFit: 'contain',
 																											}}
-																											sizes='auto'
+																											sizes='70px'
 																										/>
 																									</div>
 																								</div>
@@ -900,7 +900,7 @@ function UserOrdersList() {
 															)}
 															fill
 															style={{ objectFit: 'contain' }}
-															sizes='auto'
+															sizes='50px'
 														/>
 													</div>
 												</div>
@@ -986,7 +986,7 @@ function UserOrdersList() {
 																											style={{
 																												objectFit: 'contain',
 																											}}
-																											sizes='auto'
+																											sizes='70px'
 																										/>
 																									</div>
 																								</div>
@@ -1041,7 +1041,7 @@ function UserOrdersList() {
 																						)}
 																						fill
 																						style={{ objectFit: 'contain' }}
-																						sizes='auto'
+																						sizes='70px'
 																					/>
 																				</div>
 																			</div>
@@ -1129,7 +1129,7 @@ function UserOrdersList() {
 																												style={{
 																													objectFit: 'contain',
 																												}}
-																												sizes='auto'
+																												sizes='70px'
 																											/>
 																										</div>
 																									</div>

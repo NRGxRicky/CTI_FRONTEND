@@ -226,7 +226,7 @@ const ProductGalleryMobile = ({
 												fill
 												style={{ objectFit: 'contain' }}
 												draggable='false'
-												sizes='auto'
+												sizes='(max-width: 768px) 100vw, 600px'
 												alt={Capitalize(item.title)}
 												onLoad={() => setLoaded(true)}
 											/>

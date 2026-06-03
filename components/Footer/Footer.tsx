@@ -261,7 +261,7 @@ const Footer: React.FC<FooterProps> = () => {
 										style={{ objectFit: 'contain' }}
 										alt={'Visa MasterCard'}
 										draggable='false'
-										sizes='auto'
+										sizes='(max-width: 768px) 100px, 150px'
 									/>
 								</div>
 							</div>
@@ -278,7 +278,7 @@ const Footer: React.FC<FooterProps> = () => {
 										style={{ objectFit: 'contain' }}
 										alt={'Paypal'}
 										draggable='false'
-										sizes='auto'
+										sizes='(max-width: 768px) 100px, 150px'
 									/>
 								</div>
 							</a>
@@ -295,7 +295,7 @@ const Footer: React.FC<FooterProps> = () => {
 										style={{ objectFit: 'contain' }}
 										alt={'KueskiPay'}
 										draggable='false'
-										sizes='auto'
+										sizes='(max-width: 768px) 100px, 150px'
 									/>
 								</div>
 							</a>
@@ -307,7 +307,7 @@ const Footer: React.FC<FooterProps> = () => {
 										style={{ objectFit: 'contain' }}
 										alt={'Oxxo SPEI'}
 										draggable='false'
-										sizes='auto'
+										sizes='(max-width: 768px) 100px, 150px'
 									/>
 								</div>
 							</div>
@@ -324,7 +324,7 @@ const Footer: React.FC<FooterProps> = () => {
 										style={{ objectFit: 'contain' }}
 										alt={'Mercado Pago'}
 										draggable='false'
-										sizes='auto'
+										sizes='(max-width: 768px) 100px, 150px'
 									/>
 								</div>
 							</a>
@@ -341,7 +341,7 @@ const Footer: React.FC<FooterProps> = () => {
 										style={{ objectFit: 'contain' }}
 										alt={'Aplazo'}
 										draggable='false'
-										sizes='auto'
+										sizes='(max-width: 768px) 100px, 150px'
 									/>
 								</div>
 							</a>

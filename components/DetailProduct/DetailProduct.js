@@ -240,7 +240,7 @@ const DetailProduct = ({
 															style={{ objectFit: 'contain' }}
 															alt={Capitalize(item.marca.nombre)}
 															draggable='false'
-															sizes='auto'
+															sizes='100px'
 														/>
 													) : (
 														`${Capitalize(item.marca.nombre)}`

@@ -147,7 +147,7 @@ const BestCategories = ({ mobile = false }) => {
 													padding: 10,
 												}}
 												draggable='false'
-												sizes='auto'
+												sizes='100px'
 												alt={Capitalize(item.name)}
 											/>
 										</a>

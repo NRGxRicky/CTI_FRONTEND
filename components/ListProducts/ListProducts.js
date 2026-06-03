@@ -96,7 +96,7 @@ const ListProducts = ({ results, filter_available_store }) => {
 														style={{ objectFit: 'contain' }}
 														alt={Capitalize(producto.marca.nombre)}
 														draggable='false'
-														sizes='auto'
+														sizes='50px'
 													/>
 												</Link>
 											) : (

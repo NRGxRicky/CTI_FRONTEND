@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import useEmblaCarousel from 'embla-carousel-react';
 import Link from 'next/link';
@@ -178,7 +178,7 @@ const CarouselProductsRelated = ({
 															style={{ objectFit: 'contain' }}
 															alt={Capitalize(producto.titulo)}
 															draggable='false'
-															sizes='auto'
+															sizes='(max-width: 768px) 50vw, 220px'
 														/>
 														<NewProduct date={producto.created} />
 													</div>

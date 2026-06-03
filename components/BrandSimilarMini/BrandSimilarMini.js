@@ -87,7 +87,7 @@ const BrandSimilarMini = ({
 														fill
 														style={{ objectFit: 'contain' }}
 														draggable='false'
-														sizes='auto'
+														sizes='100px'
 														alt={Capitalize(item.titulo)}
 													/>
 												</div>

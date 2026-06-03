@@ -294,7 +294,7 @@ const Index = () => {
 												style={{ objectFit: 'contain' }}
 												alt={Capitalize(item.nombre_producto)}
 												draggable='false'
-												sizes='auto'
+												sizes='60px'
 												loading='lazy'
 											/>
 										</div>

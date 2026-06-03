@@ -534,7 +534,7 @@ function UserQuotesList() {
 																		alt={Capitalize(item.product_titulo || '')}
 																		fill
 																		style={{ objectFit: 'contain' }}
-																		sizes='auto'
+																		sizes='60px'
 																	/>
 																</div>
 															</div>

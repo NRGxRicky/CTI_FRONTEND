@@ -93,7 +93,7 @@ const PaymentsChange = () => {
 											style={{ objectFit: 'contain', padding: 5 }}
 											alt={option.title}
 											draggable='false'
-											sizes='auto'
+											sizes='50px'
 										/>
 									</div>
 									<div className='payments-change__option__item__label'>
@@ -124,7 +124,7 @@ const PaymentsChange = () => {
 											style={{ objectFit: 'contain', padding: 5 }}
 											alt={option.title}
 											draggable='false'
-											sizes='auto'
+											sizes='50px'
 										/>
 									</div>
 									<div className='payments-change__option__item__label'>
