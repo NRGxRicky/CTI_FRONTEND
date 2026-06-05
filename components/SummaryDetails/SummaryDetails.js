@@ -37,6 +37,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 	const { storeId, paypalClientId } = useEnv();
 	const [kueskiCallbackUrl, setKueskiCallbackUrl] = useState(null);
 	const [aplazoCheckoutUrl, setAplazoCheckoutUrl] = useState(null);
+	const [isMpMock, setIsMpMock] = useState(false);
 	const [paypalLoaded, setPaypalLoaded] = useState(() => typeof window !== 'undefined' && !!window.paypal);
 	const [mercadopagoLoaded, setMercadopagoLoaded] = useState(() => typeof window !== 'undefined' && !!window.MercadoPago);
 	const [globalpaymentsLoaded, setGlobalpaymentsLoaded] = useState(false);
@@ -469,9 +470,17 @@ const SummaryDetails = ({ urlAction, step }) => {
 
 			const { preferenceId } = data; // Ajusta si tu backend devuelve otro campo
 
+			// Si es mock (por ejemplo, porque la clave no está configurada)
+			if (data.isMock || (preferenceId && preferenceId.startsWith('MOCK_'))) {
+				console.log('🏖️ Mercado Pago Mock Mode detected.');
+				setIsMpMock(true);
+				return;
+			}
+			setIsMpMock(false);
+
 			// E) Instanciamos MercadoPago
 			const mp = new window.MercadoPago(
-				process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY, // tu Public Key
+				process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || 'TEST-PUBLIC-KEY', // tu Public Key
 				{
 					locale: 'es-MX',
 				}
@@ -856,11 +865,26 @@ const SummaryDetails = ({ urlAction, step }) => {
 
 				{/* Mercado Pago container */}
 				{step === 'confirm' && paymentMethod === 'mercadopago' && (
-					<div
-						ref={mercadoPagoRef}
-						id='wallet_container'
-						style={{ marginTop: '15px' }}
-					/>
+					isMpMock ? (
+						<div className='mercadopago__mock-container' style={{ marginTop: '15px' }}>
+							<button
+								className='proceed-checkout mercadopago__mock-button'
+								onClick={() => {
+									const host = window.location.host;
+									const protocol = window.location.protocol;
+									window.location.href = `${protocol}//${host}/carrito/mp/success?preference_id=MOCK_PREF_123&status=approved&collection_status=approved&payment_id=MOCK_PAY_123`;
+								}}
+							>
+								Pagar con Mercado Pago (Simulador)
+							</button>
+						</div>
+					) : (
+						<div
+							ref={mercadoPagoRef}
+							id='wallet_container'
+							style={{ marginTop: '15px' }}
+						/>
+					)
 				)}
 
 

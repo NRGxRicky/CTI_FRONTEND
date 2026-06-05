@@ -15,6 +15,24 @@ test.describe('Ruta Crítica - Flujo de Compra E2E', () => {
 
         try {
             // ============================================
+            // INICIAR SESIÓN (Requerido para checkout)
+            // ============================================
+            console.log('\n🔐 Iniciando sesión...');
+            await page.goto(environment.buildUrl('/login'));
+            await page.waitForLoadState('networkidle');
+            
+            const emailInput = page.locator('input[type="email"], input[name*="email"], input[placeholder*="correo"]').first();
+            const passwordInput = page.locator('input[type="password"]').first();
+            const submitBtn = page.locator('.login-card button[type="submit"], .login-button').first();
+            
+            await emailInput.fill(config.testCredentials.email);
+            await passwordInput.fill(config.testCredentials.password);
+            await submitBtn.click();
+            await page.waitForURL(url => !url.href.includes('/login'), { timeout: 10000 });
+            await page.waitForLoadState('networkidle');
+            console.log('✅ Sesión iniciada');
+
+            // ============================================
             // PASO 1: BÚSQUEDA DE PRODUCTO
             // ============================================
             console.log('\n🔍 PASO 1: Búsqueda de producto...');
@@ -23,10 +41,22 @@ test.describe('Ruta Crítica - Flujo de Compra E2E', () => {
             await page.waitForLoadState('networkidle');
 
             // Buscar barra de búsqueda
-            const searchInput = page.locator('input[type="search"], input[placeholder*="Buscar"], input[placeholder*="buscar"]').first();
+            let searchInput = page.locator('input[type="search"], input[placeholder*="Buscar"], input[placeholder*="buscar"]').first();
 
             if (await searchInput.count() === 0) {
                 throw new Error('Barra de búsqueda no encontrada');
+            }
+
+            // Si el input de búsqueda no es visible (es mobile-chrome)
+            if (!(await searchInput.isVisible())) {
+                console.log('📱 Dispositivo móvil detectado: Abriendo panel de búsqueda...');
+                const searchToggle = page.locator('.header-bar__mobile__search-icon__mobile, .header-bar__mobile__search-icon').first();
+                if (await searchToggle.count() > 0) {
+                    await searchToggle.click();
+                    await page.waitForTimeout(1000);
+                    // Volver a obtener el input ya visible
+                    searchInput = page.locator('.header-bar__mobile__form-container input[type="search"]').first();
+                }
             }
 
             // Realizar búsqueda
@@ -45,13 +75,13 @@ test.describe('Ruta Crítica - Flujo de Compra E2E', () => {
             await page.waitForTimeout(2000);
 
             // Buscar primer producto
-            const productLink = page.locator('a[href*="/products/"], a[href*="producto"]').first();
+            const productLink = page.locator('.products-list__item a, .embla__slide a, a[href*="/products/"], a[href*="producto"]').first();
 
             if (await productLink.count() === 0) {
                 // Intentar ir directamente al catálogo
                 await page.goto(environment.buildUrl('/listado/all/index'));
                 await page.waitForLoadState('networkidle');
-                const catalogProduct = page.locator('a[href*="/products/"], a[href*="producto"]').first();
+                const catalogProduct = page.locator('.products-list__item a, .embla__slide a, a[href*="/products/"], a[href*="producto"]').first();
 
                 if (await catalogProduct.count() === 0) {
                     throw new Error('No se encontraron productos en el catálogo');
@@ -84,7 +114,7 @@ test.describe('Ruta Crítica - Flujo de Compra E2E', () => {
 
             // Buscar botón "Añadir al carrito"
             const addToCartButton = page.locator(
-                'button:has-text("Añadir al carrito"), button:has-text("Agregar al carrito"), button:has-text("Añadir")'
+                'a:has-text("Añadir al Carrito"), a:has-text("Añadir al carrito"), button:has-text("Añadir al carrito"), a:has-text("Agregar al carrito"), button:has-text("Agregar al carrito"), .product__actions__add-to-cart'
             ).first();
 
             if (await addToCartButton.count() === 0) {
@@ -142,7 +172,7 @@ test.describe('Ruta Crítica - Flujo de Compra E2E', () => {
             console.log(`✅ Carrito tiene ${itemCount} item(s)`);
 
             // Verificar total del carrito
-            const totalElement = page.locator('[class*="total"], text=/Total/i').first();
+            const totalElement = page.locator('[class*="total"], .cart-total, .total').first();
             if (await totalElement.count() > 0) {
                 await expect(totalElement).toBeVisible();
                 console.log('✅ Total del carrito visible');
@@ -233,7 +263,7 @@ test.describe('Ruta Crítica - Flujo de Compra E2E', () => {
         await page.waitForLoadState('networkidle');
 
         // Buscar opción de PayPal
-        const paypalOption = page.locator('text=/PayPal/i, img[alt*="PayPal"]').first();
+        const paypalOption = page.locator('img[src*="paypal"], img[alt*="PayPal"], img[alt*="paypal"]').first();
 
         if (await paypalOption.count() === 0) {
             await alertManager.saveAlert(alertManager.createAlert({
@@ -263,7 +293,7 @@ test.describe('Ruta Crítica - Flujo de Compra E2E', () => {
         await page.waitForLoadState('networkidle');
 
         // Buscar opción de MercadoPago
-        const mpOption = page.locator('text=/MercadoPago/i, text=/Mercado Pago/i, img[alt*="MercadoPago"]').first();
+        const mpOption = page.locator('img[src*="mercado-pago"], img[src*="mercadopago"], img[alt*="MercadoPago"], img[alt*="Mercado Pago"]').first();
 
         if (await mpOption.count() === 0) {
             await alertManager.saveAlert(alertManager.createAlert({

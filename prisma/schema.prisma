@@ -56,6 +56,8 @@ model User {
   // Relaciones
   orders         Order[]
   cartItems      Cart[]
+  addresses      Address[]
+  taxInvoices    TaxInvoice[]
   
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -127,5 +129,40 @@ enum OrderStatus {
   INGRAM_SYNCED
   SHIPPED
   CANCELLED
+}
+
+model Address {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nombres         String
+  apellidos       String
+  telefono        String
+  calle           String
+  numero          String
+  numero_interior String?
+  colonia         String
+  codigo_postal   String
+  ciudad          String
+  estado          String
+  referencias     String?
+  active          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model TaxInvoice {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  razon_social  String
+  rfc           String
+  codigo_postal String
+  regimen       String
+  uso_de_cfdi   String
+  forma_de_pago String
+  active        Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 

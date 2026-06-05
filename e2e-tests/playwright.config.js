@@ -34,7 +34,7 @@ module.exports = defineConfig({
     // Configuración compartida para todos los proyectos
     use: {
         // URL base para navegación
-        baseURL: process.env.TEST_BASE_URL || 'https://ctimx.io',
+        baseURL: process.env.TEST_BASE_URL || 'https://ctisystems.com.mx',
 
         // Captura de trazas en primera reintento
         trace: 'on-first-retry',

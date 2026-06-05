@@ -104,7 +104,7 @@ class MonitoringOrchestrator {
                 timestamp: new Date().toISOString(),
                 runNumber: this.runCount,
                 environment: process.env.TEST_ENV || 'production',
-                baseUrl: process.env.TEST_BASE_URL || 'https://ctimx.io',
+                baseUrl: process.env.TEST_BASE_URL || 'https://ctisystems.com.mx',
                 tests: playwrightReport?.suites?.length || 0,
                 duration: playwrightReport?.duration || 0,
             };
@@ -185,7 +185,7 @@ class MonitoringOrchestrator {
         console.log('🔄 Iniciando monitoreo programado...');
         console.log('⏰ Intervalo: Cada 30 minutos');
         console.log('🌐 Entorno:', process.env.TEST_ENV || 'production');
-        console.log('🔗 Base URL:', process.env.TEST_BASE_URL || 'https://ctimx.io');
+        console.log('🔗 Base URL:', process.env.TEST_BASE_URL || 'https://ctisystems.com.mx');
         console.log('\nPresiona Ctrl+C para detener el monitoreo');
         console.log('='.repeat(60));
 

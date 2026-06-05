@@ -7,7 +7,7 @@ module.exports = {
     // Configuración de entorno
     environments: {
         production: {
-            baseUrl: 'https://ctimx.io',
+            baseUrl: 'https://ctisystems.com.mx',
             apiUrl: 'https://pchtest.to-do.mx',
             name: 'Producción',
         },
