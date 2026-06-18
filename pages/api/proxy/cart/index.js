@@ -71,10 +71,29 @@ export default async function handler(req, res) {
         const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
 
         if (!userId) {
-            // Usuario Invitado Sincronizando (Simplemente le devolvemos lo que mandó)
+            // Usuario Invitado Sincronizando
             if (body.cart && Array.isArray(body.cart)) {
+                const validatedCart = [];
+                for (const item of body.cart) {
+                    if (item && item.product && item.product.id) {
+                        const product = await db.product.findUnique({
+                            where: { id: Number(item.product.id) }
+                        });
+                        if (product) {
+                            const stock = product.stock;
+                            const quantity = Math.min(Number(item.quantity) || 1, stock);
+                            if (quantity > 0) {
+                                validatedCart.push({
+                                    ...item,
+                                    quantity,
+                                    product: mapProductToFrontend(product)
+                                });
+                            }
+                        }
+                    }
+                }
                 return res.status(200).json({
-                    cart_items: body.cart,
+                    cart_items: validatedCart,
                     shipping_cost: 150,
                     total: 0
                 });
@@ -85,16 +104,43 @@ export default async function handler(req, res) {
         // Usuario Autenticado Modificando Carrito
         // El frontend puede enviar un single item add/update
         if (body.product_id && body.quantity !== undefined) {
+            const productId = Number(body.product_id);
+            const product = await db.product.findUnique({
+                where: { id: productId }
+            });
+            const stock = product ? product.stock : 0;
+
             if (body.quantity <= 0) {
                 await db.cart.deleteMany({
-                    where: { userId, productId: Number(body.product_id) }
+                    where: { userId, productId }
                 });
             } else {
-                await db.cart.upsert({
-                    where: { userId_productId: { userId, productId: Number(body.product_id) } },
-                    update: { quantity: body.update_quantity ? body.quantity : { increment: body.quantity } },
-                    create: { userId, productId: Number(body.product_id), quantity: body.quantity }
-                });
+                let targetQuantity = body.quantity;
+                if (!body.update_quantity) {
+                    const currentCartItem = await db.cart.findUnique({
+                        where: { userId_productId: { userId, productId } }
+                    });
+                    if (currentCartItem) {
+                        targetQuantity = currentCartItem.quantity + body.quantity;
+                    }
+                }
+
+                // Truncar al stock disponible
+                if (targetQuantity > stock) {
+                    targetQuantity = stock;
+                }
+
+                if (targetQuantity <= 0) {
+                    await db.cart.deleteMany({
+                        where: { userId, productId }
+                    });
+                } else {
+                    await db.cart.upsert({
+                        where: { userId_productId: { userId, productId } },
+                        update: { quantity: targetQuantity },
+                        create: { userId, productId, quantity: targetQuantity }
+                    });
+                }
             }
         }
 
@@ -104,11 +150,30 @@ export default async function handler(req, res) {
             include: { product: true }
         });
 
-        const formattedCart = updatedCartItems.map(item => ({
-            id: item.id,
-            quantity: item.quantity,
-            product: mapProductToFrontend(item.product)
-        }));
+        // Filtrar y validar stock de elementos persistidos (por seguridad)
+        const formattedCart = [];
+        for (const item of updatedCartItems) {
+            const stock = item.product ? item.product.stock : 0;
+            if (item.quantity > stock) {
+                if (stock <= 0) {
+                    await db.cart.deleteMany({
+                        where: { id: item.id }
+                    });
+                    continue;
+                } else {
+                    await db.cart.update({
+                        where: { id: item.id },
+                        data: { quantity: stock }
+                    });
+                    item.quantity = stock;
+                }
+            }
+            formattedCart.push({
+                id: item.id,
+                quantity: item.quantity,
+                product: mapProductToFrontend(item.product)
+            });
+        }
 
         return res.status(200).json({
             cart_items: formattedCart,

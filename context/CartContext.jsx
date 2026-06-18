@@ -231,8 +231,12 @@ export const CartProvider = ({ children }) => {
 			return acc + priceTotal;
 		}, 0);
 
-		setSubtotal(preSubtotal);
-		setTotal(preSubtotal + shipping);
+		const roundedSubtotal = Math.round(preSubtotal * 100) / 100;
+		const roundedShipping = Math.round(shipping * 100) / 100;
+		const roundedTotal = Math.round((roundedSubtotal + roundedShipping) * 100) / 100;
+
+		setSubtotal(roundedSubtotal);
+		setTotal(roundedTotal);
 	}, [cart, shipping, cartMsi]);
 
 	// Verificar si hay productos de cotización en el carrito

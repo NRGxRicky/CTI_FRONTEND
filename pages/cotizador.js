@@ -36,14 +36,18 @@ export default function Cotizador() {
   // Pre-populate items from cart if redirected from cart
   useEffect(() => {
     if (router.isReady && router.query.fromCart === 'true' && cart && cart.length > 0) {
-      const cartItems = cart.map((item) => ({
-        id: item.id || Date.now() + Math.random(),
-        sku: item.product.sku || item.product.modelo || '',
-        title: item.product.titulo || item.product.title || '',
-        image: item.product.imagen1s || item.product.imageUrl || (item.product.sku ? `/api/images/${item.product.sku}` : '/images/not-available.png'),
-        price: item.product.precio_contado || item.product.precio_final || 0,
-        quantity: item.quantity || 1,
-      }));
+      const cartItems = cart.map((item) => {
+        const rawPrice = item.product.precio_contado || item.product.precio_final || 0;
+        const priceBeforeIva = Math.round((rawPrice / 1.16) * 100) / 100;
+        return {
+          id: item.id || Date.now() + Math.random(),
+          sku: item.product.sku || item.product.modelo || '',
+          title: item.product.titulo || item.product.title || '',
+          image: item.product.imagen1s || item.product.imageUrl || (item.product.sku ? `/api/images/${item.product.sku}` : '/images/not-available.png'),
+          price: priceBeforeIva,
+          quantity: item.quantity || 1,
+        };
+      });
       setItems(cartItems);
 
       // Clean the query parameter shallowly
@@ -92,12 +96,14 @@ export default function Cotizador() {
     if (existing) {
       setItems(items.map((i) => i.sku === product.sku ? { ...i, quantity: i.quantity + 1 } : i));
     } else {
+      const rawPrice = product.precio_contado || product.precio_final || 0;
+      const priceBeforeIva = Math.round((rawPrice / 1.16) * 100) / 100;
       setItems([...items, {
         id: Date.now(),
         sku: product.sku || product.modelo || '',
         title: product.titulo || product.title || '',
         image: product.imagen1s || product.image || product.imageUrl || '/images/not-available.png',
-        price: product.precio_contado || product.precio_final || 0,
+        price: priceBeforeIva,
         quantity: 1,
       }]);
     }
@@ -122,9 +128,9 @@ export default function Cotizador() {
   };
 
   // Totals
-  const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const iva = subtotal * 0.16;
-  const total = subtotal + iva;
+  const subtotal = Math.round(items.reduce((sum, i) => sum + i.price * i.quantity, 0) * 100) / 100;
+  const iva = Math.round((subtotal * 0.16) * 100) / 100;
+  const total = Math.round((subtotal + iva) * 100) / 100;
 
   // Generate PDF
   const generatePDF = async () => {

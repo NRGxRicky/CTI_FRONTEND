@@ -24,6 +24,7 @@ const CartSummaryMini = () => {
 	const { buildUrl, apiUrl } = useApi();
 	const {
 		cart,
+		addToCart,
 		removeFromCart,
 		clearCart,
 		subtotal,
@@ -218,7 +219,31 @@ const CartSummaryMini = () => {
 								</div>
 
 								<div className="item-actions">
-									<div className="item-quantity">{item.quantity} Pza.</div>
+									<div className="item-quantity-selector">
+										<button
+											onClick={() => {
+												if (item.quantity > 1) {
+													addToCart(item.product, item.quantity - 1, true, item.quote_id);
+												}
+											}}
+											className="qty-btn"
+											disabled={item.quantity <= 1}
+										>
+											-
+										</button>
+										<span className="qty-val">{item.quantity}</span>
+										<button
+											onClick={() => {
+												if (item.quantity < item.product.stock_total) {
+													addToCart(item.product, item.quantity + 1, true, item.quote_id);
+												}
+											}}
+											className="qty-btn"
+											disabled={item.quantity >= item.product.stock_total}
+										>
+											+
+										</button>
+									</div>
 
 									<div className="item-price">
 										{/* Si hay unit_price y quote_id, mostrar ese precio (desde cotización) */}
@@ -540,9 +565,41 @@ const CartSummaryMini = () => {
           gap: 10px;
           min-width: 170px;
         }
-        .item-quantity {
+        .item-quantity-selector {
+          display: flex;
+          align-items: center;
+          border: 1px solid #eaeaea;
+          border-radius: 4px;
+          overflow: hidden;
+          background: #fff;
+        }
+        .qty-btn {
+          border: none;
+          background: #f7f7f7;
+          width: 26px;
+          height: 26px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          cursor: pointer;
+          color: #333;
+          transition: background-color 0.2s, color 0.2s;
+        }
+        .qty-btn:hover:not(:disabled) {
+          background: #eaeaea;
+          color: var(--primary-color);
+        }
+        .qty-btn:disabled {
+          opacity: 0.3;
+          cursor: not-allowed;
+        }
+        .qty-val {
+          width: 30px;
+          text-align: center;
           font-weight: bold;
-          min-width: 40px;
+          font-size: 12px;
+          color: #333;
         }
         .item-price {
           font-weight: bold;

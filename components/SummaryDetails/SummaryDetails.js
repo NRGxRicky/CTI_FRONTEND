@@ -536,9 +536,9 @@ const SummaryDetails = ({ urlAction, step }) => {
 			});
 
 			// B) Calcular montos: subtotal, shipping y total.
-			const subtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-			const shippingCost = parseFloat(shipping) || 0;
-			const total = parseFloat((subtotal + shippingCost).toFixed(2));
+			const subtotal = Math.round(items.reduce((acc, item) => acc + (item.price * item.quantity), 0) * 100) / 100;
+			const shippingCost = Math.round((parseFloat(shipping) || 0) * 100) / 100;
+			const total = Math.round((subtotal + shippingCost) * 100) / 100;
 
 			// C) Construir el objeto "amount"
 			const amount = {
