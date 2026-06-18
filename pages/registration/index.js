@@ -142,37 +142,34 @@ const Register = () => {
 		}
 	};
 
+	// Redirigir limpiamente cuando el usuario esté autenticado
+	useEffect(() => {
+		if (isAuthenticated) {
+			if (redirect && isValidRedirect(redirect)) {
+				router.push(redirect);
+			} else {
+				router.push('/');
+			}
+		}
+	}, [isAuthenticated, redirect]);
+
 	const beforeLogin = async () => {
 		setError(null);
 		setLoading(true);
 		try {
 			const resp = await login(formData.email, formData.password);
-			if (resp.status === 200) {
-				if (redirect && isValidRedirect(redirect)) {
-					router.push(redirect); // Redirige a la ruta original
-				} else {
-					router.push('/'); // Ruta predeterminada si no hay "redirect"
-				}
-			} else {
+			if (resp.status !== 200) {
 				setError('No se pudo iniciar sesión de forma automática. Por favor intenta iniciar sesión manualmente.');
+				setLoading(false);
 			}
 		} catch (err) {
 			setError('Ocurrió un error al intentar iniciar sesión. Por favor intenta de nuevo.');
-		} finally {
 			setLoading(false);
 		}
 	};
 
 	if (authLoading) {
 		return <div></div>;
-	}
-
-	if (isAuthenticated) {
-		if (redirect && isValidRedirect(redirect)) {
-			router.push(redirect); // Redirige a la ruta original
-		} else {
-			router.push('/'); // Ruta predeterminada si no hay "redirect"
-		}
 	}
 
 	return (

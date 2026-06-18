@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/auth';
 import EyeClose from '../../components/Icons/EyeClose';
 import EyeOpen from '../../components/Icons/EyeOpen';
@@ -30,6 +30,17 @@ const Login = () => {
 		}
 	};
 
+	// Redirigir limpiamente cuando el usuario esté autenticado
+	useEffect(() => {
+		if (isAuthenticated) {
+			if (redirect && isValidRedirect(redirect)) {
+				router.push(redirect);
+			} else {
+				router.push('/');
+			}
+		}
+	}, [isAuthenticated, redirect]);
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError(false);
@@ -40,29 +51,15 @@ const Login = () => {
 			if (resp.status === 200) {
 				// Trackear evento de login exitoso
 				trackLogin('email');
-
-				if (redirect && isValidRedirect(redirect)) {
-					router.push(redirect); // Redirige a la ruta original
-				} else {
-					router.push('/'); // Ruta predeterminada si no hay "redirect"
-				}
 			} else {
 				setError(true);
+				setLoading(false);
 			}
 		} catch (err) {
 			setError(true);
-		} finally {
 			setLoading(false);
 		}
 	};
-
-	if (isAuthenticated) {
-		if (redirect && isValidRedirect(redirect)) {
-			router.push(redirect); // Redirige a la ruta original
-		} else {
-			router.push('/'); // Ruta predeterminada si no hay "redirect"
-		}
-	}
 
 	return (
 		<div className='container'>
