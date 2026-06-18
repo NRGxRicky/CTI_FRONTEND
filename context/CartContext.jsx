@@ -396,13 +396,25 @@ export const CartProvider = ({ children }) => {
 	};
 
 	// Eliminar del carrito
-	const removeFromCart = async (productId) => {
+	const removeFromCart = async (productIdOrCartItemId) => {
 		// Ya no bloqueamos la eliminación de productos
 		// El usuario debe poder eliminar productos de cotización si lo desea
 		setLoading(true);
+		
+		const cartItem = cart.find(
+			(item) => item.id === productIdOrCartItemId || item.product.id === productIdOrCartItemId
+		);
+
+		if (!cartItem) {
+			setLoading(false);
+			return;
+		}
+
+		const realProductId = cartItem.product.id;
+
 		if (isAuthenticated) {
 			try {
-				const response = await fetch(buildUrl(`/cart/${productId}/`), {
+				const response = await fetch(buildUrl(`/cart/${realProductId}/`), {
 					method: 'DELETE',
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -412,34 +424,28 @@ export const CartProvider = ({ children }) => {
 				if (response.ok) {
 					const backendCart = await response.json();
 
-					// Trackear evento de Google Analytics antes de actualizar el estado
-					const removedProduct = cart.find(
-						(item) => item.product.id === productId
+					const cartValue = backendCart.cart_items.reduce((acc, item) => {
+						const price = !cartMsi
+							? parseFloat(item.product.precio_contado)
+							: parseFloat(item.product.precio_final_descuento) > 0
+							? parseFloat(item.product.precio_final_descuento)
+							: parseFloat(item.product.precio_final);
+						return acc + price * item.quantity;
+					}, 0);
+
+					// Google Analytics
+					trackRemoveFromCart(
+						cartItem.product,
+						cartItem.quantity,
+						cartValue
 					);
-					if (removedProduct) {
-						const cartValue = backendCart.cart_items.reduce((acc, item) => {
-							const price = !cartMsi
-								? parseFloat(item.product.precio_contado)
-								: parseFloat(item.product.precio_final_descuento) > 0
-								? parseFloat(item.product.precio_final_descuento)
-								: parseFloat(item.product.precio_final);
-							return acc + price * item.quantity;
-						}, 0);
 
-						// Google Analytics
-						trackRemoveFromCart(
-							removedProduct.product,
-							removedProduct.quantity,
-							cartValue
-						);
-
-						// Meta Pixel
-						trackMetaRemoveFromCart(
-							removedProduct.product,
-							removedProduct.quantity,
-							cartValue
-						);
-					}
+					// Meta Pixel
+					trackMetaRemoveFromCart(
+						cartItem.product,
+						cartItem.quantity,
+						cartValue
+					);
 
 					setCart(backendCart.cart_items);
 					setShipping(backendCart.shipping_cost);
@@ -448,29 +454,24 @@ export const CartProvider = ({ children }) => {
 				console.error('Error removing item from cart:', error);
 			}
 		} else {
-			// Trackear evento de Google Analytics para carrito local antes de remover
-			const removedProduct = cart.find((item) => item.product.id === productId);
-			if (removedProduct) {
-				const newCart = cart.filter((item) => item.product.id !== productId);
-				const cartValue = newCart.reduce((acc, item) => {
-					const price = !cartMsi
-						? parseFloat(item.product.precio_contado)
-						: parseFloat(item.product.precio_final_descuento) > 0
-						? parseFloat(item.product.precio_final_descuento)
-						: parseFloat(item.product.precio_final);
-					return acc + price * item.quantity;
-				}, 0);
+			// Sincronizar localmente si no está autenticado
+			const newCart = cart.filter((item) => item.product.id !== realProductId);
+			const cartValue = newCart.reduce((acc, item) => {
+				const price = !cartMsi
+					? parseFloat(item.product.precio_contado)
+					: parseFloat(item.product.precio_final_descuento) > 0
+					? parseFloat(item.product.precio_final_descuento)
+					: parseFloat(item.product.precio_final);
+				return acc + price * item.quantity;
+			}, 0);
 
-				trackRemoveFromCart(
-					removedProduct.product,
-					removedProduct.quantity,
-					cartValue
-				);
-			}
-
-			setCart((prevCart) =>
-				prevCart.filter((item) => item.product.id !== productId)
+			trackRemoveFromCart(
+				cartItem.product,
+				cartItem.quantity,
+				cartValue
 			);
+
+			setCart(newCart);
 		}
 		setLoading(false);
 	};

@@ -224,6 +224,35 @@ export default async function handler(req, res) {
             });
         }
 
+        // ============================================
+        // CASO: VACIAR CARRITO (Clear Cart)
+        // ============================================
+        if ((apiPath === 'cart/clear' || apiPath === 'cart/clear/') && req.method === 'POST') {
+            // Verificar autenticación
+            const authHeader = req.headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) {
+                return res.status(401).json({ error: 'No token provided' });
+            }
+
+            const token = authHeader.split(' ')[1];
+            let decoded;
+            try {
+                const JWT_SECRET = process.env.JWT_SECRET || 'CTI_TEMP_SECRET_KEY';
+                decoded = jwt.verify(token, JWT_SECRET);
+            } catch (e) {
+                return res.status(401).json({ error: 'Token is invalid or expired' });
+            }
+
+            const userId = decoded.user_id;
+
+            // Borrar todos los productos del carrito de este usuario
+            await db.cart.deleteMany({
+                where: { userId }
+            });
+
+            return res.status(200).json({ status: 'cleared' });
+        }
+
 
         // ============================================
         // CASO: SUGERENCIAS DE BUSQUEDA (InstantSearch)
