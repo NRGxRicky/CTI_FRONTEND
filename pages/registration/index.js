@@ -97,6 +97,8 @@ const Register = () => {
 			return;
 		}
 
+		let registerSuccess = false;
+
 		try {
 			const response = await fetch(
 				buildUrl('/profile/register/'),
@@ -122,7 +124,11 @@ const Register = () => {
 				// Meta Pixel
 				trackMetaCompleteRegistration('email');
 
+				registerSuccess = true;
 				setSuccess(true);
+
+				// Iniciar sesión de forma automática
+				await beforeLogin();
 			} else {
 				const data = await response.json();
 				setError(data.detail || 'Ocurrió un error durante el registro.');
@@ -130,11 +136,15 @@ const Register = () => {
 		} catch (err) {
 			setError('Error de conexión, intenta más tarde.');
 		} finally {
-			setLoading(false);
+			if (!registerSuccess) {
+				setLoading(false);
+			}
 		}
 	};
 
 	const beforeLogin = async () => {
+		setError(null);
+		setLoading(true);
 		try {
 			const resp = await login(formData.email, formData.password);
 			if (resp.status === 200) {
@@ -144,10 +154,10 @@ const Register = () => {
 					router.push('/'); // Ruta predeterminada si no hay "redirect"
 				}
 			} else {
-				setError(true);
+				setError('No se pudo iniciar sesión de forma automática. Por favor intenta iniciar sesión manualmente.');
 			}
 		} catch (err) {
-			setError(true);
+			setError('Ocurrió un error al intentar iniciar sesión. Por favor intenta de nuevo.');
 		} finally {
 			setLoading(false);
 		}
@@ -180,19 +190,34 @@ const Register = () => {
 					<div className='icon-circle'>
 						<CheckCircleGreen />
 					</div>
-					<p className='success-label'>
-						Revisa tu correo para verificar tu cuenta.
-					</p>
-					<div className='card__form__label'>
-						¿No has recibido el correo electrónico?
-					</div>
-					<div className='card__form__label'>
-						Vuelve a revisar tu bandeja de entrada en 10 minutos. También podría
-						estar en tu carpeta de correo no deseado.
-					</div>
-					<button onClick={() => beforeLogin()} className='register-button'>
-						Iniciar Sesión
-					</button>
+					{loading ? (
+						<p className='success-label'>
+							Iniciando sesión de forma automática, por favor espera...
+						</p>
+					) : error ? (
+						<>
+							<p className='error-message'>{error}</p>
+							<button onClick={() => beforeLogin()} className='register-button' style={{ marginTop: '20px' }}>
+								Reintentar Inicio de Sesión
+							</button>
+							<div className='register-menu__footer'>
+								<Link
+									href={
+										redirect
+											? `/login?redirect=${encodeURIComponent(redirect)}`
+											: `/login`
+									}
+									legacyBehavior
+								>
+									<a className='login-link'>Ir al Inicio de Sesión manual</a>
+								</Link>
+							</div>
+						</>
+					) : (
+						<p className='success-label'>
+							Iniciando sesión, serás redirigido en un momento...
+						</p>
+					)}
 				</div>
 			) : (
 				<div className='register-card'>
