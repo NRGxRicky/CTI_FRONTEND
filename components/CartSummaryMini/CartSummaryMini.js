@@ -48,7 +48,7 @@ const CartSummaryMini = () => {
 	/* ───────────────────────────  Cotizador  ─────────────────────────── */
 	const handleCreateQuotation = () => {
 		dispatch(hideAll());
-		Router.push('/cotizador');
+		Router.push('/cotizador?fromCart=true');
 	};
 
 	/* ───────────────────────── Scroll helpers ───────────────────────── */

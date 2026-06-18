@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useEnv } from '../context/EnvContext';
 import Footer from '../components/Footer/Footer';
 import { useAppSelector } from '../lib/hooks';
 import CurrencyFormat from '../hooks/CurrencyFormat';
+import useCart from '../hooks/useCart';
 
 const DELIVERY_DAYS = '3 a 5 días hábiles';
 
 export default function Cotizador() {
+  const router = useRouter();
+  const { cart } = useCart();
   const { storeName, phone, contactEmail, address, logoUrl, titlePostDescription } = useEnv();
   const mobileView = useAppSelector((s) => s.mobileSlide.mobileView);
 
@@ -28,6 +32,32 @@ export default function Cotizador() {
     const saved = localStorage.getItem('cti_quote_folio');
     setFolio(saved ? parseInt(saved) + 1 : 1);
   }, []);
+
+  // Pre-populate items from cart if redirected from cart
+  useEffect(() => {
+    if (router.isReady && router.query.fromCart === 'true' && cart && cart.length > 0) {
+      const cartItems = cart.map((item) => ({
+        id: item.id || Date.now() + Math.random(),
+        sku: item.product.sku || item.product.modelo || '',
+        title: item.product.titulo || item.product.title || '',
+        image: item.product.imagen1s || item.product.imageUrl || (item.product.sku ? `/api/images/${item.product.sku}` : '/images/not-available.png'),
+        price: item.product.precio_contado || item.product.precio_final || 0,
+        quantity: item.quantity || 1,
+      }));
+      setItems(cartItems);
+
+      // Clean the query parameter shallowly
+      const { fromCart, ...restQuery } = router.query;
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: restQuery,
+        },
+        undefined,
+        { shallow: true }
+      );
+    }
+  }, [router.isReady, router.query.fromCart, cart]);
 
   // Click outside to close suggestions
   useEffect(() => {

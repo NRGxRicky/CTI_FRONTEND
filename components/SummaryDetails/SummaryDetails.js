@@ -842,19 +842,30 @@ const SummaryDetails = ({ urlAction, step }) => {
 				) : (
 					/* Botón "Continuar" o "Comprar" normal */
 					urlAction && (
-						<Link href={`${urlAction}`} legacyBehavior>
-							<a>
-								<button
-									className='proceed-checkout'
-									disabled={
-										(!address && step === 'shipping') ||
-										(!paymentMethod && (step === 'payment' || step === 'confirm'))
-									}
-								>
-									{step === 'confirm' ? 'Comprar' : 'Continuar'}
-								</button>
-							</a>
-						</Link>
+						<>
+							<Link href={`${urlAction}`} legacyBehavior>
+								<a>
+									<button
+										className='proceed-checkout'
+										disabled={
+											(!address && step === 'shipping') ||
+											(!paymentMethod && (step === 'payment' || step === 'confirm'))
+										}
+									>
+										{step === 'confirm' ? 'Comprar' : 'Continuar'}
+									</button>
+								</a>
+							</Link>
+							{step === 'cart' && (
+								<Link href='/cotizador?fromCart=true' legacyBehavior>
+									<a>
+										<button className='quote-checkout'>
+											Crear Cotización
+										</button>
+									</a>
+								</Link>
+							)}
+						</>
 					)
 				)}
 
@@ -1114,6 +1125,27 @@ const SummaryDetails = ({ urlAction, step }) => {
 
           .proceed-checkout:hover {
             background: #e00028;
+          }
+
+          .quote-checkout {
+            flex: 1;
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+          }
+
+          .quote-checkout:hover {
+            background: var(--primary-color);
+            color: #fff;
           }
 
           .proceed-checkout:disabled {
