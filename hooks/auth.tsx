@@ -139,22 +139,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		setLoading(false);
 	};
 
-	const setDataUser = async () => {
-		if (isAuthenticated) {
-			const responseUserData = await fetchDataUser(accessToken);
-			if (responseUserData.ok) {
-				const dataUser = await responseUserData.json();
-				setUsername(dataUser.username);
-				setIsverified(dataUser.is_verified);
-				setNombres(dataUser.nombres);
-				setCartMsi(dataUser.cart_msi);
-			}
-		} else {
-			setUsername('');
-			setIsverified(false);
-			setNombres('Iniciar sesión / Registrarse');
-		}
-	};
+
 
 	const updateDataUser = async (cartStatus: boolean) => {
 		if (isAuthenticated) {
@@ -211,8 +196,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	}, []);
 
 	useEffect(() => {
-		setDataUser();
-	}, [isAuthenticated]);
+		let isCurrent = true;
+
+		const updateUserData = async () => {
+			if (isAuthenticated) {
+				try {
+					const responseUserData = await fetchDataUser(accessToken);
+					if (responseUserData.ok && isCurrent) {
+						const dataUser = await responseUserData.json();
+						setUsername(dataUser.username);
+						setIsverified(dataUser.is_verified);
+						setNombres(dataUser.nombres);
+						setCartMsi(dataUser.cart_msi);
+					}
+				} catch (error) {
+					console.error('Error fetching user data:', error);
+				}
+			} else {
+				if (isCurrent) {
+					setUsername('');
+					setIsverified(false);
+					setNombres('Iniciar sesión / Registrarse');
+				}
+			}
+		};
+
+		updateUserData();
+
+		return () => {
+			isCurrent = false;
+		};
+	}, [isAuthenticated, accessToken]);
 
 	const refreshToken = async (refresh: string): Promise<boolean> => {
 		if (!refresh || refresh === 'undefined') {
