@@ -421,18 +421,28 @@ async function run() {
     let totalProcesados = 0;
     const globalStartTime = Date.now();
     let hasMore = true;
+    const skippedIds = new Set();
 
     try {
         while (hasMore) {
             const targets = await prisma.product.findMany({
-                where: specificSku ? { ingramSku: specificSku } : { imageUrl: null },
-                orderBy: { id: 'asc' },
+                where: specificSku
+                    ? { ingramSku: specificSku }
+                    : {
+                        imageUrl: null,
+                        ...(skippedIds.size > 0 ? { id: { notIn: Array.from(skippedIds) } } : {})
+                    },
+                orderBy: [{ stock: 'desc' }, { id: 'asc' }],
                 take: specificSku ? 1 : BATCH_SIZE,
-                select: { id: true, ingramSku: true, title: true, mpn: true, brand: true, upc: true, category: true }
+                select: { id: true, ingramSku: true, title: true, mpn: true, brand: true, upc: true, category: true, stock: true }
             });
 
             if (targets.length === 0) {
-                console.log('🎉 ¡Catálogo 100% completo! No quedan productos sin imagen.');
+                if (skippedIds.size > 0) {
+                    console.log(`🎉 Fin del recorrido. Se procesaron todos los productos disponibles (${skippedIds.size} quedaron pendientes de reintento transitorio de red).`);
+                } else {
+                    console.log('🎉 ¡Catálogo 100% completo! No quedan productos sin imagen.');
+                }
                 break;
             }
 
@@ -440,7 +450,7 @@ async function run() {
 
             for (let i = 0; i < targets.length; i++) {
                 const prod = targets[i];
-                console.log(`[${i + 1}/${targets.length}] SKU: ${prod.ingramSku} | ${prod.brand || 'Sin Marca'} | MPN: ${prod.mpn || 'N/A'}`);
+                console.log(`[${i + 1}/${targets.length}] SKU: ${prod.ingramSku} | Stock: ${prod.stock} | ${prod.brand || 'Sin Marca'} | MPN: ${prod.mpn || 'N/A'}`);
                 console.log(`   🏷️  ${(prod.title || '').substring(0, 60)}`);
 
                 try {
@@ -469,9 +479,11 @@ async function run() {
                         totalProcesados++;
                     } else if (res.transitory) {
                         console.log(`   ⏳ Reintentable: ${res.reason}`);
+                        skippedIds.add(prod.id);
                     }
                 } catch (itemErr) {
                     console.error(`   ❌ Error procesando SKU ${prod.ingramSku}:`, itemErr.message);
+                    skippedIds.add(prod.id);
                 }
 
                 if (i < targets.length - 1) {
