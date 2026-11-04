@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import prisma from '../../../../lib/prisma';
+import { computeSalePrice } from '../../../../lib/pricing';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'CTI_TEMP_SECRET_KEY';
 
@@ -7,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'CTI_TEMP_SECRET_KEY';
 function mapProductToFrontend(p) {
     if (!p) return null;
     const isOffer = false; 
-    const finalPrice = p.price * 1.15 * 1.16;
+    const finalPrice = computeSalePrice(p.price);
 
     return {
         id: p.id,

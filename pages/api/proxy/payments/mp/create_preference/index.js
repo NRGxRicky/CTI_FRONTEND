@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import prisma from '../../../../../../lib/prisma';
+import { computeSalePrice } from '../../../../../../lib/pricing';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'CTI_TEMP_SECRET_KEY';
 
@@ -39,12 +40,12 @@ export default async function handler(req, res) {
         // 2. Formatear items para Mercado Pago
         // Usamos los del req.body pero verificamos que correspondan a nuestro carrito
         const formattedItems = cartItems.map((item, index) => {
-            const price = item.product.price * 1.15 * 1.16; // Margen + IVA
+            const price = computeSalePrice(item.product.price);
             return {
                 id: item.product.sku || `${index}`,
                 title: item.product.titulo ? item.product.titulo.substring(0, 255) : 'Producto',
                 quantity: item.quantity,
-                unit_price: parseFloat(price.toFixed(2)),
+                unit_price: price,
                 currency_id: 'MXN',
                 picture_url: item.product.imagen1s ? `${req.headers.origin || ''}/${item.product.imagen1s}` : ''
             };
@@ -70,14 +71,11 @@ export default async function handler(req, res) {
         const failureUrl = `${protocol}://${host}/carrito/pago`;
         const pendingUrl = `${protocol}://${host}/carrito/pago`;
 
-        // Si no hay token de Mercado Pago configurado, retornamos una preferencia Mock
+        // Si no hay token de Mercado Pago configurado, no permitir transacciones mock en producción
         if (!mpAccessToken || mpAccessToken.startsWith('TU_') || mpAccessToken === 'placeholder') {
-            console.log('[Mercado Pago] MOCK MODE: Creando preferencia mock');
-            const mockPrefId = `MOCK_PREF_${Date.now()}_${userId}`;
-            return res.status(200).json({
-                preferenceId: mockPrefId,
-                isMock: true,
-                detail: 'Sandbox preference created (mock mode due to missing credentials)'
+            console.warn('[Mercado Pago] No hay credenciales válidas configuradas (MERCADOPAGO_ACCESS_TOKEN).');
+            return res.status(503).json({
+                detail: 'La pasarela de Mercado Pago se encuentra temporalmente fuera de servicio. Por favor seleccione otro método de pago.'
             });
         }
 

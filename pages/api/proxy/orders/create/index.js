@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import prisma from '../../../../../lib/prisma';
 import { IngramAdapter } from '../../../../../services/wholesalers/IngramAdapter';
+import { computeSalePrice } from '../../../../../lib/pricing';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'CTI_TEMP_SECRET_KEY';
 
@@ -66,21 +67,21 @@ export default async function handler(req, res) {
             return res.status(400).json({ detail: 'El carrito está vacío o la orden ya fue procesada' });
         }
 
-        // 2. Calcular los montos y preparar items
+        // 2. Calcular los montos y preparar items usando la fuente única de verdad
         let subtotal = 0;
         const orderItemsData = cartItems.map(item => {
-            // Re-calculamos el precio real por seguridad (no confiar en el frontend)
-            const price = item.product.price * 1.15 * 1.16; // Margen + IVA
-            subtotal += price * item.quantity;
+            const price = computeSalePrice(item.product.price);
+            subtotal += Math.round(price * item.quantity * 100) / 100;
             return {
                 productId: item.productId,
                 quantity: item.quantity,
-                price: parseFloat(price.toFixed(2))
+                price: price
             };
         });
 
-        const shipping = 150.0;
-        const total = parseFloat((subtotal + shipping).toFixed(2));
+        subtotal = Math.round(subtotal * 100) / 100;
+        const shipping = subtotal > 5000 ? 0.0 : 150.0;
+        const total = Math.round((subtotal + shipping) * 100) / 100;
 
         // 3. Verificar el pago según el método
         let transactionId = payment_id || `TX_${Date.now()}`;
@@ -147,9 +148,27 @@ export default async function handler(req, res) {
             }
             transactionId = mpPaymentData.payment_id || mpPaymentData.collection_id || transactionId;
             
+            // Rechazar simulaciones no autorizadas
+            if (String(transactionId).startsWith('MOCK_') || String(mpPaymentData.preference_id).startsWith('MOCK_')) {
+                return res.status(400).json({ detail: 'Los pagos en modo simulador están deshabilitados.' });
+            }
+
             // Validar que el pago haya sido aprobado
             if (mpPaymentData.status !== 'approved' && mpPaymentData.status !== 'SUCCESS') {
                 return res.status(400).json({ detail: `El pago de Mercado Pago no está aprobado. Estado: ${mpPaymentData.status}` });
+            }
+        }
+
+        // 3.1 Prevenir ataques de replay (reutilización de un mismo pago bancario en múltiples órdenes)
+        if (transactionId && !transactionId.startsWith('TX_')) {
+            const duplicatePayment = await db.order.findFirst({
+                where: { paymentId: transactionId }
+            });
+            if (duplicatePayment) {
+                return res.status(409).json({ 
+                    detail: 'Este identificador de transacción ya fue utilizado en una orden previa.',
+                    orderId: duplicatePayment.id 
+                });
             }
         }
 

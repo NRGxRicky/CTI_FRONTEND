@@ -10,6 +10,11 @@ export default async function handler(req, res) {
         return res.status(405).json({ detail: 'Method not allowed' });
     }
 
+    // Bloquear endpoint sandbox en producción por seguridad
+    if (process.env.NODE_ENV === 'production' && process.env.ENABLE_SANDBOX_ORDERS !== 'true') {
+        return res.status(403).json({ detail: 'El endpoint sandbox está deshabilitado por seguridad.' });
+    }
+
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ detail: 'No token provided' });

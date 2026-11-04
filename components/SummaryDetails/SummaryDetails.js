@@ -878,16 +878,9 @@ const SummaryDetails = ({ urlAction, step }) => {
 				{step === 'confirm' && paymentMethod === 'mercadopago' && (
 					isMpMock ? (
 						<div className='mercadopago__mock-container' style={{ marginTop: '15px' }}>
-							<button
-								className='proceed-checkout mercadopago__mock-button'
-								onClick={() => {
-									const host = window.location.host;
-									const protocol = window.location.protocol;
-									window.location.href = `${protocol}//${host}/carrito/mp/success?preference_id=MOCK_PREF_123&status=approved&collection_status=approved&payment_id=MOCK_PAY_123`;
-								}}
-							>
-								Pagar con Mercado Pago (Simulador)
-							</button>
+							<div className="alert alert-warning text-center" style={{ padding: '12px', borderRadius: '6px', backgroundColor: '#fff3cd', color: '#856404', border: '1px solid #ffeeba' }}>
+								⚠️ La pasarela de Mercado Pago no está disponible en este momento. Por favor, selecciona tarjeta u otro método de pago.
+							</div>
 						</div>
 					) : (
 						<div

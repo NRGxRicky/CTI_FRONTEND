@@ -9,6 +9,11 @@ export default async function handler(req, res) {
         return res.status(405).json({ detail: 'Method not allowed' });
     }
 
+    // Bloqueo de seguridad: método en integración
+    return res.status(503).json({ 
+        detail: 'Kueski Pay se encuentra en proceso de integración. Por favor utilice tarjeta de crédito/débito u otro método disponible.' 
+    });
+
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ detail: 'No token provided' });

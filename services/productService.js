@@ -1,6 +1,8 @@
 // services/productService.js
 // Servicio compartido para buscar y transformar productos en el frontend/backend
 
+import { computeSalePrice } from '../lib/pricing';
+
 // Genera un slug limpio a partir del título
 export function slugify(text) {
 	return (text || 'producto')
@@ -41,18 +43,8 @@ export function formatImageUrl(url) {
 export function mapProductToFrontend(dbProduct) {
 	if (!dbProduct) return null;
 
-	const cost = dbProduct.price || 0;
-	
-	// Calcular el precio final de venta:
-	// 1. Margen de ganancia (12% -> 1.12)
-	const margin = parseFloat(process.env.PROFIT_MARGIN || '1.12');
-	
-	// 2. Impuesto IVA aplicable en México (16% -> 1.16)
-	const iva = 1.16;
-	
-	// 3. Fórmula final (Costo Puro * Margen * IVA) redondeado a 2 decimales
-	const rawPrice = cost * margin * iva;
-	const priceMXN = Math.round(rawPrice * 100) / 100;
+	// Calcular precio unificado mediante la fuente de verdad (Margen + IVA redondeado)
+	const priceMXN = computeSalePrice(dbProduct.price);
 	
 	const brandName = dbProduct.brand || 'Ingram';
 	const brandSlug = slugify(brandName);

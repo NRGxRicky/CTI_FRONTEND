@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import prisma from '../../../../../../lib/prisma';
+import { computeSalePrice } from '../../../../../../lib/pricing';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'CTI_TEMP_SECRET_KEY';
 
@@ -34,15 +35,16 @@ export default async function handler(req, res) {
             return res.status(400).json({ detail: 'El carrito está vacío' });
         }
 
-        // 2. Calcular montos de forma segura en backend (margen + IVA)
+        // 2. Calcular montos de forma segura en backend mediante fuente única de verdad
         let subtotal = 0;
         cartItems.forEach(item => {
-            const price = item.product.price * 1.15 * 1.16;
-            subtotal += price * item.quantity;
+            const price = computeSalePrice(item.product.price);
+            subtotal += Math.round(price * item.quantity * 100) / 100;
         });
 
-        const shipping = 150.0;
-        const total = parseFloat((subtotal + shipping).toFixed(2));
+        subtotal = Math.round(subtotal * 100) / 100;
+        const shipping = subtotal > 5000 ? 0.0 : 150.0;
+        const total = Math.round((subtotal + shipping) * 100) / 100;
 
         // 3. Obtener credenciales del gateway
         const merchantId = process.env.GLOBAL_PAYMENTS_MERCHANT_ID || 'TEST_MERCHANT_ID';
