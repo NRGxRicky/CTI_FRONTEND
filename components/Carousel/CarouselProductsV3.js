@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
+import SafeImage from '../SafeImage/SafeImage';
 import useEmblaCarousel from 'embla-carousel-react';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
@@ -197,7 +198,7 @@ const CarouselProductsV3 = ({
 														</>
 													)}
 													<div className='card__carousel__image'>
-														<Image
+														<SafeImage
 															src={
 																producto.imagen1s
 																	? producto.imagen1s

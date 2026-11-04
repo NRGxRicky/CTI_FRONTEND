@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import SafeImage from '../SafeImage/SafeImage';
 import Link from 'next/link';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import useCart from '../../hooks/useCart';
@@ -192,14 +193,14 @@ const CartSummary = () => {
 										<Link href={`/${item.product.slug}`} legacyBehavior>
 											<a>
 												<div className='item-image__img'>
-													<Image
+													<SafeImage
 														src={
-															item.product.imagen1s
-																? item.product.imagen1xs.startsWith('http')
-																	? item.product.imagen1xs
-																	: `${apiUrl}${item.product.imagen1xs}`
-																: '/images/not-available.png'
+															item.product.imagen1s ||
+															item.product.imagen1xs ||
+															item.product.imageUrl ||
+															'/images/not-available.png'
 														}
+														fallbackSrc='/images/not-available.png'
 														alt={Capitalize(item.product.titulo)}
 														fill
 														style={{ objectFit: 'contain' }}

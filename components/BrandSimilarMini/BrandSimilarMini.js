@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import SafeImage from '../SafeImage/SafeImage';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
@@ -78,12 +79,13 @@ const BrandSimilarMini = ({
 															</div>
 														</>
 													)}
-													<Image
+													<SafeImage
 														src={
 															item.imagen1s
 																? item.imagen1s
 																: '/images/not-available.png'
 														}
+														fallbackSrc='/images/not-available.png'
 														fill
 														style={{ objectFit: 'contain' }}
 														draggable='false'

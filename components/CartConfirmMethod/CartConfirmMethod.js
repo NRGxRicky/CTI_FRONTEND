@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import SafeImage from '../SafeImage/SafeImage';
 import Link from 'next/link';
 
 
@@ -174,14 +175,14 @@ const CartConfirmMethod = () => {
 						{cart.map((item) => (
 							<div key={item.id} className='product-line'>
 								<div className='product-line__image'>
-									<Image
+									<SafeImage
 										src={
-											item.product.imagen1xs
-												? item.product.imagen1xs.startsWith('http')
-													? item.product.imagen1xs
-													: `${apiUrl}${item.product.imagen1xs}`
-												: '/images/not-available.png'
+											item.product.imagen1xs ||
+											item.product.imagen1s ||
+											item.product.imageUrl ||
+											'/images/not-available.png'
 										}
+										fallbackSrc='/images/not-available.png'
 										alt={item.product.titulo}
 										width={60}
 										height={60}

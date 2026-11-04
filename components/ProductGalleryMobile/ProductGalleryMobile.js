@@ -175,16 +175,17 @@ const ProductGalleryMobile = ({
 
 	useEffect(() => {
 		if (current?.url) {
+			const timer = setTimeout(() => setLoaded(true), 1500);
 			current.url.s === '/images/not-available.png' && setLoaded(true);
 			current.url.s === '/images/not-available.png'
 				? setNotImages(true)
 				: setNotImages(false);
-		}
 
-		if (current && emblaApi)
-			if (current.index !== emblaApi.selectedScrollSnap()) {
+			if (emblaApi && current.index !== emblaApi.selectedScrollSnap()) {
 				emblaApi.scrollTo(current.index);
 			}
+			return () => clearTimeout(timer);
+		}
 	}, [current]);
 
 	return (
@@ -229,6 +230,7 @@ const ProductGalleryMobile = ({
 												sizes='(max-width: 768px) 100vw, 600px'
 												alt={Capitalize(item.title)}
 												onLoad={() => setLoaded(true)}
+												onError={() => setLoaded(true)}
 											/>
 										</div>
 									</div>
@@ -245,6 +247,7 @@ const ProductGalleryMobile = ({
 									draggable='false'
 									sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
 									onLoad={() => setLoaded(true)}
+									onError={() => setLoaded(true)}
 								/>
 							</div>
 						</div>

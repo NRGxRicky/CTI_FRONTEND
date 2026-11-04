@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Image from 'next/image';
+import SafeImage from '../SafeImage/SafeImage';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import { useAppSelector } from '../../lib/hooks';
@@ -134,12 +135,13 @@ const BestCategories = ({ mobile = false }) => {
 										passHref
 									>
 										<a className='best-categories-carousel__a'>
-											<Image
+											<SafeImage
 												src={
 													item.portada
 														? item.portada
 														: '/images/not-available.png'
 												}
+												fallbackSrc='/images/not-available.png'
 												fill
 												style={{
 													objectFit: 'contain',

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Image from 'next/image';
+import SafeImage from '../SafeImage/SafeImage';
 import Link from 'next/link';
 import TruncateMarkup from 'react-truncate-markup';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
@@ -319,8 +320,9 @@ const InstantSearch = ({ query, category = 'all', recentSearches, onSelect, onRe
 					<Link href={suggestions.products[0].url} legacyBehavior>
 						<a className="search-dropdown__featured" onClick={() => dispatch(hideAll())}>
 							{suggestions.products[0].image && (
-								<Image
-									src={suggestions.products[0].image.startsWith('http') ? suggestions.products[0].image : `${apiUrl}${suggestions.products[0].image}`}
+								<SafeImage
+									src={suggestions.products[0].image}
+									fallbackSrc='/images/not-available.png'
 									alt={suggestions.products[0].original_title}
 									width={40}
 									height={40}

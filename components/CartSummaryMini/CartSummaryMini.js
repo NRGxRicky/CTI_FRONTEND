@@ -7,6 +7,7 @@ import React, {
 import useCart from '../../hooks/useCart';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import Image from 'next/image';
+import SafeImage from '../SafeImage/SafeImage';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
 import TruncateMarkup from 'react-truncate-markup';
 import Link from 'next/link';
@@ -174,14 +175,14 @@ const CartSummaryMini = () => {
 												className="item-image"
 												onClick={() => dispatch(hideAll())}
 											>
-												<Image
+												<SafeImage
 													src={
-														item.product.imagen1s
-															? item.product.imagen1xs.startsWith('http')
-																? item.product.imagen1xs
-																: `${apiUrl}${item.product.imagen1xs}`
-															: '/images/not-available.png'
+														item.product.imagen1s ||
+														item.product.imagen1xs ||
+														item.product.imageUrl ||
+														'/images/not-available.png'
 													}
+													fallbackSrc='/images/not-available.png'
 													fill
 													style={{ objectFit: 'contain' }}
 													alt={Capitalize(item.product.titulo)}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import SafeImage from '../SafeImage/SafeImage';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import { useAppSelector } from '../../lib/hooks';
@@ -60,12 +61,13 @@ const BestCategoriesMini = ({
 									<div className='categories__mini__item'>
 										<div className='categories__mini__item__container'>
 											<div className='categories__mini__image'>
-												<Image
+												<SafeImage
 													src={
 														categorie.portada
 															? categorie.portada
 															: '/images/not-available.png'
 													}
+													fallbackSrc='/images/not-available.png'
 													fill
 													style={{ objectFit: 'contain' }}
 													draggable='false'

@@ -3,6 +3,7 @@ import Router, { useRouter } from 'next/router';
 import { BrowserView, MobileView } from 'react-device-detect';
 import Link from 'next/link';
 import Image from 'next/image';
+import SafeImage from '../SafeImage/SafeImage';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import TruncateMarkup from 'react-truncate-markup';
 import CurrencyFormat from '../../hooks/CurrencyFormat';
@@ -105,7 +106,7 @@ const ListProductsMobile = ({
 										</>
 									)}
 									<div className='card__image'>
-										<Image
+										<SafeImage
 											src={
 												producto.imagen1s
 													? producto.imagen1s

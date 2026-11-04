@@ -202,13 +202,19 @@ const ProductGallery = ({
 
 	useEffect(() => {
 		if (current) {
-			if (!dictImagesloaded.find((image) => image == current.url.m)) {
-				dictImagesloaded.push(current.url.m);
+			const timer = setTimeout(() => setLoaded(true), 1500);
+			if (!dictImagesloaded.find((image) => image == current.url?.m)) {
+				dictImagesloaded.push(current.url?.m);
 			}
-			setParentDimensionsHeight(floatContainer.current.parentNode.offsetHeight);
-			setParentDimensionsWidth(
-				floatContainer.current.parentNode.parentNode.parentNode.offsetWidth
-			);
+			if (floatContainer.current?.parentNode) {
+				setParentDimensionsHeight(floatContainer.current.parentNode.offsetHeight);
+				if (floatContainer.current.parentNode.parentNode?.parentNode) {
+					setParentDimensionsWidth(
+						floatContainer.current.parentNode.parentNode.parentNode.offsetWidth
+					);
+				}
+			}
+			return () => clearTimeout(timer);
 		}
 	}, [current]);
 
@@ -352,10 +358,11 @@ const ProductGallery = ({
 									smallImage: {
 										alt: Capitalize(producto.titulo),
 										isFluidWidth: true,
-										src: current.url.m
+										src: current.url?.m
 											? current.url.m
 											: '/images/not-available.png',
 										onLoad: () => setLoaded(true),
+										onError: () => setLoaded(true),
 									},
 									style: {
 										maxWidth: '100%',
