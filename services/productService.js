@@ -34,6 +34,10 @@ export function formatImageUrl(url) {
 	if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
 		return url;
 	}
+	// Si es una ruta local de assets estáticos (ej: /images/categories/..., /images/not-available.png), servir desde el frontend
+	if (url.startsWith('/images/') || url.startsWith('/ico/') || url.startsWith('/fonts/')) {
+		return url;
+	}
 	const s3PublicUrl = process.env.S3_PUBLIC_URL || 'https://web-i4t8q7g61bigs480tvfi9pxy.191.101.1.67.sslip.io';
 	const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
 	return `${s3PublicUrl}/${cleanUrl}`;
