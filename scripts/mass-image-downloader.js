@@ -17,6 +17,8 @@ require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') }
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env.local') });
 
 const https = require('https');
+const fs = require('fs');
+const path = require('path');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { NodeHttpHandler } = require('@smithy/node-http-handler');
 const pg = require('pg');
@@ -411,7 +413,21 @@ async function run() {
 
     console.log('============================================================');
     console.log('🤖 ROBOT FOTOGRÁFICO V5.1 - BLINDADO CON TRIPLE CANDADO (CTI)');
-    console.log(`   Modo: ${useAI ? '🧠 IA Activada (Recorte de fondo)' : '⚡ Rápido (Sharp 800x800)'}`);
+    const fixDeadMode = process.argv.includes('--fix-dead');
+    let deadIds = [];
+    if (fixDeadMode) {
+        const deadFilePath = path.resolve(__dirname, '../data/dead_icecat_products.json');
+        if (fs.existsSync(deadFilePath)) {
+            const deadList = JSON.parse(fs.readFileSync(deadFilePath, 'utf8'));
+            deadIds = deadList.map(p => p.id);
+            console.log(`🎯 Modo Reparación: ${deadIds.length} productos detectados con enlaces rotos.`);
+        } else {
+            console.error('❌ Archivo data/dead_icecat_products.json no encontrado.');
+            process.exit(1);
+        }
+    }
+
+    console.log(`   Modo: ${useAI ? '🧠 IA Activada (Recorte de fondo)' : '⚡ Rápido (Sharp 800x800)'}${fixDeadMode ? ' | 🛠️ REPARACIÓN DE ENLACES ROTOS (404)' : ''}`);
     console.log(`   Lote: ${specificSku ? '1 SKU específico (' + specificSku + ')' : BATCH_SIZE + ' productos'}`);
     console.log('   Nivel 1: Icecat Oficial (GTIN + MPN)');
     console.log('   Nivel 2: Web Técnica con Triple Candado (MPN exacto + Marca)');
@@ -425,13 +441,24 @@ async function run() {
 
     try {
         while (hasMore) {
+            let whereClause = {};
+            if (specificSku) {
+                whereClause = { ingramSku: specificSku };
+            } else if (fixDeadMode) {
+                whereClause = {
+                    id: { in: deadIds },
+                    imageUrl: { contains: 'icecat.biz' },
+                    ...(skippedIds.size > 0 ? { id: { notIn: Array.from(skippedIds) } } : {})
+                };
+            } else {
+                whereClause = {
+                    imageUrl: null,
+                    ...(skippedIds.size > 0 ? { id: { notIn: Array.from(skippedIds) } } : {})
+                };
+            }
+
             const targets = await prisma.product.findMany({
-                where: specificSku
-                    ? { ingramSku: specificSku }
-                    : {
-                        imageUrl: null,
-                        ...(skippedIds.size > 0 ? { id: { notIn: Array.from(skippedIds) } } : {})
-                    },
+                where: whereClause,
                 orderBy: [{ stock: 'desc' }, { id: 'asc' }],
                 take: specificSku ? 1 : BATCH_SIZE,
                 select: { id: true, ingramSku: true, title: true, mpn: true, brand: true, upc: true, category: true, stock: true }
@@ -441,12 +468,12 @@ async function run() {
                 if (skippedIds.size > 0) {
                     console.log(`🎉 Fin del recorrido. Se procesaron todos los productos disponibles (${skippedIds.size} quedaron pendientes de reintento transitorio de red).`);
                 } else {
-                    console.log('🎉 ¡Catálogo 100% completo! No quedan productos sin imagen.');
+                    console.log('🎉 ¡Catálogo 100% completo! No quedan productos pendientes.');
                 }
                 break;
             }
 
-            console.log(`📋 Procesando lote de ${targets.length} productos sin imagen...\n`);
+            console.log(`📋 Procesando lote de ${targets.length} productos ${fixDeadMode ? 'con enlaces rotos' : 'sin imagen'}...\n`);
 
             for (let i = 0; i < targets.length; i++) {
                 const prod = targets[i];
