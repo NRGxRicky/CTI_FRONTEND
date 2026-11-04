@@ -31,6 +31,7 @@ const ProductGallery = ({
 	});
 	const [error, setError] = useState(null);
 	const [loaded, setLoaded] = useState(false);
+	const [mainImageError, setMainImageError] = useState(false);
 	const [showZoomGallery, setShowZoomGallery] = useState(false);
 	const [dictImagesloaded, setDictImagesloaded] = useState([]);
 	const [offsetY, setOffsetY] = useState(0);
@@ -202,6 +203,7 @@ const ProductGallery = ({
 
 	useEffect(() => {
 		if (current) {
+			setMainImageError(false);
 			const timer = setTimeout(() => setLoaded(true), 1500);
 			if (!dictImagesloaded.find((image) => image == current.url?.m)) {
 				dictImagesloaded.push(current.url?.m);
@@ -352,7 +354,7 @@ const ProductGallery = ({
 						}}
 						ref={imgCurrentRef}
 					>
-						{current && !notImages ? (
+						{current && !notImages && !mainImageError ? (
 							<ReactImageMagnify
 								{...{
 									smallImage: {
@@ -362,7 +364,10 @@ const ProductGallery = ({
 											? current.url.m
 											: '/images/not-available.png',
 										onLoad: () => setLoaded(true),
-										onError: () => setLoaded(true),
+										onError: () => {
+											setMainImageError(true);
+											setLoaded(true);
+										},
 									},
 									style: {
 										maxWidth: '100%',
@@ -416,6 +421,7 @@ const ProductGallery = ({
 						) : (
 							<SafeImage
 								src={'/images/not-available.png'}
+								fallbackSrc={'/images/not-available.png'}
 								fill
 								style={{ objectFit: 'contain' }}
 								alt={Capitalize(producto.titulo)}

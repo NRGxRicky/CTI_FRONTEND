@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import Image from 'next/image';
+import SafeImage from '../SafeImage/SafeImage';
 import {
 	blockBodyScroll,
 	unlockBodyScroll,
@@ -169,8 +169,9 @@ const ProductGalleryZoom = ({
 									}}
 								>
 									<div className='product__gallery_zoom__thumbnails__item__image'>
-										<Image
+										<SafeImage
 											src={item.s ? item.s : '/images/not-available.png'}
+											fallbackSrc='/images/not-available.png'
 											fill
 											style={{ objectFit: 'contain' }}
 											alt={Capitalize(item.title)}

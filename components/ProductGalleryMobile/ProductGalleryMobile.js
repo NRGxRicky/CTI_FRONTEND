@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import Image from 'next/image';
+import SafeImage from '../SafeImage/SafeImage';
 import useEmblaCarousel from 'embla-carousel-react';
 import Link from 'next/link';
 import Capitalize from '../../hooks/CapitalizeTitle';
@@ -222,8 +222,9 @@ const ProductGalleryMobile = ({
 											className='product__gallery__current__image'
 											onClick={() => setShowZoomGallery(true)}
 										>
-											<Image
+											<SafeImage
 												src={item.m ? item.m : '/images/not-available.png'}
+												fallbackSrc='/images/not-available.png'
 												fill
 												style={{ objectFit: 'contain' }}
 												draggable='false'
@@ -239,8 +240,9 @@ const ProductGalleryMobile = ({
 					) : (
 						<div className='product__gallery__item'>
 							<div className='product__gallery__current__image'>
-								<Image
+								<SafeImage
 									src={'/images/not-available.png'}
+									fallbackSrc='/images/not-available.png'
 									fill
 									style={{ objectFit: 'contain' }}
 									alt={Capitalize(producto.titulo)}
