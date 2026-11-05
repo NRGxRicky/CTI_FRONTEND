@@ -678,7 +678,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 			{paymentMethod === 'globalpayments' && (
 				<Script
 					id='globalpayments-sdk'
-					src={`${process.env.NEXT_PUBLIC_GLOBAL_PAYMENTS_GATEWAY_URL || 'https://evopaymentsmexico.gateway.mastercard.com'}/checkout/version/61/checkout.js`}
+					src={`${process.env.NEXT_PUBLIC_GLOBAL_PAYMENTS_GATEWAY_URL || 'https://evopaymentsmexico.gateway.mastercard.com'}/checkout/version/70/checkout.js`}
 					strategy='afterInteractive'
 					onLoad={() => setGlobalpaymentsLoaded(true)}
 				/>

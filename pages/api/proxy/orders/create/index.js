@@ -105,7 +105,7 @@ export default async function handler(req, res) {
                 try {
                     const authString = `merchant.${merchantId}:${apiPassword}`;
                     const basicAuth = Buffer.from(authString).toString('base64');
-                    const getOrderUrl = `${gatewayUrl}/api/rest/version/61/merchant/${merchantId}/order/${payment_id}`;
+                    const getOrderUrl = `${gatewayUrl}/api/rest/version/70/merchant/${merchantId}/order/${payment_id}`;
                     
                     console.log(`[Global Payments] Verificando orden en Gateway: ${getOrderUrl}`);
                     const checkRes = await fetch(getOrderUrl, {

@@ -64,7 +64,7 @@ export default async function handler(req, res) {
         const authString = `merchant.${merchantId}:${apiPassword}`;
         const basicAuth = Buffer.from(authString).toString('base64');
 
-        const sessionEndpoint = `${gatewayUrl}/api/rest/version/61/merchant/${merchantId}/session`;
+        const sessionEndpoint = `${gatewayUrl}/api/rest/version/70/merchant/${merchantId}/session`;
 
         console.log(`[Global Payments] Iniciando sesión para Orden ${orderId}, Total: $${total} MXN`);
         console.log(`[Global Payments] Usando Endpoint: ${sessionEndpoint}`);
