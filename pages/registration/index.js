@@ -100,14 +100,17 @@ const Register = () => {
 		let registerSuccess = false;
 
 		try {
+			const cleanEmail = (formData.email || '').trim().toLowerCase();
+			const cleanName = (formData.name || '').trim();
+
 			const response = await fetch(
 				buildUrl('/profile/register/'),
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
-						nombres: formData.name, // Enviar el nombre
-						email: formData.email,
+						nombres: cleanName,
+						email: cleanEmail,
 						password: formData.password,
 						confirm_password: formData.confirmPassword,
 						offers: formData.offers,
@@ -157,7 +160,8 @@ const Register = () => {
 		setError(null);
 		setLoading(true);
 		try {
-			const resp = await login(formData.email, formData.password);
+			const cleanEmail = (formData.email || '').trim().toLowerCase();
+			const resp = await login(cleanEmail, formData.password);
 			if (resp.status !== 200) {
 				setError('No se pudo iniciar sesión de forma automática. Por favor intenta iniciar sesión manualmente.');
 				setLoading(false);

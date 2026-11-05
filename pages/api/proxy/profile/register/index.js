@@ -14,10 +14,12 @@ export default async function handler(req, res) {
 
     try {
         const db = prisma;
+        const cleanEmail = email.trim().toLowerCase();
+        const cleanNombres = (nombres || '').trim();
 
         // Check if user exists
         const existingUser = await db.user.findUnique({
-            where: { email: email.toLowerCase() }
+            where: { email: cleanEmail }
         });
 
         if (existingUser) {
@@ -31,9 +33,9 @@ export default async function handler(req, res) {
         // Create user
         const newUser = await db.user.create({
             data: {
-                email: email.toLowerCase(),
+                email: cleanEmail,
                 password: hashedPassword,
-                nombres: nombres || ''
+                nombres: cleanNombres
             }
         });
 

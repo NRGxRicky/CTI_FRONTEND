@@ -323,11 +323,66 @@ const SummaryDetails = ({ urlAction, step }) => {
 		}
 	};
 
+	const ensureGlobalPaymentsLoaded = () => {
+		return new Promise((resolve, reject) => {
+			if (typeof window !== 'undefined' && window.Checkout) {
+				return resolve(window.Checkout);
+			}
+			if (typeof window === 'undefined') {
+				return reject(new Error('Entorno de navegador no disponible'));
+			}
+			const gatewayBase = process.env.NEXT_PUBLIC_GLOBAL_PAYMENTS_GATEWAY_URL || 'https://evopaymentsmexico.gateway.mastercard.com';
+			const scriptSrc = `${gatewayBase}/static/checkout/checkout.min.js`;
+
+			let script = document.getElementById('globalpayments-sdk-dynamic');
+			if (!script) {
+				script = document.createElement('script');
+				script.id = 'globalpayments-sdk-dynamic';
+				script.src = scriptSrc;
+				script.async = true;
+				document.body.appendChild(script);
+			}
+
+			const timeout = setTimeout(() => {
+				if (window.Checkout) {
+					resolve(window.Checkout);
+				} else {
+					reject(new Error('Tiempo de espera agotado al conectar con el servidor de pagos.'));
+				}
+			}, 12000);
+
+			script.addEventListener('load', () => {
+				clearTimeout(timeout);
+				setGlobalpaymentsLoaded(true);
+				if (window.Checkout) {
+					resolve(window.Checkout);
+				} else {
+					reject(new Error('La pasarela de pagos no inicializó correctamente.'));
+				}
+			}, { once: true });
+
+			script.addEventListener('error', () => {
+				clearTimeout(timeout);
+				reject(new Error('No se pudo descargar la pasarela de pagos del banco. Revisa tu conexión.'));
+			}, { once: true });
+		});
+	};
+
 	const handleGlobalpaymentsCheckout = async () => {
 		log('Iniciando pago con Global Payments', { cart, total });
 		setGlobalSessionLoading(true);
 
 		try {
+			if (!accessToken) {
+				throw new Error('Debes iniciar sesión para continuar con el pago.');
+			}
+
+			// 1. Asegurar que la librería Checkout de Mastercard/Global Payments esté cargada
+			let checkout = typeof window !== 'undefined' ? window.Checkout : null;
+			if (!checkout) {
+				checkout = await ensureGlobalPaymentsLoaded();
+			}
+
 			const res = await fetch(buildUrl('/payments/global/session/'), {
 				method: 'POST',
 				headers: {
@@ -337,7 +392,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 			});
 
 			if (!res.ok) {
-				const errData = await res.json();
+				const errData = await res.json().catch(() => ({}));
 				throw new Error(errData.detail || 'Error al comunicarse con el servidor');
 			}
 
@@ -351,13 +406,18 @@ const SummaryDetails = ({ urlAction, step }) => {
 			localStorage.setItem('gp_require_invoice', JSON.stringify(!!taxInvoice));
 			localStorage.setItem('gp_address', JSON.stringify(address));
 
-			if (typeof window !== 'undefined' && window.Checkout) {
-				window.Checkout.configure({
+			if (checkout && typeof checkout.configure === 'function') {
+				checkout.configure({
 					session: {
 						id: data.sessionId
 					}
 				});
-				window.Checkout.showLightbox();
+
+				if (typeof checkout.showLightbox === 'function') {
+					checkout.showLightbox();
+				} else if (typeof checkout.showPaymentPage === 'function') {
+					checkout.showPaymentPage();
+				}
 			} else {
 				alert('La pasarela de pagos no se pudo inicializar. Por favor, recarga la página.');
 			}
@@ -678,7 +738,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 			{paymentMethod === 'globalpayments' && (
 				<Script
 					id='globalpayments-sdk'
-					src={`${process.env.NEXT_PUBLIC_GLOBAL_PAYMENTS_GATEWAY_URL || 'https://evopaymentsmexico.gateway.mastercard.com'}/checkout/version/70/checkout.js`}
+					src={`${process.env.NEXT_PUBLIC_GLOBAL_PAYMENTS_GATEWAY_URL || 'https://evopaymentsmexico.gateway.mastercard.com'}/static/checkout/checkout.min.js`}
 					strategy='afterInteractive'
 					onLoad={() => setGlobalpaymentsLoaded(true)}
 				/>

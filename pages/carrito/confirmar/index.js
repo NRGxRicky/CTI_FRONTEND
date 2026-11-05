@@ -34,6 +34,12 @@ const index = () => {
 
 				{/* URL canónica */}
 				<link rel='canonical' href={`${process.env.NEXT_PUBLIC_PAGE_URL}/carrito/confirmar`} />
+				{/* Preload de pasarela Global Payments */}
+				<link
+					rel='preload'
+					href={`${process.env.NEXT_PUBLIC_GLOBAL_PAYMENTS_GATEWAY_URL || 'https://evopaymentsmexico.gateway.mastercard.com'}/static/checkout/checkout.min.js`}
+					as='script'
+				/>
 			</Head>
 			<StatusBarCart
 				steps={[

@@ -34,7 +34,7 @@ const CartShippingMethod = () => {
 		if (resData.ok) {
 			const dataJson = await resData.json();
 			setProfile(dataJson);
-			const activeAddress = dataJson.domicilios.find((d) => d.active);
+			const activeAddress = dataJson.domicilios.find((d) => d.active) || (dataJson.domicilios.length > 0 ? dataJson.domicilios[0] : null);
 			if (activeAddress) {
 				setAddress(activeAddress);
 				setActiveAddressId(activeAddress.id);
@@ -48,7 +48,7 @@ const CartShippingMethod = () => {
 
 	useEffect(() => {
 		if (accessToken) getDataProfile();
-	}, []);
+	}, [accessToken]);
 
 	const handleSelectAddress = async (domicilio) => {
 		try {

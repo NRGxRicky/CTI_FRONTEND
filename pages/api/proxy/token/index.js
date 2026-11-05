@@ -17,10 +17,11 @@ export default async function handler(req, res) {
 
     try {
         const db = prisma;
+        const cleanUsername = username.trim().toLowerCase();
         
         // Find user
         const user = await db.user.findUnique({
-            where: { email: username.toLowerCase() }
+            where: { email: cleanUsername }
         });
 
         if (!user) {

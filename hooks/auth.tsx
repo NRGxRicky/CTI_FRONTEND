@@ -23,9 +23,10 @@ const fetchToken = async (
 ): Promise<Response> => {
 	const url = makeUrl('/token/');
 	try {
+		const cleanUsername = (username || '').trim().toLowerCase();
 		const response = await fetch(url, {
 			method: 'POST',
-			body: JSON.stringify({ username, password }),
+			body: JSON.stringify({ username: cleanUsername, password }),
 			headers: {
 				'Content-Type': 'application/json',
 			},

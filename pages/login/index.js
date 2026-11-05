@@ -47,7 +47,8 @@ const Login = () => {
 		setLoading(true);
 
 		try {
-			const resp = await login(username, password);
+			const cleanUsername = (username || '').trim().toLowerCase();
+			const resp = await login(cleanUsername, password);
 			if (resp.status === 200) {
 				// Trackear evento de login exitoso
 				trackLogin('email');
