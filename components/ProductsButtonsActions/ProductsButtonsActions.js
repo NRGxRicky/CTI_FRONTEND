@@ -4,6 +4,7 @@ import useCart from '../../hooks/useCart'; // Importa el hook personalizado
 import { showCart } from '../../lib/features/showOpacityContainerSlide';
 import { useAppDispatch } from '../../lib/hooks';
 import Router from 'next/router';
+import { toast } from '../../context/ToastContext';
 
 const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +23,7 @@ const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 			await addProductToCart(product, quantity);
 		} catch (error) {
 			console.error('Error al añadir al carrito:', error);
-			alert('Hubo un error al añadir el producto al carrito.');
+			toast.error('Hubo un error al añadir el producto al carrito.');
 		} finally {
 			setIsLoading(false);
 			dispatch(showCart());
@@ -36,7 +37,7 @@ const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 			await addProductToCart(product, quantity, false);
 			Router.push('/carrito');
 
-			alert('Función de "Comprar Ahora" en desarrollo.');
+			toast.info('Función de "Comprar Ahora" en desarrollo.');
 		} catch (error) {
 			console.error('Error al procesar la compra:', error);
 		}
@@ -74,16 +75,17 @@ const ProductsButtonsActions = ({ product, quantity = 1 }) => {
 						font-size: 16px;
 						cursor: pointer;
 						background-color: #ffb116;
-						color: #ffffff;
-						font-weight: 600;
+						color: #111827;
+						font-weight: 700;
 						border-radius: 5px;
 						padding: 0 10px;
 						flex-grow: 1;
-						transition: background-color 0.3s;
+						transition: background-color 0.3s, color 0.3s;
 					}
 
 					.product__actions__add-to-cart:hover {
 						background-color: #ffa01b;
+						color: #111827;
 					}
 
 					.product__actions__add-to-cart.disabled {

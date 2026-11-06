@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { getSocialShareUrls, openShareWindow } from '../../utils/socialTracking';
+import { toast } from '../../context/ToastContext';
 
 const SocialShare = ({
   url = window.location.href,
@@ -23,7 +24,7 @@ const SocialShare = ({
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(url);
-      alert('¡Enlace copiado al portapapeles!');
+      toast.success('¡Enlace copiado al portapapeles!');
       handleShare('copy');
     } catch (err) {
       console.error('Error al copiar:', err);

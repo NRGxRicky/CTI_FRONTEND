@@ -11,6 +11,7 @@ import ProfileAddAddress from '../ProfileAddAddress/ProfileAddAddress';
 import ProfileAllAddress from '../ProfileAllAddress/ProfileAllAddress';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useApi } from '../../hooks/useApi';
+import { toast } from '../../context/ToastContext';
 
 const CartShippingMethod = () => {
 	const { buildUrl } = useApi();
@@ -117,13 +118,13 @@ const CartShippingMethod = () => {
 
 			if (response.ok) {
 				getDataProfile(); // Actualiza la lista después de eliminar
-				alert('Domicilio eliminado correctamente.');
+				toast.success('Domicilio eliminado correctamente.');
 			} else {
-				alert('Error al eliminar el domicilio.');
+				toast.error('Error al eliminar el domicilio.');
 			}
 		} catch (error) {
 			console.error('Error al eliminar el domicilio:', error);
-			alert('Error al eliminar el domicilio.');
+			toast.error('Error al eliminar el domicilio.');
 		} finally {
 			setLoadingData(false);
 		}
@@ -290,7 +291,8 @@ const CartShippingMethod = () => {
 				.cart-shipping-method__actions__change-addres__button {
 					flex: 1;
 					background: #ffb116;
-					color: #fff;
+					color: #111827;
+					font-weight: 700;
 					border-radius: 4px;
 					padding: 10px;
 					font-size: 16px;
@@ -301,12 +303,14 @@ const CartShippingMethod = () => {
 				}
 
 				.cart-shipping-method__action {
-					color: #ffa01b;
+					color: var(--primary-color);
+					font-weight: 600;
 					cursor: pointer;
 				}
 
 				.cart-shipping-method__actions__change-addres__button:hover {
 					background-color: #ffa01b;
+					color: #111827;
 				}
 
 				.cart-shipping-method__item__description {

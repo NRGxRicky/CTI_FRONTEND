@@ -9,6 +9,7 @@ import CurrencyFormat from '../../hooks/CurrencyFormat';
 import { useRouter } from 'next/router';
 import Capitalize from '../../hooks/CapitalizeTitle';
 import { useApi } from '../../hooks/useApi';
+import { toast } from '../../context/ToastContext';
 
 export default function UserQuoteDetail({ quoteId }) {
 	const { quote, loading, error } = useQuoteDetails(quoteId);
@@ -55,13 +56,13 @@ export default function UserQuoteDetail({ quoteId }) {
 				} else {
 					const error = await resp.json();
 					console.error('Error al eliminar la cotización:', error);
-					alert(
+					toast.error(
 						'No se pudo eliminar la cotización. Inténtelo de nuevo más tarde.'
 					);
 				}
 			} catch (err) {
 				console.error('Error de conexión:', err);
-				alert('Error de conexión. Inténtelo de nuevo más tarde.');
+				toast.error('Error de conexión. Inténtelo de nuevo más tarde.');
 			} finally {
 				setIsDeletingQuote(false);
 			}
@@ -78,7 +79,7 @@ export default function UserQuoteDetail({ quoteId }) {
 			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
 			if (diffDays > 10) {
-				alert(
+				toast.warning(
 					'Esta cotización ha superado los 10 días de vigencia y no puede ser procesada.'
 				);
 				return;
@@ -125,7 +126,7 @@ export default function UserQuoteDetail({ quoteId }) {
 			}
 		} catch (error) {
 			console.error('Error al comprar cotización:', error);
-			alert(
+			toast.error(
 				'Hubo un problema al procesar tu cotización. Por favor intenta de nuevo.'
 			);
 		} finally {
@@ -843,7 +844,8 @@ export default function UserQuoteDetail({ quoteId }) {
 					align-items: center;
 					justify-content: center;
 					background-color: #ffb116;
-					color: white;
+					color: #111827;
+					font-weight: 600;
 				}
 
 				.delete-icon {

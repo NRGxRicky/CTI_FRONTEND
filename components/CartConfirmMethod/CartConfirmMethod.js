@@ -266,8 +266,8 @@ const CartConfirmMethod = () => {
           
 				}
 				.warning-icon {
-					background-color: #ffa01b;
-					color: #fff;
+					background-color: #ffb116;
+					color: #111827;
 					border-radius: 50%;
 					font-weight: bold;
 					min-width: 24px;

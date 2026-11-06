@@ -11,6 +11,7 @@ import { Preloader, TailSpin } from 'react-preloader-icon';
 import useDebounce from '../../hooks/useDebounce';
 import SummaryDetails from '../SummaryDetails/SummaryDetails';
 import { useApi } from '../../hooks/useApi';
+import { toast } from '../../context/ToastContext';
 
 const CartSummary = () => {
 	const { cart, removeFromCart, addToCart, loading, hasQuoteItems } =
@@ -24,7 +25,7 @@ const CartSummary = () => {
 
 	const handleIncrement = async (item) => {
 		if (hasQuoteItems) {
-			alert('No puedes modificar la cantidad cuando hay productos de cotización en el carrito.');
+			toast.warning('No puedes modificar la cantidad cuando hay productos de cotización en el carrito.');
 			return;
 		}
 
@@ -44,7 +45,7 @@ const CartSummary = () => {
 			}
 		} catch (error) {
 			console.error('Error al añadir al carrito:', error);
-			alert('Hubo un error al añadir el producto al carrito.');
+			toast.error('Hubo un error al añadir el producto al carrito.');
 		} finally {
 			setIsLoading(false);
 		}
@@ -52,7 +53,7 @@ const CartSummary = () => {
 
 	const handleDecrement = async (item) => {
 		if (hasQuoteItems) {
-			alert('No puedes modificar la cantidad cuando hay productos de cotización en el carrito.');
+			toast.warning('No puedes modificar la cantidad cuando hay productos de cotización en el carrito.');
 			return;
 		}
 
@@ -72,7 +73,7 @@ const CartSummary = () => {
 			}
 		} catch (error) {
 			console.error('Error al decrementar el carrito:', error);
-			alert('Hubo un error al decrementar el producto del carrito.');
+			toast.error('Hubo un error al decrementar el producto del carrito.');
 		} finally {
 			setIsLoading(false);
 		}
@@ -107,7 +108,7 @@ const CartSummary = () => {
 				}
 			} catch (error) {
 				console.error('Error al actualizar el carrito:', error);
-				alert('Hubo un error al actualizar el carrito.');
+				toast.error('Hubo un error al actualizar el carrito.');
 			} finally {
 				setIsLoading(false);
 			}
@@ -118,7 +119,7 @@ const CartSummary = () => {
 
 	const handleInputChange = (e, item) => {
 		if (hasQuoteItems) {
-			alert('No puedes modificar la cantidad cuando hay productos de cotización en el carrito.');
+			toast.warning('No puedes modificar la cantidad cuando hay productos de cotización en el carrito.');
 			// Restaura el valor anterior
 			e.target.value = item.quantity;
 			return;
@@ -251,6 +252,7 @@ const CartSummary = () => {
 											</span>
 											<input
 												type='number'
+												inputMode='numeric'
 												pattern='[0-9]*'
 												className='bold product_resume__stock__action__quantity_current no-spin'
 												min={1}
@@ -435,21 +437,24 @@ const CartSummary = () => {
 				}
 
 				.product__resume__stock__action {
-					width: 90px;
+					width: 120px;
+					min-height: 44px;
 					display: flex;
 					border: 1px solid var(--primary-color);
 					border-radius: 5px;
 					background-color: #ffffff;
 					justify-content: space-between;
-					padding: 0 5px;
+					align-items: center;
+					padding: 0 4px;
 				}
 				.product_resume__stock__action__quantity {
-					font-size: 18px;
-					height: 30px;
-					width: 30px;
+					font-size: 20px;
+					height: 44px;
+					width: 44px;
 					display: flex;
 					justify-content: center;
 					align-items: center;
+					user-select: none;
 				}
 
 				.product_resume__stock__action__quantity:hover,

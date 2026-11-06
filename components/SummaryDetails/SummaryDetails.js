@@ -14,6 +14,7 @@ import KueskiPayWidget from '../KueskiPayWidget/KueskiPayWidget';
 import { getPaymentOptionsByType } from '../constants/paymentOptions';
 import { useSandbox } from '../../hooks/useSandbox';
 import { useApi } from '../../hooks/useApi';
+import { toast } from '../../context/ToastContext';
 
 const SummaryDetails = ({ urlAction, step }) => {
 	const { buildUrl } = useApi();
@@ -214,18 +215,18 @@ const SummaryDetails = ({ urlAction, step }) => {
 							} else {
 								// Manejar error
 								const errData = await response.json();
-								alert(
+								toast.error(
 									'Error al crear la orden: ' + (errData.detail || response.statusText)
 								);
 							}
 						} catch (err) {
 							console.error(err);
-							alert('Error de conexión al guardar la orden.');
+							toast.error('Error de conexión al guardar la orden.');
 						}
 					},
 					onError: (err) => {
 						console.error('PayPal error:', err);
-						alert('Ocurrió un error con PayPal.');
+						toast.error('Ocurrió un error con PayPal.');
 					},
 				})
 				.render(paypalRef.current);
@@ -312,14 +313,14 @@ const SummaryDetails = ({ urlAction, step }) => {
 						traceback: errData.traceback,
 						fullResponse: errData
 					});
-					alert('Error al crear la orden: ' + (errData.error || errData.detail || response.statusText));
+					toast.error('Error al crear la orden: ' + (errData.error || errData.detail || response.statusText));
 				}
 			} else {
-				alert(`Error de pago sandbox: ${paymentResult.errorMessage}`);
+				toast.error(`Error de pago sandbox: ${paymentResult.errorMessage}`);
 			}
 		} catch (error) {
 			console.error('Error en pago sandbox:', error);
-			alert('Error al procesar el pago sandbox');
+			toast.error('Error al procesar el pago sandbox');
 		}
 	};
 
@@ -419,11 +420,11 @@ const SummaryDetails = ({ urlAction, step }) => {
 					checkout.showPaymentPage();
 				}
 			} else {
-				alert('La pasarela de pagos no se pudo inicializar. Por favor, recarga la página.');
+				toast.error('La pasarela de pagos no se pudo inicializar. Por favor, recarga la página.');
 			}
 		} catch (error) {
 			console.error('[Global Payments] Error de inicialización:', error);
-			alert('No se pudo inicializar la pasarela de pago: ' + error.message);
+			toast.error('No se pudo inicializar la pasarela de pago: ' + error.message);
 		} finally {
 			setGlobalSessionLoading(false);
 		}
@@ -525,7 +526,8 @@ const SummaryDetails = ({ urlAction, step }) => {
 
 			if (!res.ok) {
 				console.error('Error al crear preferencia MP:', data);
-				return alert('Error al crear preferencia con Mercado Pago');
+				toast.error('Error al crear preferencia con Mercado Pago');
+				return;
 			}
 
 			const { preferenceId } = data; // Ajusta si tu backend devuelve otro campo
@@ -562,7 +564,7 @@ const SummaryDetails = ({ urlAction, step }) => {
 			brickControllerRef.current = brickController;
 		} catch (error) {
 			console.error(error);
-			alert('Error al inicializar Checkout de Mercado Pago');
+			toast.error('Error al inicializar Checkout de Mercado Pago');
 		}
 	};
 
@@ -652,19 +654,20 @@ const SummaryDetails = ({ urlAction, step }) => {
 			const data = await res.json();
 			if (!res.ok) {
 				console.error("Error creando el pago KueskiPay:", data);
-				return alert("Error al crear el pago con KueskiPay");
+				toast.error("Error al crear el pago con KueskiPay");
+				return;
 			}
 
 			// H) Guardar el callback_url en el estado para renderizar el botón
 			if (data.status === "success" && data.merchant_response.data && data.merchant_response.data.callback_url) {
 				setKueskiCallbackUrl(data.merchant_response.data.callback_url);
 			} else {
-				alert("No se recibió URL de pago de KueskiPay");
+				toast.error("No se recibió URL de pago de KueskiPay");
 			}
 
 		} catch (error) {
 			console.error(error);
-			alert("Error al inicializar el pago con KueskiPay");
+			toast.error("Error al inicializar el pago con KueskiPay");
 		}
 	};
 
@@ -700,12 +703,12 @@ const SummaryDetails = ({ urlAction, step }) => {
 				// Guárdalo en un estado local
 				setAplazoCheckoutUrl(data.aplazo_response.url);
 			} else {
-				alert('Error al generar pago con Aplazo');
+				toast.error('Error al generar pago con Aplazo');
 				console.error('aplazo error: ', data);
 			}
 		} catch (error) {
 			console.error(error);
-			alert('Error al inicializar el pago con Aplazo');
+			toast.error('Error al inicializar el pago con Aplazo');
 		}
 	};
 

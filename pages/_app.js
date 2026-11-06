@@ -11,6 +11,7 @@ import FacebookPixel from '../components/FacebookPixel/FacebookPixel';
 import NextTopLoader from 'nextjs-toploader';
 import { EnvProvider } from '../context/EnvContext';
 import { CookiesProvider } from 'react-cookie';
+import { ToastProvider } from '../context/ToastContext';
 
 function MyApp({ Component, pageProps }) {
 	useEffect(() => {
@@ -44,9 +45,11 @@ function MyApp({ Component, pageProps }) {
 				<CookiesProvider>
 					<AuthProvider>
 						<CartProvider>
-							<Layout>
-								<Component {...pageProps} />
-							</Layout>
+							<ToastProvider>
+								<Layout>
+									<Component {...pageProps} />
+								</Layout>
+							</ToastProvider>
 						</CartProvider>
 					</AuthProvider>
 				</CookiesProvider>

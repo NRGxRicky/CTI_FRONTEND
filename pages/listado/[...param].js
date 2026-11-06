@@ -945,10 +945,10 @@ const Listado = ({
 
 					.filters__button-clear {
 						background-color: #ffb116;
-						color: #ffffff;
+						color: #111827;
 						padding: 15px;
 						border-radius: 5px;
-						font-weight: 600;
+						font-weight: 700;
 						font-size: 16px;
 						cursor: pointer;
 					}

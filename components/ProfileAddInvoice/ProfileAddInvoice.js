@@ -8,6 +8,7 @@ import formasDePago from '../../hooks/formasDePago';
 import regimenesFiscales from '../../hooks/regimenesFiscales';
 import usosCFDI from '../../hooks/usosCFDI';
 import { useApi } from '../../hooks/useApi';
+import { toast } from '../../context/ToastContext';
 
 const ProfileAddInvoice = ({
 	rfcData = null, // Renombramos para mayor claridad.
@@ -136,12 +137,13 @@ const ProfileAddInvoice = ({
 				onSubmit();
 				dispatch(hideAll());
 				if (onCloseModal) onCloseModal();
+				toast.success('Datos fiscales guardados correctamente.');
 			} else {
 				const errorData = await response.json();
-				alert(errorData.message || 'Error al guardar el RFC.');
+				toast.error(errorData.message || 'Error al guardar el RFC.');
 			}
 		} catch (err) {
-			alert('Error de conexión, intenta nuevamente.');
+			toast.error('Error de conexión, intenta nuevamente.');
 		} finally {
 			setLoadingData(false);
 		}
@@ -181,10 +183,20 @@ const ProfileAddInvoice = ({
 							id='rfc'
 							name='rfc'
 							value={formData.rfc}
-							onChange={handleChange}
+							onChange={(e) => {
+								handleChange({
+									target: {
+										name: 'rfc',
+										value: e.target.value.toUpperCase(),
+										type: 'text',
+									},
+								});
+							}}
 							ref={inputRefs.rfc}
 							placeholder='Ej. ABCD123456XXX'
-							maxLength={13} // <- Restringe la cantidad de caracteres
+							maxLength={13}
+							autoCapitalize='characters'
+							style={{ textTransform: 'uppercase' }}
 						/>
 						{errors.rfc && <p className='error'>{errors.rfc}</p>}
 					</div>
@@ -287,6 +299,9 @@ const ProfileAddInvoice = ({
 							type='text'
 							id='codigo_postal'
 							name='codigo_postal'
+							inputMode='numeric'
+							pattern='[0-9]*'
+							autoComplete='postal-code'
 							value={formData.codigo_postal}
 							onChange={handleChange}
 							ref={inputRefs.codigo_postal}

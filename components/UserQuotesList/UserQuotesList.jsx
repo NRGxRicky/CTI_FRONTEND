@@ -11,6 +11,7 @@ import ListProductsPagination from '../ListProductsPagination/ListProductsPagina
 import Link from 'next/link';
 import useCart from '../../hooks/useCart';
 import { useApi } from '../../hooks/useApi';
+import { toast } from '../../context/ToastContext';
 
 function UserQuotesList() {
 	const { accessToken, updateDataUser } = useAuth();
@@ -259,16 +260,17 @@ function UserQuotesList() {
 					);
 					// Actualizar el conteo
 					setCount((prevCount) => prevCount - 1);
+					toast.success('Cotización eliminada correctamente.');
 				} else {
 					const error = await resp.json();
 					console.error('Error al eliminar la cotización:', error);
-					alert(
+					toast.error(
 						'No se pudo eliminar la cotización. Inténtelo de nuevo más tarde.'
 					);
 				}
 			} catch (err) {
 				console.error('Error de conexión:', err);
-				alert('Error de conexión. Inténtelo de nuevo más tarde.');
+				toast.error('Error de conexión. Inténtelo de nuevo más tarde.');
 			}
 		}
 	};
@@ -300,7 +302,7 @@ function UserQuotesList() {
 			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
 			if (diffDays > 10) {
-				alert(
+				toast.warning(
 					'Esta cotización ha superado los 10 días de vigencia y no puede ser procesada.'
 				);
 				return;
@@ -349,7 +351,7 @@ function UserQuotesList() {
 			}
 		} catch (error) {
 			console.error('Error al comprar cotización:', error);
-			alert(
+			toast.error(
 				'Hubo un problema al procesar tu cotización. Por favor intenta de nuevo.'
 			);
 		} finally {

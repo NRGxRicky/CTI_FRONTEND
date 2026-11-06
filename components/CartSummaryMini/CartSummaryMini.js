@@ -661,12 +661,15 @@ const CartSummaryMini = () => {
         }
         .quote-button {
           background: #ffb116;
+          color: #111827;
+          font-weight: 700;
         }
         .quote-button:hover {
           background: #ffa01b;
+          color: #111827;
         }
         .view-cart-button:hover {
-          background: #e00028;
+          background: #1b3bc2;
         }
 
         /* Botón "Crear cotización" deshabilitado */

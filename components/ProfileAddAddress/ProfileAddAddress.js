@@ -3,6 +3,7 @@ import { useAppDispatch } from '../../lib/hooks';
 import { hideAll } from '../../lib/features/showOpacityContainerSlide';
 import { useAuth } from '../../hooks/auth';
 import { useApi } from '../../hooks/useApi';
+import { toast } from '../../context/ToastContext';
 
 const ProfileAddAddress = ({
 	domicilio = null,
@@ -141,12 +142,13 @@ const ProfileAddAddress = ({
 				onSubmit();
 				dispatch(hideAll());
 				if (onCloseModal) onCloseModal();
+				toast.success('Domicilio guardado correctamente.');
 			} else {
 				const errorData = await response.json();
-				alert(errorData.message || 'Error al guardar el domicilio.');
+				toast.error(errorData.message || 'Error al guardar el domicilio.');
 			}
 		} catch (err) {
-			alert('Error de conexión, intenta nuevamente.');
+			toast.error('Error de conexión, intenta nuevamente.');
 		} finally {
 			setLoadingData(false);
 		}
@@ -216,6 +218,8 @@ const ProfileAddAddress = ({
 								type='tel'
 								id='telefono'
 								name='telefono'
+								inputMode='tel'
+								autoComplete='tel'
 								value={formData.telefono}
 								onChange={handleChange}
 								ref={inputRefs.telefono}
@@ -292,6 +296,9 @@ const ProfileAddAddress = ({
 								type='text'
 								id='codigo_postal'
 								name='codigo_postal'
+								inputMode='numeric'
+								pattern='[0-9]*'
+								autoComplete='postal-code'
 								value={formData.codigo_postal}
 								onChange={handleChange}
 								ref={inputRefs.codigo_postal}

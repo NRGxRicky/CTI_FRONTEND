@@ -248,7 +248,8 @@ const ProfileAllAddress = ({
 				.delete-button {
 					background: #ffb116;
 					border: none;
-					color: white;
+					color: #111827;
+					font-weight: 600;
 					padding: 8px 12px;
 					border-radius: 5px;
 					cursor: pointer;
@@ -256,6 +257,7 @@ const ProfileAllAddress = ({
 				}
 				.delete-button:hover {
 					background: #ffa01b;
+					color: #111827;
 				}
 
 				@media only screen and (max-width: 62em) {

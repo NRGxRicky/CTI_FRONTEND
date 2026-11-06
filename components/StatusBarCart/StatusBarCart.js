@@ -40,24 +40,26 @@ const StatusBarCart = ({ steps = [], activeStep = 'cart' }) => {
 					flex-direction: column;
 					align-items: center;
 					flex: 1;
-					color: #aaa;
+					color: #555555;
 					position: relative;
 					padding: 0 2px;
 				}
 
 				.status-step.active {
-					color: #474747;
+					color: #111827;
+					font-weight: 600;
 				}
 
 				.status-step.actived {
 					color: var(--primary-color);
+					font-weight: 700;
 				}
 
 				.status-step .line {
 					position: relative;
 					height: 4px;
 					width: 100%;
-					background: #aaa;
+					background: #bcbcbc;
 					margin: 5px 0;
 					border-radius: 1px;
 				}

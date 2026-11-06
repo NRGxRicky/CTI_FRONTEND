@@ -233,7 +233,8 @@ const ProfileAllInvoice = ({
 				.delete-button {
 					background: #ffb116;
 					border: none;
-					color: white;
+					color: #111827;
+					font-weight: 600;
 					padding: 8px 12px;
 					border-radius: 5px;
 					cursor: pointer;
@@ -242,6 +243,7 @@ const ProfileAllInvoice = ({
 
 				.delete-button:hover {
 					background: #ffa01b;
+					color: #111827;
 				}
 
 				.add-new-invoice {

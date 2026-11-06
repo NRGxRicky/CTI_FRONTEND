@@ -6,6 +6,7 @@ import Footer from '../components/Footer/Footer';
 import { useAppSelector } from '../lib/hooks';
 import CurrencyFormat from '../hooks/CurrencyFormat';
 import useCart from '../hooks/useCart';
+import { toast } from '../context/ToastContext';
 
 const DELIVERY_DAYS = '3 a 5 días hábiles';
 
@@ -134,7 +135,7 @@ export default function Cotizador() {
 
   // Generate PDF
   const generatePDF = async () => {
-    if (items.length === 0) { alert('Agrega al menos un producto'); return; }
+    if (items.length === 0) { toast.warning('Agrega al menos un producto'); return; }
     setIsGenerating(true);
 
     try {
@@ -329,7 +330,7 @@ export default function Cotizador() {
       setFolio(folio + 1);
     } catch (err) {
       console.error('Error generando PDF:', err);
-      alert('Error al generar el PDF. Intenta de nuevo.');
+      toast.error('Error al generar el PDF. Intenta de nuevo.');
     } finally {
       setIsGenerating(false);
     }

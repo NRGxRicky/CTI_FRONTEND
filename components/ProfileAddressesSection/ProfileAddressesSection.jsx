@@ -8,6 +8,7 @@ import { useAuth } from '../../hooks/auth';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { Preloader, TailSpin } from 'react-preloader-icon';
 import { useApi } from '../../hooks/useApi';
+import { toast } from '../../context/ToastContext';
 
 const ProfileAddressesSection = () => {
 	const { buildUrl } = useApi();
@@ -112,13 +113,13 @@ const ProfileAddressesSection = () => {
 			);
 			if (response.ok) {
 				await getDataProfile();
-				alert('Domicilio eliminado correctamente.');
+				toast.success('Domicilio eliminado correctamente.');
 			} else {
-				alert('Error al eliminar el domicilio.');
+				toast.error('Error al eliminar el domicilio.');
 			}
 		} catch (error) {
 			console.error('Error al eliminar el domicilio:', error);
-			alert('Error al eliminar el domicilio.');
+			toast.error('Error al eliminar el domicilio.');
 		} finally {
 			setLoadingData(false);
 		}
@@ -178,13 +179,13 @@ const ProfileAddressesSection = () => {
 			);
 			if (response.ok) {
 				await getDataProfile();
-				alert('Facturación eliminada correctamente.');
+				toast.success('Facturación eliminada correctamente.');
 			} else {
-				alert('Error al eliminar la facturación.');
+				toast.error('Error al eliminar la facturación.');
 			}
 		} catch (error) {
 			console.error('Error al eliminar la facturación:', error);
-			alert('Error al eliminar la facturación.');
+			toast.error('Error al eliminar la facturación.');
 		} finally {
 			setLoadingData(false);
 		}
@@ -379,8 +380,8 @@ const ProfileAddressesSection = () => {
 					color: #333;
 				}
 				.warning-icon {
-					background-color: #ffa01b;
-					color: #fff;
+					background-color: #ffb116;
+					color: #111827;
 					border-radius: 50%;
 					font-weight: bold;
 					min-width: 24px;

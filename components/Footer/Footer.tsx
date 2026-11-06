@@ -349,7 +349,7 @@ const Footer: React.FC<FooterProps> = () => {
 					</div>
 				</div>
 				<aside className='footer__aside'>
-					© 2025 {storeName}
+					© {new Date().getFullYear()} {storeName}
 				</aside>
 			</div>
 			<style jsx>

@@ -13,6 +13,7 @@ import usosCFDI from '../../hooks/usosCFDI';
 import { getPaymentOptionsByType } from '../constants/paymentOptions';
 import { useSandbox } from '../../hooks/useSandbox';
 import { useApi } from '../../hooks/useApi';
+import { toast } from '../../context/ToastContext';
 
 const CartPaymentMethod = () => {
 	const { buildUrl } = useApi();
@@ -173,13 +174,13 @@ const CartPaymentMethod = () => {
 
 			if (response.ok) {
 				getDataProfile();
-				alert('Facturación eliminada correctamente.');
+				toast.success('Facturación eliminada correctamente.');
 			} else {
-				alert('Error al eliminar la Facturación.');
+				toast.error('Error al eliminar la Facturación.');
 			}
 		} catch (error) {
 			console.error('Error al eliminar la Facturación:', error);
-			alert('Error al eliminar la Facturación.');
+			toast.error('Error al eliminar la Facturación.');
 		} finally {
 			setLoadingData(false);
 		}
@@ -417,7 +418,8 @@ const CartPaymentMethod = () => {
 				.cart-payment-method__actions__change-addres__button {
 					flex: 1;
 					background: #ffb116;
-					color: #fff;
+					color: #111827;
+					font-weight: 700;
 					border-radius: 4px;
 					padding: 10px;
 					font-size: 16px;
@@ -428,12 +430,14 @@ const CartPaymentMethod = () => {
 				}
 
 				.cart-payment-method__action {
-					color: #ffa01b;
+					color: var(--primary-color);
+					font-weight: 600;
 					cursor: pointer;
 				}
 
 				.cart-payment-method__actions__change-addres__button:hover {
 					background-color: #ffa01b;
+					color: #111827;
 				}
 
 				.cart-payment-method__item__description {
@@ -558,8 +562,8 @@ const CartPaymentMethod = () => {
 					margin-bottom: 10px;
 				}
 				.warning-icon {
-					background-color: #ffa01b;
-					color: #fff;
+					background-color: #ffb116;
+					color: #111827;
 					border-radius: 50%;
 					font-weight: bold;
 					min-width: 24px;
@@ -573,15 +577,18 @@ const CartPaymentMethod = () => {
 
 				.new-rfc-button {
 					background-color: #ffb116;
-					color: #fff;
+					color: #111827;
+					font-weight: 700;
 					border: none;
 					border-radius: 5px;
 					padding: 12px 20px;
 					cursor: pointer;
 					font-size: 14px;
+					transition: background-color 0.2s;
 				}
 				.new-rfc-button:hover {
 					background-color: #ffa01b;
+					color: #111827;
 				}
 
 				/* Sandbox Payment Badge */

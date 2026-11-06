@@ -37,11 +37,25 @@ const DetailProduct = ({
 	);
 	const [cartQuantity, setCartQuantity] = useState(1);
 	const [internalCartMsi, setInternalCartMsi] = useState(false);
+	const [showStickyBuyBar, setShowStickyBuyBar] = useState(false);
 	const { cartMsi } = useAuth();
 
 	useEffect(() => {
 		setInternalCartMsi(cartMsi);
 	}, [cartMsi]);
+
+	useEffect(() => {
+		const handleScroll = () => {
+			if (window.scrollY > 420) {
+				setShowStickyBuyBar(true);
+			} else {
+				setShowStickyBuyBar(false);
+			}
+		};
+
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, []);
 
 	const dispatch = useAppDispatch();
 
@@ -454,6 +468,7 @@ const DetailProduct = ({
 												type='number'
 												value={cartQuantity}
 												pattern='[0-9]*'
+												inputMode='numeric'
 												onChange={handleInputChange}
 												className='bold product_resume__stock__action__quantity_current no-spin'
 												min={1}
@@ -558,6 +573,37 @@ const DetailProduct = ({
 					)}
 				</div>
 			</div>
+
+			{item.stock_total > 0 && (
+				<div
+					className={`product__sticky-buy-bar ${
+						showStickyBuyBar ? 'visible' : ''
+					}`}
+				>
+					<div className='sticky-buy-bar__left'>
+						<div className='sticky-buy-bar__price'>
+							$ {CurrencyFormat(
+								internalCartMsi
+									? item.precio_final
+									: item.precio_final_descuento > 0
+										? item.precio_final_descuento
+										: item.precio_final
+							)}
+						</div>
+						<div className='sticky-buy-bar__stock'>
+							{item.stock_puebla > 0
+								? `Puebla: ${item.stock_puebla} disp.`
+								: `Disponibles: ${item.stock_total}`}
+						</div>
+					</div>
+					<div className='sticky-buy-bar__right'>
+						<ProductsButtonsActions
+							product={item}
+							quantity={cartQuantity}
+						/>
+					</div>
+				</div>
+			)}
 
 			<style jsx>
 				{`
@@ -885,6 +931,67 @@ const DetailProduct = ({
 							border-left: 0 !important;
 							border-right: 0 !important;
 						}
+
+						.product__sticky-buy-bar {
+							display: flex;
+							position: fixed;
+							bottom: 0;
+							left: 0;
+							right: 0;
+							width: 100%;
+							background-color: #ffffff;
+							box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.12);
+							padding: 8px 16px;
+							z-index: 95;
+							align-items: center;
+							justify-content: space-between;
+							gap: 12px;
+							transform: translateY(110%);
+							transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+						}
+
+						.product__sticky-buy-bar.visible {
+							transform: translateY(0);
+						}
+
+						.sticky-buy-bar__left {
+							flex: 1;
+							display: flex;
+							flex-direction: column;
+							justify-content: center;
+						}
+
+						.sticky-buy-bar__price {
+							font-size: 18px;
+							font-weight: 700;
+							color: var(--primary-color);
+							line-height: 1.2;
+						}
+
+						.sticky-buy-bar__stock {
+							font-size: 11px;
+							color: #616161;
+							font-weight: 500;
+						}
+
+						.sticky-buy-bar__right {
+							flex: 1.4;
+						}
+
+						.sticky-buy-bar__right :global(.product__actions) {
+							margin-top: 0 !important;
+						}
+
+						.sticky-buy-bar__right :global(.product__actions__add-to-cart) {
+							height: 44px !important;
+							line-height: 44px !important;
+							font-size: 14px !important;
+							padding: 0 12px !important;
+						}
+					}
+
+					.product__sticky-buy-bar {
+						display: none;
 					}
 				`}
 			</style>
