@@ -3,6 +3,7 @@ const isStaging = process.env.NEXT_PUBLIC_ENV === 'staging';
 
 module.exports = {
 	output: 'standalone',
+	poweredByHeader: false,
 	async headers() {
 		// Headers básicos de seguridad (siempre activos)
 		const baseHeaders = [
@@ -27,6 +28,10 @@ module.exports = {
 				value: 'camera=(), microphone=(), geolocation=()',
 			},
 			{
+				key: 'Strict-Transport-Security',
+				value: 'max-age=63072000; includeSubDomains',
+			},
+			{
 				key: 'Access-Control-Allow-Origin',
 				value: '*',
 			},
@@ -37,7 +42,7 @@ module.exports = {
 			key: 'Content-Security-Policy',
 			value: [
 				"default-src 'self'",
-				"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.kueskipay.com https://cdn.gelazo.mx https://maps.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://sdk.mercadopago.com https://*.mercadolibre.com https://*.mlstatic.com https://www.paypal.com https://www.paypalobjects.com https://*.googleapis.com https://*.gstatic.com https://*.facebook.net https://*.facebook.com https://*.doubleclick.net https://*.googletagmanager.com",
+				"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.kueskipay.com https://cdn.aplazo.mx https://maps.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://sdk.mercadopago.com https://*.mercadolibre.com https://*.mlstatic.com https://www.paypal.com https://www.paypalobjects.com https://evopaymentsmexico.gateway.mastercard.com https://*.gateway.mastercard.com https://*.googleapis.com https://*.gstatic.com https://*.facebook.net https://*.facebook.com https://evopaymentsmexico.gateway.mastercard.com https://*.gateway.mastercard.com https://*.doubleclick.net https://*.googletagmanager.com",
 				"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.googleapis.com",
 				"img-src 'self' data: https: blob: http: https://*.mercadolibre.com https://*.mlstatic.com",
 				"font-src 'self' data: https://fonts.gstatic.com https://*.gstatic.com",
